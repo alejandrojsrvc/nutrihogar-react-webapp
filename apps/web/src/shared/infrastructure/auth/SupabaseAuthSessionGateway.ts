@@ -5,9 +5,12 @@ import {
 } from '@supabase/supabase-js';
 
 import type {
+  EmailCredentials,
   AuthSession,
   AuthSessionGateway,
   AuthStateListener,
+  RegisterWithEmailInput,
+  RegisterWithEmailResult,
 } from '../../../modules/auth/application/ports/AuthSessionGateway';
 
 type SupabaseAuthClient = Pick<SupabaseClient, 'auth'>;
@@ -29,15 +32,42 @@ export class SupabaseAuthSessionGateway implements AuthSessionGateway {
     private readonly redirectTo: string,
   ) {}
 
-  async loginWithGoogle(): Promise<void> {
-    const { error } = await this.supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: this.redirectTo },
+  async loginWithEmail({ email, password }: EmailCredentials): Promise<void> {
+    const { error } = await this.supabase.auth.signInWithPassword({
+      email: normalizeEmail(email),
+      password,
     });
 
     if (error) {
       throw error;
     }
+  }
+
+  async registerWithEmail({
+    email,
+    fullName,
+    password,
+  }: RegisterWithEmailInput): Promise<RegisterWithEmailResult> {
+    const { data, error } = await this.supabase.auth.signUp({
+      email: normalizeEmail(email),
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim(),
+          locale: getBrowserLocale(),
+          timezone: getBrowserTimezone(),
+        },
+        emailRedirectTo: this.redirectTo,
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      requiresEmailConfirmation: !data.session,
+    };
   }
 
   async getSession(): Promise<AuthSession | null> {
@@ -67,6 +97,20 @@ export class SupabaseAuthSessionGateway implements AuthSessionGateway {
       throw error;
     }
   }
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function getBrowserLocale(): string {
+  return typeof navigator !== 'undefined' && navigator.language
+    ? navigator.language
+    : 'es-AR';
+}
+
+function getBrowserTimezone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 }
 
 export function createSupabaseAuthSessionGateway({

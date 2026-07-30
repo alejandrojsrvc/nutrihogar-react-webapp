@@ -2,29 +2,61 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { AuthSessionGateway } from '../../application/ports/AuthSessionGateway';
+import type {
+  AuthSession,
+  AuthSessionGateway,
+} from '../../application/ports/AuthSessionGateway';
+import { SyncCurrentUserUseCase } from '../../application/use-cases/SyncCurrentUserUseCase';
 import { renderRoute } from '../../../../test/renderRoute';
 
 describe('LoginPage', () => {
-  it('starts the Google OAuth flow', async () => {
+  it('submits email and password', async () => {
     const user = userEvent.setup();
-    const loginWithGoogle = vi.fn(async () => undefined);
+    let session: AuthSession | null = null;
+    const loginWithEmail = vi.fn(async () => {
+      session = { accessToken: 'test-token', userId: 'user-1' };
+    });
+    const getCurrentUser = vi.fn(async () => ({
+      avatarUrl: null,
+      displayName: 'Alejandro',
+      email: 'adult@example.com',
+      id: 'user-1',
+      locale: 'es-AR',
+      timezone: 'America/Argentina/Buenos_Aires',
+    }));
     const authGateway: AuthSessionGateway = {
-      getSession: async () => null,
-      loginWithGoogle,
+      getSession: async () => session,
+      loginWithEmail,
       logout: async () => undefined,
       onAuthStateChange: () => () => undefined,
+      registerWithEmail: async () => ({
+        requiresEmailConfirmation: false,
+      }),
     };
 
-    renderRoute('/login', authGateway);
-
-    expect(
-      await screen.findByRole('heading', { name: 'Bienvenido a NutriHogar' }),
-    ).toBeInTheDocument();
-    await user.click(
-      await screen.findByRole('button', { name: 'Continuar con Google' }),
+    renderRoute(
+      '/login',
+      authGateway,
+      new SyncCurrentUserUseCase({ getCurrentUser }),
     );
 
-    expect(loginWithGoogle).toHaveBeenCalledOnce();
+    await user.type(
+      await screen.findByLabelText('Correo electronico'),
+      'adult@example.com',
+    );
+    await user.type(
+      await screen.findByLabelText('Contrasena'),
+      'secret-password',
+    );
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesion' }));
+
+    expect(loginWithEmail).toHaveBeenCalledWith({
+      email: 'adult@example.com',
+      password: 'secret-password',
+    });
+    expect(getCurrentUser).toHaveBeenCalledOnce();
+    expect(
+      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+    ).toBeInTheDocument();
   });
 });

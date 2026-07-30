@@ -1,7 +1,29 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router';
+
 import { useAuth } from '../providers/useAuth';
+import {
+  loginFormSchema,
+  type LoginFormValues,
+} from '../schemas/emailAuthSchemas';
 
 export function LoginPage() {
-  const { error, isSigningIn, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const { error, isSigningIn, loginWithEmail } = useAuth();
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+  });
+
+  const onSubmit: SubmitHandler<LoginFormValues> = async (values) => {
+    if (await loginWithEmail(values)) {
+      navigate('/app');
+    }
+  };
 
   return (
     <section className="welcome-panel" aria-labelledby="login-title">
@@ -11,21 +33,51 @@ export function LoginPage() {
         Un espacio simple para organizar la nutricion y el bienestar de tu
         hogar.
       </p>
-      <button
-        className="button button--primary"
-        disabled={isSigningIn}
-        onClick={() => void loginWithGoogle()}
-        type="button"
-      >
-        {isSigningIn ? 'Conectando con Google...' : 'Continuar con Google'}
-      </button>
+      <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="form-field">
+          <label htmlFor="login-email">Correo electronico</label>
+          <input
+            autoComplete="email"
+            id="login-email"
+            type="email"
+            {...register('email')}
+            aria-invalid={errors.email ? 'true' : 'false'}
+          />
+          {errors.email ? (
+            <p className="form-field__error">{errors.email.message}</p>
+          ) : null}
+        </div>
+        <div className="form-field">
+          <label htmlFor="login-password">Contrasena</label>
+          <input
+            autoComplete="current-password"
+            id="login-password"
+            type="password"
+            {...register('password')}
+            aria-invalid={errors.password ? 'true' : 'false'}
+          />
+          {errors.password ? (
+            <p className="form-field__error">{errors.password.message}</p>
+          ) : null}
+        </div>
+        <button
+          className="button button--primary auth-form__submit"
+          disabled={isSigningIn}
+          type="submit"
+        >
+          {isSigningIn ? 'Iniciando sesion...' : 'Iniciar sesion'}
+        </button>
+      </form>
       {error ? (
         <p className="auth-error" role="alert">
           {error.message}
         </p>
       ) : null}
       <p className="supporting-text">
-        Usaremos Google para mantener segura tu cuenta y tu hogar.
+        ¿Todavia no tienes una cuenta?{' '}
+        <Link className="auth-link" to="/register">
+          Registrate
+        </Link>
       </p>
     </section>
   );

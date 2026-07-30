@@ -169,7 +169,7 @@ Se utilizarán cuando aporten:
 7. Capa Application
 La capa de aplicación contiene casos de uso de interacción.
 Ejemplos:
-LoginWithGoogleUseCase
+LoginWithEmailUseCase
 LoadActiveHouseholdUseCase
 CreateHouseholdUseCase
 CompleteAdultProfileUseCase
@@ -257,8 +257,8 @@ inviteMember(
 Sesión
 | export interface         | AuthSessionGateway  |     | {        |
 | ------------------------ | ------------------- | --- | -------- |
-| loginWithGoogle():       | Promise<void>;      |     |          |
-| loginWithApple():        | Promise<void>;      |     |          |
+| loginWithEmail(credentials: EmailCredentials): | Promise<void>; | | |
+| registerWithEmail(input: RegisterWithEmailInput): | Promise<RegisterWithEmailResult>; | | |
 | getSession():            | Promise<AuthSession |     | | null>; |
 | logout(): Promise<void>; |                     |     |          |
 }

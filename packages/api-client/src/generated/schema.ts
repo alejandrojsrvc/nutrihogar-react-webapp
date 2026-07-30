@@ -21,6 +21,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/users/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_getCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista los hogares activos del usuario autenticado */
+        get: operations["HouseholdsController_list"];
+        put?: never;
+        /** Crea un hogar y asigna al creador como administrador */
+        post: operations["HouseholdsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle de un hogar accesible */
+        get: operations["HouseholdsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualiza el nombre de un hogar administrado */
+        patch: operations["HouseholdsController_update"];
+        trace?: never;
+    };
+    "/api/households/{householdId}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista las invitaciones del hogar */
+        get: operations["HouseholdInvitationsController_list"];
+        put?: never;
+        /** Crea una invitación para un adulto */
+        post: operations["HouseholdInvitationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/household-invitations/{token}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acepta una invitación con el correo autenticado */
+        post: operations["HouseholdInvitationsController_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/household-invitations/{invitationId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancela una invitación pendiente */
+        post: operations["HouseholdInvitationsController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -30,6 +134,89 @@ export interface components {
             status: string;
             /** @example 2026-07-29T17:00:00.000Z */
             timestamp: string;
+        };
+        CurrentUserResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example usuario@example.com */
+            email: string;
+            /** @example Alejandro */
+            displayName: Record<string, never> | null;
+            /** @example null */
+            avatarUrl: Record<string, never> | null;
+            /** @example America/Argentina/Buenos_Aires */
+            timezone: string;
+            /** @example es-AR */
+            locale: string;
+        };
+        CreateHouseholdRequestDto: {
+            /** @example Hogar Sojo */
+            name: string;
+            /**
+             * @default America/Argentina/Buenos_Aires
+             * @example America/Argentina/Buenos_Aires
+             */
+            timezone: string;
+            /**
+             * @default ARS
+             * @example ARS
+             */
+            currency: string;
+        };
+        HouseholdResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example Hogar Sojo */
+            name: string;
+            /** @example America/Argentina/Buenos_Aires */
+            timezone: string;
+            /** @example ARS */
+            currency: string;
+            /** @example 125.50 */
+            weeklyBudget: Record<string, never> | null;
+            /** Format: uuid */
+            createdById: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateHouseholdRequestDto: {
+            /** @example Hogar Sojo actualizado */
+            name: string;
+        };
+        CreateHouseholdInvitationRequestDto: {
+            /** @example adulto@example.com */
+            email: string;
+            /**
+             * @example MEMBER
+             * @enum {string}
+             */
+            role: "ADMIN" | "MEMBER";
+        };
+        HouseholdInvitationResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** @example adulto@example.com */
+            email: string;
+            /** @enum {string} */
+            role: "ADMIN" | "MEMBER";
+            /** @enum {string} */
+            status: "PENDING" | "ACCEPTED" | "EXPIRED" | "CANCELLED";
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: uuid */
+            invitedById: string;
+            /** Format: uuid */
+            acceptedById: Record<string, never> | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** @description Token sin hash para compartir localmente con el invitado. */
+            token?: string;
         };
     };
     responses: never;
@@ -56,6 +243,362 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HealthResponseDto"];
                 };
+            };
+        };
+    };
+    UsersController_getCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CurrentUserResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateHouseholdRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no es integrante activo. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El hogar no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateHouseholdRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo los administradores pueden editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El hogar no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdInvitationsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdInvitationResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden consultar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdInvitationsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateHouseholdInvitationRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdInvitationResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden invitar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario ya es miembro o ya existe una invitación. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdInvitationsController_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdInvitationResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El correo autenticado no coincide. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El token no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La invitación ya fue procesada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La invitación ha expirado. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HouseholdInvitationsController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdInvitationResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden cancelar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La invitación no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La invitación ya fue procesada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
