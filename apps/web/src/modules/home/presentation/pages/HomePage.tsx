@@ -1,10 +1,11 @@
-import { Link, Navigate } from 'react-router';
+import { Link, Navigate, useLocation } from 'react-router';
 
 import { useHealth } from '../../../../shared/presentation/hooks/useHealth';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 
 export function HomePage() {
+  const location = useLocation();
   const healthQuery = useHealth();
   const {
     activeHousehold,
@@ -72,6 +73,11 @@ export function HomePage() {
     <section className="page-section" aria-labelledby="home-title">
       <p className="eyebrow">Inicio</p>
       <h1 id="home-title">Tu hogar empieza aqui</h1>
+      {isProfileSavedNavigation(location.state) ? (
+        <p className="profile-success" role="status">
+          Perfil guardado correctamente.
+        </p>
+      ) : null}
       <div className="household-summary">
         <p className="household-summary__label">Hogar activo</p>
         <h2>{activeHousehold.name}</h2>
@@ -138,5 +144,14 @@ export function HomePage() {
         <p>Los datos de tu familia apareceran aqui.</p>
       </div>
     </section>
+  );
+}
+
+function isProfileSavedNavigation(state: unknown): boolean {
+  return (
+    typeof state === 'object' &&
+    state !== null &&
+    'profileSaved' in state &&
+    state.profileSaved === true
   );
 }

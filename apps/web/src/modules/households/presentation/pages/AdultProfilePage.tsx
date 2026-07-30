@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, Navigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 
 import { useAuth } from '../../../auth/presentation/providers/useAuth';
 import { useHouseholds } from '../hooks/useHouseholds';
@@ -16,6 +16,7 @@ import {
 } from '../schemas/adultProfileSchemas';
 
 export function AdultProfilePage() {
+  const navigate = useNavigate();
   const { session } = useAuth();
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
@@ -104,6 +105,10 @@ export function AdultProfilePage() {
         heightCm: Number(values.heightCm),
         name: values.name.trim(),
         primaryGoal: values.primaryGoal as PrimaryGoal,
+      });
+      navigate('/app', {
+        replace: true,
+        state: { profileSaved: true },
       });
     } catch {
       // El error de la mutacion se muestra debajo del formulario.

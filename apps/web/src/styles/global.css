@@ -328,6 +328,17 @@ button.button:disabled {
   font-weight: var(--font-weight-semibold);
 }
 
+.profile-success {
+  max-width: 36rem;
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-md);
+  color: var(--color-primary-800);
+  background: var(--color-primary-soft);
+  font-weight: var(--font-weight-semibold);
+}
+
 .household-section {
   margin-bottom: var(--space-8);
   padding-block: var(--space-5);
