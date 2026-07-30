@@ -10,11 +10,13 @@
     "dev": "npm run dev --workspace @nutrihogar/web",
     "build": "npm run build --workspace @nutrihogar/web",
     "lint": "npm run lint --workspace @nutrihogar/web",
+    "api:generate": "node scripts/generate-api-client.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test --workspace @nutrihogar/web"
   },
   "devDependencies": {
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.9.6"
   },
   "engines": {
