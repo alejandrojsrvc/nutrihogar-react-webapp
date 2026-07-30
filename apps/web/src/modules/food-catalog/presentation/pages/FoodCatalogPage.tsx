@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 import type {
   FoodSearchCriteria,
@@ -16,6 +16,7 @@ import {
 const PAGE_SIZE = 12;
 
 export function FoodCatalogPage() {
+  const location = useLocation();
   const [searchText, setSearchText] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [preparationState, setPreparationState] = useState<
@@ -64,6 +65,16 @@ export function FoodCatalogPage() {
       <p className="lead">
         Busca ingredientes y consulta sus nutrientes para organizar mejor tus comidas.
       </p>
+      {getCatalogFeedback(location.state) ? (
+        <p className="food-feedback" role="status">
+          {getCatalogFeedback(location.state)}
+        </p>
+      ) : null}
+      <div className="food-catalog-actions">
+        <Link className="button button--primary" to="/app/alimentos/nuevo">
+          Registrar alimento personalizado
+        </Link>
+      </div>
 
       <form className="food-search-form" onSubmit={handleSearchSubmit}>
         <div className="form-field food-search-form__query">
@@ -169,6 +180,17 @@ export function FoodCatalogPage() {
       ) : null}
     </section>
   );
+}
+
+function getCatalogFeedback(state: unknown): string | null {
+  if (!state || typeof state !== 'object') {
+    return null;
+  }
+
+  const feedback = state as { foodDeleted?: boolean };
+  return feedback.foodDeleted
+    ? 'El alimento se elimino correctamente de tu catalogo.'
+    : null;
 }
 
 function FoodResultCard({

@@ -7,16 +7,44 @@ import {
 } from '@nutrihogar/api-client';
 
 import type {
+  CustomFoodInput,
   FoodCatalogGateway,
   FoodCategory,
   FoodDetail,
+  FoodServingInput,
   FoodSearchCriteria,
   FoodSummary,
+  NutrientDefinition,
+  UpdateCustomFoodInput,
 } from '../../../modules/food-catalog/application/ports/FoodCatalogGateway';
 
 type GeneratedFoodSearchQuery = NonNullable<
   paths['/api/foods']['get']['parameters']['query']
 >;
+
+type MutationApiResult<T = unknown> = {
+  data?: T;
+  error?: unknown;
+  response?: Response;
+};
+
+type FoodMutationApiClient = {
+  POST(
+    path: '/api/households/{householdId}/foods',
+    options: {
+      body: unknown;
+      params: { path: { householdId: string } };
+    },
+  ): Promise<MutationApiResult<components['schemas']['FoodDetailResponseDto']>>;
+  PATCH(
+    path: '/api/foods/{foodId}',
+    options: { body: unknown; params: { path: { foodId: string } } },
+  ): Promise<MutationApiResult<components['schemas']['FoodDetailResponseDto']>>;
+  DELETE(
+    path: '/api/foods/{foodId}',
+    options: { params: { path: { foodId: string } } },
+  ): Promise<MutationApiResult>;
+};
 
 export class HttpFoodCatalogGateway implements FoodCatalogGateway {
   constructor(private readonly apiClient: ApiClient) {}
@@ -100,6 +128,130 @@ export class HttpFoodCatalogGateway implements FoodCatalogGateway {
       throw normalizeApiError(error);
     }
   }
+
+  async listNutrients(): Promise<NutrientDefinition[]> {
+    try {
+      const result = await this.apiClient.GET('/api/nutrients');
+
+      if (result.error !== undefined) {
+        throw normalizeApiError(result.error, result.response);
+      }
+
+      if (!result.data) {
+        throw new ApiClientError(
+          'unknown',
+          'La API no devolvio las definiciones de nutrientes.',
+        );
+      }
+
+      return result.data.map((nutrient) => ({
+        code: nutrient.code,
+        displayOrder: nutrient.displayOrder,
+        group: nutrient.group,
+        id: nutrient.id,
+        isRequired: nutrient.isRequired,
+        name: nutrient.name,
+        unit: nutrient.unit,
+      }));
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async createCustomFood(
+    householdId: string,
+    input: CustomFoodInput,
+  ): Promise<FoodDetail> {
+    try {
+      const result = await this.mutationClient().POST(
+        '/api/households/{householdId}/foods',
+        {
+          body: toCustomFoodRequest(input),
+          params: { path: { householdId } },
+        },
+      );
+
+      return this.requireFoodMutationData(result, 'crear');
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async updateCustomFood(
+    foodId: string,
+    input: UpdateCustomFoodInput,
+  ): Promise<FoodDetail> {
+    try {
+      const result = await this.mutationClient().PATCH('/api/foods/{foodId}', {
+        body: toCustomFoodRequest(input),
+        params: { path: { foodId } },
+      });
+
+      return this.requireFoodMutationData(result, 'actualizar');
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async deleteCustomFood(foodId: string): Promise<void> {
+    try {
+      const result = await this.mutationClient().DELETE('/api/foods/{foodId}', {
+        params: { path: { foodId } },
+      });
+
+      if (result.error !== undefined) {
+        throw normalizeApiError(result.error, result.response);
+      }
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  private mutationClient(): FoodMutationApiClient {
+    // The backend exposes these routes, but the committed OpenAPI snapshot
+    // predates them. Keep the compatibility boundary inside infrastructure.
+    return this.apiClient as unknown as FoodMutationApiClient;
+  }
+
+  private requireFoodMutationData(
+    result: MutationApiResult<components['schemas']['FoodDetailResponseDto']>,
+    action: string,
+  ): FoodDetail {
+    if (result.error !== undefined) {
+      throw normalizeApiError(result.error, result.response);
+    }
+
+    if (!result.data) {
+      throw new ApiClientError(
+        'unknown',
+        `La API no devolvio el alimento despues de ${action}lo.`,
+      );
+    }
+
+    return toFoodDetail(result.data);
+  }
+}
+
+function toCustomFoodRequest(
+  input: CustomFoodInput | UpdateCustomFoodInput,
+): Record<string, unknown> {
+  const request: Record<string, unknown> = { ...input };
+
+  if (input.servings !== undefined) {
+    request.servings = input.servings.map(toFoodServingRequest);
+  }
+
+  return request;
+}
+
+function toFoodServingRequest(serving: FoodServingInput) {
+  return {
+    equivalentGrams: serving.equivalentGrams ?? null,
+    equivalentMilliliters: serving.equivalentMilliliters ?? null,
+    name: serving.name,
+    quantity: serving.quantity,
+    unit: serving.unit,
+  };
 }
 
 function toFoodCategory(

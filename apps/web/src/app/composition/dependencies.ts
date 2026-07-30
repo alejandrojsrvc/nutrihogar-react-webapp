@@ -9,7 +9,11 @@ import { SyncCurrentUserUseCase } from '../../modules/auth/application/use-cases
 import { CreateAdultProfileUseCase } from '../../modules/households/application/use-cases/CreateAdultProfileUseCase';
 import { GetFoodDetailUseCase } from '../../modules/food-catalog/application/use-cases/GetFoodDetailUseCase';
 import { ListFoodCategoriesUseCase } from '../../modules/food-catalog/application/use-cases/ListFoodCategoriesUseCase';
+import { ListFoodNutrientsUseCase } from '../../modules/food-catalog/application/use-cases/ListFoodNutrientsUseCase';
 import { SearchFoodsUseCase } from '../../modules/food-catalog/application/use-cases/SearchFoodsUseCase';
+import { CreateCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/CreateCustomFoodUseCase';
+import { DeleteCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/DeleteCustomFoodUseCase';
+import { UpdateCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/UpdateCustomFoodUseCase';
 import { AcceptHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/AcceptHouseholdInvitationUseCase';
 import { CreateHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/CreateHouseholdInvitationUseCase';
 import { CreateHouseholdUseCase } from '../../modules/households/application/use-cases/CreateHouseholdUseCase';
@@ -68,6 +72,18 @@ export const checkHealthUseCase = new CheckHealthUseCase(healthGateway);
 export const searchFoodsUseCase = new SearchFoodsUseCase(foodCatalogGateway);
 export const getFoodDetailUseCase = new GetFoodDetailUseCase(foodCatalogGateway);
 export const listFoodCategoriesUseCase = new ListFoodCategoriesUseCase(
+  foodCatalogGateway,
+);
+export const listFoodNutrientsUseCase = new ListFoodNutrientsUseCase(
+  foodCatalogGateway,
+);
+export const createCustomFoodUseCase = new CreateCustomFoodUseCase(
+  foodCatalogGateway,
+);
+export const updateCustomFoodUseCase = new UpdateCustomFoodUseCase(
+  foodCatalogGateway,
+);
+export const deleteCustomFoodUseCase = new DeleteCustomFoodUseCase(
   foodCatalogGateway,
 );
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);

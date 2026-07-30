@@ -92,8 +92,46 @@ export interface FoodSearchResult {
   };
 }
 
+export interface FoodNutrientInput {
+  nutrientDefinitionId: string;
+  amount: number;
+}
+
+export interface FoodServingInput {
+  name: string;
+  quantity: number;
+  unit: string;
+  equivalentGrams?: number | null;
+  equivalentMilliliters?: number | null;
+}
+
+export interface CustomFoodInput {
+  name: string;
+  brand?: string | null;
+  categoryId: string;
+  preparationState: PreparationState;
+  referenceQuantity: number;
+  referenceUnit: ReferenceUnit;
+  source?: string;
+  confidenceLevel: ConfidenceLevel;
+  nutrients: FoodNutrientInput[];
+  servings: FoodServingInput[];
+}
+
+export type UpdateCustomFoodInput = Partial<CustomFoodInput>;
+
 export interface FoodCatalogGateway {
   search(criteria: FoodSearchCriteria): Promise<FoodSearchResult>;
   getById(foodId: string): Promise<FoodDetail>;
   listCategories(): Promise<FoodCategory[]>;
+  listNutrients(): Promise<NutrientDefinition[]>;
+  createCustomFood(
+    householdId: string,
+    input: CustomFoodInput,
+  ): Promise<FoodDetail>;
+  updateCustomFood(
+    foodId: string,
+    input: UpdateCustomFoodInput,
+  ): Promise<FoodDetail>;
+  deleteCustomFood(foodId: string): Promise<void>;
 }

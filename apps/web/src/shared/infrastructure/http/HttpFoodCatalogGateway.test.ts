@@ -151,4 +151,89 @@ describe('HttpFoodCatalogGateway', () => {
       new HttpFoodCatalogGateway(apiClient).listCategories(),
     ).resolves.toEqual([category]);
   });
+
+  it('lists nutrients and sends custom food mutations through the API client', async () => {
+    const requests: Request[] = [];
+    const fetchImplementation: typeof globalThis.fetch = vi.fn(
+      async (input, init) => {
+        const request = new Request(input, init);
+        requests.push(request);
+
+        if (request.method === 'DELETE') {
+          return new Response(null, { status: 204 });
+        }
+
+        if (request.url.endsWith('/api/nutrients')) {
+          return new Response(
+            JSON.stringify([
+              {
+                code: 'ENERGY_KCAL',
+                displayOrder: 1,
+                group: 'ENERGY',
+                id: 'nutrient-energy',
+                isRequired: true,
+                name: 'Energia',
+                unit: 'kcal',
+              },
+            ]),
+            { headers: { 'Content-Type': 'application/json' }, status: 200 },
+          );
+        }
+
+        return new Response(JSON.stringify(detail), {
+          headers: { 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      },
+    );
+    const apiClient = createApiClient({
+      baseUrl: 'http://localhost:3000',
+      fetch: fetchImplementation,
+      getAccessToken: () => 'test-token',
+    });
+    const gateway = new HttpFoodCatalogGateway(apiClient);
+
+    await expect(gateway.listNutrients()).resolves.toMatchObject([
+      { code: 'ENERGY_KCAL', isRequired: true },
+    ]);
+    await expect(
+      gateway.createCustomFood('household-1', {
+        brand: null,
+        categoryId: 'category-meat',
+        confidenceLevel: 'USER_PROVIDED',
+        name: 'Pollo casero',
+        nutrients: [{ amount: 165, nutrientDefinitionId: 'nutrient-energy' }],
+        preparationState: 'COOKED',
+        referenceQuantity: 100,
+        referenceUnit: 'GRAM',
+        servings: [
+          {
+            equivalentGrams: 150,
+            equivalentMilliliters: null,
+            name: '1 porcion',
+            quantity: 1,
+            unit: 'unidad',
+          },
+        ],
+        source: 'Envase',
+      }),
+    ).resolves.toMatchObject({ id: 'food-chicken-cooked' });
+    await expect(
+      gateway.updateCustomFood('food-chicken-cooked', {
+        nutrients: [{ amount: 170, nutrientDefinitionId: 'nutrient-energy' }],
+      }),
+    ).resolves.toMatchObject({ id: 'food-chicken-cooked' });
+    await expect(gateway.deleteCustomFood('food-chicken-cooked')).resolves.toBeUndefined();
+
+    expect(requests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).toEqual([
+      'GET /api/nutrients',
+      'POST /api/households/household-1/foods',
+      'PATCH /api/foods/food-chicken-cooked',
+      'DELETE /api/foods/food-chicken-cooked',
+    ]);
+    expect(await requests[1]?.clone().json()).toMatchObject({
+      nutrients: [{ amount: 165, nutrientDefinitionId: 'nutrient-energy' }],
+      servings: [{ equivalentGrams: 150, equivalentMilliliters: null }],
+    });
+  });
 });
