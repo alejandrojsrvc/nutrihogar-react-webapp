@@ -36,8 +36,8 @@ export function AcceptHouseholdInvitationPage() {
           La invitacion se acepto correctamente. Ahora puedes entrar al
           espacio familiar.
         </p>
-        <Link className="button button--primary" to="/app">
-          Ir al hogar
+        <Link className="button button--primary" to="/onboarding">
+          Continuar configuracion
         </Link>
       </section>
     );

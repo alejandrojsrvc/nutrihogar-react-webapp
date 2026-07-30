@@ -4,6 +4,7 @@ import { PrivateLayout } from '../layouts/PrivateLayout';
 import { PublicLayout } from '../layouts/PublicLayout';
 import { PublicOnlyRoute } from '../routing/PublicOnlyRoute';
 import { RequireAuth } from '../routing/RequireAuth';
+import { RequireCompletedOnboarding } from '../routing/RequireCompletedOnboarding';
 import { HomePage } from '../../modules/home/presentation/pages/HomePage';
 import { LoginPage } from '../../modules/auth/presentation/pages/LoginPage';
 import { RegisterPage } from '../../modules/auth/presentation/pages/RegisterPage';
@@ -46,7 +47,10 @@ export const appRoutes: RouteObject[] = [
         children: [
           { path: '/onboarding', element: <OnboardingPage /> },
           { path: '/app/perfil', element: <AdultProfilePage /> },
-          { path: '/app/alimentos', element: <FoodCatalogPage /> },
+          {
+            path: '/app/alimentos',
+            element: <FoodCatalogPage />,
+          },
           { path: '/app/alimentos/nuevo', element: <CustomFoodFormPage /> },
           {
             path: '/app/alimentos/:foodId/editar',
@@ -54,7 +58,12 @@ export const appRoutes: RouteObject[] = [
           },
           { path: '/app/alimentos/:foodId', element: <FoodDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
-          { path: '/app', element: <HomePage /> },
+          {
+            element: <RequireCompletedOnboarding />,
+            children: [
+              { path: '/app', element: <HomePage /> },
+            ],
+          },
           {
             path: '/invitaciones/:token',
             element: <AcceptHouseholdInvitationPage />,

@@ -81,8 +81,8 @@ OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 - `/login`: acceso publico con correo y contrasena.
 - `/register`: registro de un adulto.
 - `/auth/revisa-tu-correo`: confirmacion pendiente de correo.
-- `/onboarding`: creacion privada del primer hogar.
-- `/app`: inicio privado con hogar activo e integrantes.
+- `/onboarding`: resolucion privada del onboarding; crea o selecciona un hogar y continua con el perfil adulto.
+- `/app`: inicio privado con hogar activo e integrantes despues de completar el perfil.
 - `/app/perfil`: configuracion y edicion del perfil adulto autenticado en cinco pasos.
 - `/app/alimentos`: busqueda paginada y filtrada del catalogo de alimentos.
 - `/app/alimentos/nuevo`: alta de un alimento personalizado del hogar.
@@ -112,8 +112,8 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 3. En `/login`, iniciar sesion con el correo y la contrasena registrados.
 4. Comprobar que la API sincroniza el usuario y que se llega a `/app`.
 5. Si no existen hogares, completar `/onboarding` y comprobar que el nuevo hogar queda activo.
-6. En `/app`, verificar el hogar activo, los integrantes y la accion **Configurar perfil**.
-7. Completar `/app/perfil` en sus cinco pasos, añadir una restriccion si corresponde, guardar el perfil y comprobar que aparece en la lista de integrantes.
+6. Completar `/app/perfil` en sus cinco pasos, añadir una restriccion si corresponde, guardar el perfil y comprobar que aparece en la lista de integrantes.
+7. En `/app`, verificar el hogar activo, los integrantes y el acceso al catalogo.
 8. Volver a abrir `/app/perfil`, editar un dato o una restriccion y comprobar que los cambios se guardan.
 9. Abrir `/app/alimentos`, buscar `pollo`, cambiar categoria y preparacion, y comprobar que los resultados se actualizan con debounce.
 10. Avanzar de pagina, abrir un resultado y verificar nutrientes completos, porciones, fuente y nivel de confianza.

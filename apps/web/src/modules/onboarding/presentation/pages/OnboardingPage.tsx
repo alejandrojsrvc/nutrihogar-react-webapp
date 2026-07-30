@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
-import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import { useOnboardingStatus } from '../hooks/useOnboardingStatus';
 import {
   createHouseholdFormSchema,
   getDefaultTimezone,
@@ -12,15 +12,13 @@ import {
 
 export function OnboardingPage() {
   const navigate = useNavigate();
+  const onboarding = useOnboardingStatus();
   const {
     createHousehold,
     createHouseholdError,
-    households,
     isCreatingHousehold,
-    isError,
-    isPending,
-    error: householdsError,
-  } = useHouseholds();
+    selectActiveHousehold,
+  } = onboarding.households;
   const {
     formState: { errors },
     handleSubmit,
@@ -35,10 +33,18 @@ export function OnboardingPage() {
   });
 
   useEffect(() => {
-    if (!isPending && !isError && households.length > 0) {
+    if (onboarding.isLoading || onboarding.isError) {
+      return;
+    }
+
+    if (onboarding.step === 'complete-profile') {
+      navigate('/app/perfil', { replace: true });
+    }
+
+    if (onboarding.step === 'ready') {
       navigate('/app', { replace: true });
     }
-  }, [households.length, isError, isPending, navigate]);
+  }, [navigate, onboarding.isError, onboarding.isLoading, onboarding.step]);
 
   const onSubmit: SubmitHandler<CreateHouseholdFormValues> = async (values) => {
     try {
@@ -47,13 +53,13 @@ export function OnboardingPage() {
         name: values.name.trim(),
         timezone: values.timezone.trim(),
       });
-      navigate('/app', { replace: true });
+      navigate('/app/perfil', { replace: true });
     } catch {
       // El error de la mutacion se muestra debajo del formulario.
     }
   };
 
-  if (isPending) {
+  if (onboarding.isLoading) {
     return (
       <section className="page-section" aria-labelledby="onboarding-loading-title">
         <p className="eyebrow">Primeros pasos</p>
@@ -65,16 +71,53 @@ export function OnboardingPage() {
     );
   }
 
-  if (isError) {
+  if (onboarding.isError) {
     return (
       <section className="page-section" aria-labelledby="onboarding-error-title">
         <p className="eyebrow">Primeros pasos</p>
         <h1 id="onboarding-error-title">No pudimos cargar tus hogares</h1>
         <p className="lead" role="alert">
           {getErrorMessage(
-            householdsError,
+            onboarding.error,
             'No se pudo conectar con la API de NutriHogar.',
           )}
+        </p>
+      </section>
+    );
+  }
+
+  if (onboarding.step === 'select-household') {
+    return (
+      <section className="page-section" aria-labelledby="household-select-title">
+        <p className="eyebrow">Primeros pasos</p>
+        <h1 id="household-select-title">Elige un hogar para continuar</h1>
+        <p className="lead">
+          Selecciona el espacio familiar donde quieres configurar tu perfil.
+        </p>
+        <div className="household-list" role="list">
+          {onboarding.households.households.map((household) => (
+            <button
+              className="household-list__item"
+              key={household.id}
+              onClick={() => selectActiveHousehold(household)}
+              type="button"
+            >
+              <span>{household.name}</span>
+              <small>{household.currency}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (onboarding.step !== 'create-household') {
+    return (
+      <section className="page-section" aria-labelledby="onboarding-continue-title">
+        <p className="eyebrow">Primeros pasos</p>
+        <h1 id="onboarding-continue-title">Estamos preparando tu espacio</h1>
+        <p className="lead" role="status">
+          Recuperando tu progreso...
         </p>
       </section>
     );
