@@ -1,6 +1,17 @@
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useNavigate } from 'react-router';
+
+import { useAuth } from '../../modules/auth/presentation/providers/useAuth';
 
 export function PrivateLayout() {
+  const navigate = useNavigate();
+  const { error, isSigningOut, logout } = useAuth();
+
+  async function handleLogout() {
+    if (await logout()) {
+      navigate('/login', { replace: true });
+    }
+  }
+
   return (
     <div className="private-layout">
       <header className="app-header">
@@ -14,8 +25,23 @@ export function PrivateLayout() {
           </span>
           <span>NutriHogar</span>
         </NavLink>
-        <span className="app-header__context">Area familiar</span>
+        <div className="app-header__actions">
+          <span className="app-header__context">Area familiar</span>
+          <button
+            className="button button--secondary"
+            disabled={isSigningOut}
+            onClick={() => void handleLogout()}
+            type="button"
+          >
+            {isSigningOut ? 'Cerrando...' : 'Cerrar sesion'}
+          </button>
+        </div>
       </header>
+      {error ? (
+        <p className="auth-error auth-error--layout" role="alert">
+          {error.message}
+        </p>
+      ) : null}
       <main className="private-layout__content">
         <Outlet />
       </main>

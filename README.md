@@ -42,7 +42,11 @@ Variables disponibles:
 | Variable       | Descripcion                                                                     |
 | -------------- | ------------------------------------------------------------------------------- |
 | `VITE_API_URL` | Origen de la API para el cliente web. El prefijo `/api` forma parte de las rutas OpenAPI. |
+| `VITE_SUPABASE_URL` | URL publica del proyecto Supabase usado por Auth.                         |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Clave publishable publica de Supabase; nunca usar `service_role` en el navegador. |
 | `OPENAPI_URL`  | URL del documento JSON usado por `npm run api:generate`.                        |
+
+En Supabase Auth debe habilitarse Google y añadirse la URL de la aplicación más `/app` a las Redirect URLs (por ejemplo, `http://localhost:5173/app`).
 
 ## Comandos
 
@@ -74,12 +78,12 @@ OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 
 ## Rutas iniciales
 
-- `/login`: acceso publico provisional.
+- `/login`: acceso publico mediante Google OAuth.
 - `/onboarding`: recorrido privado provisional.
 - `/app`: inicio privado vacio.
 - Cualquier otra URL muestra la pagina 404.
 
-Los layouts publico y privado estan separados. La autenticacion y la proteccion efectiva de rutas se incorporaran en su issue dedicada.
+Los layouts publico y privado estan separados. La sesion se restaura al cargar la aplicacion y las rutas privadas redirigen a `/login` cuando no existe una sesion valida.
 
 ## Verificar la PWA
 
@@ -94,8 +98,9 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 
 ## Pruebas manuales
 
-1. Abrir `/login` y verificar la pantalla provisional.
-2. Pulsar **Continuar** y comprobar el layout privado en `/onboarding`.
-3. Abrir `/app` y verificar el estado vacio.
-4. Abrir una URL inexistente y comprobar la pagina 404.
-5. Repetir el recorrido a 320 px de ancho y en escritorio.
+1. Abrir `/login` y pulsar **Continuar con Google**.
+2. Completar el login de Google y comprobar que se llega a `/app`.
+3. Recargar la pagina y verificar que la sesion permanece activa.
+4. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
+5. Sin sesion, abrir `/app` o `/onboarding` y comprobar la redireccion a `/login`.
+6. Repetir el recorrido a 320 px de ancho y en escritorio.
