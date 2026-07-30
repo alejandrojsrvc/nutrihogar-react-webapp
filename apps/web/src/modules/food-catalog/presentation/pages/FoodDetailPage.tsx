@@ -1,6 +1,7 @@
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
-import { useFoodDetail } from '../hooks/useFoodCatalog';
+import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import { useDeleteCustomFood, useFoodDetail } from '../hooks/useFoodCatalog';
 import {
   formatAmount,
   formatReference,
@@ -11,7 +12,11 @@ import {
 
 export function FoodDetailPage() {
   const { foodId } = useParams<{ foodId: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const households = useHouseholds();
   const foodDetail = useFoodDetail(foodId);
+  const deleteFood = useDeleteCustomFood();
 
   if (!foodId || foodDetail.isError) {
     return (
@@ -27,6 +32,27 @@ export function FoodDetailPage() {
   }
 
   const food = foodDetail.data;
+  const canManage =
+    food.foodType === 'CUSTOM' &&
+    !food.isGlobal &&
+    food.householdId === households.activeHousehold?.id;
+  const savedFeedback = getDetailFeedback(location.state);
+
+  async function handleDelete() {
+    if (!window.confirm(`¿Eliminar ${food.name} de tu catalogo?`)) {
+      return;
+    }
+
+    try {
+      await deleteFood.mutateAsync(food.id);
+      navigate('/app/alimentos', {
+        replace: true,
+        state: { foodDeleted: true },
+      });
+    } catch {
+      // El error se muestra junto a las acciones del detalle.
+    }
+  }
 
   return (
     <section className="page-section food-detail-page" aria-labelledby="food-detail-title">
@@ -36,6 +62,31 @@ export function FoodDetailPage() {
       <p className="eyebrow">Detalle del alimento</p>
       <h1 id="food-detail-title">{food.name}</h1>
       {food.brand ? <p className="lead food-detail-brand">{food.brand}</p> : null}
+      {savedFeedback ? (
+        <p className="food-feedback" role="status">
+          {savedFeedback}
+        </p>
+      ) : null}
+      {canManage ? (
+        <div className="food-detail-actions">
+          <Link className="button button--secondary" to={`/app/alimentos/${food.id}/editar`}>
+            Editar alimento
+          </Link>
+          <button
+            className="button button--danger"
+            disabled={deleteFood.isPending}
+            onClick={() => void handleDelete()}
+            type="button"
+          >
+            {deleteFood.isPending ? 'Eliminando...' : 'Eliminar alimento'}
+          </button>
+        </div>
+      ) : null}
+      {deleteFood.error ? (
+        <p className="auth-error" role="alert">
+          No se pudo eliminar el alimento. Intentalo nuevamente.
+        </p>
+      ) : null}
 
       <div className="food-detail-meta">
         <span>{food.category.name}</span>
@@ -147,6 +198,16 @@ export function FoodDetailPage() {
       ) : null}
     </section>
   );
+}
+
+function getDetailFeedback(state: unknown): string | null {
+  if (!state || typeof state !== 'object') {
+    return null;
+  }
+
+  return (state as { foodSaved?: boolean }).foodSaved
+    ? 'El alimento se guardo correctamente.'
+    : null;
 }
 
 function FoodNutrientHighlight({

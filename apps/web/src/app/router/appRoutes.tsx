@@ -14,6 +14,7 @@ import { AdultProfilePage } from '../../modules/households/presentation/pages/Ad
 import { HouseholdInvitationsPage } from '../../modules/households/presentation/pages/HouseholdInvitationsPage';
 import { FoodCatalogPage } from '../../modules/food-catalog/presentation/pages/FoodCatalogPage';
 import { FoodDetailPage } from '../../modules/food-catalog/presentation/pages/FoodDetailPage';
+import { CustomFoodFormPage } from '../../modules/food-catalog/presentation/pages/CustomFoodFormPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -46,6 +47,11 @@ export const appRoutes: RouteObject[] = [
           { path: '/onboarding', element: <OnboardingPage /> },
           { path: '/app/perfil', element: <AdultProfilePage /> },
           { path: '/app/alimentos', element: <FoodCatalogPage /> },
+          { path: '/app/alimentos/nuevo', element: <CustomFoodFormPage /> },
+          {
+            path: '/app/alimentos/:foodId/editar',
+            element: <CustomFoodFormPage />,
+          },
           { path: '/app/alimentos/:foodId', element: <FoodDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           { path: '/app', element: <HomePage /> },

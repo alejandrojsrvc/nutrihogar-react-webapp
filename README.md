@@ -85,7 +85,9 @@ OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 - `/app`: inicio privado con hogar activo e integrantes.
 - `/app/perfil`: configuracion y edicion del perfil adulto autenticado en cinco pasos.
 - `/app/alimentos`: busqueda paginada y filtrada del catalogo de alimentos.
+- `/app/alimentos/nuevo`: alta de un alimento personalizado del hogar.
 - `/app/alimentos/:foodId`: detalle nutricional, porciones, fuente y confianza de un alimento.
+- `/app/alimentos/:foodId/editar`: edicion de un alimento personalizado del hogar.
 - `/app/invitaciones`: gestion de invitaciones para el hogar activo.
 - `/invitaciones/:token`: aceptacion de una invitacion autenticada.
 - Cualquier otra URL muestra la pagina 404.
@@ -116,10 +118,14 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 9. Abrir `/app/alimentos`, buscar `pollo`, cambiar categoria y preparacion, y comprobar que los resultados se actualizan con debounce.
 10. Avanzar de pagina, abrir un resultado y verificar nutrientes completos, porciones, fuente y nivel de confianza.
 11. Probar una busqueda sin resultados y comprobar el estado vacio.
-12. Abrir `/app/invitaciones`, crear una invitacion y copiar el enlace mostrado.
-13. Recargar `/app/invitaciones`, pulsar **Recuperar enlace** en la invitacion pendiente y comprobar que el enlace vuelve a mostrarse.
-14. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
-15. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
-16. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
-17. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
-18. Repetir el recorrido a 320 px de ancho y en escritorio.
+12. Pulsar **Registrar alimento personalizado**, completar los datos generales y los cuatro nutrientes principales, y crear el alimento.
+13. Comprobar que el detalle muestra el alimento creado, agregar una porcion y un micronutriente opcional, y guardar los cambios desde **Editar alimento**.
+14. Volver al catalogo, buscar el alimento personalizado y pulsar **Eliminar alimento**; confirmar el borrado y verificar que deja de aparecer.
+15. Abrir un alimento global y comprobar que no muestra acciones de edicion ni eliminacion.
+16. Abrir `/app/invitaciones`, crear una invitacion y copiar el enlace mostrado.
+17. Recargar `/app/invitaciones`, pulsar **Recuperar enlace** en la invitacion pendiente y comprobar que el enlace vuelve a mostrarse.
+18. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
+19. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
+20. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
+21. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
+22. Repetir el recorrido a 320 px de ancho y en escritorio.
