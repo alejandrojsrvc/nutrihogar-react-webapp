@@ -1,22 +1,30 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import type { AuthSessionGateway } from '../../application/ports/AuthSessionGateway';
 import { renderRoute } from '../../../../test/renderRoute';
 
 describe('LoginPage', () => {
-  it('renders the provisional login page and navigates to onboarding', async () => {
+  it('starts the Google OAuth flow', async () => {
     const user = userEvent.setup();
+    const loginWithGoogle = vi.fn(async () => undefined);
+    const authGateway: AuthSessionGateway = {
+      getSession: async () => null,
+      loginWithGoogle,
+      logout: async () => undefined,
+      onAuthStateChange: () => () => undefined,
+    };
 
-    renderRoute('/login');
+    renderRoute('/login', authGateway);
 
     expect(
-      screen.getByRole('heading', { name: 'Bienvenido a NutriHogar' }),
+      await screen.findByRole('heading', { name: 'Bienvenido a NutriHogar' }),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole('link', { name: 'Continuar' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Continuar con Google' }),
+    );
 
-    expect(
-      screen.getByRole('heading', { name: 'Preparemos tu hogar' }),
-    ).toBeInTheDocument();
+    expect(loginWithGoogle).toHaveBeenCalledOnce();
   });
 });

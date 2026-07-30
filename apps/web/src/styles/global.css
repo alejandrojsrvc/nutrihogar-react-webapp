@@ -116,6 +116,16 @@ p {
   text-decoration: none;
 }
 
+button.button {
+  border: 0;
+  cursor: pointer;
+}
+
+button.button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .button--primary {
   color: var(--color-text-inverse);
   background: var(--color-primary);
@@ -125,10 +135,41 @@ p {
   background: var(--color-primary-hover);
 }
 
+.button--secondary {
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.button--secondary:hover {
+  background: var(--color-primary-soft);
+}
+
 .supporting-text {
   margin-top: var(--space-4);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.auth-error {
+  margin: var(--space-4) 0 0;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+.auth-error--layout {
+  margin: var(--space-3) var(--space-4) 0;
+}
+
+.auth-loading {
+  display: grid;
+  min-height: 100vh;
+  align-content: center;
+  width: min(100%, 34rem);
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-4);
 }
 
 .private-layout {
@@ -138,9 +179,11 @@ p {
 
 .app-header {
   display: flex;
+  flex-wrap: wrap;
   min-height: 4.5rem;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-4);
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
@@ -149,6 +192,15 @@ p {
 .app-header__context {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.app-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-left: auto;
 }
 
 .private-layout__content {
@@ -279,6 +331,7 @@ p {
   }
 
   .app-header {
+    flex-wrap: nowrap;
     padding-inline: var(--space-8);
   }
 
