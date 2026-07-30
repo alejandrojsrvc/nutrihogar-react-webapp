@@ -3,8 +3,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createAdultProfileUseCase,
   listAdultProfilesUseCase,
+  updateAdultProfileUseCase,
 } from '../../../../app/composition/dependencies';
-import type { CreateAdultProfileInput } from '../../application/ports/AdultProfileGateway';
+import type {
+  CreateAdultProfileInput,
+  UpdateAdultProfileInput,
+} from '../../application/ports/AdultProfileGateway';
 
 export const adultProfileQueryKeys = {
   all: ['adult-profiles'] as const,
@@ -33,12 +37,32 @@ export function useAdultProfiles(householdId: string | undefined) {
       }
     },
   });
+  const updateMutation = useMutation({
+    mutationFn: ({
+      input,
+      profileId,
+    }: {
+      input: UpdateAdultProfileInput;
+      profileId: string;
+    }) => updateAdultProfileUseCase.execute(profileId, input),
+    onSuccess: () => {
+      if (householdId) {
+        void queryClient.invalidateQueries({
+          queryKey: adultProfileQueryKeys.byHousehold(householdId),
+        });
+      }
+    },
+  });
 
   return {
     ...query,
     createAdultProfile: createMutation.mutateAsync,
     createAdultProfileError: createMutation.error,
     isCreatingAdultProfile: createMutation.isPending,
+    isUpdatingAdultProfile: updateMutation.isPending,
     profiles: query.data ?? [],
+    updateAdultProfile: (profileId: string, input: UpdateAdultProfileInput) =>
+      updateMutation.mutateAsync({ input, profileId }),
+    updateAdultProfileError: updateMutation.error,
   };
 }

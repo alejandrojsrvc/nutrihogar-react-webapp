@@ -7,6 +7,7 @@ import type {
   RegisterWithEmailInput,
   RegisterWithEmailResult,
 } from '../../application/ports/AuthSessionGateway';
+import type { CurrentUser } from '../../application/ports/CurrentUserGateway';
 import type { SyncCurrentUserUseCase } from '../../application/use-cases/SyncCurrentUserUseCase';
 
 export type AuthStatus =
@@ -15,9 +16,11 @@ export type AuthStatus =
   | 'unauthenticated';
 
 export interface AuthContextValue {
+  currentUser: CurrentUser | null;
   error: Error | null;
   isSigningIn: boolean;
   isSigningOut: boolean;
+  isCurrentUserLoading: boolean;
   loginWithEmail: (credentials: EmailCredentials) => Promise<boolean>;
   registerWithEmail: (
     input: RegisterWithEmailInput,

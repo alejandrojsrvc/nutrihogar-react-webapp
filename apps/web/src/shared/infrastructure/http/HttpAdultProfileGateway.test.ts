@@ -9,7 +9,15 @@ const profile = {
   age: 36,
   biologicalSex: 'MALE',
   birthDate: '1990-05-20',
-  dietaryRestrictions: [],
+  dietaryRestrictions: [
+    {
+      id: 'restriction-1',
+      name: 'Mani',
+      notes: 'Evitar trazas.',
+      severity: 'Alta',
+      type: 'ALLERGY',
+    },
+  ],
   hasKitchenScale: true,
   heightCm: 175.5,
   householdId: 'household-1',
@@ -56,7 +64,7 @@ describe('HttpAdultProfileGateway', () => {
     expect(request?.headers.get('Authorization')).toBe('Bearer test-token');
   });
 
-  it('creates a profile and sends an empty restrictions list', async () => {
+  it('creates a profile and sends dietary restrictions', async () => {
     let request: Request | undefined;
     const fetchImplementation: typeof globalThis.fetch = vi.fn(
       async (input, init) => {
@@ -77,6 +85,14 @@ describe('HttpAdultProfileGateway', () => {
         activityLevel: 'MODERATE',
         birthDate: '1990-05-20',
         biologicalSex: 'MALE',
+        dietaryRestrictions: [
+          {
+            name: 'Mani',
+            notes: 'Evitar trazas.',
+            severity: 'Alta',
+            type: 'ALLERGY',
+          },
+        ],
         hasKitchenScale: true,
         heightCm: 175.5,
         name: 'Alejandro',
@@ -89,11 +105,65 @@ describe('HttpAdultProfileGateway', () => {
       activityLevel: 'MODERATE',
       birthDate: '1990-05-20',
       biologicalSex: 'MALE',
-      dietaryRestrictions: [],
+      dietaryRestrictions: [
+        {
+          name: 'Mani',
+          notes: 'Evitar trazas.',
+          severity: 'Alta',
+          type: 'ALLERGY',
+        },
+      ],
       hasKitchenScale: true,
       heightCm: 175.5,
       name: 'Alejandro',
       primaryGoal: 'FAT_LOSS',
+    });
+  });
+
+  it('updates a profile with the PATCH endpoint', async () => {
+    let request: Request | undefined;
+    const fetchImplementation: typeof globalThis.fetch = vi.fn(
+      async (input, init) => {
+        request = new Request(input, init);
+        return new Response(JSON.stringify(profile), {
+          headers: { 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      },
+    );
+    const apiClient = createApiClient({
+      baseUrl: 'http://localhost:3000',
+      fetch: fetchImplementation,
+    });
+
+    await expect(
+      new HttpAdultProfileGateway(apiClient).update('profile-1', {
+        heightCm: 180,
+        dietaryRestrictions: [
+          {
+            name: 'Nuez',
+            notes: null,
+            severity: null,
+            type: 'INTOLERANCE',
+          },
+        ],
+      }),
+    ).resolves.toMatchObject({ id: 'profile-1', name: 'Alejandro' });
+
+    expect(request?.method).toBe('PATCH');
+    expect(request?.url).toBe(
+      'http://localhost:3000/api/adult-profiles/profile-1',
+    );
+    await expect(request?.json()).resolves.toEqual({
+      dietaryRestrictions: [
+        {
+          name: 'Nuez',
+          notes: null,
+          severity: null,
+          type: 'INTOLERANCE',
+        },
+      ],
+      heightCm: 180,
     });
   });
 });
