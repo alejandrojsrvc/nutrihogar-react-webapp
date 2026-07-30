@@ -96,9 +96,17 @@ describe('HouseholdInvitationsPage', () => {
     await user.click(screen.getByRole('button', { name: 'Crear invitacion' }));
 
     expect(await screen.findByText('Invitacion lista')).toBeInTheDocument();
-    expect(screen.getByLabelText('Enlace de invitacion')).toHaveValue(
+    expect(
+      screen.getByLabelText('Enlace de invitacion para adult@example.com'),
+    ).toHaveValue(
       `${window.location.origin}/invitaciones/raw-invitation-token`,
     );
+    await user.click(
+      await screen.findByRole('button', { name: 'Recuperar enlace' }),
+    );
+    expect(
+      await screen.findAllByLabelText('Enlace de invitacion para adult@example.com'),
+    ).toHaveLength(2);
     expect(await createRequest?.json()).toEqual({
       email: 'adult@example.com',
       role: 'ADMIN',

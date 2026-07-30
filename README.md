@@ -111,8 +111,9 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 6. En `/app`, verificar el hogar activo, los integrantes y la accion **Configurar perfil**.
 7. Completar `/app/perfil`, guardar el perfil y comprobar que aparece en la lista de integrantes.
 8. Abrir `/app/invitaciones`, crear una invitacion y copiar el enlace mostrado.
-9. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
-10. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
-11. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
-12. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
-13. Repetir el recorrido a 320 px de ancho y en escritorio.
+9. Recargar `/app/invitaciones`, pulsar **Recuperar enlace** en la invitacion pendiente y comprobar que el enlace vuelve a mostrarse.
+10. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
+11. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
+12. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
+13. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
+14. Repetir el recorrido a 320 px de ancho y en escritorio.

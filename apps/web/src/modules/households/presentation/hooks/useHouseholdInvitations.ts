@@ -1,11 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import {
   acceptHouseholdInvitationUseCase,
   createHouseholdInvitationUseCase,
+  getHouseholdInvitationTokenUseCase,
   listHouseholdInvitationsUseCase,
+  rememberHouseholdInvitationTokenUseCase,
 } from '../../../../app/composition/dependencies';
-import type { CreateHouseholdInvitationInput } from '../../application/ports/HouseholdInvitationGateway';
+import type {
+  CreateHouseholdInvitationInput,
+  HouseholdInvitation,
+} from '../../application/ports/HouseholdInvitationGateway';
 import { householdQueryKeys } from './useHouseholds';
 
 export const householdInvitationQueryKeys = {
@@ -28,7 +34,14 @@ export function useHouseholdInvitations(householdId: string | undefined) {
   const createMutation = useMutation({
     mutationFn: (input: CreateHouseholdInvitationInput) =>
       createHouseholdInvitationUseCase.execute(householdId as string, input),
-    onSuccess: () => {
+    onSuccess: (invitation) => {
+      if (invitation.token) {
+        rememberHouseholdInvitationTokenUseCase.execute(
+          invitation.id,
+          invitation.token,
+        );
+      }
+
       if (householdId) {
         void queryClient.invalidateQueries({
           queryKey: householdInvitationQueryKeys.byHousehold(householdId),
@@ -36,13 +49,23 @@ export function useHouseholdInvitations(householdId: string | undefined) {
       }
     },
   });
+  const invitations = useMemo(
+    () =>
+      (query.data ?? []).map((invitation) =>
+        withRememberedToken(invitation),
+      ),
+    [query.data],
+  );
+  const createdInvitation = createMutation.data
+    ? withRememberedToken(createMutation.data)
+    : undefined;
 
   return {
     ...query,
     createInvitation: createMutation.mutateAsync,
     createInvitationError: createMutation.error,
-    createdInvitation: createMutation.data,
-    invitations: query.data ?? [],
+    createdInvitation,
+    invitations,
     isCreatingInvitation: createMutation.isPending,
   };
 }
@@ -63,4 +86,17 @@ export function useAcceptHouseholdInvitation() {
     error: mutation.error,
     isAccepting: mutation.isPending,
   };
+}
+
+function withRememberedToken(
+  invitation: HouseholdInvitation,
+): HouseholdInvitation {
+  return invitation.token
+    ? invitation
+    : {
+        ...invitation,
+        token:
+          getHouseholdInvitationTokenUseCase.execute(invitation.id) ??
+          undefined,
+      };
 }

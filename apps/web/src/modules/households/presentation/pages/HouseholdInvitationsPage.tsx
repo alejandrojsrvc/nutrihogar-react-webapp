@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, Navigate } from 'react-router';
 
@@ -11,6 +12,9 @@ import {
 } from '../schemas/householdInvitationSchemas';
 
 export function HouseholdInvitationsPage() {
+  const [revealedInvitationId, setRevealedInvitationId] = useState<
+    string | null
+  >(null);
   const households = useHouseholds();
   const invitations = useHouseholdInvitations(
     households.activeHousehold?.id,
@@ -181,7 +185,28 @@ export function HouseholdInvitationsPage() {
                     {formatInvitationDate(invitation.expiresAt)}
                   </span>
                 </div>
-                <small>Pendiente</small>
+                <div className="invitation-card__actions">
+                  <small>Pendiente</small>
+                  {invitation.token ? (
+                    <button
+                      className="button button--secondary"
+                      aria-expanded={revealedInvitationId === invitation.id}
+                      onClick={() =>
+                        setRevealedInvitationId((currentId) =>
+                          currentId === invitation.id ? null : invitation.id,
+                        )
+                      }
+                      type="button"
+                    >
+                      {revealedInvitationId === invitation.id
+                        ? 'Ocultar enlace'
+                        : 'Recuperar enlace'}
+                    </button>
+                  ) : null}
+                </div>
+                {revealedInvitationId === invitation.id && invitation.token ? (
+                  <InvitationLink invitation={invitation} />
+                ) : null}
               </article>
             ))}
           </div>
@@ -209,16 +234,26 @@ function CreatedInvitation({
     );
   }
 
-  const invitationUrl = `${window.location.origin}/invitaciones/${encodeURIComponent(
-    invitation.token,
-  )}`;
-
   return (
     <div className="invitation-success" role="status">
       <h3>Invitacion lista</h3>
+      <InvitationLink invitation={invitation} />
+    </div>
+  );
+}
+
+function InvitationLink({ invitation }: { invitation: HouseholdInvitation }) {
+  if (!invitation.token) {
+    return null;
+  }
+
+  const invitationUrl = getInvitationUrl(invitation.token);
+
+  return (
+    <div className="invitation-link-wrapper">
       <p>Comparte este enlace con {invitation.email}:</p>
       <input
-        aria-label="Enlace de invitacion"
+        aria-label={`Enlace de invitacion para ${invitation.email}`}
         className="invitation-link"
         readOnly
         value={invitationUrl}
@@ -248,6 +283,10 @@ function InvitationStatus({
 
 function getRoleLabel(role: 'ADMIN' | 'MEMBER'): string {
   return role === 'ADMIN' ? 'Administrador' : 'Integrante';
+}
+
+function getInvitationUrl(token: string): string {
+  return `${window.location.origin}/invitaciones/${encodeURIComponent(token)}`;
 }
 
 function formatInvitationDate(value: string): string {

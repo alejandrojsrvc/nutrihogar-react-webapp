@@ -10,7 +10,9 @@ import { CreateAdultProfileUseCase } from '../../modules/households/application/
 import { AcceptHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/AcceptHouseholdInvitationUseCase';
 import { CreateHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/CreateHouseholdInvitationUseCase';
 import { CreateHouseholdUseCase } from '../../modules/households/application/use-cases/CreateHouseholdUseCase';
+import { GetHouseholdInvitationTokenUseCase } from '../../modules/households/application/use-cases/GetHouseholdInvitationTokenUseCase';
 import { ListHouseholdInvitationsUseCase } from '../../modules/households/application/use-cases/ListHouseholdInvitationsUseCase';
+import { RememberHouseholdInvitationTokenUseCase } from '../../modules/households/application/use-cases/RememberHouseholdInvitationTokenUseCase';
 import { ListAdultProfilesUseCase } from '../../modules/households/application/use-cases/ListAdultProfilesUseCase';
 import { ListHouseholdsUseCase } from '../../modules/households/application/use-cases/ListHouseholdsUseCase';
 import { ResolveActiveHouseholdUseCase } from '../../modules/households/application/use-cases/ResolveActiveHouseholdUseCase';
@@ -22,6 +24,7 @@ import { HttpHealthGateway } from '../../shared/infrastructure/http/HttpHealthGa
 import { HttpHouseholdGateway } from '../../shared/infrastructure/http/HttpHouseholdGateway';
 import { HttpHouseholdInvitationGateway } from '../../shared/infrastructure/http/HttpHouseholdInvitationGateway';
 import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/storage/LocalStorageActiveHouseholdGateway';
+import { LocalStorageHouseholdInvitationLinkGateway } from '../../shared/infrastructure/storage/LocalStorageHouseholdInvitationLinkGateway';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -49,6 +52,8 @@ const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
 const householdInvitationGateway = new HttpHouseholdInvitationGateway(apiClient);
 const activeHouseholdGateway = new LocalStorageActiveHouseholdGateway();
+const householdInvitationLinkGateway =
+  new LocalStorageHouseholdInvitationLinkGateway();
 
 export const syncCurrentUserUseCase = new SyncCurrentUserUseCase(
   currentUserGateway,
@@ -62,6 +67,10 @@ export const createHouseholdInvitationUseCase =
   new CreateHouseholdInvitationUseCase(householdInvitationGateway);
 export const acceptHouseholdInvitationUseCase =
   new AcceptHouseholdInvitationUseCase(householdInvitationGateway);
+export const getHouseholdInvitationTokenUseCase =
+  new GetHouseholdInvitationTokenUseCase(householdInvitationLinkGateway);
+export const rememberHouseholdInvitationTokenUseCase =
+  new RememberHouseholdInvitationTokenUseCase(householdInvitationLinkGateway);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );
