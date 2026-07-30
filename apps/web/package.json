@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.5.7",
+    "@nutrihogar/api-client": "*",
     "@nutrihogar/design-tokens": "*",
     "@tanstack/react-query": "^5.101.4",
     "react": "^19.2.8",

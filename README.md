@@ -41,7 +41,8 @@ Variables disponibles:
 
 | Variable       | Descripcion                                                                     |
 | -------------- | ------------------------------------------------------------------------------- |
-| `VITE_API_URL` | URL base de la API. Su consumo se implementara en la issue del cliente OpenAPI. |
+| `VITE_API_URL` | Origen de la API para el cliente web. El prefijo `/api` forma parte de las rutas OpenAPI. |
+| `OPENAPI_URL`  | URL del documento JSON usado por `npm run api:generate`.                        |
 
 ## Comandos
 
@@ -55,11 +56,20 @@ npm run lint
 # Ejecutar pruebas
 npm run test
 
+# Regenerar el cliente desde NestJS/OpenAPI
+npm run api:generate
+
 # Comprobar formato
 npm run format:check
 
 # Compilar para produccion
 npm run build
+```
+
+`npm run api:generate` usa por defecto `http://localhost:3000/api/docs-json`. Puede recibir otro documento sin modificar archivos:
+
+```bash
+OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 ```
 
 ## Rutas iniciales
