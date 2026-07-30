@@ -17,7 +17,7 @@ describe('PrivateLayout', () => {
       screen.getByRole('navigation', { name: 'Navegacion principal' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
     ).toBeInTheDocument();
   });
 

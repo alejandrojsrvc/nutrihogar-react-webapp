@@ -6,18 +6,29 @@ import { afterEach, beforeEach, vi } from 'vitest';
 beforeEach(() => {
   vi.stubGlobal(
     'fetch',
-    vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          status: 'ok',
-          timestamp: '2026-07-29T17:00:00.000Z',
-        }),
-        {
-          headers: { 'Content-Type': 'application/json' },
-          status: 200,
-        },
-      ),
-    ),
+    vi.fn(async (input: RequestInfo | URL) => {
+      const url = input instanceof Request ? input.url : String(input);
+      const body = url.endsWith('/api/households')
+        ? [
+            {
+              currency: 'ARS',
+              id: 'household-1',
+              name: 'Hogar Sojo',
+              timezone: 'America/Argentina/Buenos_Aires',
+            },
+          ]
+        : url.includes('/adult-profiles')
+          ? []
+        : {
+            status: 'ok',
+            timestamp: '2026-07-29T17:00:00.000Z',
+          };
+
+      return new Response(JSON.stringify(body), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }),
   );
 });
 
