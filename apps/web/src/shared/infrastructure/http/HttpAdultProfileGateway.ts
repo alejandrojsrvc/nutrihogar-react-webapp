@@ -2,12 +2,14 @@ import {
   ApiClientError,
   normalizeApiError,
   type ApiClient,
+  type components,
 } from '@nutrihogar/api-client';
 
 import type {
   AdultProfile,
   AdultProfileGateway,
   CreateAdultProfileInput,
+  UpdateAdultProfileInput,
 } from '../../../modules/households/application/ports/AdultProfileGateway';
 
 export class HttpAdultProfileGateway implements AdultProfileGateway {
@@ -47,8 +49,8 @@ export class HttpAdultProfileGateway implements AdultProfileGateway {
         {
           body: {
             ...input,
-            dietaryRestrictions: [],
-          },
+            dietaryRestrictions: input.dietaryRestrictions ?? [],
+          } as unknown as components['schemas']['CreateAdultProfileRequestDto'],
           params: { path: { householdId } },
         },
       );
@@ -61,6 +63,36 @@ export class HttpAdultProfileGateway implements AdultProfileGateway {
         throw new ApiClientError(
           'unknown',
           'La API no devolvio el perfil creado.',
+        );
+      }
+
+      return toAdultProfile(result.data);
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async update(
+    profileId: string,
+    input: UpdateAdultProfileInput,
+  ): Promise<AdultProfile> {
+    try {
+      const result = await this.apiClient.PATCH(
+        '/api/adult-profiles/{profileId}',
+        {
+          body: input as unknown as components['schemas']['UpdateAdultProfileRequestDto'],
+          params: { path: { profileId } },
+        },
+      );
+
+      if (result.error !== undefined) {
+        throw normalizeApiError(result.error, result.response);
+      }
+
+      if (!result.data) {
+        throw new ApiClientError(
+          'unknown',
+          'La API no devolvio el perfil actualizado.',
         );
       }
 
@@ -83,10 +115,15 @@ function toAdultProfile(value: {
   activityLevel: AdultProfile['activityLevel'];
   primaryGoal: AdultProfile['primaryGoal'];
   hasKitchenScale: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
   dietaryRestrictions: Array<{
     id: string;
     name: string;
     type: AdultProfile['dietaryRestrictions'][number]['type'];
+    severity: unknown;
+    notes: unknown;
   }>;
 }): AdultProfile {
   return {
@@ -97,6 +134,8 @@ function toAdultProfile(value: {
     dietaryRestrictions: value.dietaryRestrictions.map((restriction) => ({
       id: restriction.id,
       name: restriction.name,
+      notes: toNullableText(restriction.notes),
+      severity: toNullableText(restriction.severity),
       type: restriction.type,
     })),
     hasKitchenScale: value.hasKitchenScale,
@@ -106,5 +145,12 @@ function toAdultProfile(value: {
     name: value.name,
     primaryGoal: value.primaryGoal,
     userId: value.userId,
+    isActive: value.isActive,
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
   };
+}
+
+function toNullableText(value: unknown): string | null {
+  return typeof value === 'string' ? value : null;
 }

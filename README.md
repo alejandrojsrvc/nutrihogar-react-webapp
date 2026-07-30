@@ -83,7 +83,7 @@ OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 - `/auth/revisa-tu-correo`: confirmacion pendiente de correo.
 - `/onboarding`: creacion privada del primer hogar.
 - `/app`: inicio privado con hogar activo e integrantes.
-- `/app/perfil`: configuracion del perfil adulto autenticado.
+- `/app/perfil`: configuracion y edicion del perfil adulto autenticado en cinco pasos.
 - `/app/invitaciones`: gestion de invitaciones para el hogar activo.
 - `/invitaciones/:token`: aceptacion de una invitacion autenticada.
 - Cualquier otra URL muestra la pagina 404.
@@ -109,11 +109,12 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 4. Comprobar que la API sincroniza el usuario y que se llega a `/app`.
 5. Si no existen hogares, completar `/onboarding` y comprobar que el nuevo hogar queda activo.
 6. En `/app`, verificar el hogar activo, los integrantes y la accion **Configurar perfil**.
-7. Completar `/app/perfil`, guardar el perfil y comprobar que aparece en la lista de integrantes.
-8. Abrir `/app/invitaciones`, crear una invitacion y copiar el enlace mostrado.
-9. Recargar `/app/invitaciones`, pulsar **Recuperar enlace** en la invitacion pendiente y comprobar que el enlace vuelve a mostrarse.
-10. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
-11. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
-12. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
-13. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
-14. Repetir el recorrido a 320 px de ancho y en escritorio.
+7. Completar `/app/perfil` en sus cinco pasos, añadir una restriccion si corresponde, guardar el perfil y comprobar que aparece en la lista de integrantes.
+8. Volver a abrir `/app/perfil`, editar un dato o una restriccion y comprobar que los cambios se guardan.
+9. Abrir `/app/invitaciones`, crear una invitacion y copiar el enlace mostrado.
+10. Recargar `/app/invitaciones`, pulsar **Recuperar enlace** en la invitacion pendiente y comprobar que el enlace vuelve a mostrarse.
+11. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
+12. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
+13. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
+14. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
+15. Repetir el recorrido a 320 px de ancho y en escritorio.

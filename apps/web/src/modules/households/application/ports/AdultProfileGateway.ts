@@ -6,11 +6,17 @@ export type ActivityLevel =
   | 'HIGH'
   | 'VERY_HIGH';
 export type PrimaryGoal = 'FAT_LOSS' | 'MAINTENANCE' | 'MUSCLE_GAIN';
+export type DietaryRestrictionType =
+  | 'ALLERGY'
+  | 'INTOLERANCE'
+  | 'PREFERENCE';
 
 export interface DietaryRestriction {
   id: string;
   name: string;
-  type: 'ALLERGY' | 'INTOLERANCE' | 'PREFERENCE';
+  type: DietaryRestrictionType;
+  severity: string | null;
+  notes: string | null;
 }
 
 export interface AdultProfile {
@@ -25,7 +31,17 @@ export interface AdultProfile {
   activityLevel: ActivityLevel;
   primaryGoal: PrimaryGoal;
   hasKitchenScale: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
   dietaryRestrictions: DietaryRestriction[];
+}
+
+export interface DietaryRestrictionInput {
+  type: DietaryRestrictionType;
+  name: string;
+  severity?: string | null;
+  notes?: string | null;
 }
 
 export interface CreateAdultProfileInput {
@@ -36,12 +52,19 @@ export interface CreateAdultProfileInput {
   activityLevel: ActivityLevel;
   primaryGoal: PrimaryGoal;
   hasKitchenScale: boolean;
+  dietaryRestrictions: DietaryRestrictionInput[];
 }
+
+export type UpdateAdultProfileInput = Partial<CreateAdultProfileInput>;
 
 export interface AdultProfileGateway {
   list(householdId: string): Promise<AdultProfile[]>;
   create(
     householdId: string,
     input: CreateAdultProfileInput,
+  ): Promise<AdultProfile>;
+  update(
+    profileId: string,
+    input: UpdateAdultProfileInput,
   ): Promise<AdultProfile>;
 }

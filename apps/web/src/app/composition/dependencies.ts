@@ -17,6 +17,7 @@ import { ListAdultProfilesUseCase } from '../../modules/households/application/u
 import { ListHouseholdsUseCase } from '../../modules/households/application/use-cases/ListHouseholdsUseCase';
 import { ResolveActiveHouseholdUseCase } from '../../modules/households/application/use-cases/ResolveActiveHouseholdUseCase';
 import { SelectActiveHouseholdUseCase } from '../../modules/households/application/use-cases/SelectActiveHouseholdUseCase';
+import { UpdateAdultProfileUseCase } from '../../modules/households/application/use-cases/UpdateAdultProfileUseCase';
 import { CheckHealthUseCase } from '../../shared/application/use-cases/CheckHealthUseCase';
 import { HttpCurrentUserGateway } from '../../shared/infrastructure/http/HttpCurrentUserGateway';
 import { HttpAdultProfileGateway } from '../../shared/infrastructure/http/HttpAdultProfileGateway';
@@ -75,6 +76,9 @@ export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );
 export const createAdultProfileUseCase = new CreateAdultProfileUseCase(
+  adultProfileGateway,
+);
+export const updateAdultProfileUseCase = new UpdateAdultProfileUseCase(
   adultProfileGateway,
 );
 export const resolveActiveHouseholdUseCase = new ResolveActiveHouseholdUseCase(
