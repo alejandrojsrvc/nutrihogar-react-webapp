@@ -21,6 +21,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/foods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Busca alimentos visibles para el usuario */
+        get: operations["FoodCatalogController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/foods/{foodId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle de un alimento visible */
+        get: operations["FoodCatalogController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/food-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista las categorías activas */
+        get: operations["FoodCatalogController_listFoodCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista las definiciones dinámicas de nutrientes */
+        get: operations["FoodCatalogController_listNutrientDefinitions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/users/me": {
         parameters: {
             query?: never;
@@ -125,6 +193,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/households/{householdId}/adult-profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista los perfiles adultos activos del hogar */
+        get: operations["AdultProfilesController_list"];
+        put?: never;
+        /** Crea el perfil adulto del usuario autenticado */
+        post: operations["AdultProfilesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{profileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle de un perfil adulto accesible */
+        get: operations["AdultProfilesController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualiza un perfil propio o administrado */
+        patch: operations["AdultProfilesController_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -134,6 +238,97 @@ export interface components {
             status: string;
             /** @example 2026-07-29T17:00:00.000Z */
             timestamp: string;
+        };
+        Object: Record<string, never>;
+        CategoryResponseDto: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            name: string;
+            displayOrder: number;
+        };
+        FoodSummaryResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: Record<string, never> | null;
+            name: string;
+            brand: Record<string, never> | null;
+            category: components["schemas"]["CategoryResponseDto"];
+            /** @enum {string} */
+            foodType: "GENERIC" | "COMMERCIAL" | "CUSTOM" | "PREPARED";
+            /** @enum {string} */
+            preparationState: "RAW" | "COOKED" | "READY_TO_EAT" | "NOT_APPLICABLE";
+            referenceQuantity: number;
+            /** @enum {string} */
+            referenceUnit: "GRAM" | "MILLILITER" | "UNIT";
+            energyKcal: Record<string, never> | null;
+            proteinGrams: Record<string, never> | null;
+            carbohydrateGrams: Record<string, never> | null;
+            fatGrams: Record<string, never> | null;
+        };
+        PaginationResponseDto: {
+            page: number;
+            limit: number;
+            total: number;
+        };
+        FoodSearchResponseDto: {
+            items: components["schemas"]["FoodSummaryResponseDto"][];
+            pagination: components["schemas"]["PaginationResponseDto"];
+        };
+        NutrientDefinitionResponseDto: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            name: string;
+            unit: string;
+            group: string;
+            displayOrder: number;
+            isRequired: boolean;
+        };
+        FoodNutrientResponseDto: {
+            /** Format: uuid */
+            id: string;
+            nutrientDefinition: components["schemas"]["NutrientDefinitionResponseDto"];
+            amount: number;
+        };
+        FoodServingResponseDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            quantity: number;
+            unit: string;
+            equivalentGrams: Record<string, never> | null;
+            equivalentMilliliters: Record<string, never> | null;
+        };
+        FoodDetailResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: Record<string, never> | null;
+            name: string;
+            brand: Record<string, never> | null;
+            category: components["schemas"]["CategoryResponseDto"];
+            /** @enum {string} */
+            foodType: "GENERIC" | "COMMERCIAL" | "CUSTOM" | "PREPARED";
+            /** @enum {string} */
+            preparationState: "RAW" | "COOKED" | "READY_TO_EAT" | "NOT_APPLICABLE";
+            referenceQuantity: number;
+            /** @enum {string} */
+            referenceUnit: "GRAM" | "MILLILITER" | "UNIT";
+            energyKcal: Record<string, never> | null;
+            proteinGrams: Record<string, never> | null;
+            carbohydrateGrams: Record<string, never> | null;
+            fatGrams: Record<string, never> | null;
+            description: Record<string, never> | null;
+            source: string;
+            sourceReference: Record<string, never> | null;
+            /** @enum {string} */
+            confidenceLevel: "VERIFIED" | "HIGH" | "MEDIUM" | "LOW" | "USER_PROVIDED";
+            isGlobal: boolean;
+            nutrients: components["schemas"]["FoodNutrientResponseDto"][];
+            servings: components["schemas"]["FoodServingResponseDto"][];
+            aliases: string[];
         };
         CurrentUserResponseDto: {
             /** Format: uuid */
@@ -218,6 +413,102 @@ export interface components {
             /** @description Token sin hash para compartir localmente con el invitado. */
             token?: string;
         };
+        DietaryRestrictionRequestDto: {
+            /**
+             * @example ALLERGY
+             * @enum {string}
+             */
+            type: "ALLERGY" | "INTOLERANCE" | "PREFERENCE";
+            /** @example Maní */
+            name: string;
+            /** @example SEVERE */
+            severity?: Record<string, never>;
+            /** @example Evitar contaminación cruzada. */
+            notes?: Record<string, never>;
+        };
+        CreateAdultProfileRequestDto: {
+            /** @example Alejandro */
+            name: string;
+            /**
+             * Format: date
+             * @example 1990-05-20
+             */
+            birthDate: string;
+            /** @enum {string} */
+            biologicalSex: "MALE" | "FEMALE";
+            /** @example 175.5 */
+            heightCm: number;
+            /** @enum {string} */
+            activityLevel: "SEDENTARY" | "LIGHT" | "MODERATE" | "HIGH" | "VERY_HIGH";
+            /** @enum {string} */
+            primaryGoal: "FAT_LOSS" | "MAINTENANCE" | "MUSCLE_GAIN";
+            /** @example true */
+            hasKitchenScale: boolean;
+            dietaryRestrictions?: components["schemas"]["DietaryRestrictionRequestDto"][];
+        };
+        DietaryRestrictionResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @enum {string} */
+            type: "ALLERGY" | "INTOLERANCE" | "PREFERENCE";
+            name: string;
+            severity: Record<string, never> | null;
+            notes: Record<string, never> | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdultProfileResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: uuid */
+            userId: string;
+            name: string;
+            /** Format: date */
+            birthDate: string;
+            /** @example 36 */
+            age: number;
+            /** @enum {string} */
+            biologicalSex: "MALE" | "FEMALE";
+            /** @example 175.5 */
+            heightCm: number;
+            /** @enum {string} */
+            activityLevel: "SEDENTARY" | "LIGHT" | "MODERATE" | "HIGH" | "VERY_HIGH";
+            /** @enum {string} */
+            primaryGoal: "FAT_LOSS" | "MAINTENANCE" | "MUSCLE_GAIN";
+            hasKitchenScale: boolean;
+            isActive: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            dietaryRestrictions: components["schemas"]["DietaryRestrictionResponseDto"][];
+        };
+        UpdateAdultProfileRequestDto: {
+            /** @example Alejandro */
+            name?: string;
+            /**
+             * Format: date
+             * @example 1990-05-20
+             */
+            birthDate?: string;
+            /** @enum {string} */
+            biologicalSex?: "MALE" | "FEMALE";
+            /** @example 175.5 */
+            heightCm?: number;
+            /** @enum {string} */
+            activityLevel?: "SEDENTARY" | "LIGHT" | "MODERATE" | "HIGH" | "VERY_HIGH";
+            /** @enum {string} */
+            primaryGoal?: "FAT_LOSS" | "MAINTENANCE" | "MUSCLE_GAIN";
+            /** @example true */
+            hasKitchenScale?: boolean;
+            dietaryRestrictions?: components["schemas"]["DietaryRestrictionRequestDto"][];
+        };
     };
     responses: never;
     parameters: never;
@@ -243,6 +534,126 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HealthResponseDto"];
                 };
+            };
+        };
+    };
+    FoodCatalogController_search: {
+        parameters: {
+            query?: {
+                query?: string;
+                categoryId?: string;
+                preparationState?: "RAW" | "COOKED" | "READY_TO_EAT";
+                foodType?: "GENERIC" | "COMMERCIAL" | "CUSTOM";
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoodSearchResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FoodCatalogController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                foodId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoodDetailResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El alimento no existe o no es visible. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FoodCatalogController_listFoodCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FoodCatalogController_listNutrientDefinitions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutrientDefinitionResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -595,6 +1006,189 @@ export interface operations {
             };
             /** @description La invitación ya fue procesada. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdultProfilesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdultProfileResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdultProfilesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAdultProfileRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdultProfileResponseDto"];
+                };
+            };
+            /** @description Los datos del perfil son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario ya tiene un perfil activo en el hogar. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdultProfilesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdultProfileResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El perfil no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdultProfilesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAdultProfileRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdultProfileResponseDto"];
+                };
+            };
+            /** @description Los datos del perfil son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo el propietario o un administrador pueden editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El perfil no existe. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

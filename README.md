@@ -81,8 +81,9 @@ OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 - `/login`: acceso publico con correo y contrasena.
 - `/register`: registro de un adulto.
 - `/auth/revisa-tu-correo`: confirmacion pendiente de correo.
-- `/onboarding`: recorrido privado provisional.
-- `/app`: inicio privado vacio.
+- `/onboarding`: creacion privada del primer hogar.
+- `/app`: inicio privado con hogar activo e integrantes.
+- `/app/perfil`: configuracion del perfil adulto autenticado.
 - Cualquier otra URL muestra la pagina 404.
 
 Los layouts publico y privado estan separados. La sesion se restaura al cargar la aplicacion y las rutas privadas redirigen a `/login` cuando no existe una sesion valida.
@@ -104,7 +105,10 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 2. Si Email Auth exige confirmacion, revisar el correo y abrir el enlace para volver a `/onboarding`; si no, comprobar el acceso directo a `/onboarding`.
 3. En `/login`, iniciar sesion con el correo y la contrasena registrados.
 4. Comprobar que la API sincroniza el usuario y que se llega a `/app`.
-5. Recargar la pagina y verificar que la sesion permanece activa.
-6. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
-7. Sin sesion, abrir `/app` o `/onboarding` y comprobar la redireccion a `/login`.
-8. Repetir el recorrido a 320 px de ancho y en escritorio.
+5. Si no existen hogares, completar `/onboarding` y comprobar que el nuevo hogar queda activo.
+6. En `/app`, verificar el hogar activo, los integrantes y la accion **Configurar perfil**.
+7. Completar `/app/perfil`, guardar el perfil y comprobar que aparece en la lista de integrantes.
+8. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
+9. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
+10. Sin sesion, abrir `/app` o `/onboarding` y comprobar la redireccion a `/login`.
+11. Repetir el recorrido a 320 px de ancho y en escritorio.

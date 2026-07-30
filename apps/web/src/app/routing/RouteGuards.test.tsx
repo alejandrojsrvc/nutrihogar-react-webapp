@@ -21,7 +21,7 @@ describe('route guards', () => {
     renderRoute('/register', createTestAuthGateway(authenticatedSession));
 
     expect(
-      await screen.findByRole('heading', { name: 'Preparemos tu hogar' }),
+      await screen.findByRole('heading', { name: 'Crea tu hogar' }),
     ).toBeInTheDocument();
   });
 
