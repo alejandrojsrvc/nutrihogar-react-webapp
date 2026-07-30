@@ -1,30 +1,29 @@
-Arquitectura Backend
+Arquitectura Frontend
 Plataforma de control nutricional familiar
-Stack inicial: NestJS, TypeScript, PostgreSQL, Prisma y Supabase Auth
-Enfoque: DDD pragmático, arquitectura hexagonal, Clean Architecture y monolito modular
+Stack inicial: React, TypeScript, Vite, TanStack Query, React Hook Form, Zod y PWA
+Enfoque: arquitectura modular por funcionalidades, casos de uso, puertos y adaptadores
 1. Propósito
-Este documento define la arquitectura que debe seguir el backend de la plataforma de control nutricional
-familiar.
-El objetivo es construir una aplicación:
-• Independiente de NestJS.
-• Independiente de Prisma.
-• Independiente de Supabase.
-• Independiente de proveedores de inteligencia artificial.
-• Organizada alrededor del dominio y sus casos de uso.
-• Fácil de probar sin base de datos ni servidor HTTP.
-• Preparada para sustituir infraestructura sin modificar las reglas de negocio.
-• Implementada inicialmente como monolito modular, no como microservicios.
+Este documento define la arquitectura del frontend web de la plataforma de control nutricional familiar.
+El frontend debe:
+• Mantener la lógica de negocio fuera de los componentes React.
+• Permitir reutilizar dominio y casos de uso en una futura aplicación React Native.
+• Ser independiente del cliente HTTP concreto.
+• Ser independiente de TanStack Query en las capas internas.
+• Ser independiente de IndexedDB en los casos de uso.
+• Evitar componentes que conozcan directamente la forma de la API.
+• Separar formularios, presentación, aplicación e infraestructura.
+• Mantener una experiencia mobile-first.
 La regla principal es:
-El dominio y los casos de uso no conocen NestJS, Prisma,
-Supabase, HTTP, OpenAI ni ninguna infraestructura externa.
+El dominio y los casos de uso del cliente no conocen React,
+TanStack Query, Axios, Fetch, IndexedDB, Supabase ni el navegador.
 2. Estilo arquitectónico
-El backend seguirá una combinación de:
-• Domain-Driven Design.
-• Arquitectura hexagonal.
-• Clean Architecture.
-• CQRS ligero.
-• Monolito modular.
-La aplicación se dividirá por contextos funcionales y no únicamente por tipos técnicos.
+El frontend seguirá una arquitectura basada en:
+• Módulos funcionales.
+• Casos de uso.
+• Puertos y adaptadores.
+• Domain model compartible.
+• Presentación desacoplada.
+• Estado remoto separado del estado de interfaz.
 1
 
 Dirección de dependencias
@@ -35,953 +34,696 @@ Application
 Domain
 Infrastructure
 ↑
-Application / Domain ports
-Las capas externas dependen de las internas.
-Nunca debe ocurrir lo contrario.
-Permitido
-Controller NestJS
-→ Use Case
-→ Domain
-Prisma Repository
-→ Repository Port
-→ Domain Entity
-No permitido
-Domain Entity
-→ Prisma
-Use Case
-→ NestJS Controller
-Domain Service
-→ Supabase Client
+Application ports
+React pertenece a la capa de presentación.
+Los gateways HTTP e IndexedDB pertenecen a infraestructura.
+3. Organización general
+src/
+├── app/
+│ ├── composition/
+│ ├── providers/
+│ ├── router/
+│ ├── layouts/
+│ └── bootstrap/
+├── modules/
+│ ├── auth/
+│ ├── households/
+│ ├── adult-profiles/
+│ ├── food-catalog/
+│ ├── nutrition-goals/
+│ ├── meals/
+│ ├── recipes/
+│ ├── inventory/
+│ ├── meal-planning/
+│ ├── health-tracking/
+│ └── notifications/
+├── shared/
+│ ├── domain/
+│ ├── application/
+│ ├── infrastructure/
+│ ├── presentation/
 2
 
-3. Monolito modular
-El sistema comenzará como una sola aplicación NestJS, pero estará dividido en contextos claramente
-delimitados.
-src/
-├── identity/
-├── households/
-├── food-catalog/
-├── nutrition/
-├── meal-tracking/
-├── recipes/
-├── inventory/
-├── meal-planning/
-├── health-tracking/
-├── notifications/
-└── shared/
-Cada contexto debe poder evolucionar con independencia razonable.
-No se crearán microservicios durante el MVP.
-4. Bounded contexts
-Identity and Access
-Responsabilidades:
-• Identidad autenticada.
-• Usuarios.
-• Validación de tokens.
-• Sesiones externas.
-• Autorización general.
-Entidades y conceptos:
-• User.
-• AuthenticatedIdentity.
-• IdentityProvider.
-• AccessToken.
-3
-
-Households
-Responsabilidades:
-• Hogares.
-• Integrantes.
-• Invitaciones.
-• Roles.
-• Configuración compartida.
-Entidades:
-• Household.
-• HouseholdMembership.
-• HouseholdInvitation.
-• AdultProfile.
-• DietaryRestriction.
-Food Catalog
-Responsabilidades:
-• Alimentos.
-• Productos comerciales.
-• Categorías.
-• Nutrientes.
-• Porciones y equivalencias.
-• Fuentes nutricionales.
-Entidades:
-• Food.
-• FoodCategory.
-• FoodServing.
-• FoodAlias.
-• NutrientDefinition.
-• FoodNutrient.
-Nutrition
-Responsabilidades:
-• Cálculos nutricionales.
-• Metabolismo basal.
-• Gasto estimado.
-• Metas nutricionales.
-• Versionado de objetivos.
-• Cantidades y nutrientes.
-4
-
-Conceptos:
-• NutritionGoal.
-• NutritionGoalSuggestion.
-• NutrientAmount.
-• NutrientCollection.
-• FoodQuantity.
-• Calories.
-• Macronutrients.
-Meal Tracking
-Responsabilidades:
-• Registro de comidas.
-• Elementos consumidos.
-• Snapshots nutricionales.
-• Edición, cancelación y duplicación.
-• Resúmenes diarios.
-Entidades:
-• Meal.
-• MealItem.
-• NutritionSnapshot.
-Recipes and Preparation
-Responsabilidades:
-• Recetas reutilizables.
-• Ingredientes.
-• Preparaciones reales.
-• Peso final cocido.
-• Densidad nutricional.
-• Porciones servidas.
-• Restos.
-Entidades:
-• Recipe.
-• RecipeIngredient.
-• PreparedBatch.
-• ServedPortion.
-• PortionRemainder.
-5
-
-Inventory
-Responsabilidades:
-• Existencias del hogar.
-• Movimientos.
-• Compras.
-• Desperdicios.
-• Sobrantes.
-• Sincronización offline.
-Entidades:
-• InventoryItem.
-• InventoryMovement.
-• Purchase.
-• PurchaseItem.
-• ShoppingList.
-• ShoppingListItem.
-Meal Planning
-Responsabilidades:
-• Plan semanal.
-• Comidas planificadas.
-• Participantes.
-• Presupuesto.
-• Propuestas generadas por IA.
-Entidades:
-• WeeklyPlan.
-• PlannedMeal.
-• PlannedMealParticipant.
-Health Tracking
-Responsabilidades:
-• Peso.
-• Medidas corporales.
-• Síntomas digestivos.
-• Tendencias.
-• Sugerencias de revisión de metas.
-6
-
-Entidades:
-• BodyMeasurement.
-• DigestiveSymptom.
-Notifications
-Responsabilidades:
-• Preferencias de recordatorios.
-• Suscripciones push.
-• Entrega y auditoría de notificaciones.
-Entidades:
-• NotificationPreference.
-• PushSubscription.
-• NotificationDelivery.
-5. Estructura interna de cada contexto
-Ejemplo para meal-tracking :
-src/meal-tracking/
+│ └── utils/
+└── main.tsx
+Cada módulo contendrá solo las capas que necesite.
+4. Estructura de un módulo
+Ejemplo para meals :
+modules/meals/
 ├── domain/
 │ ├── entities/
 │ ├── value-objects/
-│ ├── services/
-│ ├── events/
-│ ├── errors/
-│ └── repositories/
+│ ├── models/
+│ └── errors/
 ├── application/
-│ ├── commands/
-│ ├── queries/
 │ ├── use-cases/
 │ ├── ports/
+│ ├── commands/
+│ ├── queries/
 │ └── dto/
 ├── infrastructure/
-│ ├── persistence/
-│ ├── authentication/
-│ ├── messaging/
-│ └── mappers/
-├── presentation/
-│ └── http/
-│ ├── controllers/
-7
+│ ├── http/
+│ ├── mappers/
+│ └── storage/
+└── presentation/
+├── pages/
+├── components/
+├── forms/
+├── hooks/
+└── routes/
+5. Capa Domain
+La capa de dominio del frontend contiene modelos y reglas necesarias para representar y manipular el
+estado del cliente.
+No debe duplicar todo el dominio backend.
+Solo incluirá reglas útiles para la experiencia del usuario y para previsualizaciones.
+3
 
-│       ├── request-dto/
-│       ├── response-dto/
-│       ├── mappers/
-│       └── presenters/
-└── meal-tracking.module.ts
-No todos los contextos necesitarán todas las carpetas desde el primer día.
-Se crearán cuando exista una responsabilidad real.
-6. Capa Domain
-La capa de dominio contiene:
-• Entidades.
-• Aggregates.
-• Value Objects.
-• Servicios de dominio.
-• Eventos de dominio.
-• Errores de negocio.
-• Interfaces de repositorio cuando sean necesarias para expresar el dominio.
-No contiene:
-• Decoradores de NestJS.
-• DTO HTTP.
-• Prisma.
-• Supabase.
-• Swagger.
-• Variables de entorno.
-• Logging técnico.
-• Requests o responses.
-Ejemplo de entidad
-| export class Meal | {   |     |
-| ----------------- | --- | --- |
-private constructor(
-| public readonly     | id: MealId,     |                 |
-| ------------------- | --------------- | --------------- |
-| public readonly     | householdId:    | HouseholdId,    |
-| public readonly     | adultProfileId: | AdultProfileId, |
-| private type:       | MealType,       |                 |
-| private consumedAt: | Date,           |                 |
-| private items:      | MealItem[],     |                 |
-| private status:     | MealStatus,     |                 |
-) {}
-8
-
-| static create(props:        | CreateMealProps): | Meal { |
-| --------------------------- | ----------------- | ------ |
-| if (props.items.length      | === 0)            | {      |
-| throw new EmptyMealError(); |                   |        |
+Ejemplos:
+MealDraft
+MealDraftItem
+FoodSelection
+FoodQuantity
+NutrientSummary
+NutritionGoalView
+WeeklyPlanDraft
+InventorySnapshot
+Ejemplo
+| export  | class | MealDraft | {                |     |     |
+| ------- | ----- | --------- | ---------------- | --- | --- |
+| private |       | items:    | MealDraftItem[]; |     |     |
+constructor(
+|     | public | readonly        | profileId:  | string,   |     |
+| --- | ------ | --------------- | ----------- | --------- | --- |
+|     | public | readonly        | mealType:   | MealType, |     |
+|     | public | readonly        | consumedAt: | Date,     |     |
+|     | items: | MealDraftItem[] |             | = [],     |     |
+) {
+|     | this.items | =   | items; |     |     |
+| --- | ---------- | --- | ------ | --- | --- |
 }
-| return new Meal( |     |     |
-| ---------------- | --- | --- |
-props.id,
-props.householdId,
-props.adultProfileId,
-props.type,
-props.consumedAt,
-props.items,
-MealStatus.confirmed(),
+| addItem(item: |        | MealDraftItem): |     | MealDraft | {   |
+| ------------- | ------ | --------------- | --- | --------- | --- |
+|               | return | new MealDraft(  |     |           |     |
+this.profileId,
+this.mealType,
+this.consumedAt,
+|     | [...this.items, |     | item], |     |     |
+| --- | --------------- | --- | ------ | --- | --- |
 );
 }
-| replaceItems(items:         | MealItem[]): | void { |
-| --------------------------- | ------------ | ------ |
-| if (items.length            | === 0) {     |        |
-| throw new EmptyMealError(); |              |        |
-}
-| this.items = items; |     |     |
-| ------------------- | --- | --- |
-}
-| cancel(): void {                       |     |     |
-| -------------------------------------- | --- | --- |
-| if (this.status.isCancelled())         |     | {   |
-| throw new MealAlreadyCancelledError(); |     |     |
-}
-| this.status = | MealStatus.cancelled(); |     |
-| ------------- | ----------------------- | --- |
-}
-| calculateTotals(): | NutrientCollection | {   |
-| ------------------ | ------------------ | --- |
-return this.items.reduce(
-| (totals, item) | => totals.add(item.nutrients), |     |
-| -------------- | ------------------------------ | --- |
-NutrientCollection.empty(),
+| removeItem(itemId: |        |                | string): | MealDraft | {   |
+| ------------------ | ------ | -------------- | -------- | --------- | --- |
+|                    | return | new MealDraft( |          |           |     |
+this.profileId,
+this.mealType,
+this.consumedAt,
+|     | this.items.filter((item) |     |     | => item.id | !== itemId), |
+| --- | ------------------------ | --- | --- | ---------- | ------------ |
 );
 }
-}
-7. Value Objects
-Los valores relevantes del dominio no deben circular como números o strings sin significado.
-9
+| isEmpty(): |        | boolean           | {   |        |     |
+| ---------- | ------ | ----------------- | --- | ------ | --- |
+|            | return | this.items.length |     | === 0; |     |
+4
 
-Value Objects recomendados:
-HouseholdId
-UserId
-AdultProfileId
-FoodId
-MealId
-RecipeId
-InventoryItemId
-Email
-Calories
+}
+}
+El frontend puede calcular una previsualización, pero el backend seguirá siendo la fuente definitiva.
+6. Value Objects del cliente
+Ejemplos:
+FoodQuantity
 Grams
 Milliliters
-BodyWeight
-Height
-Money
-FoodQuantity
+Calories
 NutrientAmount
-NutrientCode
-DateRange
-Ejemplo:
-| export class                | Grams              | {                         |          |        |            |
-| --------------------------- | ------------------ | ------------------------- | -------- | ------ | ---------- |
-| private                     | constructor(public |                           | readonly | value: | number) {} |
-| static create(value:        |                    | number):                  | Grams    | {      |            |
-| if (!Number.isFinite(value) |                    |                           | ||       | value  | <= 0) {    |
-| throw                       | new                | InvalidGramsError(value); |          |        |            |
-}
-| return | new | Grams(value); |     |     |     |
-| ------ | --- | ------------- | --- | --- | --- |
-}
-| add(other: | Grams):                 | Grams | {   |                 |     |
-| ---------- | ----------------------- | ----- | --- | --------------- | --- |
-| return     | Grams.create(this.value |       |     | + other.value); |     |
-}
-| subtract(other: |        | Grams):                  | Grams {        |     |     |
-| --------------- | ------ | ------------------------ | -------------- | --- | --- |
-| const           | result | = this.value             | - other.value; |     |     |
-| if (result      |        | < 0) {                   |                |     |     |
-| throw           | new    | NegativeQuantityError(); |                |     |     |
-}
-10
-
-return Grams.create(result);
-}
-}
-Las validaciones esenciales deben vivir aquí, no únicamente en los DTO HTTP.
-8. Aggregates
-No debe tratarse cada tabla de base de datos como un aggregate.
-Aggregates iniciales propuestos:
-Household
-Responsable de:
-• Configuración del hogar.
-• Reglas básicas de membresía.
-• Roles administrativos.
-AdultProfile
-Responsable de:
-• Datos nutricionales personales.
-• Restricciones.
-• Preferencias.
-Food
-Responsable de:
-• Información del alimento.
-• Nutrientes.
-• Porciones.
-• Alias.
-• Estado crudo o cocido.
-NutritionGoal
-Responsable de:
-• Meta activa.
-• Valores nutricionales.
-• Período de vigencia.
-• Versionado.
-11
-
-Meal
-Responsable de:
-• Tipo y fecha.
-• Elementos.
-• Snapshots.
-• Totales.
-• Estado confirmado o cancelado.
-Recipe
-Responsable de:
-• Definición reutilizable.
-• Ingredientes.
-• Instrucciones.
-PreparedBatch
-Responsable de:
-• Preparación concreta.
-• Cantidades reales.
-• Peso final cocido.
-• Densidad nutricional.
-• Porciones.
-• Sobrantes.
-InventoryItem
-Responsable de:
-• Existencia actual.
-• Unidad.
-• Mínimo.
-• Estado.
-Los movimientos serán registros inmutables relacionados con el aggregate.
-WeeklyPlan
-Responsable de:
-• Semana.
-• Comidas planificadas.
-• Participantes.
-• Estado del plan.
-12
-
-9. Capa Application
-La capa de aplicación contiene:
-• Casos de uso.
-• Commands.
-• Queries.
-• Puertos.
-• Resultados.
-• Coordinación de transacciones.
-• Autorización específica de aplicación.
-• Orquestación entre aggregates.
-No contiene:
-• Controllers.
-• Prisma.
-• Requests HTTP.
-• Decoradores de framework.
-• Componentes externos concretos.
-Ejemplos de casos de uso
+LocalDate
+LocalTime
+HouseholdId
+AdultProfileId
+No es necesario replicar cada Value Object del backend.
+Se utilizarán cuando aporten:
+• Validación.
+• Claridad.
+• Reutilización.
+• Menos estados inválidos.
+7. Capa Application
+La capa de aplicación contiene casos de uso de interacción.
+Ejemplos:
+LoginWithGoogleUseCase
+LoadActiveHouseholdUseCase
 CreateHouseholdUseCase
-InviteHouseholdMemberUseCase
-AcceptHouseholdInvitationUseCase
-CreateAdultProfileUseCase
+CompleteAdultProfileUseCase
+SearchFoodsUseCase
 CreateCustomFoodUseCase
-GenerateNutritionGoalSuggestionUseCase
+GenerateNutritionGoalUseCase
 ConfirmNutritionGoalUseCase
+5
+
 RegisterMealUseCase
 UpdateMealUseCase
-CancelMealUseCase
 DuplicateMealUseCase
-GetDailyNutritionSummaryQuery
-CreateRecipeUseCase
-FinalizePreparedBatchUseCase
-RegisterServedPortionUseCase
-RegisterPurchaseUseCase
-AdjustInventoryUseCase
-GenerateWeeklyPlanUseCase
-13
-
-10. Commands y Queries
-Se utilizará CQRS ligero.
-No es necesario introducir buses complejos durante el MVP.
-Commands
-Cambian estado.
-RegisterMealCommand
-CancelMealCommand
-CreateHouseholdCommand
-ConfirmNutritionGoalCommand
-AdjustInventoryCommand
-Queries
-Consultan información.
-GetMealQuery
-ListFoodsQuery
-GetDailyNutritionSummaryQuery
-GetCurrentInventoryQuery
-GetWeeklyPlanQuery
-Las queries pueden utilizar read models optimizados sin reconstruir aggregates cuando no se necesitan
-reglas de negocio.
-11. Ejemplo de caso de uso
-| export interface  | RegisterMealCommand | {   |
-| ----------------- | ------------------- | --- |
-| actorId: string;  |                     |     |
-| householdId:      | string;             |     |
-| adultProfileId:   | string;             |     |
-| mealType: string; |                     |     |
-| consumedAt:       | Date;               |     |
-items: Array<{
-| foodId: string; |         |     |
-| --------------- | ------- | --- |
-| quantity:       | number; |     |
-| unit: string;   |         |     |
-| servingId?:     | string; |     |
-14
-
-| measurementMethod: |     | string; |     |     |
-| ------------------ | --- | ------- | --- | --- |
+LoadDailyNutritionSummaryUseCase
+AdjustInventoryOfflineUseCase
+SynchronizeInventoryUseCase
+Estos casos de uso no conocen React ni hooks.
+8. Ejemplo de caso de uso
+| export interface   | RegisterMealInput |         | {   |
+| ------------------ | ----------------- | ------- | --- |
+| householdId:       | string;           |         |     |
+| profileId:         | string;           |         |     |
+| mealType:          | string;           |         |     |
+| consumedAt:        | Date;             |         |     |
+| items: Array<{     |                   |         |     |
+| foodId:            | string;           |         |     |
+| quantity:          | number;           |         |     |
+| unit:              | string;           |         |     |
+| servingId?:        | string;           |         |     |
+| measurementMethod: |                   | string; |     |
 }>;
 }
-| export | class RegisterMealUseCase |     | {   |     |
-| ------ | ------------------------- | --- | --- | --- |
+| export class | RegisterMealUseCase |     | {   |
+| ------------ | ------------------- | --- | --- |
 constructor(
-| private | readonly | authorization:         | HouseholdAuthorizationPort, |                      |
-| ------- | -------- | ---------------------- | --------------------------- | -------------------- |
-| private | readonly | adultProfiles:         | AdultProfileRepository,     |                      |
-| private | readonly | foods: FoodRepository, |                             |                      |
-| private | readonly | meals: MealRepository, |                             |                      |
-| private | readonly | nutritionCalculator:   |                             | NutritionCalculator, |
-| private | readonly | unitOfWork:            | UnitOfWork,                 |                      |
-| private | readonly | idGenerator:           | IdGenerator,                |                      |
+| private | readonly | mealGateway: | MealGateway, |
+| ------- | -------- | ------------ | ------------ |
 ) {}
-| async    | execute(                         |     |     |     |
-| -------- | -------------------------------- | --- | --- | --- |
-| command: | RegisterMealCommand,             |     |     |     |
-| ):       | Promise<RegisterMealResult>      |     | {   |     |
-| await    | this.authorization.ensureMember( |     |     |     |
-command.actorId,
-command.householdId,
-);
-| const | profile | = await this.adultProfiles.findById( |     |     |
-| ----- | ------- | ------------------------------------ | --- | --- |
-AdultProfileId.create(command.adultProfileId),
-);
-if (!profile || profile.householdId.value !== command.householdId) {
-|     | throw new AdultProfileNotFoundError(); |     |     |     |
-| --- | -------------------------------------- | --- | --- | --- |
+| async execute(             |                            |     |      |
+| -------------------------- | -------------------------- | --- | ---- |
+| input:                     | RegisterMealInput,         |     |      |
+| ): Promise<RegisteredMeal> |                            | {   |      |
+| if (input.items.length     |                            | === | 0) { |
+| throw                      | new EmptyMealDraftError(); |     |      |
 }
-| const | foods = | await this.foods.findVisibleByIds( |     |     |
-| ----- | ------- | ---------------------------------- | --- | --- |
-HouseholdId.create(command.householdId),
-|     | command.items.map((item) |     | => FoodId.create(item.foodId)), |     |
-| --- | ------------------------ | --- | ------------------------------- | --- |
-);
-| const | mealItems   | = command.items.map((item) |     | => {             |
-| ----- | ----------- | -------------------------- | --- | ---------------- |
-|       | const food  | = foods.find(              |     |                  |
-|       | (candidate) | => candidate.id.value      |     | === item.foodId, |
-);
-|     | if (!food) | {                                   |     |     |
-| --- | ---------- | ----------------------------------- | --- | --- |
-|     | throw new  | FoodNotAvailableError(item.foodId); |     |     |
+| return | this.mealGateway.register(input); |     |     |
+| ------ | --------------------------------- | --- | --- |
 }
-|     | return this.nutritionCalculator.createMealItem(food, |     |     | item); |
-| --- | ---------------------------------------------------- | --- | --- | ------ |
+}
+La interfaz React ejecutará este caso de uso mediante un hook adaptador.
+6
+
+9. Puertos
+Gateway de comidas
+| export interface | MealGateway         | {   |                          |
+| ---------------- | ------------------- | --- | ------------------------ |
+| register(input:  | RegisterMealInput): |     | Promise<RegisteredMeal>; |
+update(id: string, input: UpdateMealInput): Promise<RegisteredMeal>;
+| getById(id: | string): Promise<MealDetails>; |     |     |
+| ----------- | ------------------------------ | --- | --- |
+| cancel(id:  | string): Promise<void>;        |     |     |
+duplicate(id: string, input: DuplicateMealInput): Promise<RegisteredMeal>;
+}
+Gateway de alimentos
+| export interface | FoodCatalogGateway             |     | {                        |
+| ---------------- | ------------------------------ | --- | ------------------------ |
+| search(input:    | SearchFoodsInput):             |     | Promise<PaginatedFoods>; |
+| getById(id:      | string): Promise<FoodDetails>; |     |                          |
+createCustomFood(
+| householdId:                  | string, |     |     |
+| ----------------------------- | ------- | --- | --- |
+| input: CreateCustomFoodInput, |         |     |     |
+): Promise<FoodDetails>;
+}
+Gateway de hogares
+| export interface                     | HouseholdGateway       |     | {                   |
+| ------------------------------------ | ---------------------- | --- | ------------------- |
+| list(): Promise<HouseholdSummary[]>; |                        |     |                     |
+| create(input:                        | CreateHouseholdInput): |     | Promise<Household>; |
+inviteMember(
+| householdId:              | string, |     |     |
+| ------------------------- | ------- | --- | --- |
+| input: InviteMemberInput, |         |     |     |
+): Promise<void>;
+}
+Sesión
+| export interface         | AuthSessionGateway  |     | {        |
+| ------------------------ | ------------------- | --- | -------- |
+| loginWithGoogle():       | Promise<void>;      |     |          |
+| loginWithApple():        | Promise<void>;      |     |          |
+| getSession():            | Promise<AuthSession |     | | null>; |
+| logout(): Promise<void>; |                     |     |          |
+}
+7
+
+Inventario offline
+export interface InventoryLocalRepository {
+getSnapshot(householdId: string): Promise<InventorySnapshot>;
+saveMovement(movement: PendingInventoryMovement): Promise<void>;
+listPendingMovements(): Promise<PendingInventoryMovement[]>;
+markSynchronized(ids: string[]): Promise<void>;
+}
+10. Capa Infrastructure
+Implementa los puertos.
+infrastructure/
+├── http/
+├── auth/
+├── storage/
+├── notifications/
+└── mappers/
+Ejemplos:
+HttpMealGateway
+HttpFoodCatalogGateway
+HttpHouseholdGateway
+SupabaseAuthSessionGateway
+DexieInventoryLocalRepository
+WebPushNotificationGateway
+11. Cliente OpenAPI
+El cliente generado desde OpenAPI pertenece a infraestructura.
+No debe utilizarse directamente desde componentes.
+Incorrecto
+const response = await generatedApi.mealsControllerCreate(...);
+8
+
+dentro de una página React.
+Correcto
+Page
+→ Hook
+→ Use Case
+→ MealGateway
+→ Generated API Client
+Adaptador
+| export class | HttpMealGateway | implements | MealGateway | {   |
+| ------------ | --------------- | ---------- | ----------- | --- |
+constructor(
+| private | readonly apiClient: | GeneratedApiClient, |     |     |
+| ------- | ------------------- | ------------------- | --- | --- |
+) {}
+| async register(            |                                 |                             |     |     |
+| -------------------------- | ------------------------------- | --------------------------- | --- | --- |
+| input:                     | RegisterMealInput,              |                             |     |     |
+| ): Promise<RegisteredMeal> |                                 | {                           |     |     |
+| const                      | response = await                | this.apiClient.createMeal({ |     |     |
+| householdId:               | input.householdId,              |                             |     |     |
+| body:                      | MealApiMapper.toRequest(input), |                             |     |     |
 });
+| return | MealApiMapper.toDomain(response); |     |     |     |
+| ------ | --------------------------------- | --- | --- | --- |
+}
+}
+12. Mappers
+Se utilizarán mappers para separar:
+• Respuestas API.
+• Modelos de aplicación.
+• Estado de formularios.
+• Dominio del cliente.
+Ejemplos:
+MealApiMapper
+FoodApiMapper
+9
+
+NutritionGoalApiMapper
+MealFormMapper
+AdultProfileFormMapper
+Flujo
+Formulario
+→ Form Mapper
+→ Application Input
+→ Gateway
+→ API Mapper
+→ HTTP Request
+13. Capa Presentation
+Contiene:
+• Páginas.
+• Componentes.
+• Hooks React.
+• Formularios.
+• Routing.
+• Estados visuales.
+• Notificaciones visuales.
+No contiene:
+• Reglas nutricionales definitivas.
+• Requests HTTP directos.
+• Acceso directo a IndexedDB.
+• Tokens de Supabase.
+• Mapeo complejo de respuestas.
+14. Páginas y componentes
+Pages
+Coordinan una vista completa.
+Ejemplos:
+10
+
+DailyNutritionPage
+RegisterMealPage
+FoodCatalogPage
+WeeklyPlanPage
+InventoryPage
+AdultProfilePage
+Feature components
+Representan una funcionalidad relevante.
+Ejemplos:
+MealForm
+FoodSelector
+NutritionSummary
+ServedPortionEditor
+InventoryAdjustmentForm
+UI components
+Componentes visuales genéricos.
+Ejemplos:
+Button
+Input
+Modal
+Drawer
+Card
+ProgressBar
+EmptyState
+Un componente UI genérico no debe conocer Meal , Food o Household .
+15. Hooks
+Los hooks conectan React con la capa de aplicación.
+export function useRegisterMeal() {
+const useCase = useDependency(RegisterMealUseCase);
+11
+
+const queryClient = useQueryClient();
+return useMutation({
+mutationFn: (input: RegisterMealInput) =>
+useCase.execute(input),
+onSuccess: async (_, input) => {
+await queryClient.invalidateQueries({
+queryKey: [
+'daily-nutrition-summary',
+input.profileId,
+],
+});
+},
+});
+}
+El caso de uso no debe importar:
+• useMutation .
+• useQuery .
+• React.
+• QueryClient.
+16. TanStack Query
+Se utilizará para:
+• Datos remotos.
+• Caché.
+• Refetch.
+• Estados de carga.
+• Invalidación.
+• Mutaciones HTTP.
+No se utilizará como:
+• Fuente durable del inventario offline.
+• Estado global para formularios.
+• Reemplazo de casos de uso.
+• Contenedor de reglas de negocio.
+Query keys
+Se centralizarán.
+12
+
+| export const           | mealQueryKeys    | = {       |               |           |
+| ---------------------- | ---------------- | --------- | ------------- | --------- |
+| all: ['meals']         | as const,        |           |               |           |
+| detail:                | (mealId: string) | =>        |               |           |
+| [...mealQueryKeys.all, |                  | 'detail', | mealId]       | as const, |
+| dailySummary:          | (profileId:      | string,   | date: string) | =>        |
+[
+...mealQueryKeys.all,
+'daily-summary',
+profileId,
+date,
+| ] as const, |     |     |     |     |
+| ----------- | --- | --- | --- | --- |
+};
+17. Formularios
+React Hook Form administrará el estado de formularios.
+Zod validará la estructura de entrada.
+Separación recomendada
+Form Schema
+→ Form Values
+→ Form Mapper
+→ Application Command
+→ Use Case
+No se enviarán los valores del formulario directamente a la API sin mapear.
+Ejemplo
+| export const | mealFormSchema     | = z.object({ |     |     |
+| ------------ | ------------------ | ------------ | --- | --- |
+| profileId:   | z.string().uuid(), |              |     |     |
+| mealType:    | z.enum([           |              |     |     |
+'BREAKFAST',
+'LUNCH',
+'SNACK',
+'DINNER',
+'EXTRA',
+]),
+| consumedAt: | z.date(), |     |     |     |
+| ----------- | --------- | --- | --- | --- |
+13
+
+items: z.array(mealItemFormSchema).min(1),
+});
+18. Estado global
+Se evitará un store global grande.
+Estado remoto
+TanStack Query.
+Estado de formulario
+React Hook Form.
+Sesión
+Provider pequeño.
+Hogar activo
+Contexto o store pequeño persistido.
+Flujos temporales complejos
+Estado local, reducer o máquina de estados.
+Ejemplo:
+• Preparar receta.
+• Registrar peso cocido.
+• Asignar porciones.
+• Registrar sobrantes.
+Inventario offline
+IndexedDB detrás de un repositorio.
+19. Composition root
+La carpeta app/composition construirá las dependencias.
+Ejemplo:
+14
+
+const mealGateway = new HttpMealGateway(apiClient);
+export const registerMealUseCase =
+new RegisterMealUseCase(mealGateway);
+Los componentes no deben instanciar gateways.
+Puede utilizarse un Dependency Provider para exponer los casos de uso.
+20. Manejo de errores
+Se diferenciarán:
+Errores de dominio del cliente
+EmptyMealDraftError
+InvalidQuantityError
+IncompleteFormError
+Errores de infraestructura
+NetworkError
+UnauthorizedError
+ForbiddenError
+ApiValidationError
+OfflineUnavailableError
+Presentación
+Los hooks o páginas traducen errores a mensajes comprensibles.
+La infraestructura no debe mostrar toasts directamente.
+21. Previsualización nutricional
+El frontend podrá calcular una previsualización para mejorar la experiencia.
+Ejemplo:
 15
 
-| const meal                                      | = Meal.create({                                |     |     |
-| ----------------------------------------------- | ---------------------------------------------- | --- | --- |
-| id: MealId.create(this.idGenerator.generate()), |                                                |     |     |
-| householdId:                                    | HouseholdId.create(command.householdId),       |     |     |
-| adultProfileId:                                 | AdultProfileId.create(command.adultProfileId), |     |     |
-| type:                                           | MealType.create(command.mealType),             |     |     |
-| consumedAt:                                     | command.consumedAt,                            |     |     |
-| items:                                          | mealItems,                                     |     |     |
-});
-| await this.unitOfWork.execute(async |                        | () => | {   |
-| ----------------------------------- | ---------------------- | ----- | --- |
-| await                               | this.meals.save(meal); |       |     |
-});
-| return { |                                        |     |     |
-| -------- | -------------------------------------- | --- | --- |
-| mealId:  | meal.id.value,                         |     |     |
-| totals:  | meal.calculateTotals().toPrimitives(), |     |     |
-};
-}
-}
-12. Puertos
-Los casos de uso dependen de abstracciones.
-Repositorios
-| export interface | MealRepository        | {        |     |
-| ---------------- | --------------------- | -------- | --- |
-| findById(id:     | MealId): Promise<Meal | | null>; |     |
-| save(meal:       | Meal): Promise<void>; |          |     |
-}
-| export interface | FoodRepository | {   |     |
-| ---------------- | -------------- | --- | --- |
-findVisibleByIds(
-| householdId: | HouseholdId, |     |     |
-| ------------ | ------------ | --- | --- |
-| foodIds:     | FoodId[],    |     |     |
-): Promise<Food[]>;
-}
-| export interface | HouseholdRepository | {                 |          |
-| ---------------- | ------------------- | ----------------- | -------- |
-| findById(id:     | HouseholdId):       | Promise<Household | | null>; |
-| save(household:  | Household):         | Promise<void>;    |          |
-}
+Cantidad seleccionada
+→ equivalencia
+→ nutrientes estimados
+Sin embargo:
+• El backend recalcula.
+• El backend guarda los snapshots.
+• La respuesta del backend reemplaza la previsualización.
+• La interfaz debe distinguir estimación de valor confirmado.
+El motor de previsualización puede residir en un paquete compartido reutilizable con React Native.
+22. Arquitectura offline del inventario
+Solo el inventario funcionará sin conexión durante el MVP.
+Datos locales
+IndexedDB almacenará:
+• Último snapshot.
+• Movimientos pendientes.
+• Ajustes pendientes.
+• Última sincronización.
+• IDs de operación.
+Flujo
+UI
+→ AdjustInventoryUseCase
+→ InventoryLocalRepository
+→ IndexedDB
+Al recuperar conexión:
+SynchronizeInventoryUseCase
+→ obtener movimientos pendientes
+→ enviar al backend
+→ aplicar respuesta
+→ marcar sincronizados
 16
 
-Transacciones
-| export interface     | UnitOfWork |     | {               |     |             |
-| -------------------- | ---------- | --- | --------------- | --- | ----------- |
-| execute<T>(callback: |            | ()  | => Promise<T>): |     | Promise<T>; |
-}
-Identidad
-| export interface | IdentityProvider |     |     | {   |     |
-| ---------------- | ---------------- | --- | --- | --- | --- |
-verifyAccessToken(token: string): Promise<AuthenticatedIdentity>;
-}
-Inteligencia artificial
-| export interface | WeeklyPlanGenerator |     |     |     | {   |
-| ---------------- | ------------------- | --- | --- | --- | --- |
-generate(
-| input: WeeklyPlanGenerationInput, |     |     |     |     |     |
-| --------------------------------- | --- | --- | --- | --- | --- |
-): Promise<WeeklyPlanProposal>;
-}
-Notificaciones
-| export interface | PushNotificationSender |     |                |     | {   |
-| ---------------- | ---------------------- | --- | -------------- | --- | --- |
-| send(message:    | PushMessage):          |     | Promise<void>; |     |     |
-}
-Tiempo e IDs
-| export interface | Clock | {   |     |     |     |
-| ---------------- | ----- | --- | --- | --- | --- |
-| now(): Date;     |       |     |     |     |     |
-}
-| export interface | IdGenerator |     | {   |     |     |
-| ---------------- | ----------- | --- | --- | --- | --- |
-| generate():      | string;     |     |     |     |     |
-}
-Esto permite probar casos de uso con dobles de prueba.
+Los componentes no deben acceder directamente a Dexie.
+23. React Native futuro
+La arquitectura debe permitir compartir:
+• Entidades ligeras.
+• Value Objects.
+• Casos de uso.
+• Puertos.
+• Mappers.
+• Esquemas.
+• Cliente OpenAPI.
+• Motor de previsualización.
+• Query keys.
+• Reglas de validación.
+No se compartirán necesariamente:
+• Componentes DOM.
+• Navegación.
+• Modales.
+• Inputs.
+• Cámara.
+• Escáner.
+• Almacenamiento concreto.
+• Push notifications.
+Estructura futura:
+nutrition-clients/
+├── apps/
+│ ├── web/
+│ └── mobile/
+└── packages/
+├── domain/
+├── application/
+├── api-client/
+├── schemas/
+├── nutrition-engine/
+└── design-tokens/
 17
 
-13. Capa Infrastructure
-Contiene implementaciones concretas de los puertos.
-infrastructure/
-├── persistence/
-│ └── prisma/
-├── authentication/
-│ └── supabase/
-├── ai/
-│ └── openai/
-├── notifications/
-├── clock/
-└── identifiers/
-Ejemplos:
-PrismaMealRepository
-PrismaFoodRepository
-PrismaHouseholdRepository
-PrismaUnitOfWork
-SupabaseIdentityProvider
-OpenAiWeeklyPlanGenerator
-WebPushNotificationSender
-SystemClock
-UuidGenerator
-14. Prisma como adaptador
-Prisma no representa el modelo de dominio.
-Sus modelos representan persistencia.
-model Meal {
-id String @id @db.Uuid
-householdId String @db.Uuid
-adultProfileId String @db.Uuid
-mealType String
-consumedAt DateTime
-status String
+24. Diseño mobile-first
+Las funcionalidades principales se diseñarán primero para teléfono:
+• Registrar comida.
+• Buscar alimento.
+• Ingresar peso.
+• Consultar plan de hoy.
+• Ajustar inventario.
+• Registrar compra.
+• Confirmar porción.
+Las tablas extensas se evitarán en móvil.
+Se usarán:
+• Listas.
+• Cards simples.
+• Drawers.
+• Formularios por pasos.
+• Acciones fijas inferiores cuando sea necesario.
+25. Rutas iniciales
+/login
+/onboarding
+/app
+/app/hogar
+/app/perfiles
+/app/perfiles/:profileId
+/app/perfiles/:profileId/meta
+/app/alimentos
+/app/alimentos/:foodId
+/app/comidas/nueva
+/app/comidas/:mealId
+/app/resumen/:date
+/app/recetas
+/app/inventario
+/app/plan-semanal
+/app/progreso
+Las rutas se registrarán desde cada módulo.
 18
 
-  items          MealItem[]
-}
-El repositorio debe convertir entre persistencia y dominio.
-Mapper
-| export class     | PrismaMealMapper                                 | {   |     |
-| ---------------- | ------------------------------------------------ | --- | --- |
-| static toDomain( |                                                  |     |     |
-| record:          | MealWithItemsPersistence,                        |     |     |
-| ): Meal          | {                                                |     |     |
-| return           | Meal.restore({                                   |     |     |
-| id:              | MealId.create(record.id),                        |     |     |
-| householdId:     | HouseholdId.create(record.householdId),          |     |     |
-| adultProfileId:  | AdultProfileId.create(record.adultProfileId),    |     |     |
-| type:            | MealType.create(record.mealType),                |     |     |
-| consumedAt:      | record.consumedAt,                               |     |     |
-| status:          | MealStatus.create(record.status),                |     |     |
-| items:           | record.items.map(PrismaMealItemMapper.toDomain), |     |     |
-});
-}
-| static toPersistence(meal: |                            | Meal): MealPersistenceData | {   |
-| -------------------------- | -------------------------- | -------------------------- | --- |
-| return                     | {                          |                            |     |
-| id:                        | meal.id.value,             |                            |     |
-| householdId:               | meal.householdId.value,    |                            |     |
-| adultProfileId:            | meal.adultProfileId.value, |                            |     |
-| mealType:                  | meal.type.value,           |                            |     |
-| consumedAt:                | meal.consumedAt,           |                            |     |
-| status:                    | meal.status.value,         |                            |     |
-};
-}
-}
-Nunca se deben devolver modelos Prisma desde los repositorios.
-15. Capa Presentation
-NestJS se utilizará como adaptador de entrada HTTP y composition root.
-La capa HTTP contiene:
-• Controllers.
-• DTO de request.
-19
-
-• DTO de response.
-• Guards.
-• Decoradores.
-• Presenters.
-• Mappers HTTP.
-• Documentación Swagger.
-Controller
-@Controller('households/:householdId/meals')
-| export class | RegisterMealController |     | {   |
-| ------------ | ---------------------- | --- | --- |
-constructor(
-| private | readonly registerMeal: |     | RegisterMealUseCase, |
-| ------- | ---------------------- | --- | -------------------- |
-) {}
-@Post()
-| async execute(                       |                                |                             |         |
-| ------------------------------------ | ------------------------------ | --------------------------- | ------- |
-| @Param('householdId')                |                                | householdId:                | string, |
-| @Body()                              | body: RegisterMealHttpRequest, |                             |         |
-| @CurrentUser()                       | user:                          | AuthenticatedUserHttp,      |         |
-| ): Promise<RegisterMealHttpResponse> |                                |                             | {       |
-| const                                | result = await                 | this.registerMeal.execute({ |         |
-| actorId:                             | user.id,                       |                             |         |
-householdId,
-| adultProfileId: | body.adultProfileId,                                  |     |     |
-| --------------- | ----------------------------------------------------- | --- | --- |
-| mealType:       | body.mealType,                                        |     |     |
-| consumedAt:     | new Date(body.consumedAt),                            |     |     |
-| items:          | body.items.map(RegisterMealHttpMapper.toCommandItem), |     |     |
-});
-| return | RegisterMealHttpPresenter.present(result); |     |     |
-| ------ | ------------------------------------------ | --- | --- |
-}
-}
-El controller no debe:
-• Consultar Prisma.
-• Calcular nutrientes.
-• Aplicar reglas de negocio.
-• Crear entidades directamente.
-• Manejar transacciones.
-16. Tipos de DTO
-Se distinguirán tres tipos.
-20
-
-DTO HTTP
-| Pertenece a  | presentation | .   |     |
-| ------------ | ------------ | --- | --- |
-Puede utilizar:
-| •  class-validator   |     | .   |     |
-| -------------------- | --- | --- | --- |
-| •  class-transformer |     | .   |     |
-• Swagger.
-| export | class RegisterMealHttpRequest |     | {   |
-| ------ | ----------------------------- | --- | --- |
-@IsUUID()
-| adultProfileId!: |     | string; |     |
-| ---------------- | --- | ------- | --- |
-@IsString()
-| mealType!: | string; |     |     |
-| ---------- | ------- | --- | --- |
-@IsISO8601()
-| consumedAt!:      |                                | string;    |     |
-| ----------------- | ------------------------------ | ---------- | --- |
-| @ValidateNested({ |                                | each: true | })  |
-| items!:           | RegisterMealItemHttpRequest[]; |            |     |
-}
-Command de aplicación
-| Pertenece a  | application | .   |     |
-| ------------ | ----------- | --- | --- |
-No usa decoradores.
-| export          | interface                  | RegisterMealCommand | {   |
-| --------------- | -------------------------- | ------------------- | --- |
-| actorId:        | string;                    |                     |     |
-| householdId:    |                            | string;             |     |
-| adultProfileId: |                            | string;             |     |
-| mealType:       | string;                    |                     |     |
-| consumedAt:     |                            | Date;               |     |
-| items:          | RegisterMealItemCommand[]; |                     |     |
-}
-Result de aplicación
-También es independiente del framework.
-21
-
-export interface RegisterMealResult {
-mealId: string;
-totals: Record<string, number>;
-}
-Response DTO
-Pertenece a presentation .
-Adapta el resultado para HTTP.
-17. Errores
-Errores de dominio
-Ejemplos:
-EmptyMealError
-InvalidFoodQuantityError
-MealAlreadyCancelledError
-NegativeInventoryError
-InvalidNutritionGoalError
-Errores de aplicación
-Ejemplos:
-FoodNotAvailableError
-HouseholdAccessDeniedError
-AdultProfileNotFoundError
-InvitationExpiredError
-Traducción HTTP
-La capa presentation convierte errores a códigos HTTP.
-Domain/Application error → HTTP exception response
-El dominio nunca debe conocer BadRequestException , NotFoundException o
-ForbiddenException .
-22
-
-18. Eventos de dominio
-Los eventos se utilizarán cuando exista una consecuencia clara.
-Ejemplos:
-MealRegistered
-MealCancelled
-PreparedBatchFinalized
-PurchaseRegistered
-InventoryAdjusted
-NutritionGoalConfirmed
-No es necesario introducir un broker durante el MVP.
-Inicialmente pueden publicarse mediante un dispatcher en memoria después de confirmar la transacción.
+26. Dependencias entre módulos
+Los módulos no deben importar libremente componentes internos de otros módulos.
+Se expondrá una API pública por módulo.
 Ejemplo:
-MealRegistered
-→ actualizar proyección diaria
-→ evaluar recordatorio pendiente
-19. Transacciones
-Los casos de uso que cambien varios registros deben usar UnitOfWork .
-Ejemplos:
-• Crear hogar y membresía administrativa.
-• Confirmar una meta y cerrar la anterior.
-• Registrar comida y snapshots.
-• Finalizar preparación y crear sobrante.
-• Registrar compra y movimientos de inventario.
-La implementación Prisma debe mantener el mismo contexto transaccional para todos los repositorios
-utilizados.
-20. Lecturas y proyecciones
-No todas las consultas necesitan aggregates completos.
-23
-
-Para reportes y listados se permiten read repositories.
-export interface DailyNutritionSummaryReadRepository {
-getByProfileAndDate(
-profileId: AdultProfileId,
-date: LocalDate,
-): Promise<DailyNutritionSummaryReadModel>;
-}
-Estos repositorios pueden consultar Prisma directamente y devolver read models.
-No deben devolver entidades de dominio cuando la consulta solo requiere presentación.
-21. Autorización
-Habrá dos niveles.
-Autenticación técnica
-La capa de infraestructura valida el token de Supabase.
-Autorización funcional
-Los casos de uso verifican:
-• Pertenencia al hogar.
-• Rol.
-• Acceso al perfil.
-• Visibilidad de alimentos.
-• Capacidad para modificar recursos.
-No debe depender exclusivamente de guards HTTP, porque los casos de uso podrían ejecutarse desde
-workers o CLI.
-22. Cálculos nutricionales
-El motor nutricional será código determinista y agnóstico.
-No dependerá de IA.
-Responsabilidades:
-24
-
-CalculateFoodNutrients
-ConvertServingToBaseQuantity
-SumNutrients
-CalculateRecipeTotals
-CalculateRecipeDensity
-CalculatePortionNutrients
-CalculateConsumedQuantity
-CalculateBmr
-CalculateTdee
-CalculateNutritionGoal
-Los cálculos deberán usar precisión decimal.
-Los valores se redondearán únicamente para presentación.
-23. IA como adaptador externo
-La IA nunca será fuente de verdad para calorías o macros.
-La IA podrá proponer:
-• Planes semanales.
-• Recetas.
-• Sustituciones.
-• Cantidades aproximadas.
-• Patrones posibles.
-El backend debe validar:
-• Existencia de alimentos.
-• Restricciones.
-• Cantidades positivas.
-• Integrantes.
-• Recetas.
-• Presupuesto.
-• Estructura de respuesta.
-Después, los cálculos nutricionales se realizan mediante el dominio.
-25
-
-24. Pruebas
+modules/meals/index.ts
+Podrá exportar:
+• Casos de uso públicos.
+• Modelos públicos.
+• Componentes reutilizables explícitos.
+• Query keys públicas.
+No se importarán rutas profundas de otro módulo sin justificación.
+27. Pruebas
 Domain
 Pruebas unitarias puras.
-Sin NestJS, Prisma ni base de datos.
 Ejemplos:
-• Crear comida válida.
-• Rechazar comida vacía.
-• Calcular consumo real.
-• Calcular densidad de receta.
-• Rechazar cantidad negativa.
-• Versionar meta.
+• MealDraft vacío.
+• Agregar alimento.
+• Eliminar alimento.
+• Cálculo de previsualización.
+• Validación de cantidades.
 Application
-Pruebas de casos de uso con repositorios en memoria o mocks.
+Casos de uso con gateways falsos.
 Ejemplos:
 • Registrar comida.
-• Verificar permisos.
-• Confirmar meta.
-• Cancelar comida.
-• Registrar compra.
+• Buscar alimentos.
+• Crear hogar.
+• Sincronizar inventario.
+19
+
 Infrastructure
-Pruebas de integración.
+Pruebas de adaptadores.
 Ejemplos:
-• Repositorio Prisma.
-• Mapper Prisma.
-• Transacciones.
-• Validación de token de Supabase.
+• Mapeo API.
+• Manejo de errores HTTP.
+• Repositorio Dexie.
+• Sesión Supabase.
 Presentation
-Pruebas e2e HTTP.
+Pruebas con Testing Library.
 Ejemplos:
-• Requests válidos.
-26
+• Formulario.
+• Selector de alimentos.
+• Resumen diario.
+• Estados de carga y error.
+End-to-end
+Flujos completos:
+Login
+→ hogar
+→ perfil
+→ catálogo
+→ meta
+→ registrar comida
+→ resumen diario
+28. Reglas para Codex
+Cada tarea frontend deberá respetar:
+1. Identificar el módulo funcional.
+2. No hacer llamadas HTTP desde páginas o componentes.
+3. Crear o reutilizar un gateway.
+4. Crear un caso de uso para la interacción.
+5. Mantener React fuera de application y domain.
+6. No colocar lógica compleja dentro de hooks.
+20
 
-• DTO inválido.
-• 401 .
-• 403 .
-• Respuestas y códigos HTTP.
-25. Composition root
-NestJS será responsable de conectar interfaces con implementaciones.
-Ejemplo conceptual:
-{
-provide: MealRepositoryToken,
-useClass: PrismaMealRepository,
-}
-{
-provide: IdentityProviderToken,
-useClass: SupabaseIdentityProvider,
-}
-Los casos de uso reciben los puertos mediante inyección.
-Los tokens de dependencia se definirán en application o en un módulo de composición, no dentro del
-dominio.
-26. Reglas para Codex
-Cada tarea de backend deberá respetar:
-1. Identificar el bounded context afectado.
-2. No colocar lógica de negocio en controllers.
-3. No colocar lógica de negocio en repositorios Prisma.
-4. No usar modelos Prisma como entidades.
-5. Crear o reutilizar Value Objects.
-6. Implementar un caso de uso por acción.
-7. Separar DTO HTTP de commands.
-8. Definir puertos antes de adaptadores.
-9. Añadir mappers explícitos.
-10. Probar dominio y casos de uso sin NestJS.
-11. Mantener transacciones en UnitOfWork .
-12. No importar infraestructura desde domain o application.
-27
+7. No duplicar tipos generados por OpenAPI.
+8. Mapear respuestas API a modelos internos.
+9. Separar schemas de formulario de commands.
+10. Usar TanStack Query solo para estado remoto.
+11. Usar React Hook Form para formularios.
+12. Mantener IndexedDB detrás de un puerto.
+13. Diseñar primero para móvil.
+14. Añadir pruebas.
+15. No implementar funcionalidades fuera del issue.
+16. Ejecutar lint, tests y build.
+29. Ejemplo completo de flujo
+RegisterMealPage
+→ MealForm
+→ useRegisterMeal
+→ RegisterMealUseCase
+→ MealGateway
+→ HttpMealGateway
+→ GeneratedApiClient
+→ Backend
+Respuesta:
+Backend
+→ HttpMealGateway
+→ MealApiMapper
+→ RegisteredMeal
+→ RegisterMealUseCase
+→ useRegisterMeal
+→ invalidar resumen diario
+→ mostrar confirmación
+30. Definición de terminado
+Una tarea frontend está terminada cuando:
+• La funcionalidad está dentro de su módulo.
+• No existen requests HTTP directos en componentes.
+• La interacción pasa por un caso de uso.
+• Los proveedores externos están detrás de adaptadores.
+21
 
-13. No crear abstracciones sin una necesidad real.
-14. No implementar funcionalidades fuera del issue.
-15. Ejecutar lint, tests y build.
-27. Definición de terminado
-Una tarea backend está terminada cuando:
-• El dominio expresa las reglas.
-• Existe un caso de uso explícito.
-• Los puertos necesarios están definidos.
-• Prisma está encapsulado en infraestructura.
-• NestJS está limitado a presentación y composición.
-• Los DTO HTTP no llegan directamente al dominio.
-• Existen pruebas unitarias del dominio.
-• Existen pruebas del caso de uso.
-• Existen pruebas de integración cuando se agrega infraestructura.
-• Swagger está actualizado.
-• Las migraciones son reproducibles.
-• No se rompen lint, test ni build.
-28
+• El formulario está validado.
+• Los errores tienen representación visual.
+• Existen estados de carga y vacío.
+• Funciona en móvil.
+• Existen pruebas de aplicación y presentación.
+• No se rompe lint, test ni build.
+• El código potencialmente compartible no depende de React DOM.
+22
