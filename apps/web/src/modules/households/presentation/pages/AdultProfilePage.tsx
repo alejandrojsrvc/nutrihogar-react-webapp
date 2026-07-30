@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   useFieldArray,
   useForm,
+  useWatch,
   type FieldErrors,
   type FieldPath,
   type FieldArrayWithId,
@@ -14,6 +15,7 @@ import {
 } from 'react-hook-form';
 import { Link, Navigate, useNavigate } from 'react-router';
 
+import { adultProfileDraftStorage } from '../../../../app/composition/dependencies';
 import type {
   ActivityLevel,
   AdultProfile,
@@ -21,6 +23,7 @@ import type {
   DietaryRestrictionInput,
   PrimaryGoal,
 } from '../../application/ports/AdultProfileGateway';
+import type { AdultProfileDraftValues } from '../../application/ports/AdultProfileDraftStorage';
 import { useAuth } from '../../../auth/presentation/providers/useAuth';
 import { useAdultProfiles } from '../hooks/useAdultProfiles';
 import { useHouseholds } from '../hooks/useHouseholds';
@@ -54,7 +57,15 @@ export function AdultProfilePage() {
   const currentProfile = profiles.profiles.find(
     (profile) => profile.userId === currentUser?.id,
   );
+  const draftKey =
+    currentUser && households.activeHousehold
+      ? getAdultProfileDraftKey(
+          currentUser.id,
+          households.activeHousehold.id,
+        )
+      : null;
   const [currentStep, setCurrentStep] = useState(1);
+  const [restoredDraftKey, setRestoredDraftKey] = useState<string | null>(null);
   const {
     control,
     formState: { errors },
@@ -66,6 +77,7 @@ export function AdultProfilePage() {
     defaultValues: getDefaultFormValues(),
     resolver: zodResolver(adultProfileFormSchema),
   });
+  const watchedValues = useWatch({ control });
   const { append, fields, remove } = useFieldArray({
     control,
     keyName: 'formId',
@@ -73,10 +85,65 @@ export function AdultProfilePage() {
   });
 
   useEffect(() => {
+    if (
+      !draftKey ||
+      households.isPending ||
+      profiles.isPending ||
+      profiles.isError ||
+      isCurrentUserLoading ||
+      restoredDraftKey === draftKey
+    ) {
+      return;
+    }
+
     if (currentProfile) {
       reset(getDefaultFormValues(currentProfile));
+      adultProfileDraftStorage.clear(draftKey);
+    } else {
+      const draft = adultProfileDraftStorage.get(draftKey);
+
+      if (draft) {
+        reset({
+          ...getDefaultFormValues(),
+          ...draft.values,
+          dietaryRestrictions: draft.values.dietaryRestrictions,
+        } as AdultProfileFormValues);
+        queueMicrotask(() => setCurrentStep(draft.currentStep));
+      }
     }
-  }, [currentProfile, reset]);
+
+    queueMicrotask(() => setRestoredDraftKey(draftKey));
+  }, [
+    currentProfile,
+    draftKey,
+    households.isPending,
+    isCurrentUserLoading,
+    profiles.isError,
+    profiles.isPending,
+    reset,
+    restoredDraftKey,
+  ]);
+
+  useEffect(() => {
+    if (
+      !draftKey ||
+      currentProfile ||
+      restoredDraftKey !== draftKey
+    ) {
+      return;
+    }
+
+    adultProfileDraftStorage.save(draftKey, {
+      currentStep,
+      values: toAdultProfileDraftValues(watchedValues),
+    });
+  }, [
+    currentProfile,
+    currentStep,
+    draftKey,
+    restoredDraftKey,
+    watchedValues,
+  ]);
 
   if (households.isPending) {
     return <ProfileStatus message="Cargando tu hogar..." />;
@@ -142,6 +209,10 @@ export function AdultProfilePage() {
         await profiles.createAdultProfile(input);
       }
 
+      if (draftKey) {
+        adultProfileDraftStorage.clear(draftKey);
+      }
+
       navigate('/app', {
         replace: true,
         state: { profileSaved: true },
@@ -169,6 +240,9 @@ export function AdultProfilePage() {
       </h1>
       <p className="lead">
         Completa estos pasos para personalizar las recomendaciones de tu hogar.
+      </p>
+      <p className="supporting-text">
+        Hogar activo: <strong>{households.activeHousehold.name}</strong>
       </p>
       <ProfileStepIndicator currentStep={currentStep} />
       <form
@@ -516,6 +590,30 @@ function getDefaultFormValues(
     heightCm: profile ? String(profile.heightCm) : '',
     name: profile?.name ?? '',
     primaryGoal: profile?.primaryGoal ?? ('' as never),
+  };
+}
+
+function getAdultProfileDraftKey(userId: string, householdId: string): string {
+  return `${userId}:${householdId}`;
+}
+
+function toAdultProfileDraftValues(
+  values: AdultProfileFormValues,
+): AdultProfileDraftValues {
+  return {
+    activityLevel: values.activityLevel,
+    birthDate: values.birthDate,
+    biologicalSex: values.biologicalSex,
+    dietaryRestrictions: values.dietaryRestrictions.map((restriction) => ({
+      name: restriction.name,
+      notes: restriction.notes,
+      severity: restriction.severity,
+      type: restriction.type,
+    })),
+    hasKitchenScale: values.hasKitchenScale,
+    heightCm: values.heightCm,
+    name: values.name,
+    primaryGoal: values.primaryGoal,
   };
 }
 

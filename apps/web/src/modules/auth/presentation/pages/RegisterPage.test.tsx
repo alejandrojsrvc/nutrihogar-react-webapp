@@ -112,7 +112,7 @@ describe('RegisterPage', () => {
     await user.click(screen.getByRole('button', { name: 'Crear cuenta' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Crea tu hogar' }),
+      await screen.findByRole('heading', { name: 'Configura tu perfil' }),
     ).toBeInTheDocument();
   });
 });

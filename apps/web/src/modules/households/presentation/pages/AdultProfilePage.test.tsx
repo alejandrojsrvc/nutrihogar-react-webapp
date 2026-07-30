@@ -33,6 +33,7 @@ const profile = {
 describe('AdultProfilePage', () => {
   it('creates a profile with dietary restrictions and redirects home', async () => {
     const user = userEvent.setup();
+    let profileCreated = false;
     let createRequest: Request | undefined;
 
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
@@ -51,11 +52,12 @@ describe('AdultProfilePage', () => {
 
       if (request.url.includes('/adult-profiles')) {
         if (request.method === 'POST') {
+          profileCreated = true;
           createRequest = request;
           return jsonResponse(profile, 201);
         }
 
-        return jsonResponse([]);
+        return jsonResponse(profileCreated ? [profile] : []);
       }
 
       return jsonResponse({ status: 'ok' });
@@ -133,6 +135,34 @@ describe('AdultProfilePage', () => {
       await screen.findByText('La fecha de nacimiento no puede ser futura.'),
     ).toBeInTheDocument();
     expect(screen.queryByLabelText('Sexo biologico')).not.toBeInTheDocument();
+  });
+
+  it('restores the profile draft and current step after a reload', async () => {
+    const user = userEvent.setup();
+
+    const firstRender = renderRoute(
+      '/app/perfil',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+
+    await user.type(await screen.findByLabelText('Nombre'), 'Alejandro');
+    await user.type(
+      screen.getByLabelText('Fecha de nacimiento'),
+      '1990-05-20',
+    );
+    await user.click(screen.getByRole('button', { name: 'Continuar' }));
+
+    expect(await screen.findByText(/Paso 2 de 5/)).toBeInTheDocument();
+    firstRender.unmount();
+
+    renderRoute(
+      '/app/perfil',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+
+    expect(await screen.findByText(/Paso 2 de 5/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Anterior' }));
+    expect(await screen.findByDisplayValue('Alejandro')).toBeInTheDocument();
   });
 
   it('rejects a height less than or equal to zero before advancing', async () => {

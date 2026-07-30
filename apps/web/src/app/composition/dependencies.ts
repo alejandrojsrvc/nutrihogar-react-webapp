@@ -26,6 +26,7 @@ import { ResolveActiveHouseholdUseCase } from '../../modules/households/applicat
 import { SelectActiveHouseholdUseCase } from '../../modules/households/application/use-cases/SelectActiveHouseholdUseCase';
 import { UpdateAdultProfileUseCase } from '../../modules/households/application/use-cases/UpdateAdultProfileUseCase';
 import { CheckHealthUseCase } from '../../shared/application/use-cases/CheckHealthUseCase';
+import { ResolveOnboardingStepUseCase } from '../../modules/onboarding/application/use-cases/ResolveOnboardingStepUseCase';
 import { HttpCurrentUserGateway } from '../../shared/infrastructure/http/HttpCurrentUserGateway';
 import { HttpAdultProfileGateway } from '../../shared/infrastructure/http/HttpAdultProfileGateway';
 import { HttpHealthGateway } from '../../shared/infrastructure/http/HttpHealthGateway';
@@ -33,6 +34,7 @@ import { HttpFoodCatalogGateway } from '../../shared/infrastructure/http/HttpFoo
 import { HttpHouseholdGateway } from '../../shared/infrastructure/http/HttpHouseholdGateway';
 import { HttpHouseholdInvitationGateway } from '../../shared/infrastructure/http/HttpHouseholdInvitationGateway';
 import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/storage/LocalStorageActiveHouseholdGateway';
+import { LocalStorageAdultProfileDraftStorage } from '../../shared/infrastructure/storage/LocalStorageAdultProfileDraftStorage';
 import { LocalStorageHouseholdInvitationLinkGateway } from '../../shared/infrastructure/storage/LocalStorageHouseholdInvitationLinkGateway';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 
@@ -62,6 +64,8 @@ const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
 const householdInvitationGateway = new HttpHouseholdInvitationGateway(apiClient);
 const activeHouseholdGateway = new LocalStorageActiveHouseholdGateway();
+export const adultProfileDraftStorage =
+  new LocalStorageAdultProfileDraftStorage();
 const householdInvitationLinkGateway =
   new LocalStorageHouseholdInvitationLinkGateway();
 
@@ -107,6 +111,8 @@ export const createAdultProfileUseCase = new CreateAdultProfileUseCase(
 export const updateAdultProfileUseCase = new UpdateAdultProfileUseCase(
   adultProfileGateway,
 );
+export const resolveOnboardingStepUseCase =
+  new ResolveOnboardingStepUseCase();
 export const resolveActiveHouseholdUseCase = new ResolveActiveHouseholdUseCase(
   activeHouseholdGateway,
 );

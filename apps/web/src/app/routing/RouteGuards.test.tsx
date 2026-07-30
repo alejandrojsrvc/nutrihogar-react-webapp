@@ -9,19 +9,23 @@ const authenticatedSession = {
 };
 
 describe('route guards', () => {
-  it('redirects an authenticated visitor from login to the app', async () => {
+  it('redirects an authenticated visitor from login to the next onboarding step', async () => {
     renderRoute('/login', createTestAuthGateway(authenticatedSession));
 
     expect(
-      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole(
+        'heading',
+        { name: 'Configura tu perfil' },
+        { timeout: 3000 },
+      ),
     ).toBeInTheDocument();
   });
 
-  it('redirects an authenticated visitor from register to onboarding', async () => {
+  it('redirects an authenticated visitor from register to the next onboarding step', async () => {
     renderRoute('/register', createTestAuthGateway(authenticatedSession));
 
     expect(
-      await screen.findByRole('heading', { name: 'Crea tu hogar' }),
+      await screen.findByRole('heading', { name: 'Configura tu perfil' }),
     ).toBeInTheDocument();
   });
 

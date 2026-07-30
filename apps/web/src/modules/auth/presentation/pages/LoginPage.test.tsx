@@ -56,7 +56,7 @@ describe('LoginPage', () => {
     });
     expect(getCurrentUser).toHaveBeenCalledOnce();
     expect(
-      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole('heading', { name: 'Configura tu perfil' }),
     ).toBeInTheDocument();
   });
 });
