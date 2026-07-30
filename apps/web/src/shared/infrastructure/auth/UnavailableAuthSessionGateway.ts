@@ -1,13 +1,18 @@
 import type {
   AuthSession,
   AuthSessionGateway,
+  RegisterWithEmailResult,
 } from '../../../modules/auth/application/ports/AuthSessionGateway';
 
 const configurationMessage =
   'Supabase Auth no esta configurado. Define VITE_SUPABASE_URL y VITE_SUPABASE_PUBLISHABLE_KEY.';
 
 export class UnavailableAuthSessionGateway implements AuthSessionGateway {
-  async loginWithGoogle(): Promise<void> {
+  async loginWithEmail(): Promise<void> {
+    throw new Error(configurationMessage);
+  }
+
+  async registerWithEmail(): Promise<RegisterWithEmailResult> {
     throw new Error(configurationMessage);
   }
 

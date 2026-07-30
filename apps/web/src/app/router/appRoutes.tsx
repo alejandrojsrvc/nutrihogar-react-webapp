@@ -6,6 +6,8 @@ import { PublicOnlyRoute } from '../routing/PublicOnlyRoute';
 import { RequireAuth } from '../routing/RequireAuth';
 import { HomePage } from '../../modules/home/presentation/pages/HomePage';
 import { LoginPage } from '../../modules/auth/presentation/pages/LoginPage';
+import { RegisterPage } from '../../modules/auth/presentation/pages/RegisterPage';
+import { ReviewEmailPage } from '../../modules/auth/presentation/pages/ReviewEmailPage';
 import { OnboardingPage } from '../../modules/onboarding/presentation/pages/OnboardingPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
@@ -19,7 +21,14 @@ export const appRoutes: RouteObject[] = [
     children: [
       {
         element: <PublicLayout />,
-        children: [{ path: '/login', element: <LoginPage /> }],
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+          {
+            path: '/auth/revisa-tu-correo',
+            element: <ReviewEmailPage />,
+          },
+        ],
       },
     ],
   },

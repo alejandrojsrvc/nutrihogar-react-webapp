@@ -5,7 +5,10 @@ import {
   type PropsWithChildren,
 } from 'react';
 
-import type { AuthSession } from '../../application/ports/AuthSessionGateway';
+import type {
+  AuthSession,
+  EmailCredentials,
+} from '../../application/ports/AuthSessionGateway';
 import {
   AuthContext,
   type AuthContextValue,
@@ -24,6 +27,7 @@ function toError(error: unknown): Error {
 export function AuthProvider({
   authGateway,
   children,
+  syncCurrentUserUseCase,
 }: PropsWithChildren<AuthProviderProps>) {
   const [error, setError] = useState<Error | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -52,6 +56,14 @@ export function AuthProvider({
 
         setSession(currentSession);
         setStatus(currentSession ? 'authenticated' : 'unauthenticated');
+
+        if (currentSession) {
+          void syncCurrentUserUseCase.execute().catch((authError: unknown) => {
+            if (isMounted) {
+              setError(toError(authError));
+            }
+          });
+        }
       })
       .catch((authError: unknown) => {
         if (!isMounted) {
@@ -67,21 +79,60 @@ export function AuthProvider({
       isMounted = false;
       unsubscribe();
     };
-  }, [authGateway]);
+  }, [authGateway, syncCurrentUserUseCase]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       error,
       isSigningIn,
       isSigningOut,
-      loginWithGoogle: async () => {
+      loginWithEmail: async (credentials: EmailCredentials) => {
         setError(null);
         setIsSigningIn(true);
 
         try {
-          await authGateway.loginWithGoogle();
+          await authGateway.loginWithEmail(credentials);
+          const currentSession = await authGateway.getSession();
+
+          if (!currentSession) {
+            throw new Error('No se pudo recuperar la sesion iniciada.');
+          }
+
+          setSession(currentSession);
+          setStatus('authenticated');
+          await syncCurrentUserUseCase.execute();
+          return true;
         } catch (authError: unknown) {
           setError(toError(authError));
+          return false;
+        } finally {
+          setIsSigningIn(false);
+        }
+      },
+      registerWithEmail: async (input) => {
+        setError(null);
+        setIsSigningIn(true);
+
+        try {
+          const result = await authGateway.registerWithEmail(input);
+
+          if (result.requiresEmailConfirmation) {
+            return result;
+          }
+
+          const currentSession = await authGateway.getSession();
+
+          if (!currentSession) {
+            throw new Error('No se pudo recuperar la sesion registrada.');
+          }
+
+          setSession(currentSession);
+          setStatus('authenticated');
+          await syncCurrentUserUseCase.execute();
+          return result;
+        } catch (authError: unknown) {
+          setError(toError(authError));
+          return null;
         } finally {
           setIsSigningIn(false);
         }
@@ -105,7 +156,15 @@ export function AuthProvider({
       session,
       status,
     }),
-    [authGateway, error, isSigningIn, isSigningOut, session, status],
+    [
+      authGateway,
+      error,
+      isSigningIn,
+      isSigningOut,
+      session,
+      status,
+      syncCurrentUserUseCase,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

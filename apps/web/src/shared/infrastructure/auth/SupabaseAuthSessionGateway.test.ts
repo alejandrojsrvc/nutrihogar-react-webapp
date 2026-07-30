@@ -29,7 +29,11 @@ function createSupabaseClient() {
   let authStateListener:
     | ((event: AuthChangeEvent, session: Session | null) => void)
     | undefined;
-  const signInWithOAuth = vi.fn(async () => ({ error: null }));
+  const signInWithPassword = vi.fn(async () => ({ error: null }));
+  const signUp = vi.fn(async () => ({
+    data: { session: null, user: null },
+    error: null,
+  }));
   const getSession = vi.fn(async () => ({
     data: { session: createSession() },
     error: null,
@@ -42,7 +46,13 @@ function createSupabaseClient() {
     return { data: { subscription: { unsubscribe } } };
   });
   const supabase = {
-    auth: { getSession, onAuthStateChange, signInWithOAuth, signOut },
+    auth: {
+      getSession,
+      onAuthStateChange,
+      signInWithPassword,
+      signOut,
+      signUp,
+    },
   } as unknown as SupabaseClient;
 
   return {
@@ -50,29 +60,62 @@ function createSupabaseClient() {
     client: supabase,
     getSession,
     onAuthStateChange,
-    signInWithOAuth,
+    signInWithPassword,
     signOut,
+    signUp,
     unsubscribe,
   };
 }
 
 describe('SupabaseAuthSessionGateway', () => {
-  it('maps the Supabase session and starts Google OAuth', async () => {
+  it('normalizes credentials and starts email login', async () => {
     const fake = createSupabaseClient();
     const gateway = new SupabaseAuthSessionGateway(
       fake.client,
-      'http://localhost:5173/app',
+      'http://localhost:5173/onboarding',
     );
 
-    await gateway.loginWithGoogle();
+    await gateway.loginWithEmail({
+      email: '  ADULT@EXAMPLE.COM ',
+      password: 'secret-password',
+    });
 
-    expect(fake.signInWithOAuth).toHaveBeenCalledWith({
-      options: { redirectTo: 'http://localhost:5173/app' },
-      provider: 'google',
+    expect(fake.signInWithPassword).toHaveBeenCalledWith({
+      email: 'adult@example.com',
+      password: 'secret-password',
     });
     await expect(gateway.getSession()).resolves.toEqual({
       accessToken: 'access-token',
       userId: 'user-1',
+    });
+  });
+
+  it('registers with metadata and reports email confirmation', async () => {
+    const fake = createSupabaseClient();
+    const gateway = new SupabaseAuthSessionGateway(
+      fake.client,
+      'http://localhost:5173/onboarding',
+    );
+
+    await expect(
+      gateway.registerWithEmail({
+        email: '  ADULT@EXAMPLE.COM ',
+        fullName: '  Alejandro Sojo ',
+        password: 'secret-password',
+      }),
+    ).resolves.toEqual({ requiresEmailConfirmation: true });
+
+    expect(fake.signUp).toHaveBeenCalledWith({
+      email: 'adult@example.com',
+      password: 'secret-password',
+      options: {
+        data: {
+          full_name: 'Alejandro Sojo',
+          locale: expect.any(String),
+          timezone: expect.any(String),
+        },
+        emailRedirectTo: 'http://localhost:5173/onboarding',
+      },
     });
   });
 
@@ -81,7 +124,7 @@ describe('SupabaseAuthSessionGateway', () => {
     const listener = vi.fn();
     const gateway = new SupabaseAuthSessionGateway(
       fake.client,
-      'http://localhost:5173/app',
+      'http://localhost:5173/onboarding',
     );
 
     const unsubscribe = gateway.onAuthStateChange(listener);

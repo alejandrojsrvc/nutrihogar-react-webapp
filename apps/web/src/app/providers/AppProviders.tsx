@@ -1,14 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, type PropsWithChildren } from 'react';
 
-import { authSessionGateway } from '../composition/dependencies';
+import {
+  authSessionGateway,
+  syncCurrentUserUseCase,
+} from '../composition/dependencies';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
+import type { SyncCurrentUserUseCase } from '../../modules/auth/application/use-cases/SyncCurrentUserUseCase';
 import { AuthProvider } from '../../modules/auth/presentation/providers/AuthProvider';
 
 export function AppProviders({
   authGateway = authSessionGateway,
   children,
-}: PropsWithChildren<{ authGateway?: AuthSessionGateway }>) {
+  syncCurrentUser = syncCurrentUserUseCase,
+}: PropsWithChildren<{
+  authGateway?: AuthSessionGateway;
+  syncCurrentUser?: SyncCurrentUserUseCase;
+}>) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -23,7 +31,12 @@ export function AppProviders({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider authGateway={authGateway}>{children}</AuthProvider>
+      <AuthProvider
+        authGateway={authGateway}
+        syncCurrentUserUseCase={syncCurrentUser}
+      >
+        {children}
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

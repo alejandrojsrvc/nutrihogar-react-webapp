@@ -48,9 +48,12 @@ describe('PrivateLayout', () => {
   it('shows the loading screen while restoring the session', () => {
     const authGateway: AuthSessionGateway = {
       getSession: () => new Promise(() => undefined),
-      loginWithGoogle: async () => undefined,
+      loginWithEmail: async () => undefined,
       logout: async () => undefined,
       onAuthStateChange: () => () => undefined,
+      registerWithEmail: async () => ({
+        requiresEmailConfirmation: false,
+      }),
     };
 
     renderRoute('/app', authGateway);
