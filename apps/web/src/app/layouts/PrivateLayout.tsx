@@ -48,7 +48,7 @@ export function PrivateLayout() {
       <nav className="bottom-navigation" aria-label="Navegacion principal">
         <NavLink to="/app">Inicio</NavLink>
         <span aria-disabled="true">Plan</span>
-        <span aria-disabled="true">Inventario</span>
+        <NavLink to="/app/alimentos">Alimentos</NavLink>
       </nav>
     </div>
   );

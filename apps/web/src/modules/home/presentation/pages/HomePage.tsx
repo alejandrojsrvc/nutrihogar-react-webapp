@@ -115,6 +115,9 @@ export function HomePage() {
         <Link className="button button--secondary" to="/app/perfil">
           Configurar perfil
         </Link>
+        <Link className="button button--secondary" to="/app/alimentos">
+          Explorar alimentos
+        </Link>
         <Link className="button button--secondary" to="/app/invitaciones">
           Gestionar invitaciones
         </Link>
