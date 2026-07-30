@@ -9,6 +9,7 @@ import type {
   AuthSession,
   EmailCredentials,
 } from '../../application/ports/AuthSessionGateway';
+import type { CurrentUser } from '../../application/ports/CurrentUserGateway';
 import {
   AuthContext,
   type AuthContextValue,
@@ -29,9 +30,11 @@ export function AuthProvider({
   children,
   syncCurrentUserUseCase,
 }: PropsWithChildren<AuthProviderProps>) {
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isCurrentUserLoading, setIsCurrentUserLoading] = useState(true);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
 
@@ -43,6 +46,10 @@ export function AuthProvider({
       }
 
       setError(null);
+      if (!nextSession) {
+        setCurrentUser(null);
+        setIsCurrentUserLoading(false);
+      }
       setSession(nextSession);
       setStatus(nextSession ? 'authenticated' : 'unauthenticated');
     });
@@ -58,11 +65,27 @@ export function AuthProvider({
         setStatus(currentSession ? 'authenticated' : 'unauthenticated');
 
         if (currentSession) {
-          void syncCurrentUserUseCase.execute().catch((authError: unknown) => {
-            if (isMounted) {
-              setError(toError(authError));
-            }
-          });
+          void syncCurrentUserUseCase
+            .execute()
+            .then((nextCurrentUser) => {
+              if (isMounted) {
+                setCurrentUser(nextCurrentUser);
+              }
+            })
+            .catch((authError: unknown) => {
+              if (isMounted) {
+                setCurrentUser(null);
+                setError(toError(authError));
+              }
+            })
+            .finally(() => {
+              if (isMounted) {
+                setIsCurrentUserLoading(false);
+              }
+            });
+        } else {
+          setCurrentUser(null);
+          setIsCurrentUserLoading(false);
         }
       })
       .catch((authError: unknown) => {
@@ -71,6 +94,8 @@ export function AuthProvider({
         }
 
         setError(toError(authError));
+        setCurrentUser(null);
+        setIsCurrentUserLoading(false);
         setSession(null);
         setStatus('unauthenticated');
       });
@@ -83,12 +108,15 @@ export function AuthProvider({
 
   const value = useMemo<AuthContextValue>(
     () => ({
+      currentUser,
       error,
       isSigningIn,
       isSigningOut,
+      isCurrentUserLoading,
       loginWithEmail: async (credentials: EmailCredentials) => {
         setError(null);
         setIsSigningIn(true);
+        setIsCurrentUserLoading(true);
 
         try {
           await authGateway.loginWithEmail(credentials);
@@ -100,18 +128,21 @@ export function AuthProvider({
 
           setSession(currentSession);
           setStatus('authenticated');
-          await syncCurrentUserUseCase.execute();
+          setCurrentUser(await syncCurrentUserUseCase.execute());
           return true;
         } catch (authError: unknown) {
+          setCurrentUser(null);
           setError(toError(authError));
           return false;
         } finally {
+          setIsCurrentUserLoading(false);
           setIsSigningIn(false);
         }
       },
       registerWithEmail: async (input) => {
         setError(null);
         setIsSigningIn(true);
+        setIsCurrentUserLoading(true);
 
         try {
           const result = await authGateway.registerWithEmail(input);
@@ -128,12 +159,14 @@ export function AuthProvider({
 
           setSession(currentSession);
           setStatus('authenticated');
-          await syncCurrentUserUseCase.execute();
+          setCurrentUser(await syncCurrentUserUseCase.execute());
           return result;
         } catch (authError: unknown) {
+          setCurrentUser(null);
           setError(toError(authError));
           return null;
         } finally {
+          setIsCurrentUserLoading(false);
           setIsSigningIn(false);
         }
       },
@@ -143,6 +176,8 @@ export function AuthProvider({
 
         try {
           await authGateway.logout();
+          setCurrentUser(null);
+          setIsCurrentUserLoading(false);
           setSession(null);
           setStatus('unauthenticated');
           return true;
@@ -158,9 +193,11 @@ export function AuthProvider({
     }),
     [
       authGateway,
+      currentUser,
       error,
       isSigningIn,
       isSigningOut,
+      isCurrentUserLoading,
       session,
       status,
       syncCurrentUserUseCase,

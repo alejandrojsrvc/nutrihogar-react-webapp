@@ -48,11 +48,11 @@ const STEP_FIELDS: Record<number, FieldPath<AdultProfileFormValues>[]> = {
 
 export function AdultProfilePage() {
   const navigate = useNavigate();
-  const { session } = useAuth();
+  const { currentUser, isCurrentUserLoading } = useAuth();
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const currentProfile = profiles.profiles.find(
-    (profile) => profile.userId === session?.userId,
+    (profile) => profile.userId === currentUser?.id,
   );
   const [currentStep, setCurrentStep] = useState(1);
   const {
@@ -80,6 +80,19 @@ export function AdultProfilePage() {
 
   if (households.isPending) {
     return <ProfileStatus message="Cargando tu hogar..." />;
+  }
+
+  if (isCurrentUserLoading) {
+    return <ProfileStatus message="Cargando tu usuario..." />;
+  }
+
+  if (!currentUser) {
+    return (
+      <ProfileStatus
+        isError
+        message="No se pudo identificar tu usuario. Recarga la pagina e intentalo nuevamente."
+      />
+    );
   }
 
   if (households.isError) {

@@ -63,7 +63,10 @@ describe('AdultProfilePage', () => {
 
     renderRoute(
       '/app/perfil',
-      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+      createTestAuthGateway({
+        accessToken: 'test-token',
+        userId: 'user-1',
+      }),
     );
 
     await fillBasicInformation(user);
@@ -114,7 +117,10 @@ describe('AdultProfilePage', () => {
 
     renderRoute(
       '/app/perfil',
-      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+      createTestAuthGateway({
+        accessToken: 'test-token',
+        userId: 'user-1',
+      }),
     );
 
     await user.type(await screen.findByLabelText('Nombre'), 'Alejandro');
@@ -181,7 +187,10 @@ describe('AdultProfilePage', () => {
 
     renderRoute(
       '/app/perfil',
-      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+      createTestAuthGateway({
+        accessToken: 'test-token',
+        userId: 'supabase-user-1',
+      }),
     );
 
     expect(await screen.findByRole('heading', { name: 'Edita tu perfil' })).toBeInTheDocument();
