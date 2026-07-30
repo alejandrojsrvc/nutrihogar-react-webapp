@@ -109,6 +109,9 @@ export function HomePage() {
         <Link className="button button--secondary" to="/app/perfil">
           Configurar perfil
         </Link>
+        <Link className="button button--secondary" to="/app/invitaciones">
+          Gestionar invitaciones
+        </Link>
       </div>
       {healthQuery.isPending && (
         <p className="lead" role="status">

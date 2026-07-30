@@ -1,6 +1,11 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
+
+import { getAuthRedirectPath } from '../utils/authRedirect';
 
 export function ReviewEmailPage() {
+  const location = useLocation();
+  const redirectPath = getAuthRedirectPath(location.state);
+
   return (
     <section className="welcome-panel" aria-labelledby="review-email-title">
       <p className="eyebrow">Un ultimo paso</p>
@@ -9,7 +14,11 @@ export function ReviewEmailPage() {
         Te enviamos un enlace para confirmar tu cuenta. Cuando lo confirmes,
         volveras a NutriHogar para continuar.
       </p>
-      <Link className="button button--primary" to="/login">
+      <Link
+        className="button button--primary"
+        state={{ from: redirectPath }}
+        to="/login"
+      >
         Volver al inicio de sesion
       </Link>
     </section>

@@ -84,6 +84,8 @@ OPENAPI_URL=https://api.example.com/api/docs-json npm run api:generate
 - `/onboarding`: creacion privada del primer hogar.
 - `/app`: inicio privado con hogar activo e integrantes.
 - `/app/perfil`: configuracion del perfil adulto autenticado.
+- `/app/invitaciones`: gestion de invitaciones para el hogar activo.
+- `/invitaciones/:token`: aceptacion de una invitacion autenticada.
 - Cualquier otra URL muestra la pagina 404.
 
 Los layouts publico y privado estan separados. La sesion se restaura al cargar la aplicacion y las rutas privadas redirigen a `/login` cuando no existe una sesion valida.
@@ -108,7 +110,9 @@ El manifiesto define nombre, colores, modo `standalone`, URL inicial e icono ada
 5. Si no existen hogares, completar `/onboarding` y comprobar que el nuevo hogar queda activo.
 6. En `/app`, verificar el hogar activo, los integrantes y la accion **Configurar perfil**.
 7. Completar `/app/perfil`, guardar el perfil y comprobar que aparece en la lista de integrantes.
-8. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
-9. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
-10. Sin sesion, abrir `/app` o `/onboarding` y comprobar la redireccion a `/login`.
-11. Repetir el recorrido a 320 px de ancho y en escritorio.
+8. Abrir `/app/invitaciones`, crear una invitacion y copiar el enlace mostrado.
+9. Abrir el enlace con la cuenta invitada, aceptar y comprobar el mensaje de exito.
+10. Recargar la pagina y verificar que la sesion y el hogar activo permanecen.
+11. Pulsar **Cerrar sesion** y confirmar el regreso a `/login`.
+12. Sin sesion, abrir `/app`, `/onboarding` o un enlace de invitacion y comprobar la redireccion a `/login`.
+13. Repetir el recorrido a 320 px de ancho y en escritorio.

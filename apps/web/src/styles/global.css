@@ -408,6 +408,74 @@ button.button:disabled {
   color: var(--color-text-secondary);
 }
 
+.invitation-section {
+  margin-bottom: var(--space-8);
+  padding-block: var(--space-5);
+  border-block: 1px solid var(--color-border);
+}
+
+.invitation-form {
+  max-width: 36rem;
+}
+
+.invitation-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.invitation-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.invitation-card div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.invitation-card span,
+.invitation-card small,
+.empty-copy {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.invitation-success {
+  max-width: 36rem;
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-md);
+  color: var(--color-primary-800);
+  background: var(--color-primary-soft);
+}
+
+.invitation-success h3,
+.invitation-success p {
+  margin-bottom: var(--space-2);
+}
+
+.invitation-success p:last-child {
+  margin-bottom: 0;
+}
+
+.invitation-link {
+  width: 100%;
+  min-height: 3rem;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+}
+
 .empty-state {
   padding: var(--space-8) 0;
   border-top: 1px solid var(--color-border);
