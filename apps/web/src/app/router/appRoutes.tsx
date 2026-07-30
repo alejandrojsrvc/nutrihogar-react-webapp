@@ -12,6 +12,8 @@ import { OnboardingPage } from '../../modules/onboarding/presentation/pages/Onbo
 import { AcceptHouseholdInvitationPage } from '../../modules/households/presentation/pages/AcceptHouseholdInvitationPage';
 import { AdultProfilePage } from '../../modules/households/presentation/pages/AdultProfilePage';
 import { HouseholdInvitationsPage } from '../../modules/households/presentation/pages/HouseholdInvitationsPage';
+import { FoodCatalogPage } from '../../modules/food-catalog/presentation/pages/FoodCatalogPage';
+import { FoodDetailPage } from '../../modules/food-catalog/presentation/pages/FoodDetailPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -43,6 +45,8 @@ export const appRoutes: RouteObject[] = [
         children: [
           { path: '/onboarding', element: <OnboardingPage /> },
           { path: '/app/perfil', element: <AdultProfilePage /> },
+          { path: '/app/alimentos', element: <FoodCatalogPage /> },
+          { path: '/app/alimentos/:foodId', element: <FoodDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           { path: '/app', element: <HomePage /> },
           {

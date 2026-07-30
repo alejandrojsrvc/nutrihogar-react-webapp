@@ -1,0 +1,99 @@
+export type FoodType = 'GENERIC' | 'COMMERCIAL' | 'CUSTOM' | 'PREPARED';
+export type PreparationState =
+  | 'RAW'
+  | 'COOKED'
+  | 'READY_TO_EAT'
+  | 'NOT_APPLICABLE';
+export type SearchPreparationState = Exclude<
+  PreparationState,
+  'NOT_APPLICABLE'
+>;
+export type ReferenceUnit = 'GRAM' | 'MILLILITER' | 'UNIT';
+export type ConfidenceLevel =
+  | 'VERIFIED'
+  | 'HIGH'
+  | 'MEDIUM'
+  | 'LOW'
+  | 'USER_PROVIDED';
+
+export interface FoodCategory {
+  id: string;
+  code: string;
+  name: string;
+  displayOrder: number;
+}
+
+export interface NutrientDefinition {
+  id: string;
+  code: string;
+  name: string;
+  unit: string;
+  group: string;
+  displayOrder: number;
+  isRequired: boolean;
+}
+
+export interface FoodNutrient {
+  id: string;
+  nutrientDefinition: NutrientDefinition;
+  amount: number;
+}
+
+export interface FoodServing {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  equivalentGrams: number | null;
+  equivalentMilliliters: number | null;
+}
+
+export interface FoodSummary {
+  id: string;
+  householdId: string | null;
+  name: string;
+  brand: string | null;
+  category: FoodCategory;
+  foodType: FoodType;
+  preparationState: PreparationState;
+  referenceQuantity: number;
+  referenceUnit: ReferenceUnit;
+  energyKcal: number | null;
+  proteinGrams: number | null;
+  carbohydrateGrams: number | null;
+  fatGrams: number | null;
+}
+
+export interface FoodDetail extends FoodSummary {
+  description: string | null;
+  source: string;
+  sourceReference: string | null;
+  confidenceLevel: ConfidenceLevel;
+  isGlobal: boolean;
+  nutrients: FoodNutrient[];
+  servings: FoodServing[];
+  aliases: string[];
+}
+
+export interface FoodSearchCriteria {
+  query?: string;
+  categoryId?: string;
+  preparationState?: SearchPreparationState;
+  page: number;
+  limit: number;
+}
+
+export interface FoodSearchResult {
+  items: FoodSummary[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+}
+
+export interface FoodCatalogGateway {
+  search(criteria: FoodSearchCriteria): Promise<FoodSearchResult>;
+  getById(foodId: string): Promise<FoodDetail>;
+  listCategories(): Promise<FoodCategory[]>;
+}
