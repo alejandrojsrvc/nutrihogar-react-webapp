@@ -1,16 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 import { useAuth } from '../providers/useAuth';
+import { getAuthRedirectPath } from '../utils/authRedirect';
 import {
   registerFormSchema,
   type RegisterFormValues,
 } from '../schemas/emailAuthSchemas';
 
 export function RegisterPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { error, isSigningIn, registerWithEmail } = useAuth();
+  const redirectPath = getAuthRedirectPath(location.state);
   const {
     formState: { errors },
     handleSubmit,
@@ -31,11 +34,11 @@ export function RegisterPage() {
     }
 
     if (result.requiresEmailConfirmation) {
-      navigate('/auth/revisa-tu-correo');
+      navigate('/auth/revisa-tu-correo', { state: { from: redirectPath } });
       return;
     }
 
-    navigate('/onboarding');
+    navigate(redirectPath);
   };
 
   return (
@@ -117,7 +120,11 @@ export function RegisterPage() {
       ) : null}
       <p className="supporting-text">
         ¿Ya tienes una cuenta?{' '}
-        <Link className="auth-link" to="/login">
+        <Link
+          className="auth-link"
+          state={{ from: redirectPath }}
+          to="/login"
+        >
           Inicia sesion
         </Link>
       </p>

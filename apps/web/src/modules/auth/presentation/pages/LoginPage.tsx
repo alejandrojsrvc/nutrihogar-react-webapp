@@ -1,16 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 import { useAuth } from '../providers/useAuth';
+import { getAuthRedirectPath } from '../utils/authRedirect';
 import {
   loginFormSchema,
   type LoginFormValues,
 } from '../schemas/emailAuthSchemas';
 
 export function LoginPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { error, isSigningIn, loginWithEmail } = useAuth();
+  const redirectPath = getAuthRedirectPath(location.state);
   const {
     formState: { errors },
     handleSubmit,
@@ -21,7 +24,7 @@ export function LoginPage() {
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (values) => {
     if (await loginWithEmail(values)) {
-      navigate('/app');
+      navigate(redirectPath);
     }
   };
 
@@ -75,7 +78,11 @@ export function LoginPage() {
       ) : null}
       <p className="supporting-text">
         ¿Todavia no tienes una cuenta?{' '}
-        <Link className="auth-link" to="/register">
+        <Link
+          className="auth-link"
+          state={{ from: redirectPath }}
+          to="/register"
+        >
           Registrate
         </Link>
       </p>

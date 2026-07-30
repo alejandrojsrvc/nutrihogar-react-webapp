@@ -86,9 +86,10 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar perfil' }));
 
     expect(
-      await screen.findByRole('heading', {
-        name: 'Tu perfil ya esta configurado',
-      }),
+      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Perfil guardado correctamente.'),
     ).toBeInTheDocument();
   });
 });
