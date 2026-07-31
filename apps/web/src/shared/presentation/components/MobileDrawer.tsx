@@ -30,6 +30,7 @@ export function MobileDrawer({
         <NavLink className="sidebar__link sidebar__link--primary" onClick={onClose} to="/app/comidas/nueva">Registrar comida</NavLink>
         <NavLink className="sidebar__link" onClick={onClose} to="/app/perfil">Perfil</NavLink>
         <NavLink className="sidebar__link" onClick={onClose} to="/app/alimentos">Alimentos</NavLink>
+        <NavLink className="sidebar__link" onClick={onClose} to="/app/recetas">Recetas</NavLink>
         <Button className="mobile-drawer__logout" disabled={isSigningOut} onClick={onLogout} type="button" variant="tertiary"><LogOut size={17} aria-hidden="true" />{isSigningOut ? 'Cerrando...' : 'Cerrar sesión'}</Button>
       </aside>
     </div>
