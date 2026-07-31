@@ -43,7 +43,7 @@ const PROFILE_STEPS = [
 
 const STEP_FIELDS: Record<number, FieldPath<AdultProfileFormValues>[]> = {
   1: ['name', 'birthDate'],
-  2: ['biologicalSex', 'heightCm'],
+  2: ['biologicalSex', 'weightKg', 'heightCm'],
   3: ['activityLevel', 'primaryGoal'],
   4: ['dietaryRestrictions'],
   5: ['hasKitchenScale'],
@@ -393,6 +393,18 @@ function BodyInformationStep({
         />
         {getFieldError(errors, 'heightCm')}
       </div>
+      <div className="form-field">
+        <label htmlFor="profile-weight">Peso en kilogramos</label>
+        <input
+          id="profile-weight"
+          inputMode="decimal"
+          min="0.01"
+          type="number"
+          {...register('weightKg')}
+          aria-invalid={errors.weightKg ? 'true' : 'false'}
+        />
+        {getFieldError(errors, 'weightKg')}
+      </div>
     </div>
   );
 }
@@ -588,6 +600,8 @@ function getDefaultFormValues(
       })) ?? [],
     hasKitchenScale: profile?.hasKitchenScale ?? false,
     heightCm: profile ? String(profile.heightCm) : '',
+    weightKg:
+      profile?.weightKg == null ? '' : String(profile.weightKg),
     name: profile?.name ?? '',
     primaryGoal: profile?.primaryGoal ?? ('' as never),
   };
@@ -612,6 +626,7 @@ function toAdultProfileDraftValues(
     })),
     hasKitchenScale: values.hasKitchenScale,
     heightCm: values.heightCm,
+    weightKg: values.weightKg,
     name: values.name,
     primaryGoal: values.primaryGoal,
   };
@@ -626,6 +641,7 @@ function toAdultProfileInput(
   dietaryRestrictions: DietaryRestrictionInput[];
   hasKitchenScale: boolean;
   heightCm: number;
+  weightKg: number | null;
   name: string;
   primaryGoal: PrimaryGoal;
 } {
@@ -641,6 +657,7 @@ function toAdultProfileInput(
     })),
     hasKitchenScale: values.hasKitchenScale,
     heightCm: Number(values.heightCm),
+    weightKg: values.weightKg.trim() ? Number(values.weightKg) : null,
     name: values.name.trim(),
     primaryGoal: values.primaryGoal,
   };
@@ -648,7 +665,7 @@ function toAdultProfileInput(
 
 function getFirstErrorStep(errors: FieldErrors<AdultProfileFormValues>): number {
   if (errors.name || errors.birthDate) return 1;
-  if (errors.biologicalSex || errors.heightCm) return 2;
+  if (errors.biologicalSex || errors.heightCm || errors.weightKg) return 2;
   if (errors.activityLevel || errors.primaryGoal) return 3;
   if (errors.dietaryRestrictions) return 4;
   return 5;

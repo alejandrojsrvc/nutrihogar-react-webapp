@@ -75,6 +75,15 @@ export interface FoodDetail extends FoodSummary {
   aliases: string[];
 }
 
+export interface FoodSelection {
+  food: FoodDetail | FoodSummary;
+  quantity: number;
+  unit: import('@nutrihogar/domain').MeasurementUnit;
+  measurementMethod: import('@nutrihogar/domain').MeasurementMethod;
+  servingId?: string;
+  servingEquivalent?: number | null;
+}
+
 export interface FoodSearchCriteria {
   query?: string;
   categoryId?: string;

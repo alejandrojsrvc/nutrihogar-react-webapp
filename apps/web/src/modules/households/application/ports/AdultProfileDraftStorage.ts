@@ -13,6 +13,7 @@ export interface AdultProfileDraftValues {
   biologicalSex: string;
   dietaryRestrictions: AdultProfileDraftRestriction[];
   hasKitchenScale: boolean;
+  weightKg: string;
   heightCm: string;
   name: string;
   primaryGoal: string;

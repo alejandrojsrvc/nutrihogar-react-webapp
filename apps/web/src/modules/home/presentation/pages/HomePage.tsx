@@ -112,6 +112,22 @@ export function HomePage() {
             ))}
           </div>
         ) : null}
+        {profilesQuery.profiles[0] ? (
+          <Link
+            className="button button--primary"
+            to={`/app/comidas/nueva?profileId=${profilesQuery.profiles[0].id}`}
+          >
+            Registrar comida
+          </Link>
+        ) : null}
+        {profilesQuery.profiles[0] ? (
+          <Link
+            className="button button--secondary"
+            to={`/app/perfiles/${profilesQuery.profiles[0].id}/meta`}
+          >
+            Ver meta nutricional
+          </Link>
+        ) : null}
         <Link className="button button--secondary" to="/app/perfil">
           Configurar perfil
         </Link>

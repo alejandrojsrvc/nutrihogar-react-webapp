@@ -16,6 +16,9 @@ import { HouseholdInvitationsPage } from '../../modules/households/presentation/
 import { FoodCatalogPage } from '../../modules/food-catalog/presentation/pages/FoodCatalogPage';
 import { FoodDetailPage } from '../../modules/food-catalog/presentation/pages/FoodDetailPage';
 import { CustomFoodFormPage } from '../../modules/food-catalog/presentation/pages/CustomFoodFormPage';
+import { NutritionGoalPage } from '../../modules/nutrition-goals/presentation/pages/NutritionGoalPage';
+import { NutritionGoalProposalPage } from '../../modules/nutrition-goals/presentation/pages/NutritionGoalProposalPage';
+import { RegisterMealPage } from '../../modules/meals/presentation/pages/RegisterMealPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -57,6 +60,9 @@ export const appRoutes: RouteObject[] = [
             element: <CustomFoodFormPage />,
           },
           { path: '/app/alimentos/:foodId', element: <FoodDetailPage /> },
+          { path: '/app/perfiles/:profileId/meta', element: <NutritionGoalPage /> },
+          { path: '/app/perfiles/:profileId/meta/propuesta', element: <NutritionGoalProposalPage /> },
+          { path: '/app/comidas/nueva', element: <RegisterMealPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

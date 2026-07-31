@@ -241,6 +241,139 @@ button.button:disabled {
   margin: var(--space-3) var(--space-4) 0;
 }
 
+.nutrition-value-list,
+.nutrition-calculation {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-6) 0;
+}
+
+.nutrition-value-list > div,
+.nutrition-calculation > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nutrition-value-list dt,
+.nutrition-calculation dt {
+  color: var(--color-text-secondary);
+}
+
+.nutrition-value-list dd,
+.nutrition-calculation dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.nutrition-goal-form,
+.meal-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.meal-form__actions,
+.meal-items__heading,
+.food-selector__header,
+.food-selector__selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.meal-items,
+.nutrition-preview {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.meal-item,
+.food-selector__result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  background: transparent;
+}
+
+.meal-item div,
+.food-selector__result {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.meal-item span,
+.food-selector__result span,
+.food-selector__result small {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.food-selector {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  overflow: auto;
+  padding: var(--space-4);
+  background: var(--color-canvas);
+}
+
+.food-selector__filters {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-6) 0;
+}
+
+.food-selector__result {
+  cursor: pointer;
+}
+
+.food-selector__result.is-selected {
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+}
+
+.food-selector__selection {
+  align-items: end;
+  flex-wrap: wrap;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.food-selector__selection h3 {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.food-selector__selection .form-field {
+  flex: 1 1 8rem;
+}
+
+@media (min-width: 48rem) {
+  .food-selector {
+    inset: 5vh 10vw;
+    padding: var(--space-8);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .food-selector__filters {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
 .auth-loading {
   display: grid;
   min-height: 100vh;
