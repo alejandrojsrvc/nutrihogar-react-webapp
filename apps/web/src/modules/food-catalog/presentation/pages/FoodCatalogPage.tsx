@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router';
 
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import type {
   FoodSearchCriteria,
   SearchPreparationState,
@@ -60,11 +61,12 @@ export function FoodCatalogPage() {
 
   return (
     <section className="page-section food-catalog-page" aria-labelledby="food-catalog-title">
-      <p className="eyebrow">Catalogo de alimentos</p>
-      <h1 id="food-catalog-title">Encuentra un alimento</h1>
-      <p className="lead">
-        Busca ingredientes y consulta sus nutrientes para organizar mejor tus comidas.
-      </p>
+      <PageHeader
+        eyebrow="Catalogo de alimentos"
+        title="Encuentra un alimento"
+        titleId="food-catalog-title"
+        description="Busca ingredientes y consulta sus nutrientes para organizar mejor tus comidas."
+      />
       {getCatalogFeedback(location.state) ? (
         <p className="food-feedback" role="status">
           {getCatalogFeedback(location.state)}

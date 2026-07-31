@@ -14,6 +14,7 @@ import {
   type UseFormRegister,
 } from 'react-hook-form';
 import { Link, Navigate, useNavigate } from 'react-router';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
 
 import { adultProfileDraftStorage } from '../../../../app/composition/dependencies';
 import type {
@@ -234,6 +235,7 @@ export function AdultProfilePage() {
 
   return (
     <section className="page-section" aria-labelledby="profile-title">
+      <BackButton fallback="/app" />
       <p className="eyebrow">Perfil adulto</p>
       <h1 id="profile-title">
         {isEditing ? 'Edita tu perfil' : 'Configura tu perfil'}

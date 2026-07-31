@@ -1,5 +1,7 @@
 import { Link, Navigate, useLocation } from 'react-router';
+import { UserRound } from 'lucide-react';
 
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHealth } from '../../../../shared/presentation/hooks/useHealth';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -71,8 +73,23 @@ export function HomePage() {
 
   return (
     <section className="page-section" aria-labelledby="home-title">
-      <p className="eyebrow">Inicio</p>
-      <h1 id="home-title">Tu hogar empieza aqui</h1>
+      <PageHeader
+        action={
+          <Link
+            className="button button--primary"
+            to={
+              profilesQuery.profiles[0]
+                ? `/app/comidas/nueva?profileId=${profilesQuery.profiles[0].id}`
+                : '/app/perfil'
+            }
+          >
+            {profilesQuery.profiles[0] ? 'Registrar comida' : 'Configurar perfil'}
+          </Link>
+        }
+        eyebrow="Inicio"
+        title="Tu hogar empieza aqui"
+        titleId="home-title"
+      />
       {isProfileSavedNavigation(location.state) ? (
         <p className="profile-success" role="status">
           Perfil guardado correctamente.
@@ -106,37 +123,43 @@ export function HomePage() {
           <div className="profile-list">
             {profilesQuery.profiles.map((profile) => (
               <div className="profile-card" key={profile.id}>
-                <strong>{profile.name}</strong>
-                <span>{profile.heightCm} cm</span>
+                <div className="profile-card__identity">
+                  <UserRound size={18} aria-hidden="true" />
+                  <strong>{profile.name}</strong>
+                  <span className="profile-card__sex">
+                    {profile.biologicalSex === 'MALE' ? 'Hombre' : 'Mujer'}
+                  </span>
+                </div>
+                <span>
+                  {profile.weightKg == null
+                    ? 'Peso pendiente'
+                    : `${profile.weightKg} kg`}
+                  {' · '}
+                  {profile.heightCm} cm
+                </span>
               </div>
             ))}
           </div>
         ) : null}
-        {profilesQuery.profiles[0] ? (
-          <Link
-            className="button button--primary"
-            to={`/app/comidas/nueva?profileId=${profilesQuery.profiles[0].id}`}
-          >
-            Registrar comida
+        <div className="home-actions">
+          {profilesQuery.profiles[0] ? (
+            <Link
+              className="button button--secondary"
+              to={`/app/perfiles/${profilesQuery.profiles[0].id}/meta`}
+            >
+              Ver meta nutricional
+            </Link>
+          ) : null}
+          <Link className="button button--secondary" to="/app/perfil">
+            Configurar perfil
           </Link>
-        ) : null}
-        {profilesQuery.profiles[0] ? (
-          <Link
-            className="button button--secondary"
-            to={`/app/perfiles/${profilesQuery.profiles[0].id}/meta`}
-          >
-            Ver meta nutricional
+          <Link className="button button--secondary" to="/app/alimentos">
+            Explorar alimentos
           </Link>
-        ) : null}
-        <Link className="button button--secondary" to="/app/perfil">
-          Configurar perfil
-        </Link>
-        <Link className="button button--secondary" to="/app/alimentos">
-          Explorar alimentos
-        </Link>
-        <Link className="button button--secondary" to="/app/invitaciones">
-          Gestionar invitaciones
-        </Link>
+          <Link className="button button--secondary" to="/app/invitaciones">
+            Gestionar invitaciones
+          </Link>
+        </div>
       </div>
       {healthQuery.isPending && (
         <p className="lead" role="status">

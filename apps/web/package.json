@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.6",
     "@hookform/resolvers": "^5.5.7",
     "@nutrihogar/api-client": "*",
     "@nutrihogar/domain": "*",
@@ -22,6 +23,7 @@
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.83.0",
     "react-router": "^8.3.0",
+    "lucide-react": "^0.468.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

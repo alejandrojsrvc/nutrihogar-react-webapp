@@ -74,15 +74,15 @@ La dirección visual combina:
 
 •
 
-Lovable como referencia principal de calidez, fondos suaves y composición espaciosa.
+Wise como referencia principal para claridad, composición espaciosa y jerarquía de acciones.
 
 •
 
-Airbnb como referencia para interacción móvil, tamaños táctiles, formularios y drawers.
+Airbnb como referencia secundaria para interacción móvil, tamaños táctiles, formularios y drawers.
 
 •
 
-Cal.com como referencia para dashboards limpios y jerarquía visual.
+Cal.com como referencia secundaria para dashboards limpios y jerarquía visual.
 
 •
 
@@ -202,11 +202,11 @@ No debe utilizarse como fondo dominante de toda la aplicación.
 
 Superficies
 
---color-canvas: #f7f4ed;
+--color-canvas: #ffffff;
 
---color-surface: #fffefb;
+--color-surface: #ffffff;
 
---color-surface-muted: #efeee8;
+--color-surface-muted: #e8ebe6;
 
 --color-surface-elevated: #ffffff;
 
@@ -224,7 +224,7 @@ Bordes
 
 --color-border: #dedcd4;
 
---color-border-strong: #c8c6be;
+--color-border-strong: hsl(48, 48%, 61%);
 
 --color-focus-ring: #68a985;
 
@@ -298,9 +298,9 @@ Usar:
 
 Inter
 
-Alternativa para encabezados, solo si ya está incluida en el proyecto:
+Los encabezados utilizan la misma familia para mantener una interfaz consistente:
 
-Manrope
+Inter
 
 Configuración recomendada:
 
@@ -322,7 +322,7 @@ sans-serif;
 
 --font-family-heading:
 
-"Manrope",
+"Inter",
 
 "Inter",
 
@@ -357,7 +357,7 @@ Pesos:
 
 --font-weight-semibold: 600;
 
---font-weight-bold: 700;
+--font-weight-bold: 600;
 
 Reglas:
 
@@ -373,7 +373,7 @@ Los labels utilizan 500 o 600.
 
 •
 
-Los títulos utilizan 600 o 700.
+Los títulos utilizan 600.
 Los datos numéricos deben usar  font-variant-numeric: tabular-nums .
 
 •
@@ -423,6 +423,10 @@ Padding de página móvil: 16 px.
 •
 
 Padding de página de escritorio: 24–32 px.
+
+El contenido privado utiliza un ancho común máximo de 72rem para que las
+pantallas compartan la misma alineación. Los formularios y bloques de lectura
+continua pueden limitarse a 36rem sin cambiar el ancho del shell.
 
 •
 
@@ -700,9 +704,9 @@ Toda sección de una página sin motivo.
 
 Estilo:
 
-background: var(--color-surface);
+background: var(--color-surface-subtle);
 
-border: 1px solid var(--color-border);
+border: 0;
 
 border-radius: var(--radius-lg);
 
@@ -712,7 +716,8 @@ box-shadow: var(--shadow-sm);
 
 Móvil
 
-Utilizar navegación inferior para las secciones principales cuando sea necesario.
+Utilizar navegación inferior para las secciones principales en móvil y un
+drawer para navegación secundaria.
 
 Posibles accesos:
 
@@ -740,7 +745,8 @@ La acción “Registrar comida” debe tener mayor visibilidad.
 
 Escritorio
 
-Utilizar sidebar compacto o navegación superior, según el layout existente.
+Utilizar un sidebar fijo en escritorio. El topbar se reserva para marca,
+contexto y acciones del shell; no duplica la navegación principal.
 
 Reglas:
 
@@ -982,11 +988,29 @@ Efectos que retrasen la interacción.
 
 19. Modo oscuro
 
-No es obligatorio para el primer MVP.
+El modo oscuro forma parte del sistema visual vigente y se aplica a toda la
+aplicación mediante los mismos tokens semánticos.
 
-No agregar modo oscuro a menos que exista una tarea específica.
+La preferencia inicial sigue el sistema operativo (`prefers-color-scheme`). La
+persona puede elegir `Sistema`, `Claro` u `Oscuro`; la elección se persiste
+localmente.
 
-Los tokens deben definirse de forma que pueda añadirse después sin reescribir los componentes.
+En oscuro:
+
+--color-canvas: #000000;
+
+--color-surface: #111111;
+
+--color-surface-muted: #1d1d1d;
+
+--color-surface-subtle: #171717;
+
+--color-text-primary: #f5f5f5;
+
+--color-text-secondary: #a6a6a6;
+
+El negro se reserva para el canvas. El verde continúa siendo el color de
+marca, acción y estados positivos, no el fondo dominante.
 
 20. Implementación de tokens
 
@@ -1064,7 +1088,8 @@ No cambiar la identidad visual fuera del alcance de la tarea.
 
 12.
 
-Ejecutar lint, tests y build.
+Ejecutar lint y tests. No iniciar servidores ni ejecutar build como parte de
+la validación automatizada del frontend.
 
 13.
 
@@ -1132,7 +1157,7 @@ Incluir pasos para probar manualmente en móvil y escritorio.
 
 •
 
-[ ] Lint, tests y build pasan correctamente.
+[ ] Lint y tests pasan correctamente.
 
 23. Prompt base para tareas visuales
 
@@ -1166,7 +1191,7 @@ Reutiliza componentes existentes antes de crear nuevos.
 
 Al finalizar:
 
-- ejecuta lint, tests y build;
+- ejecuta lint y tests;
 
 - enumera los archivos modificados;
 
@@ -1177,9 +1202,13 @@ Al finalizar:
 
 Base visual: cálida y espaciosa
 
-Fondo: crema suave
+Fondo claro: blanco
 
-Superficies: blanco cálido
+Superficies claras: blanco y gris suave
+
+Fondo oscuro: negro
+
+Superficies oscuras: grises neutros
 
 Primary: verde #2F7D5A
 
@@ -1189,7 +1218,7 @@ Sombras: mínimas
 
 14
 
-Tipografía: Inter, con Manrope opcional en títulos
+Tipografía: Inter
 
 Radio: 10 px en controles, 14–16 px en cards
 
@@ -1200,5 +1229,3 @@ Datos: precisos, legibles y sin decoración innecesaria
 Tono: amable, directo y no culpabilizante
 
 15
-
-

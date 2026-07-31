@@ -8,6 +8,7 @@ import {
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 import type { SyncCurrentUserUseCase } from '../../modules/auth/application/use-cases/SyncCurrentUserUseCase';
 import { AuthProvider } from '../../modules/auth/presentation/providers/AuthProvider';
+import { ThemeProvider } from '../../shared/presentation/providers/ThemeProvider';
 
 export function AppProviders({
   authGateway = authSessionGateway,
@@ -35,7 +36,7 @@ export function AppProviders({
         authGateway={authGateway}
         syncCurrentUserUseCase={syncCurrentUser}
       >
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

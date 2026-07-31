@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { X } from 'lucide-react';
 
 import type { MeasurementMethod, MeasurementUnit } from '@nutrihogar/domain';
 import type { FoodSelection } from '../../application/ports/FoodCatalogGateway';
@@ -8,6 +9,7 @@ import {
   useFoodSearch,
 } from '../hooks/useFoodCatalog';
 import { formatAmount, preparationStateLabels } from '../utils/foodLabels';
+import { IconButton } from '../../../../shared/presentation/components/IconButton';
 
 export function FoodSelector({ onSelect, onClose }: { onSelect: (selection: FoodSelection) => void; onClose: () => void }) {
   const [query, setQuery] = useState('');
@@ -29,7 +31,7 @@ export function FoodSelector({ onSelect, onClose }: { onSelect: (selection: Food
     <div className="food-selector" role="dialog" aria-modal="true" aria-labelledby="food-selector-title">
       <div className="food-selector__header">
         <div><p className="eyebrow">Agregar alimento</p><h2 id="food-selector-title">Busca un alimento</h2></div>
-        <button className="button button--secondary" onClick={onClose} type="button">Cerrar</button>
+        <IconButton aria-label="Cerrar selector de alimentos" onClick={onClose} type="button"><X size={20} aria-hidden="true" /></IconButton>
       </div>
       <div className="food-selector__filters">
         <div className="form-field"><label htmlFor="selector-query">Nombre</label><input autoFocus id="selector-query" onChange={(event) => setQuery(event.target.value)} placeholder="Ej. pollo" type="search" value={query} /></div>
