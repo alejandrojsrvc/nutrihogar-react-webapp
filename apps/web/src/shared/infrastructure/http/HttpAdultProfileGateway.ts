@@ -109,9 +109,10 @@ function toAdultProfile(value: {
   userId: string;
   name: string;
   birthDate: string;
-  age: number;
-  biologicalSex: AdultProfile['biologicalSex'];
-  heightCm: number;
+   age: number;
+   biologicalSex: AdultProfile['biologicalSex'];
+   weightKg?: number | null;
+   heightCm: number;
   activityLevel: AdultProfile['activityLevel'];
   primaryGoal: AdultProfile['primaryGoal'];
   hasKitchenScale: boolean;
@@ -140,6 +141,7 @@ function toAdultProfile(value: {
     })),
     hasKitchenScale: value.hasKitchenScale,
     heightCm: value.heightCm,
+    weightKg: value.weightKg ?? null,
     householdId: value.householdId,
     id: value.id,
     name: value.name,

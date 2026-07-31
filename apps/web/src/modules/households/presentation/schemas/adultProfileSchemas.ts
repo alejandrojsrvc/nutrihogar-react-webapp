@@ -34,6 +34,16 @@ export const adultProfileFormSchema = z.object({
   biologicalSex: z.enum(['MALE', 'FEMALE'], 'Selecciona una opcion.'),
   dietaryRestrictions: z.array(dietaryRestrictionFormSchema),
   hasKitchenScale: z.boolean(),
+  weightKg: z
+    .string()
+    .refine(
+      (value) =>
+        value.trim() === '' ||
+        (Number.isFinite(Number(value)) && Number(value) > 0),
+      {
+        message: 'El peso debe ser un numero mayor que cero.',
+      },
+    ),
   heightCm: z
     .string()
     .min(1, 'Indica tu altura.')

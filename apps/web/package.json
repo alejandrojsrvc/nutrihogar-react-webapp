@@ -12,7 +12,10 @@
   "dependencies": {
     "@hookform/resolvers": "^5.5.7",
     "@nutrihogar/api-client": "*",
+    "@nutrihogar/domain": "*",
     "@nutrihogar/design-tokens": "*",
+    "@nutrihogar/nutrition-engine": "*",
+    "@nutrihogar/schemas": "*",
     "@supabase/supabase-js": "^2.111.0",
     "@tanstack/react-query": "^5.101.4",
     "react": "^19.2.8",

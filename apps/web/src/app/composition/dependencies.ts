@@ -14,6 +14,14 @@ import { SearchFoodsUseCase } from '../../modules/food-catalog/application/use-c
 import { CreateCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/CreateCustomFoodUseCase';
 import { DeleteCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/DeleteCustomFoodUseCase';
 import { UpdateCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/UpdateCustomFoodUseCase';
+import {
+  ConfirmNutritionGoalSuggestionUseCase,
+  GenerateNutritionGoalSuggestionUseCase,
+  GetCurrentNutritionGoalUseCase,
+} from '../../modules/nutrition-goals/application/use-cases/NutritionGoalUseCases';
+import { HttpNutritionGoalGateway } from '../../modules/nutrition-goals/infrastructure/http/HttpNutritionGoalGateway';
+import { RegisterMealUseCase } from '../../modules/meals/application/use-cases/RegisterMealUseCase';
+import { HttpMealGateway } from '../../modules/meals/infrastructure/http/HttpMealGateway';
 import { AcceptHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/AcceptHouseholdInvitationUseCase';
 import { CreateHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/CreateHouseholdInvitationUseCase';
 import { CreateHouseholdUseCase } from '../../modules/households/application/use-cases/CreateHouseholdUseCase';
@@ -59,6 +67,8 @@ export const apiClient: ApiClient = createApiClient({
 
 const healthGateway = new HttpHealthGateway(apiClient);
 const foodCatalogGateway = new HttpFoodCatalogGateway(apiClient);
+const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
+const mealGateway = new HttpMealGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -90,6 +100,14 @@ export const updateCustomFoodUseCase = new UpdateCustomFoodUseCase(
 export const deleteCustomFoodUseCase = new DeleteCustomFoodUseCase(
   foodCatalogGateway,
 );
+export const generateNutritionGoalSuggestionUseCase =
+  new GenerateNutritionGoalSuggestionUseCase(nutritionGoalGateway);
+export const confirmNutritionGoalSuggestionUseCase =
+  new ConfirmNutritionGoalSuggestionUseCase(nutritionGoalGateway);
+export const getCurrentNutritionGoalUseCase = new GetCurrentNutritionGoalUseCase(
+  nutritionGoalGateway,
+);
+export const registerMealUseCase = new RegisterMealUseCase(mealGateway);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =

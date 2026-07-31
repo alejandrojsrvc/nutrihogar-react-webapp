@@ -27,6 +27,7 @@ export interface AdultProfile {
   birthDate: string;
   age: number;
   biologicalSex: BiologicalSex;
+  weightKg?: number | null;
   heightCm: number;
   activityLevel: ActivityLevel;
   primaryGoal: PrimaryGoal;
@@ -48,6 +49,7 @@ export interface CreateAdultProfileInput {
   name: string;
   birthDate: string;
   biologicalSex: BiologicalSex;
+  weightKg?: number | null;
   heightCm: number;
   activityLevel: ActivityLevel;
   primaryGoal: PrimaryGoal;
