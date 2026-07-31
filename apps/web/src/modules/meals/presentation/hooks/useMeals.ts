@@ -8,6 +8,7 @@ import type { RegisterMealInput } from '../../application/ports/MealGateway';
 
 export const mealQueryKeys = {
   all: ['meals'] as const,
+  detail: (mealId: string) => [...mealQueryKeys.all, 'detail', mealId] as const,
   dailySummary: (profileId: string, date: string) =>
     [...mealQueryKeys.all, 'daily-summary', profileId, date] as const,
 };
@@ -32,7 +33,7 @@ export function useDailyNutritionSummary(profileId: string | undefined, date: st
 export function useMealDetails(mealId: string | undefined) {
   return useQuery({
     enabled: Boolean(mealId),
-    queryKey: mealId ? [...mealQueryKeys.all, 'detail', mealId] : mealQueryKeys.all,
+    queryKey: mealId ? mealQueryKeys.detail(mealId) : mealQueryKeys.all,
     queryFn: () => getMealDetailsUseCase.execute(mealId as string),
     retry: false,
   });

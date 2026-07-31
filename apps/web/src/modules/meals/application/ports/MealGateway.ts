@@ -12,23 +12,44 @@ export interface RegisteredMeal {
   totals: Record<string, number>;
 }
 
+export interface MealNutrientSnapshot {
+  code: string;
+  name: string;
+  unit: string;
+  amount: number;
+}
+
+export interface MealItemSnapshot {
+  id: string;
+  foodId: string | null;
+  foodName: string;
+  brand: string | null;
+  preparationState: string | null;
+  foodServingId: string | null;
+  measurementMethod: string;
+  confidenceLevel: string | null;
+  quantity: number;
+  baseQuantity: number;
+  unit: string;
+  baseUnit: string;
+  nutrients: MealNutrientSnapshot[];
+  totals: Record<string, number>;
+}
+
 export interface MealDetails extends RegisteredMeal {
   notes: string | null;
-  items: Array<{
-    foodId: string | null;
-    foodName: string;
-    foodServingId: string | null;
-    measurementMethod: string;
-    quantity: number;
-    unit: string;
-    totals: Record<string, number>;
-  }>;
+  householdId: string | null;
+  adultProfileId: string | null;
+  status: string;
+  source: string;
+  items: MealItemSnapshot[];
 }
 
 export interface RegisterMealInput extends Omit<MealFormValues, 'items'> {
   householdId: string;
   items: Array<{
     foodId: string;
+    servingId?: string;
     quantity: number;
     unit: string;
     measurementMethod: string;
@@ -37,8 +58,5 @@ export interface RegisterMealInput extends Omit<MealFormValues, 'items'> {
 
 export interface MealGateway {
   register(input: RegisterMealInput): Promise<RegisteredMeal>;
-}
-
-export interface MealDetailsGateway {
   getById(mealId: string): Promise<MealDetails>;
 }
