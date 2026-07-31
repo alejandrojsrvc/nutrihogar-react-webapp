@@ -10,6 +10,10 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;
@@ -95,7 +99,8 @@ p {
 
 .welcome-panel,
 .page-section {
-  width: 100%;
+  width: min(100%, 72rem);
+  margin-inline: auto;
 }
 
 .eyebrow {
@@ -208,7 +213,7 @@ a.button:active {
 
 .auth-form {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .form-field {
@@ -221,7 +226,9 @@ a.button:active {
   font-weight: var(--font-weight-semibold);
 }
 
-.form-field input {
+.form-field input,
+.form-field select,
+.form-field textarea {
   width: 100%;
   min-height: 3rem;
   padding: var(--space-3) var(--space-4);
@@ -231,14 +238,25 @@ a.button:active {
   background: var(--color-surface);
 }
 
-.form-field select {
-  width: 100%;
-  min-height: 3rem;
-  padding: var(--space-3) var(--space-4);
+.theme-control {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.theme-control select {
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   background: var(--color-surface);
+  cursor: pointer;
 }
 
 .form-field input[aria-invalid='true'] {
@@ -324,22 +342,10 @@ a.button:active {
 }
 
 .back-button {
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  gap: var(--space-2);
+  width: 2.75rem;
+  height: 2.75rem;
   margin-bottom: var(--space-5);
-  padding: var(--space-2) 0;
-  border: 0;
-  color: var(--color-text-secondary);
-  background: transparent;
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-}
-
-.back-button:hover {
-  color: var(--color-text-primary);
+  padding: 0;
 }
 
 .page-header h1,
@@ -388,14 +394,8 @@ a.button:active {
 }
 
 .form-field textarea {
-  width: 100%;
   min-height: 6rem;
   resize: vertical;
-  padding: var(--space-3) var(--space-4);
-  border: 0;
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
-  background: var(--color-surface);
   font: inherit;
 }
 
@@ -456,7 +456,7 @@ a.button:active {
 .nutrition-goal-form,
 .meal-form {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .meal-form__actions,
@@ -467,6 +467,14 @@ a.button:active {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+}
+
+.meal-form__actions {
+  flex-wrap: wrap;
+}
+
+.meal-form__actions > * {
+  flex: 1 1 100%;
 }
 
 .meal-items,
@@ -480,7 +488,8 @@ a.button:active {
 
 .meal-item,
 .food-selector__result {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
@@ -489,6 +498,37 @@ a.button:active {
   border: 0;
   text-align: left;
   background: transparent;
+}
+
+.meal-item > div:first-child {
+  min-width: 0;
+}
+
+.meal-item > div:first-child strong {
+  overflow-wrap: anywhere;
+}
+
+.meal-item > label {
+  display: grid;
+  min-width: 5rem;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.meal-item > label input {
+  width: 5rem;
+  min-height: 3rem;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+}
+
+.meal-item > button {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .meal-item div,
@@ -506,10 +546,14 @@ a.button:active {
 
 .food-selector {
   position: fixed;
-  z-index: 10;
+  z-index: 30;
   inset: 0;
-  overflow: auto;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--space-4);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
   background: var(--color-canvas);
 }
 
@@ -548,6 +592,8 @@ a.button:active {
 @media (min-width: 48rem) {
   .food-selector {
     inset: 5vh 10vw;
+    height: auto;
+    max-height: 90vh;
     padding: var(--space-8);
     border: 0;
     border-radius: var(--radius-lg);
@@ -555,6 +601,18 @@ a.button:active {
 
   .food-selector__filters {
     grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .meal-form__actions > * {
+    flex: 0 1 auto;
+  }
+
+  .meal-item {
+    display: flex;
+  }
+
+  .meal-item > button {
+    width: auto;
   }
 }
 
@@ -717,7 +775,7 @@ a.button:active {
   inset: 0;
   width: 100%;
   border: 0;
-  background: rgb(14 15 12 / 0.28);
+  background: var(--color-overlay);
 }
 
 .mobile-drawer {
@@ -892,7 +950,7 @@ a.button:active {
 .food-catalog-page,
 .food-detail-page,
 .food-form-page {
-  max-width: 58rem;
+  max-width: 72rem;
 }
 
 .food-catalog-actions {

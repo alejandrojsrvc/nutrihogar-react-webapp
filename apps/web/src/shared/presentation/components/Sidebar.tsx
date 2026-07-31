@@ -2,6 +2,7 @@ import { Apple, ClipboardList, House, LogOut, UserRound, UtensilsCrossed } from 
 import { NavLink } from 'react-router';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
+import { ThemeControl } from './ThemeControl';
 
 function NavigationLink({
   children,
@@ -40,6 +41,7 @@ export function Sidebar({
         <NavigationLink icon={<Apple size={18} aria-hidden="true" />} to="/app/alimentos">Alimentos</NavigationLink>
         <span className="sidebar__link sidebar__link--disabled" aria-disabled="true"><ClipboardList size={18} aria-hidden="true" /><span>Plan</span><small>Próximamente</small></span>
       </div>
+      <ThemeControl />
       <Button className="sidebar__logout" disabled={isSigningOut} onClick={onLogout} type="button" variant="tertiary">
         <LogOut size={17} aria-hidden="true" />
         {isSigningOut ? 'Cerrando...' : 'Cerrar sesion'}

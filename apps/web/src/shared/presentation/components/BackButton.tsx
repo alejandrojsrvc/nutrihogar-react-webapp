@@ -1,6 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
+import { IconButton } from './IconButton';
+
 export function BackButton({
   fallback = '/app',
   label = 'Atrás',
@@ -21,9 +23,13 @@ export function BackButton({
   }
 
   return (
-    <button className="back-button" onClick={handleBack} type="button">
-      <ArrowLeft size={18} aria-hidden="true" />
-      <span>{label}</span>
-    </button>
+    <IconButton
+      aria-label={label}
+      className="back-button"
+      onClick={handleBack}
+      type="button"
+    >
+      <ArrowLeft size={20} aria-hidden="true" />
+    </IconButton>
   );
 }
