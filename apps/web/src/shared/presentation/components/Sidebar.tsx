@@ -1,4 +1,4 @@
-import { Apple, ClipboardList, House, LogOut, UserRound, UtensilsCrossed } from 'lucide-react';
+import { Apple, ClipboardList, House, LogOut, Soup, UserRound, UtensilsCrossed } from 'lucide-react';
 import { NavLink } from 'react-router';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
@@ -33,12 +33,13 @@ export function Sidebar({
       <div className="sidebar__section">
         <p className="sidebar__label">Tu espacio</p>
         <NavigationLink icon={<House size={18} aria-hidden="true" />} to="/app">Inicio</NavigationLink>
-        <NavigationLink icon={<UtensilsCrossed size={18} aria-hidden="true" />} to="/app/comidas/nueva">Registrar comida</NavigationLink>
+        <NavLink className="sidebar__link sidebar__link--primary" to="/app/comidas/nueva"><UtensilsCrossed size={18} aria-hidden="true" /><span>Registrar comida</span></NavLink>
         <NavigationLink icon={<UserRound size={18} aria-hidden="true" />} to="/app/perfil">Perfil</NavigationLink>
       </div>
       <div className="sidebar__section">
         <p className="sidebar__label">Organizar</p>
         <NavigationLink icon={<Apple size={18} aria-hidden="true" />} to="/app/alimentos">Alimentos</NavigationLink>
+        <NavigationLink icon={<Soup size={18} aria-hidden="true" />} to="/app/recetas">Recetas</NavigationLink>
         <span className="sidebar__link sidebar__link--disabled" aria-disabled="true"><ClipboardList size={18} aria-hidden="true" /><span>Plan</span><small>Próximamente</small></span>
       </div>
       <ThemeControl />

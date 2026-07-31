@@ -24,6 +24,9 @@ import { RegisterMealUseCase } from '../../modules/meals/application/use-cases/R
 import { HttpMealGateway } from '../../modules/meals/infrastructure/http/HttpMealGateway';
 import { GetMealDetailsUseCase } from '../../modules/meals/application/use-cases/GetMealDetailsUseCase';
 import { GetDailyNutritionSummaryUseCase } from '../../modules/meals/application/use-cases/GetDailyNutritionSummaryUseCase';
+import { UpdateMealUseCase } from '../../modules/meals/application/use-cases/UpdateMealUseCase';
+import { CancelMealUseCase } from '../../modules/meals/application/use-cases/CancelMealUseCase';
+import { DuplicateMealUseCase } from '../../modules/meals/application/use-cases/DuplicateMealUseCase';
 import { HttpDailyNutritionSummaryGateway } from '../../modules/meals/infrastructure/http/HttpDailyNutritionSummaryGateway';
 import { AcceptHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/AcceptHouseholdInvitationUseCase';
 import { CreateHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/CreateHouseholdInvitationUseCase';
@@ -48,6 +51,11 @@ import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/
 import { LocalStorageAdultProfileDraftStorage } from '../../shared/infrastructure/storage/LocalStorageAdultProfileDraftStorage';
 import { LocalStorageHouseholdInvitationLinkGateway } from '../../shared/infrastructure/storage/LocalStorageHouseholdInvitationLinkGateway';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
+import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
+import { CreateRecipeUseCase } from '../../modules/recipes/application/use-cases/CreateRecipeUseCase';
+import { UpdateRecipeUseCase } from '../../modules/recipes/application/use-cases/UpdateRecipeUseCase';
+import { LoadRecipeUseCase } from '../../modules/recipes/application/use-cases/LoadRecipeUseCase';
+import { ListRecipesUseCase } from '../../modules/recipes/application/use-cases/ListRecipesUseCase';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -73,6 +81,7 @@ const foodCatalogGateway = new HttpFoodCatalogGateway(apiClient);
 const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
 const mealGateway = new HttpMealGateway(apiClient);
 const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(apiClient);
+const recipeGateway = new HttpRecipeGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -113,9 +122,16 @@ export const getCurrentNutritionGoalUseCase = new GetCurrentNutritionGoalUseCase
 );
 export const registerMealUseCase = new RegisterMealUseCase(mealGateway);
 export const getMealDetailsUseCase = new GetMealDetailsUseCase(mealGateway);
+export const updateMealUseCase = new UpdateMealUseCase(mealGateway);
+export const cancelMealUseCase = new CancelMealUseCase(mealGateway);
+export const duplicateMealUseCase = new DuplicateMealUseCase(mealGateway);
 export const getDailyNutritionSummaryUseCase = new GetDailyNutritionSummaryUseCase(
   dailyNutritionSummaryGateway,
 );
+export const createRecipeUseCase = new CreateRecipeUseCase(recipeGateway);
+export const updateRecipeUseCase = new UpdateRecipeUseCase(recipeGateway);
+export const loadRecipeUseCase = new LoadRecipeUseCase(recipeGateway);
+export const listRecipesUseCase = new ListRecipesUseCase(recipeGateway);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =

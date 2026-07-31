@@ -3,11 +3,15 @@ import {
   getDailyNutritionSummaryUseCase,
   getMealDetailsUseCase,
   registerMealUseCase,
+  updateMealUseCase,
+  cancelMealUseCase,
+  duplicateMealUseCase,
 } from '../../../../app/composition/dependencies';
-import type { RegisterMealInput } from '../../application/ports/MealGateway';
+import type { DuplicateMealInput, RegisterMealInput, UpdateMealInput } from '../../application/ports/MealGateway';
 
 export const mealQueryKeys = {
   all: ['meals'] as const,
+  detail: (mealId: string) => [...mealQueryKeys.all, 'detail', mealId] as const,
   dailySummary: (profileId: string, date: string) =>
     [...mealQueryKeys.all, 'daily-summary', profileId, date] as const,
 };
@@ -29,10 +33,43 @@ export function useDailyNutritionSummary(profileId: string | undefined, date: st
   });
 }
 
+export function useUpdateMeal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mealId, input }: { mealId: string; input: UpdateMealInput }) => updateMealUseCase.execute(mealId, input),
+    onSuccess: (meal) => {
+      queryClient.setQueryData(mealQueryKeys.detail(meal.id), meal);
+      void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
+    },
+  });
+}
+
+export function useCancelMeal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (mealId: string) => cancelMealUseCase.execute(mealId),
+    onSuccess: (_, mealId) => {
+      void queryClient.invalidateQueries({ queryKey: mealQueryKeys.detail(mealId) });
+      void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
+    },
+  });
+}
+
+export function useDuplicateMeal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mealId, input }: { mealId: string; input: DuplicateMealInput }) => duplicateMealUseCase.execute(mealId, input),
+    onSuccess: (meal) => {
+      queryClient.setQueryData(mealQueryKeys.detail(meal.id), meal);
+      void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
+    },
+  });
+}
+
 export function useMealDetails(mealId: string | undefined) {
   return useQuery({
     enabled: Boolean(mealId),
-    queryKey: mealId ? [...mealQueryKeys.all, 'detail', mealId] : mealQueryKeys.all,
+    queryKey: mealId ? mealQueryKeys.detail(mealId) : mealQueryKeys.all,
     queryFn: () => getMealDetailsUseCase.execute(mealId as string),
     retry: false,
   });

@@ -49,6 +49,25 @@ export interface paths {
         get: operations["FoodCatalogController_detail"];
         put?: never;
         post?: never;
+        /** Elimina lógicamente un alimento personalizado */
+        delete: operations["FoodCatalogController_remove"];
+        options?: never;
+        head?: never;
+        /** Edita un alimento personalizado del hogar */
+        patch: operations["FoodCatalogController_update"];
+        trace?: never;
+    };
+    "/api/households/{householdId}/foods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crea un alimento personalizado para un hogar */
+        post: operations["FoodCatalogController_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -229,6 +248,219 @@ export interface paths {
         patch: operations["AdultProfilesController_update"];
         trace?: never;
     };
+    "/api/adult-profiles/{profileId}/nutrition-goal-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Calcula y guarda una propuesta nutricional pendiente
+         * @description La propuesta es una estimación editable y no constituye una prescripción médica ni se activa automáticamente.
+         */
+        post: operations["NutritionGoalSuggestionsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition-goal-suggestions/{suggestionId}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma una propuesta nutricional */
+        post: operations["NutritionGoalSuggestionsController_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/nutrition-goal-suggestions/{suggestionId}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rechaza una propuesta nutricional */
+        post: operations["NutritionGoalSuggestionsController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{profileId}/nutrition-goals/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene la meta nutricional actual */
+        get: operations["NutritionGoalSuggestionsController_current"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{profileId}/nutrition-goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el historial de metas nutricionales */
+        get: operations["NutritionGoalSuggestionsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/meals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consulta las comidas del hogar */
+        get: operations["MealsController_list"];
+        put?: never;
+        /** Registra una comida manual con snapshots nutricionales */
+        post: operations["MealsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/meals/{mealId}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Duplica una comida recalculando sus snapshots */
+        post: operations["MealsController_duplicate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/meals/{mealId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle de una comida */
+        get: operations["MealsController_get"];
+        put?: never;
+        post?: never;
+        /** Cancela lógicamente una comida */
+        delete: operations["MealsController_delete"];
+        options?: never;
+        head?: never;
+        /** Edita una comida y recalcula sus snapshots */
+        patch: operations["MealsController_update"];
+        trace?: never;
+    };
+    "/api/adult-profiles/{profileId}/daily-nutrition-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el resumen nutricional diario de un adulto */
+        get: operations["DailyNutritionSummaryController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/recipes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista las recetas activas del hogar */
+        get: operations["RecipesController_list"];
+        put?: never;
+        /** Crea una receta del hogar */
+        post: operations["RecipesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recipes/{recipeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle de una receta */
+        get: operations["RecipesController_get"];
+        put?: never;
+        post?: never;
+        /** Archiva una receta */
+        delete: operations["RecipesController_archive"];
+        options?: never;
+        head?: never;
+        /** Edita una receta */
+        patch: operations["RecipesController_update"];
+        trace?: never;
+    };
+    "/api/recipes/{recipeId}/nutrition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Calcula los nutrientes estimados de una receta */
+        get: operations["RecipesController_nutrition"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -329,6 +561,74 @@ export interface components {
             nutrients: components["schemas"]["FoodNutrientResponseDto"][];
             servings: components["schemas"]["FoodServingResponseDto"][];
             aliases: string[];
+        };
+        FoodNutrientRequestDto: {
+            /** Format: uuid */
+            nutrientDefinitionId: string;
+            /** @example 25.4 */
+            amount: number;
+        };
+        FoodServingRequestDto: {
+            /** @example 1 rebanada */
+            name: string;
+            /** @example 1 */
+            quantity: number;
+            /** @example unidad */
+            unit: string;
+            /** @example 30 */
+            equivalentGrams?: Record<string, never>;
+            /** @example 250 */
+            equivalentMilliliters?: Record<string, never>;
+        };
+        CreateCustomFoodRequestDto: {
+            /** @example Pan casero */
+            name: string;
+            /** @example Receta familiar */
+            brand?: Record<string, never>;
+            /** @example Pan integral preparado en casa. */
+            description?: Record<string, never>;
+            /** Format: uuid */
+            categoryId: string;
+            /** @enum {string} */
+            preparationState: "RAW" | "COOKED" | "READY_TO_EAT" | "NOT_APPLICABLE";
+            /** @example 100 */
+            referenceQuantity: number;
+            /** @enum {string} */
+            referenceUnit: "GRAM" | "MILLILITER" | "UNIT";
+            /** @example USER */
+            source?: string;
+            /**
+             * @example USER_PROVIDED
+             * @enum {string}
+             */
+            confidenceLevel: "VERIFIED" | "HIGH" | "MEDIUM" | "LOW" | "USER_PROVIDED";
+            nutrients: components["schemas"]["FoodNutrientRequestDto"][];
+            servings?: components["schemas"]["FoodServingRequestDto"][];
+        };
+        UpdateCustomFoodRequestDto: {
+            /** @example Pan casero */
+            name?: string;
+            /** @example Receta familiar */
+            brand?: Record<string, never>;
+            /** @example Pan integral preparado en casa. */
+            description?: Record<string, never>;
+            /** Format: uuid */
+            categoryId?: string;
+            /** @enum {string} */
+            preparationState?: "RAW" | "COOKED" | "READY_TO_EAT" | "NOT_APPLICABLE";
+            /** @example 100 */
+            referenceQuantity?: number;
+            /** @enum {string} */
+            referenceUnit?: "GRAM" | "MILLILITER" | "UNIT";
+            /** @example USER */
+            source?: string;
+            /**
+             * @example USER_PROVIDED
+             * @enum {string}
+             */
+            confidenceLevel?: "VERIFIED" | "HIGH" | "MEDIUM" | "LOW" | "USER_PROVIDED";
+            nutrients?: components["schemas"]["FoodNutrientRequestDto"][];
+            servings?: components["schemas"]["FoodServingRequestDto"][];
         };
         CurrentUserResponseDto: {
             /** Format: uuid */
@@ -436,6 +736,8 @@ export interface components {
             birthDate: string;
             /** @enum {string} */
             biologicalSex: "MALE" | "FEMALE";
+            /** @example 80.5 */
+            weightKg?: Record<string, never>;
             /** @example 175.5 */
             heightCm: number;
             /** @enum {string} */
@@ -475,6 +777,8 @@ export interface components {
             age: number;
             /** @enum {string} */
             biologicalSex: "MALE" | "FEMALE";
+            /** @example 80.5 */
+            weightKg: Record<string, never> | null;
             /** @example 175.5 */
             heightCm: number;
             /** @enum {string} */
@@ -499,6 +803,8 @@ export interface components {
             birthDate?: string;
             /** @enum {string} */
             biologicalSex?: "MALE" | "FEMALE";
+            /** @example 80.5 */
+            weightKg?: Record<string, never>;
             /** @example 175.5 */
             heightCm?: number;
             /** @enum {string} */
@@ -508,6 +814,366 @@ export interface components {
             /** @example true */
             hasKitchenScale?: boolean;
             dietaryRestrictions?: components["schemas"]["DietaryRestrictionRequestDto"][];
+        };
+        NutritionGoalCalculationResponseDto: {
+            /** @example 1850 */
+            bmr: number;
+            /** @example 1.55 */
+            activityFactor: number;
+            /** @example 2868 */
+            tdee: number;
+        };
+        NutritionGoalValuesResponseDto: {
+            /** @example 2294 */
+            dailyCalories: number;
+            /** @example 170 */
+            proteinGrams: number;
+            /** @example 260 */
+            carbohydrateGrams: number;
+            /** @example 64 */
+            fatGrams: number;
+            /** @example 32 */
+            fiberGrams: number;
+        };
+        NutritionGoalSuggestionResponseDto: {
+            /** Format: uuid */
+            id: string;
+            calculation: components["schemas"]["NutritionGoalCalculationResponseDto"];
+            suggestion: components["schemas"]["NutritionGoalValuesResponseDto"];
+            /** @enum {string} */
+            status: "PENDING" | "CONFIRMED" | "REJECTED" | "EXPIRED";
+        };
+        ConfirmNutritionGoalSuggestionRequestDto: {
+            /** @example 2150 */
+            dailyCalories?: number;
+            /** @example 170 */
+            proteinGrams?: number;
+            /** @example 210 */
+            carbohydrateGrams?: number;
+            /** @example 70 */
+            fatGrams?: number;
+            /** @example 30 */
+            fiberGrams?: number;
+        };
+        NutritionGoalResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** Format: date-time */
+            validFrom: string;
+            /** Format: date-time */
+            validUntil?: Record<string, never> | null;
+            /** @example 2150 */
+            dailyCalories: number;
+            /** @example 170 */
+            proteinGrams: number;
+            /** @example 210 */
+            carbohydrateGrams: number;
+            /** @example 70 */
+            fatGrams: number;
+            /** @example 30 */
+            fiberGrams: number;
+            /** @example FAT_LOSS */
+            goalType: string;
+            /** @example MIFFLIN_ST_JEOR_V1 */
+            calculationMethod: string;
+            /** Format: uuid */
+            confirmedById: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        CreateMealItemRequestDto: {
+            /** Format: uuid */
+            foodId: string;
+            /** Format: uuid */
+            servingId?: string;
+            /** @example 220 */
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT" | "SERVING";
+            /** @enum {string} */
+            measurementMethod: "WEIGHED" | "SERVING" | "UNIT" | "APPROXIMATED";
+        };
+        CreateMealRequestDto: {
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @enum {string} */
+            mealType: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+            /**
+             * Format: date-time
+             * @example 2026-07-29T13:30:00-03:00
+             */
+            consumedAt: string;
+            notes?: Record<string, never> | null;
+            items: components["schemas"]["CreateMealItemRequestDto"][];
+        };
+        MealNutrientResponseDto: {
+            /** @example PROTEIN */
+            code: string;
+            /** @example Proteína */
+            name: string;
+            /** @example g */
+            unit: string;
+            /** @example 73.06 */
+            amount: number;
+        };
+        MealItemResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            foodId: Record<string, never> | null;
+            /** Format: uuid */
+            foodServingId: Record<string, never> | null;
+            /** @example Pollo cocido */
+            nameSnapshot: string;
+            /** @example Marca familiar */
+            brandSnapshot?: Record<string, never> | null;
+            /** @example COOKED */
+            preparationStateSnapshot: string;
+            /** @example 220 */
+            quantity: number;
+            /** @example GRAM */
+            unit: string;
+            /** @example 220 */
+            baseQuantity: number;
+            /** @example GRAM */
+            baseUnit: string;
+            /** @example WEIGHED */
+            measurementMethod: string;
+            /** @example VERIFIED */
+            confidenceLevel: string;
+            nutrients: components["schemas"]["MealNutrientResponseDto"][];
+        };
+        MealResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example LUNCH */
+            mealType: string;
+            /** Format: date-time */
+            consumedAt: string;
+            /** @example CONFIRMED */
+            status: string;
+            /** @example MANUAL */
+            source: string;
+            notes?: Record<string, never> | null;
+            /**
+             * @example {
+             *       "ENERGY_KCAL": 597,
+             *       "PROTEIN": 73.06
+             *     }
+             */
+            totals: Record<string, never>;
+            items: components["schemas"]["MealItemResponseDto"][];
+        };
+        DuplicateMealRequestDto: {
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @enum {string} */
+            mealType: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+            /** Format: date-time */
+            consumedAt: string;
+        };
+        MealListResponseDto: {
+            items: components["schemas"]["MealResponseDto"][];
+            /** @example 1 */
+            page: number;
+            /** @example 20 */
+            limit: number;
+            /** @example 4 */
+            total: number;
+        };
+        UpdateMealRequestDto: {
+            /** @enum {string} */
+            mealType?: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+            /** Format: date-time */
+            consumedAt?: string;
+            notes?: Record<string, never> | null;
+            items?: components["schemas"]["CreateMealItemRequestDto"][];
+        };
+        DailyNutritionValuesResponseDto: {
+            /** @example 2200 */
+            dailyCalories: number;
+            /** @example 170 */
+            proteinGrams: number;
+            /** @example 230 */
+            carbohydrateGrams: number;
+            /** @example 70 */
+            fatGrams: number;
+            /** @example 30 */
+            fiberGrams: number;
+        };
+        DailyNutritionMealResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example LUNCH */
+            mealType: string;
+            /** Format: date-time */
+            consumedAt: string;
+            totals: Record<string, never>;
+        };
+        DailyNutritionSummaryResponseDto: {
+            /** @example 2026-07-29 */
+            date: string;
+            /** Format: uuid */
+            profileId: string;
+            /** @example Alejandro */
+            profileName: string;
+            goal?: components["schemas"]["DailyNutritionValuesResponseDto"] | null;
+            consumed: components["schemas"]["DailyNutritionValuesResponseDto"];
+            remaining?: components["schemas"]["DailyNutritionValuesResponseDto"] | null;
+            meals: components["schemas"]["DailyNutritionMealResponseDto"][];
+        };
+        RecipeIngredientRequestDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example 600 */
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT" | "SERVING";
+            /** Format: uuid */
+            servingId?: Record<string, never>;
+            /** @example 1 */
+            position: number;
+            notes?: Record<string, never> | null;
+        };
+        RecipeInstructionRequestDto: {
+            /** Format: uuid */
+            id?: string;
+            /** @example 1 */
+            position: number;
+            /** @example Cocinar el pollo. */
+            description: string;
+        };
+        CreateRecipeRequestDto: {
+            /** @example Arroz con pollo */
+            name: string;
+            description?: Record<string, never> | null;
+            /** @example LUNCH */
+            category?: Record<string, never> | null;
+            /** @example 4 */
+            defaultServings: number;
+            /** @example 60 */
+            estimatedPreparationMinutes?: Record<string, never> | null;
+            tags?: string[];
+            ingredients: components["schemas"]["RecipeIngredientRequestDto"][];
+            instructions?: components["schemas"]["RecipeInstructionRequestDto"][];
+        };
+        RecipeIngredientResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example 600 */
+            quantity: number;
+            /** @example GRAM */
+            unit: string;
+            /** Format: uuid */
+            servingId?: Record<string, never> | null;
+            /** @example 1 */
+            position: number;
+            notes?: Record<string, never> | null;
+        };
+        RecipeInstructionResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example 1 */
+            position: number;
+            /** @example Cocinar el pollo. */
+            description: string;
+        };
+        RecipeResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: uuid */
+            createdById: string;
+            /** @example Arroz con pollo */
+            name: string;
+            description?: Record<string, never> | null;
+            category?: Record<string, never> | null;
+            /** @example 4 */
+            defaultServings: number;
+            /** @example 60 */
+            estimatedPreparationMinutes?: Record<string, never> | null;
+            tags: string[];
+            /** @example ACTIVE */
+            status: string;
+            ingredients: components["schemas"]["RecipeIngredientResponseDto"][];
+            instructions: components["schemas"]["RecipeInstructionResponseDto"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        RecipeListResponseDto: {
+            items: components["schemas"]["RecipeResponseDto"][];
+            /** @example 1 */
+            page: number;
+            /** @example 20 */
+            limit: number;
+            /** @example 3 */
+            total: number;
+        };
+        RecipeNutritionIngredientResponseDto: {
+            /** Format: uuid */
+            ingredientId: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example 600 */
+            baseQuantity: number;
+            /** @example GRAM */
+            baseUnit: string;
+            nutrients: {
+                [key: string]: number;
+            };
+        };
+        RecipeNutritionWarningResponseDto: {
+            /** Format: uuid */
+            ingredientId: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example NUTRIENTS_UNAVAILABLE */
+            code: string;
+            /** @example No nutritional data is available for this ingredient. */
+            message: string;
+        };
+        RecipeNutritionResponseDto: {
+            /** Format: uuid */
+            recipeId: string;
+            /** @example 4 */
+            servings: number;
+            ingredients: components["schemas"]["RecipeNutritionIngredientResponseDto"][];
+            totalNutrients: {
+                [key: string]: number;
+            };
+            perServingNutrients: {
+                [key: string]: number;
+            };
+            warnings: components["schemas"]["RecipeNutritionWarningResponseDto"][];
+        };
+        UpdateRecipeRequestDto: {
+            /** @example Arroz con pollo */
+            name?: string;
+            description?: Record<string, never> | null;
+            /** @example LUNCH */
+            category?: Record<string, never> | null;
+            /** @example 4 */
+            defaultServings?: number;
+            /** @example 60 */
+            estimatedPreparationMinutes?: Record<string, never> | null;
+            tags?: string[];
+            ingredients?: components["schemas"]["RecipeIngredientRequestDto"][];
+            instructions?: components["schemas"]["RecipeInstructionRequestDto"][];
         };
     };
     responses: never;
@@ -598,6 +1264,146 @@ export interface operations {
             };
             /** @description El alimento no existe o no es visible. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FoodCatalogController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                foodId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description El alimento fue eliminado lógicamente. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El alimento es global o pertenece a otro hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El alimento no existe o fue eliminado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FoodCatalogController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                foodId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomFoodRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoodDetailResponseDto"];
+                };
+            };
+            /** @description Los datos nutricionales son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El alimento es global o pertenece a otro hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El alimento no existe o fue eliminado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FoodCatalogController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCustomFoodRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoodDetailResponseDto"];
+                };
+            };
+            /** @description Los datos nutricionales son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no es integrante activo del hogar. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1188,6 +1994,881 @@ export interface operations {
                 content?: never;
             };
             /** @description El perfil no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalSuggestionsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalSuggestionResponseDto"];
+                };
+            };
+            /** @description El perfil está incompleto o no corresponde a un adulto válido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar del perfil. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El perfil no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalSuggestionsController_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                suggestionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmNutritionGoalSuggestionRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalResponseDto"];
+                };
+            };
+            /** @description Los valores nutricionales son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al perfil. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La propuesta no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La propuesta ya fue procesada o expiró. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalSuggestionsController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                suggestionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description La propuesta fue rechazada. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al perfil. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La propuesta no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La propuesta ya fue procesada o expiró. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalSuggestionsController_current: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalResponseDto"] | null;
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al perfil. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalSuggestionsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al perfil. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealsController_list: {
+        parameters: {
+            query?: {
+                adultProfileId?: string;
+                dateFrom?: string;
+                dateTo?: string;
+                mealType?: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+                includeCancelled?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealListResponseDto"];
+                };
+            };
+            /** @description Los filtros de consulta son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar o no es administrador. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMealRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealResponseDto"];
+                };
+            };
+            /** @description La comida o sus cantidades son inválidas. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El perfil o alimento no existe o no es visible. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealsController_duplicate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DuplicateMealRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealResponseDto"];
+                };
+            };
+            /** @description La fecha o los datos de duplicación son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la comida. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La comida, perfil o alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No se puede duplicar una comida cancelada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la comida. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La comida no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealsController_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description La comida fue cancelada. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede cancelar la comida. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La comida no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La comida ya estaba cancelada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMealRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealResponseDto"];
+                };
+            };
+            /** @description Los datos de la comida son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede editar la comida. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La comida o sus alimentos no existen. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La comida está cancelada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DailyNutritionSummaryController_get: {
+        parameters: {
+            query: {
+                date: string;
+            };
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyNutritionSummaryResponseDto"];
+                };
+            };
+            /** @description La fecha consultada es inválida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El perfil no es accesible para el usuario. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El perfil no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_list: {
+        parameters: {
+            query?: {
+                query?: string;
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipeListResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRecipeRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipeResponseDto"];
+                };
+            };
+            /** @description Los datos o ingredientes son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya existe una receta con ese nombre. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipeResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la receta. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description La receta fue archivada. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden archivar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta ya está archivada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRecipeRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipeResponseDto"];
+                };
+            };
+            /** @description Los datos o ingredientes son inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede editar la receta. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta o alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta está archivada o el nombre ya existe. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_nutrition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipeNutritionResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la receta. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta o un alimento no existe. */
             404: {
                 headers: {
                     [name: string]: unknown;
