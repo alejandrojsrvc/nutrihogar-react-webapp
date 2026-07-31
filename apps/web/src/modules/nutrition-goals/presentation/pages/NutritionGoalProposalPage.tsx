@@ -4,6 +4,7 @@ import { useAdultProfiles } from '../../../households/presentation/hooks/useAdul
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useNutritionGoalSuggestion } from '../hooks/useNutritionGoals';
 import { NutritionGoalValuesForm } from '../components/NutritionGoalValuesForm';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 
 export function NutritionGoalProposalPage() {
   const { profileId } = useParams();
@@ -26,8 +27,7 @@ export function NutritionGoalProposalPage() {
 
   return (
     <section className="page-section" aria-labelledby="proposal-title">
-      <p className="eyebrow">Propuesta nutricional</p>
-      <h1 id="proposal-title">Revisa tu estimación</h1>
+      <PageHeader eyebrow="Propuesta nutricional" title="Revisa tu estimación" titleId="proposal-title" />
       <NutritionGoalValuesForm
         profileId={profileId}
         suggestion={suggestion.data}

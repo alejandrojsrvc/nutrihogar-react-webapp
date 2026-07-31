@@ -1,5 +1,6 @@
 import { Link, Navigate, useLocation } from 'react-router';
 
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHealth } from '../../../../shared/presentation/hooks/useHealth';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -71,8 +72,7 @@ export function HomePage() {
 
   return (
     <section className="page-section" aria-labelledby="home-title">
-      <p className="eyebrow">Inicio</p>
-      <h1 id="home-title">Tu hogar empieza aqui</h1>
+      <PageHeader eyebrow="Inicio" title="Tu hogar empieza aqui" titleId="home-title" />
       {isProfileSavedNavigation(location.state) ? (
         <p className="profile-success" role="status">
           Perfil guardado correctamente.

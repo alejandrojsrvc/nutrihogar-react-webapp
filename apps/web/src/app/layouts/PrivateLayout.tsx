@@ -1,6 +1,8 @@
 import { NavLink, Outlet, useNavigate } from 'react-router';
+import { Apple, ClipboardList, House, LogOut, UtensilsCrossed } from 'lucide-react';
 
 import { useAuth } from '../../modules/auth/presentation/providers/useAuth';
+import { Button } from '../../shared/presentation/components/Button';
 
 export function PrivateLayout() {
   const navigate = useNavigate();
@@ -27,14 +29,15 @@ export function PrivateLayout() {
         </NavLink>
         <div className="app-header__actions">
           <span className="app-header__context">Area familiar</span>
-          <button
-            className="button button--secondary"
+          <Button
+            variant="tertiary"
             disabled={isSigningOut}
             onClick={() => void handleLogout()}
             type="button"
           >
+            <LogOut size={17} strokeWidth={2} aria-hidden="true" />
             {isSigningOut ? 'Cerrando...' : 'Cerrar sesion'}
-          </button>
+          </Button>
         </div>
       </header>
       {error ? (
@@ -46,9 +49,10 @@ export function PrivateLayout() {
         <Outlet />
       </main>
       <nav className="bottom-navigation" aria-label="Navegacion principal">
-        <NavLink to="/app">Inicio</NavLink>
-        <span aria-disabled="true">Plan</span>
-        <NavLink to="/app/alimentos">Alimentos</NavLink>
+        <NavLink to="/app"><House size={18} aria-hidden="true" /><span>Inicio</span></NavLink>
+        <NavLink to="/app/comidas/nueva"><UtensilsCrossed size={18} aria-hidden="true" /><span>Registrar</span></NavLink>
+        <span aria-disabled="true"><ClipboardList size={18} aria-hidden="true" /><span>Plan</span></span>
+        <NavLink to="/app/alimentos"><Apple size={18} aria-hidden="true" /><span>Alimentos</span></NavLink>
       </nav>
     </div>
   );

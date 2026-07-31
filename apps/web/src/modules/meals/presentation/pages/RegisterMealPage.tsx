@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import { calculateNutritionPreview, roundNutritionSummary } from '@nutrihogar/nutrition-engine';
 import { mealFormSchema, type MealFormValues } from '@nutrihogar/schemas';
 import type { NutritionSummary } from '@nutrihogar/domain';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
@@ -78,8 +79,7 @@ export function RegisterMealPage() {
 
   return (
     <section className="page-section meal-page" aria-labelledby="register-meal-title">
-      <p className="eyebrow">Registro de comida</p>
-      <h1 id="register-meal-title">Registra lo que comiste</h1>
+      <PageHeader eyebrow="Registro de comida" title="Registra lo que comiste" titleId="register-meal-title" />
       <form className="meal-form" onSubmit={form.handleSubmit(submit)}>
         <div className="form-field"><label htmlFor="meal-profile">Adulto</label><select id="meal-profile" {...form.register('profileId')}><option value="">Selecciona un adulto</option>{profiles.profiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select>{form.formState.errors.profileId ? <p className="form-field__error">{form.formState.errors.profileId.message}</p> : null}</div>
         <div className="form-field"><label htmlFor="meal-type">Tipo de comida</label><select id="meal-type" {...form.register('mealType')}>{Object.entries(mealTypeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
