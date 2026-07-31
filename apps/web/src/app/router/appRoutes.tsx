@@ -23,6 +23,8 @@ import { DailyNutritionSummaryPage } from '../../modules/meals/presentation/page
 import { MealDetailPage } from '../../modules/meals/presentation/pages/MealDetailPage';
 import { EditMealPage } from '../../modules/meals/presentation/pages/EditMealPage';
 import { DuplicateMealPage } from '../../modules/meals/presentation/pages/DuplicateMealPage';
+import { RecipeListPage } from '../../modules/recipes/presentation/pages/RecipeListPage';
+import { RecipeDetailPage } from '../../modules/recipes/presentation/pages/RecipeDetailPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -71,6 +73,8 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/comidas/:mealId/repetir', element: <DuplicateMealPage /> },
           { path: '/app/comidas/:mealId', element: <MealDetailPage /> },
           { path: '/app/resumen/:date', element: <DailyNutritionSummaryPage /> },
+          { path: '/app/recetas', element: <RecipeListPage /> },
+          { path: '/app/recetas/:recipeId', element: <RecipeDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,
