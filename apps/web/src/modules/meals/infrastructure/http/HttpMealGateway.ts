@@ -1,11 +1,12 @@
 import { ApiClientError, normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
-import type { MealDetails, MealGateway, RegisterMealInput, RegisteredMeal, UpdateMealInput } from '../../application/ports/MealGateway';
+import type { DuplicateMealInput, MealDetails, MealGateway, RegisterMealInput, RegisteredMeal, UpdateMealInput } from '../../application/ports/MealGateway';
 import { toMealDetails, toRegisteredMeal } from '../mappers/MealApiMapper';
 
 type ApiResult<T> = { data?: T; error?: unknown; response?: Response };
 
 interface MealApiClient {
   POST(path: string, options: { params: { path: { householdId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
+  POST(path: string, options: { params: { path: { mealId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
   GET(path: string, options: { params: { path: { mealId: string } } }): Promise<ApiResult<unknown>>;
   PATCH(path: string, options: { params: { path: { mealId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
   DELETE(path: string, options: { params: { path: { mealId: string } }}): Promise<ApiResult<unknown>>;
@@ -72,6 +73,24 @@ export class HttpMealGateway implements MealGateway {
         params: { path: { mealId } },
       });
       if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async duplicate(mealId: string, input: DuplicateMealInput): Promise<MealDetails> {
+    try {
+      const result = await (this.apiClient as unknown as MealApiClient).POST(`/api/meals/${mealId}/duplicate`, {
+        params: { path: { mealId } },
+        body: {
+          adultProfileId: input.adultProfileId,
+          consumedAt: input.consumedAt.toISOString(),
+          mealType: input.mealType,
+        },
+      });
+      if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
+      if (!result.data) throw new ApiClientError('unknown', 'La API no devolvio la comida duplicada.');
+      return toMealDetails(result.data);
     } catch (error) {
       throw normalizeApiError(error);
     }

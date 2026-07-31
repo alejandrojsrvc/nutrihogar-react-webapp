@@ -80,4 +80,16 @@ describe('HttpMealGateway', () => {
     expect(requests.map((request) => request.method)).toEqual(['PATCH', 'DELETE']);
     expect(await requests[0]?.clone().json()).toMatchObject({ items: [{ servingId: 'serving-1' }] });
   });
+
+  it('duplicates a meal with a new destination', async () => {
+    let request: Request | undefined;
+    const fetchImplementation: typeof globalThis.fetch = vi.fn(async (input, init) => {
+      request = new Request(input, init);
+      return new Response(JSON.stringify({ id: 'meal-2', consumedAt: '2026-08-01T13:00:00.000Z', mealType: 'LUNCH', totals: {}, items: [] }), { headers: { 'Content-Type': 'application/json' }, status: 201 });
+    });
+    const apiClient = createApiClient({ baseUrl: 'http://localhost:3000', fetch: fetchImplementation });
+    await new HttpMealGateway(apiClient).duplicate('meal-1', { adultProfileId: 'profile-1', consumedAt: new Date('2026-08-01T13:00:00.000Z'), mealType: 'LUNCH' });
+    expect(new URL(request?.url ?? '').pathname).toBe('/api/meals/meal-1/duplicate');
+    expect(await request?.clone().json()).toMatchObject({ adultProfileId: 'profile-1', mealType: 'LUNCH' });
+  });
 });

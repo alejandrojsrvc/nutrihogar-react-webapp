@@ -5,8 +5,9 @@ import {
   registerMealUseCase,
   updateMealUseCase,
   cancelMealUseCase,
+  duplicateMealUseCase,
 } from '../../../../app/composition/dependencies';
-import type { RegisterMealInput, UpdateMealInput } from '../../application/ports/MealGateway';
+import type { DuplicateMealInput, RegisterMealInput, UpdateMealInput } from '../../application/ports/MealGateway';
 
 export const mealQueryKeys = {
   all: ['meals'] as const,
@@ -49,6 +50,17 @@ export function useCancelMeal() {
     mutationFn: (mealId: string) => cancelMealUseCase.execute(mealId),
     onSuccess: (_, mealId) => {
       void queryClient.invalidateQueries({ queryKey: mealQueryKeys.detail(mealId) });
+      void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
+    },
+  });
+}
+
+export function useDuplicateMeal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mealId, input }: { mealId: string; input: DuplicateMealInput }) => duplicateMealUseCase.execute(mealId, input),
+    onSuccess: (meal) => {
+      queryClient.setQueryData(mealQueryKeys.detail(meal.id), meal);
       void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
     },
   });
