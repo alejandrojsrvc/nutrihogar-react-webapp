@@ -51,6 +51,11 @@ import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/
 import { LocalStorageAdultProfileDraftStorage } from '../../shared/infrastructure/storage/LocalStorageAdultProfileDraftStorage';
 import { LocalStorageHouseholdInvitationLinkGateway } from '../../shared/infrastructure/storage/LocalStorageHouseholdInvitationLinkGateway';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
+import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
+import { CreateRecipeUseCase } from '../../modules/recipes/application/use-cases/CreateRecipeUseCase';
+import { UpdateRecipeUseCase } from '../../modules/recipes/application/use-cases/UpdateRecipeUseCase';
+import { LoadRecipeUseCase } from '../../modules/recipes/application/use-cases/LoadRecipeUseCase';
+import { ListRecipesUseCase } from '../../modules/recipes/application/use-cases/ListRecipesUseCase';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -76,6 +81,7 @@ const foodCatalogGateway = new HttpFoodCatalogGateway(apiClient);
 const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
 const mealGateway = new HttpMealGateway(apiClient);
 const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(apiClient);
+const recipeGateway = new HttpRecipeGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -122,6 +128,10 @@ export const duplicateMealUseCase = new DuplicateMealUseCase(mealGateway);
 export const getDailyNutritionSummaryUseCase = new GetDailyNutritionSummaryUseCase(
   dailyNutritionSummaryGateway,
 );
+export const createRecipeUseCase = new CreateRecipeUseCase(recipeGateway);
+export const updateRecipeUseCase = new UpdateRecipeUseCase(recipeGateway);
+export const loadRecipeUseCase = new LoadRecipeUseCase(recipeGateway);
+export const listRecipesUseCase = new ListRecipesUseCase(recipeGateway);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =
