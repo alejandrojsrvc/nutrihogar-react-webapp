@@ -24,7 +24,7 @@ export class HttpNutritionGoalGateway implements NutritionGoalGateway {
   async generateSuggestion(profileId: string): Promise<NutritionGoalSuggestion> {
     try {
       const result = await this.client().POST(
-        '/api/adult-profiles/:profileId/nutrition-goal-suggestions',
+        `/api/adult-profiles/${profileId}/nutrition-goal-suggestions`,
         { params: { path: { profileId } } },
       );
       return toSuggestion(this.requireData(result, 'generar la propuesta'));
@@ -39,7 +39,7 @@ export class HttpNutritionGoalGateway implements NutritionGoalGateway {
   ): Promise<NutritionGoal> {
     try {
       const result = await this.client().POST(
-        '/api/nutrition-goal-suggestions/:suggestionId/confirm',
+        `/api/nutrition-goal-suggestions/${suggestionId}/confirm`,
         { params: { path: { suggestionId } }, body: values },
       );
       return toGoal(this.requireData(result, 'confirmar la meta'));
@@ -51,7 +51,7 @@ export class HttpNutritionGoalGateway implements NutritionGoalGateway {
   async getCurrent(profileId: string): Promise<NutritionGoal | null> {
     try {
       const result = await this.client().GET(
-        '/api/adult-profiles/:profileId/nutrition-goals/current',
+        `/api/adult-profiles/${profileId}/nutrition-goals/current`,
         { params: { path: { profileId } } },
       );
       if (result.error !== undefined) {
