@@ -4,16 +4,17 @@
   --color-primary-soft: #ddeee5;
   --color-primary-200: #bfddcc;
   --color-primary-800: #22553f;
-  --color-canvas: #f4f6f3;
+  --color-canvas: #ffffff;
   --color-surface: #ffffff;
   --color-surface-muted: #e8ebe6;
+  --color-surface-subtle: #f1f3f2;
   --color-surface-elevated: #ffffff;
   --color-text-primary: #1f2924;
   --color-text-secondary: #68736d;
   --color-text-disabled: #9aa39e;
   --color-text-inverse: #ffffff;
   --color-border: #dedcd4;
-  --color-border-strong: #c8c6be;
+  --color-border-strong: hsl(48, 48%, 61%);
   --color-focus-ring: #68a985;
   --color-success: #2f7d5a;
   --color-success-soft: #ddeee5;
@@ -41,7 +42,7 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-weight-bold: 600;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
