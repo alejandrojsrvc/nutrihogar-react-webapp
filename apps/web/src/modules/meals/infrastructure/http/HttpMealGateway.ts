@@ -12,7 +12,7 @@ export class HttpMealGateway implements MealGateway {
 
   async register(input: RegisterMealInput): Promise<RegisteredMeal> {
     try {
-      const result = await (this.apiClient as unknown as MealApiClient).POST('/api/households/:householdId/meals', {
+      const result = await (this.apiClient as unknown as MealApiClient).POST(`/api/households/${input.householdId}/meals`, {
         params: { path: { householdId: input.householdId } },
         body: {
           adultProfileId: input.profileId,
