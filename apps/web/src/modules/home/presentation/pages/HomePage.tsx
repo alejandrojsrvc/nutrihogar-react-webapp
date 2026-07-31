@@ -33,7 +33,7 @@ export function HomePage() {
 
   return (
     <section className="page-section home-page" aria-labelledby="home-title">
-      <PageHeader action={<Link className="button button--primary home-page__primary-action" to={profileId ? `/app/comidas/nueva?profileId=${profileId}&date=${date}` : '/app/perfil'}>{profileId ? 'Registrar comida' : 'Configurar perfil'}</Link>} eyebrow="Inicio" title="Tu hogar empieza aquí" titleId="home-title" />
+      <PageHeader action={<Link className="button button--primary home-page__primary-action" to={profileId ? `/app/comidas/nueva?profileId=${profileId}&date=${date}` : '/app/perfil'}>{profileId ? 'Registrar comida' : 'Configurar perfil'}</Link>} eyebrow="Inicio" title="Tu hogar empieza aqui" titleId="home-title" />
       {isSuccessNavigation(location.state) ? <p className="profile-success" role="status">{location.state.mealSaved ? 'Comida registrada correctamente.' : 'Perfil guardado correctamente.'}</p> : null}
       <div className="household-summary"><p className="household-summary__label">Hogar activo</p><h2>{activeHousehold.name}</h2><p>{activeHousehold.currency} · {activeHousehold.timezone}</p></div>
       {activeProfiles.length > 1 ? <div className="form-field home-page__profile-selector"><label htmlFor="home-profile">Consultar para</label><select id="home-profile" onChange={(event) => setSelectedProfileId(event.target.value)} value={profileId}>{activeProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select></div> : null}
