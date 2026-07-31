@@ -19,6 +19,7 @@ import type {
   NutrientDefinition,
 } from '../../application/ports/FoodCatalogGateway';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   useCreateCustomFood,
   useFoodCategories,
@@ -210,6 +211,7 @@ export function CustomFoodFormPage() {
 
   return (
     <section className="page-section food-form-page" aria-labelledby="custom-food-title">
+      <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
       <Link className="auth-link food-back-link" to="/app/alimentos">
         Volver al catalogo
       </Link>

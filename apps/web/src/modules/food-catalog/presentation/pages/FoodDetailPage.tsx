@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useDeleteCustomFood, useFoodDetail } from '../hooks/useFoodCatalog';
 import {
   formatAmount,
@@ -56,9 +57,7 @@ export function FoodDetailPage() {
 
   return (
     <section className="page-section food-detail-page" aria-labelledby="food-detail-title">
-      <Link className="auth-link food-back-link" to="/app/alimentos">
-        Volver al catalogo
-      </Link>
+      <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
       <p className="eyebrow">Detalle del alimento</p>
       <h1 id="food-detail-title">{food.name}</h1>
       {food.brand ? <p className="lead food-detail-brand">{food.brand}</p> : null}

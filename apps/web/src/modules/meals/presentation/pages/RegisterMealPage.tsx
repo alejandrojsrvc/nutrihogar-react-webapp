@@ -7,6 +7,7 @@ import { calculateNutritionPreview, roundNutritionSummary } from '@nutrihogar/nu
 import { mealFormSchema, type MealFormValues } from '@nutrihogar/schemas';
 import type { NutritionSummary } from '@nutrihogar/domain';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
@@ -79,6 +80,7 @@ export function RegisterMealPage() {
 
   return (
     <section className="page-section meal-page" aria-labelledby="register-meal-title">
+      <BackButton fallback="/app" />
       <PageHeader eyebrow="Registro de comida" title="Registra lo que comiste" titleId="register-meal-title" />
       <form className="meal-form" onSubmit={form.handleSubmit(submit)}>
         <div className="form-field"><label htmlFor="meal-profile">Adulto</label><select id="meal-profile" {...form.register('profileId')}><option value="">Selecciona un adulto</option>{profiles.profiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select>{form.formState.errors.profileId ? <p className="form-field__error">{form.formState.errors.profileId.message}</p> : null}</div>

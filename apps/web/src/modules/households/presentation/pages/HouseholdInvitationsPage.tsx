@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, Navigate } from 'react-router';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
 
 import type { HouseholdInvitation } from '../../application/ports/HouseholdInvitationGateway';
 import { useHouseholdInvitations } from '../hooks/useHouseholdInvitations';
@@ -106,6 +107,7 @@ export function HouseholdInvitationsPage() {
 
   return (
     <section className="page-section" aria-labelledby="invitations-title">
+      <BackButton fallback="/app" />
       <p className="eyebrow">{households.activeHousehold.name}</p>
       <h1 id="invitations-title">Invita a tu familia</h1>
       <p className="lead">

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   useCurrentNutritionGoal,
   useGenerateNutritionGoalSuggestion,
@@ -39,6 +40,7 @@ export function NutritionGoalPage() {
   if (currentGoal.data) {
     return (
       <section className="page-section" aria-labelledby="current-goal-title">
+        <BackButton fallback="/app" />
         <PageHeader eyebrow="Meta nutricional" title={`Meta activa de ${profile.name}`} titleId="current-goal-title" />
         <NutritionGoalValuesForm values={currentGoal.data} readOnly />
         <button className="button button--primary" onClick={() => generate.mutate(profileId, { onSuccess: () => navigate(`/app/perfiles/${profileId}/meta/propuesta`) })} type="button">
@@ -59,6 +61,7 @@ function GenerateGoal({ profileId, profileName }: { profileId: string; profileNa
 
   return (
     <section className="page-section" aria-labelledby="goal-start-title">
+      <BackButton fallback="/app" />
       <PageHeader eyebrow="Meta nutricional" title={`Configura la meta de ${profileName}`} titleId="goal-start-title" description="Usaremos los datos de tu perfil para preparar una estimación que podrás revisar antes de confirmarla." />
       <button
         className="button button--primary"
