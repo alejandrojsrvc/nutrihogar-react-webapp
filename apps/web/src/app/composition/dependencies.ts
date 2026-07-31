@@ -24,6 +24,8 @@ import { RegisterMealUseCase } from '../../modules/meals/application/use-cases/R
 import { HttpMealGateway } from '../../modules/meals/infrastructure/http/HttpMealGateway';
 import { GetMealDetailsUseCase } from '../../modules/meals/application/use-cases/GetMealDetailsUseCase';
 import { GetDailyNutritionSummaryUseCase } from '../../modules/meals/application/use-cases/GetDailyNutritionSummaryUseCase';
+import { UpdateMealUseCase } from '../../modules/meals/application/use-cases/UpdateMealUseCase';
+import { CancelMealUseCase } from '../../modules/meals/application/use-cases/CancelMealUseCase';
 import { HttpDailyNutritionSummaryGateway } from '../../modules/meals/infrastructure/http/HttpDailyNutritionSummaryGateway';
 import { AcceptHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/AcceptHouseholdInvitationUseCase';
 import { CreateHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/CreateHouseholdInvitationUseCase';
@@ -113,6 +115,8 @@ export const getCurrentNutritionGoalUseCase = new GetCurrentNutritionGoalUseCase
 );
 export const registerMealUseCase = new RegisterMealUseCase(mealGateway);
 export const getMealDetailsUseCase = new GetMealDetailsUseCase(mealGateway);
+export const updateMealUseCase = new UpdateMealUseCase(mealGateway);
+export const cancelMealUseCase = new CancelMealUseCase(mealGateway);
 export const getDailyNutritionSummaryUseCase = new GetDailyNutritionSummaryUseCase(
   dailyNutritionSummaryGateway,
 );

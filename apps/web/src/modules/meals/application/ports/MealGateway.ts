@@ -56,7 +56,11 @@ export interface RegisterMealInput extends Omit<MealFormValues, 'items'> {
   }>;
 }
 
+export type UpdateMealInput = Omit<RegisterMealInput, 'householdId' | 'profileId'>;
+
 export interface MealGateway {
   register(input: RegisterMealInput): Promise<RegisteredMeal>;
   getById(mealId: string): Promise<MealDetails>;
+  update(mealId: string, input: UpdateMealInput): Promise<MealDetails>;
+  cancel(mealId: string): Promise<void>;
 }

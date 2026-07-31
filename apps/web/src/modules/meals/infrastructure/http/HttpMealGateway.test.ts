@@ -60,4 +60,24 @@ describe('HttpMealGateway', () => {
     expect(meal.items[0]?.nutrients[0]?.amount).toBe(130);
     expect(meal.adultProfileId).toBe('profile-1');
   });
+
+  it('updates and cancels a meal through its id', async () => {
+    const requests: Request[] = [];
+    const fetchImplementation: typeof globalThis.fetch = vi.fn(async (input, init) => {
+      const request = new Request(input, init);
+      requests.push(request);
+      return new Response(request.method === 'PATCH' ? JSON.stringify({ id: 'meal-1', consumedAt: '2026-07-31T12:00:00.000Z', mealType: 'LUNCH', totals: {}, items: [] }) : null, {
+        headers: { 'Content-Type': 'application/json' },
+        status: request.method === 'PATCH' ? 200 : 204,
+      });
+    });
+    const apiClient = createApiClient({ baseUrl: 'http://localhost:3000', fetch: fetchImplementation });
+    const gateway = new HttpMealGateway(apiClient);
+
+    await gateway.update('meal-1', { consumedAt: new Date('2026-07-31T12:00:00.000Z'), items: [{ foodId: 'food-1', quantity: 100, unit: 'GRAM', measurementMethod: 'WEIGHED', servingId: 'serving-1' }], mealType: 'LUNCH', notes: '' });
+    await gateway.cancel('meal-1');
+
+    expect(requests.map((request) => request.method)).toEqual(['PATCH', 'DELETE']);
+    expect(await requests[0]?.clone().json()).toMatchObject({ items: [{ servingId: 'serving-1' }] });
+  });
 });

@@ -1,8 +1,8 @@
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
-import { useMealDetails } from '../hooks/useMeals';
+import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
 
 const mealTypeLabels: Record<string, string> = {
   BREAKFAST: 'Desayuno',
@@ -33,7 +33,9 @@ const methodLabels: Record<string, string> = {
 
 export function MealDetailPage() {
   const { mealId } = useParams();
+  const navigate = useNavigate();
   const query = useMealDetails(mealId);
+  const cancelMeal = useCancelMeal();
 
   if (query.isPending) return <p className="page-section" role="status">Cargando detalle...</p>;
   if (query.isError || !query.data) {
@@ -48,6 +50,10 @@ export function MealDetailPage() {
   }
 
   const meal = query.data;
+  function cancel() {
+    if (!mealId || !window.confirm('Cancelar esta comida hará que deje de contar en el resumen diario. ¿Quieres continuar?')) return;
+    cancelMeal.mutate(mealId, { onSuccess: () => navigate(`/app/resumen/${meal.consumedAt.slice(0, 10)}`, { state: { mealCancelled: true } }) });
+  }
   return (
     <section className="page-section meal-detail-page" aria-labelledby="meal-detail-title">
       <BackButton fallback="/app" />
@@ -103,7 +109,8 @@ export function MealDetailPage() {
       <div className="meal-detail-actions">
         <Link className="button button--primary" to={`/app/comidas/${meal.id}/editar`}>Editar comida</Link>
         <Link className="button button--secondary" to={`/app/comidas/${meal.id}/repetir`}>Repetir comida</Link>
-        <button className="button button--danger" disabled={meal.status !== 'CONFIRMED'} type="button">Cancelar comida</button>
+        <button className="button button--danger" disabled={meal.status !== 'CONFIRMED' || cancelMeal.isPending} onClick={cancel} type="button">{cancelMeal.isPending ? 'Cancelando...' : 'Cancelar comida'}</button>
+        {cancelMeal.isError ? <p role="alert">No se pudo cancelar la comida. Inténtalo nuevamente.</p> : null}
       </div>
     </section>
   );

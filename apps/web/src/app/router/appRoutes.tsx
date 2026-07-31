@@ -21,6 +21,7 @@ import { NutritionGoalProposalPage } from '../../modules/nutrition-goals/present
 import { RegisterMealPage } from '../../modules/meals/presentation/pages/RegisterMealPage';
 import { DailyNutritionSummaryPage } from '../../modules/meals/presentation/pages/DailyNutritionSummaryPage';
 import { MealDetailPage } from '../../modules/meals/presentation/pages/MealDetailPage';
+import { EditMealPage } from '../../modules/meals/presentation/pages/EditMealPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -65,6 +66,7 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/perfiles/:profileId/meta', element: <NutritionGoalPage /> },
           { path: '/app/perfiles/:profileId/meta/propuesta', element: <NutritionGoalProposalPage /> },
           { path: '/app/comidas/nueva', element: <RegisterMealPage /> },
+          { path: '/app/comidas/:mealId/editar', element: <EditMealPage /> },
           { path: '/app/comidas/:mealId', element: <MealDetailPage /> },
           { path: '/app/resumen/:date', element: <DailyNutritionSummaryPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },

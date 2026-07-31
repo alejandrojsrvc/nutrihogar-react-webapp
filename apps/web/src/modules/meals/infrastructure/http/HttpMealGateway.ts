@@ -1,5 +1,5 @@
 import { ApiClientError, normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
-import type { MealDetails, MealGateway, RegisterMealInput, RegisteredMeal } from '../../application/ports/MealGateway';
+import type { MealDetails, MealGateway, RegisterMealInput, RegisteredMeal, UpdateMealInput } from '../../application/ports/MealGateway';
 import { toMealDetails, toRegisteredMeal } from '../mappers/MealApiMapper';
 
 type ApiResult<T> = { data?: T; error?: unknown; response?: Response };
@@ -7,6 +7,8 @@ type ApiResult<T> = { data?: T; error?: unknown; response?: Response };
 interface MealApiClient {
   POST(path: string, options: { params: { path: { householdId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
   GET(path: string, options: { params: { path: { mealId: string } } }): Promise<ApiResult<unknown>>;
+  PATCH(path: string, options: { params: { path: { mealId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
+  DELETE(path: string, options: { params: { path: { mealId: string } }}): Promise<ApiResult<unknown>>;
 }
 
 export class HttpMealGateway implements MealGateway {
@@ -40,6 +42,36 @@ export class HttpMealGateway implements MealGateway {
       if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
       if (!result.data) throw new ApiClientError('unknown', 'La API no devolvio el detalle de la comida.');
       return toMealDetails(result.data);
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async update(mealId: string, input: UpdateMealInput): Promise<MealDetails> {
+    try {
+      const result = await (this.apiClient as unknown as MealApiClient).PATCH(`/api/meals/${mealId}`, {
+        params: { path: { mealId } },
+        body: {
+          consumedAt: input.consumedAt.toISOString(),
+          items: input.items,
+          mealType: input.mealType,
+          notes: input.notes || null,
+        },
+      });
+      if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
+      if (!result.data) throw new ApiClientError('unknown', 'La API no devolvio la comida actualizada.');
+      return toMealDetails(result.data);
+    } catch (error) {
+      throw normalizeApiError(error);
+    }
+  }
+
+  async cancel(mealId: string): Promise<void> {
+    try {
+      const result = await (this.apiClient as unknown as MealApiClient).DELETE(`/api/meals/${mealId}`, {
+        params: { path: { mealId } },
+      });
+      if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
     } catch (error) {
       throw normalizeApiError(error);
     }
