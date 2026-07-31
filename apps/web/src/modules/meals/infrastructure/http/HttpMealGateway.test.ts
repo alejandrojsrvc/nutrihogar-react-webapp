@@ -29,4 +29,24 @@ describe('HttpMealGateway', () => {
       '/api/households/household-123/meals',
     );
   });
+
+  it('loads a meal detail by id', async () => {
+    let request: Request | undefined;
+    const fetchImplementation: typeof globalThis.fetch = vi.fn(async (input, init) => {
+      request = new Request(input, init);
+      return new Response(JSON.stringify({
+        consumedAt: '2026-07-31T12:00:00.000Z',
+        id: 'meal-1',
+        items: [{ foodId: 'food-1', nameSnapshot: 'Arroz', quantity: 100, unit: 'GRAM' }],
+        mealType: 'LUNCH',
+        totals: { calories: 300 },
+      }), { headers: { 'Content-Type': 'application/json' }, status: 200 });
+    });
+    const apiClient = createApiClient({ baseUrl: 'http://localhost:3000', fetch: fetchImplementation });
+
+    const meal = await new HttpMealGateway(apiClient).getById('meal-1');
+
+    expect(new URL(request?.url ?? '').pathname).toBe('/api/meals/meal-1');
+    expect(meal.items[0]?.foodName).toBe('Arroz');
+  });
 });

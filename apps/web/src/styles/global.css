@@ -1710,3 +1710,186 @@ a.button:active {
     transition-duration: 0.01ms !important;
   }
 }
+
+.daily-summary-page {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.summary-filters {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 36rem;
+}
+
+.summary-status {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.daily-summary-heading,
+.section-heading,
+.nutrition-metric__heading,
+.daily-meal,
+.meal-detail-page > .button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.daily-summary-heading h2,
+.section-heading h2 {
+  margin-bottom: 0;
+}
+
+.daily-summary-heading__calories {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.daily-summary-heading__calories span {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+.nutrition-summary,
+.daily-meals,
+.meal-detail-summary,
+.meal-detail-items {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.nutrition-metric {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.nutrition-metric__heading {
+  font-size: var(--font-size-sm);
+}
+
+.nutrition-metric__heading strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.nutrition-metric__track {
+  height: 0.625rem;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+}
+
+.nutrition-metric__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+  transition: width var(--duration-normal);
+}
+
+.nutrition-metric__remaining {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.nutrition-metric--protein .nutrition-metric__track span { background: var(--color-protein); }
+.nutrition-metric--carbohydrates .nutrition-metric__track span { background: var(--color-carbohydrates); }
+.nutrition-metric--fat .nutrition-metric__track span { background: var(--color-fat); }
+.nutrition-metric--fiber .nutrition-metric__track span { background: var(--color-fiber); }
+
+.daily-meal-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.daily-meal {
+  min-height: 3.5rem;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+}
+
+.daily-meal:hover {
+  background: var(--color-surface-muted);
+}
+
+.daily-meal span {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.daily-meal small,
+.meal-detail-items span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.daily-meal__totals {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.daily-meal__totals small {
+  color: var(--color-primary);
+}
+
+.meal-detail-page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.meal-detail-page h2 {
+  margin-bottom: 0;
+}
+
+.meal-detail-items ul {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.meal-detail-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.meal-detail-notes {
+  margin: 0;
+  padding: var(--space-4);
+  border-left: 3px solid var(--color-primary);
+  color: var(--color-text-secondary);
+  background: var(--color-primary-soft);
+}
+
+@media (max-width: 30rem) {
+  .summary-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-summary-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .daily-summary-heading__calories {
+    text-align: left;
+  }
+}

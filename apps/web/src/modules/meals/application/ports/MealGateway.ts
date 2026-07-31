@@ -12,6 +12,19 @@ export interface RegisteredMeal {
   totals: Record<string, number>;
 }
 
+export interface MealDetails extends RegisteredMeal {
+  notes: string | null;
+  items: Array<{
+    foodId: string | null;
+    foodName: string;
+    foodServingId: string | null;
+    measurementMethod: string;
+    quantity: number;
+    unit: string;
+    totals: Record<string, number>;
+  }>;
+}
+
 export interface RegisterMealInput extends Omit<MealFormValues, 'items'> {
   householdId: string;
   items: Array<{
@@ -24,4 +37,8 @@ export interface RegisterMealInput extends Omit<MealFormValues, 'items'> {
 
 export interface MealGateway {
   register(input: RegisterMealInput): Promise<RegisteredMeal>;
+}
+
+export interface MealDetailsGateway {
+  getById(mealId: string): Promise<MealDetails>;
 }
