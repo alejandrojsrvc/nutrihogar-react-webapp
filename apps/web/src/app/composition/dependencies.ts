@@ -22,6 +22,9 @@ import {
 import { HttpNutritionGoalGateway } from '../../modules/nutrition-goals/infrastructure/http/HttpNutritionGoalGateway';
 import { RegisterMealUseCase } from '../../modules/meals/application/use-cases/RegisterMealUseCase';
 import { HttpMealGateway } from '../../modules/meals/infrastructure/http/HttpMealGateway';
+import { GetMealDetailsUseCase } from '../../modules/meals/application/use-cases/GetMealDetailsUseCase';
+import { GetDailyNutritionSummaryUseCase } from '../../modules/meals/application/use-cases/GetDailyNutritionSummaryUseCase';
+import { HttpDailyNutritionSummaryGateway } from '../../modules/meals/infrastructure/http/HttpDailyNutritionSummaryGateway';
 import { AcceptHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/AcceptHouseholdInvitationUseCase';
 import { CreateHouseholdInvitationUseCase } from '../../modules/households/application/use-cases/CreateHouseholdInvitationUseCase';
 import { CreateHouseholdUseCase } from '../../modules/households/application/use-cases/CreateHouseholdUseCase';
@@ -69,6 +72,7 @@ const healthGateway = new HttpHealthGateway(apiClient);
 const foodCatalogGateway = new HttpFoodCatalogGateway(apiClient);
 const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
 const mealGateway = new HttpMealGateway(apiClient);
+const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -108,6 +112,10 @@ export const getCurrentNutritionGoalUseCase = new GetCurrentNutritionGoalUseCase
   nutritionGoalGateway,
 );
 export const registerMealUseCase = new RegisterMealUseCase(mealGateway);
+export const getMealDetailsUseCase = new GetMealDetailsUseCase(mealGateway);
+export const getDailyNutritionSummaryUseCase = new GetDailyNutritionSummaryUseCase(
+  dailyNutritionSummaryGateway,
+);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =

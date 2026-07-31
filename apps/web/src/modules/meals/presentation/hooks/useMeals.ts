@@ -1,13 +1,39 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { registerMealUseCase } from '../../../../app/composition/dependencies';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  getDailyNutritionSummaryUseCase,
+  getMealDetailsUseCase,
+  registerMealUseCase,
+} from '../../../../app/composition/dependencies';
 import type { RegisterMealInput } from '../../application/ports/MealGateway';
 
-export const mealQueryKeys = { all: ['meals'] as const };
+export const mealQueryKeys = {
+  all: ['meals'] as const,
+  dailySummary: (profileId: string, date: string) =>
+    [...mealQueryKeys.all, 'daily-summary', profileId, date] as const,
+};
 
 export function useRegisterMeal() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: RegisterMealInput) => registerMealUseCase.execute(input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: mealQueryKeys.all }),
+  });
+}
+
+export function useDailyNutritionSummary(profileId: string | undefined, date: string) {
+  return useQuery({
+    enabled: Boolean(profileId && date),
+    queryKey: profileId ? mealQueryKeys.dailySummary(profileId, date) : mealQueryKeys.all,
+    queryFn: () => getDailyNutritionSummaryUseCase.execute(profileId as string, date),
+    retry: false,
+  });
+}
+
+export function useMealDetails(mealId: string | undefined) {
+  return useQuery({
+    enabled: Boolean(mealId),
+    queryKey: mealId ? [...mealQueryKeys.all, 'detail', mealId] : mealQueryKeys.all,
+    queryFn: () => getMealDetailsUseCase.execute(mealId as string),
+    retry: false,
   });
 }
