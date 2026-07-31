@@ -461,6 +461,211 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/recipes/{recipeId}/prepared-batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inicia una preparacion desde una receta */
+        post: operations["PreparedBatchesController_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene una preparacion */
+        get: operations["PreparedBatchesController_get"];
+        put?: never;
+        post?: never;
+        /** Cancela una preparacion */
+        delete: operations["PreparedBatchesController_cancel"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle operativo de una preparacion */
+        get: operations["PreparedBatchesController_getDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/ingredients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edita los ingredientes reales de una preparacion */
+        patch: operations["PreparedBatchesController_update"];
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/confirm-ingredients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma ingredientes y crea snapshots nutricionales */
+        post: operations["PreparedBatchesController_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finaliza una preparacion y calcula su densidad */
+        post: operations["PreparedBatchesController_finalize"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/served-portions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Asigna porciones de una preparacion a adultos */
+        post: operations["ServedPortionsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/served-portions/{portionId}/confirm-consumption": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma el consumo real de una porcion */
+        post: operations["ServedPortionsController_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/leftovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra un sobrante disponible de una preparacion */
+        post: operations["PreparedFoodLeftoversController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/prepared-leftovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consulta los sobrantes preparados de un hogar */
+        get: operations["PreparedFoodLeftoversController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-leftovers/{leftoverId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene un sobrante preparado */
+        get: operations["PreparedFoodLeftoversController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-leftovers/{leftoverId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualiza el estado de un sobrante preparado */
+        patch: operations["PreparedFoodLeftoversController_changeStatus"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1174,6 +1379,273 @@ export interface components {
             tags?: string[];
             ingredients?: components["schemas"]["RecipeIngredientRequestDto"][];
             instructions?: components["schemas"]["RecipeInstructionRequestDto"][];
+        };
+        StartPreparedBatchRequestDto: {
+            /** Format: date-time */
+            preparedAt?: string;
+        };
+        PreparedBatchIngredientResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            foodId: string;
+            /** Format: uuid */
+            servingId?: Record<string, never> | null;
+            /** @example 600 */
+            quantity: number;
+            /** @example GRAM */
+            unit: string;
+            /** @example 1 */
+            position: number;
+            notes?: Record<string, never> | null;
+            foodNameSnapshot?: Record<string, never> | null;
+            brandSnapshot?: Record<string, never> | null;
+            preparationStateSnapshot?: Record<string, never> | null;
+            confidenceLevel?: Record<string, never> | null;
+            baseQuantity?: Record<string, never> | null;
+            baseUnit?: Record<string, never> | null;
+            nutrients: {
+                [key: string]: number;
+            };
+        };
+        PreparedBatchWarningResponseDto: {
+            /** Format: uuid */
+            ingredientId: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example NUTRIENTS_UNAVAILABLE */
+            code: string;
+            /** @example No nutritional data is available for this ingredient. */
+            message: string;
+        };
+        PreparedBatchResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: uuid */
+            recipeId?: Record<string, never> | null;
+            /** @example Arroz con pollo */
+            recipeNameSnapshot: string;
+            /** Format: date-time */
+            preparedAt: string;
+            /** @enum {string} */
+            status: "DRAFT" | "INGREDIENTS_CONFIRMED" | "FINALIZED" | "CANCELLED";
+            ingredients: components["schemas"]["PreparedBatchIngredientResponseDto"][];
+            totalNutrients: {
+                [key: string]: number;
+            };
+            /** @example 1650 */
+            finalCookedWeight?: Record<string, never> | null;
+            nutrientsPerGram: {
+                [key: string]: number;
+            };
+            nutrientsPer100Grams: {
+                [key: string]: number;
+            };
+            warnings: components["schemas"]["PreparedBatchWarningResponseDto"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            finalizedAt?: Record<string, never> | null;
+            /** Format: date-time */
+            cancelledAt?: Record<string, never> | null;
+        };
+        PreparedBatchAvailabilityResponseDto: {
+            /** @example 1650 */
+            finalCookedWeight: number;
+            /** @example 900 */
+            servedWeight: number;
+            /** @example 500 */
+            storedLeftoverWeight: number;
+            /** @example 40 */
+            savedRemainderWeight: number;
+            /** @example 0 */
+            discardedWeight: number;
+            /** @example 250 */
+            availableWeight: number;
+        };
+        PreparedBatchPortionRemainderResponseDto: {
+            /** @example 40 */
+            weight: number;
+            /** @enum {string} */
+            disposition: "SAVED" | "DISCARDED" | "SHARED" | "CONSUMED_LATER";
+            /** Format: date-time */
+            createdAt: string;
+        };
+        PreparedBatchServedPortionResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+            /** Format: date-time */
+            servedAt: string;
+            /** @enum {string} */
+            status: "SERVED" | "CONSUMED" | "CANCELLED";
+            /** @example 480 */
+            consumedWeight?: Record<string, never> | null;
+            remainder?: components["schemas"]["PreparedBatchPortionRemainderResponseDto"] | null;
+            /** Format: uuid */
+            mealId?: Record<string, never> | null;
+            nutritionSnapshot: {
+                [key: string]: number;
+            };
+        };
+        PreparedBatchLeftoverDetailResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            preparedBatchId: string;
+            /** @example 500 */
+            availableWeight: number;
+            nutrientDensitySnapshot: {
+                [key: string]: number;
+            };
+            /** Format: date-time */
+            storedAt: string;
+            storageLocation?: Record<string, never> | null;
+            notes?: Record<string, never> | null;
+            /** @enum {string} */
+            status: "AVAILABLE" | "CONSUMED" | "DISCARDED" | "EXPIRED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        PreparedBatchDetailsResponseDto: {
+            batch: components["schemas"]["PreparedBatchResponseDto"];
+            availability?: components["schemas"]["PreparedBatchAvailabilityResponseDto"] | null;
+            servedPortions: components["schemas"]["PreparedBatchServedPortionResponseDto"][];
+            leftovers: components["schemas"]["PreparedBatchLeftoverDetailResponseDto"][];
+        };
+        PreparedBatchIngredientRequestDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example 600 */
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT" | "SERVING";
+            /** Format: uuid */
+            servingId?: Record<string, never> | null;
+            /** @example 1 */
+            position: number;
+            notes?: Record<string, never> | null;
+        };
+        UpdatePreparedBatchIngredientsRequestDto: {
+            ingredients: components["schemas"]["PreparedBatchIngredientRequestDto"][];
+        };
+        FinalizePreparedBatchRequestDto: {
+            /** @example 1650 */
+            finalCookedWeight: number;
+            /**
+             * @default GRAM
+             * @enum {string}
+             */
+            unit: "GRAM";
+        };
+        ServedPortionRequestDto: {
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+        };
+        ServePreparedBatchPortionsRequestDto: {
+            portions: components["schemas"]["ServedPortionRequestDto"][];
+            /** Format: date-time */
+            servedAt?: string;
+        };
+        ServedPortionResultResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+            estimatedNutrition: {
+                [key: string]: number;
+            };
+        };
+        ServePreparedBatchPortionsResponseDto: {
+            /** Format: uuid */
+            preparedBatchId: string;
+            portions: components["schemas"]["ServedPortionResultResponseDto"][];
+            /** @example 750 */
+            availableWeight: number;
+        };
+        ConfirmServedPortionConsumptionRequestDto: {
+            /** @example 40 */
+            remainderWeight?: number;
+            /** @enum {string} */
+            remainderDisposition?: "SAVED" | "DISCARDED" | "SHARED" | "CONSUMED_LATER";
+            /**
+             * @example LUNCH
+             * @enum {string}
+             */
+            mealType: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+            /** Format: date-time */
+            consumedAt: string;
+        };
+        ConfirmServedPortionConsumptionResponseDto: {
+            /** Format: uuid */
+            portionId: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+            /** @example 480 */
+            consumedWeight: number;
+            /** @example 40 */
+            remainderWeight?: Record<string, never> | null;
+            /** @enum {string|null} */
+            remainderDisposition?: "SAVED" | "DISCARDED" | "SHARED" | "CONSUMED_LATER" | null;
+            /** Format: uuid */
+            mealId?: Record<string, never> | null;
+            nutrients: {
+                [key: string]: number;
+            };
+        };
+        RegisterPreparedFoodLeftoverRequestDto: {
+            /** @example 750 */
+            weight: number;
+            /** Format: date-time */
+            storedAt: string;
+            /** @example REFRIGERATOR */
+            storageLocation?: string;
+            /** @example Guardar para manana */
+            notes?: string;
+        };
+        PreparedFoodLeftoverResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            preparedBatchId: string;
+            /** Format: uuid */
+            householdId: string;
+            /** @example 750 */
+            availableWeight: number;
+            nutrientDensitySnapshot: {
+                [key: string]: number;
+            };
+            /** Format: date-time */
+            storedAt: string;
+            storageLocation?: Record<string, never> | null;
+            notes?: Record<string, never> | null;
+            /** @enum {string} */
+            status: "AVAILABLE" | "CONSUMED" | "DISCARDED" | "EXPIRED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdatePreparedFoodLeftoverStatusRequestDto: {
+            /** @enum {string} */
+            status: "CONSUMED" | "DISCARDED" | "EXPIRED";
         };
     };
     responses: never;
@@ -2870,6 +3342,693 @@ export interface operations {
             };
             /** @description La receta o un alimento no existe. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartPreparedBatchRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description La fecha o los datos son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta o un alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta esta archivada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description La preparacion fue cancelada. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede cancelar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no puede cancelarse. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_getDetails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchDetailsResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePreparedBatchIngredientsRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description Los ingredientes son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede editar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion o un alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion ya no esta en borrador. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description Los ingredientes o equivalencias son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede confirmar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion o un alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion ya fue confirmada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_finalize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinalizePreparedBatchRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description El peso cocido es invalido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede finalizar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no puede finalizarse. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ServedPortionsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServePreparedBatchPortionsRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServePreparedBatchPortionsResponseDto"];
+                };
+            };
+            /** @description Las porciones o la fecha son invalidas. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion o el perfil adulto no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no tiene disponibilidad suficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ServedPortionsController_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                portionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmServedPortionConsumptionRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfirmServedPortionConsumptionResponseDto"];
+                };
+            };
+            /** @description El resto, tipo de comida o fecha son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la porcion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La porcion o la preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La porcion ya fue confirmada o no esta disponible. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterPreparedFoodLeftoverRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"];
+                };
+            };
+            /** @description El peso o la fecha son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no tiene disponibilidad suficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_list: {
+        parameters: {
+            query?: {
+                status?: "AVAILABLE" | "CONSUMED" | "DISCARDED" | "EXPIRED";
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                leftoverId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al sobrante. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El sobrante no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_changeStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                leftoverId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePreparedFoodLeftoverStatusRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"];
+                };
+            };
+            /** @description El estado es invalido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al sobrante. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El sobrante no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El sobrante ya fue cerrado. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

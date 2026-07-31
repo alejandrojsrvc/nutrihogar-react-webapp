@@ -5,6 +5,7 @@ export interface RecipeIngredient {
   unit: string;
   servingId: string | null;
   position: number;
+  notes: string | null;
 }
 
 export interface RecipeInstruction {
@@ -28,4 +29,13 @@ export interface Recipe {
   instructions: RecipeInstruction[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface RecipeNutrition {
+  recipeId: string;
+  servings: number;
+  ingredients: Array<{ ingredientId: string; foodId: string; baseQuantity: number; baseUnit: string; nutrients: Record<string, number> }>;
+  totalNutrients: Record<string, number>;
+  perServingNutrients: Record<string, number>;
+  warnings: Array<{ ingredientId: string; foodId: string; code: string; message: string }>;
 }

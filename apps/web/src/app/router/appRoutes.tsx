@@ -25,6 +25,11 @@ import { EditMealPage } from '../../modules/meals/presentation/pages/EditMealPag
 import { DuplicateMealPage } from '../../modules/meals/presentation/pages/DuplicateMealPage';
 import { RecipeListPage } from '../../modules/recipes/presentation/pages/RecipeListPage';
 import { RecipeDetailPage } from '../../modules/recipes/presentation/pages/RecipeDetailPage';
+import { RecipeFormPage } from '../../modules/recipes/presentation/pages/RecipeFormPage';
+import { StartPreparedBatchPage } from '../../modules/recipes/presentation/pages/StartPreparedBatchPage';
+import { FinalizePreparedBatchPage } from '../../modules/recipes/presentation/pages/FinalizePreparedBatchPage';
+import { PreparedBatchDetailPage } from '../../modules/recipes/presentation/pages/PreparedBatchDetailPage';
+import { ServePreparedBatchPortionsPage } from '../../modules/recipes/presentation/pages/ServePreparedBatchPortionsPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -74,7 +79,13 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/comidas/:mealId', element: <MealDetailPage /> },
           { path: '/app/resumen/:date', element: <DailyNutritionSummaryPage /> },
           { path: '/app/recetas', element: <RecipeListPage /> },
+          { path: '/app/recetas/nueva', element: <RecipeFormPage /> },
+          { path: '/app/recetas/:recipeId/editar', element: <RecipeFormPage /> },
           { path: '/app/recetas/:recipeId', element: <RecipeDetailPage /> },
+          { path: '/app/preparaciones/nueva', element: <StartPreparedBatchPage /> },
+          { path: '/app/preparaciones/:batchId/finalizar', element: <FinalizePreparedBatchPage /> },
+          { path: '/app/preparaciones/:batchId/servir', element: <ServePreparedBatchPortionsPage /> },
+          { path: '/app/preparaciones/:batchId', element: <PreparedBatchDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

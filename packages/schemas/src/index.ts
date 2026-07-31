@@ -38,3 +38,35 @@ export const mealFormSchema = z.object({
 export type NutritionGoalValues = z.infer<typeof nutritionGoalValuesSchema>;
 export type MealItemFormValues = z.infer<typeof mealItemFormSchema>;
 export type MealFormValues = z.infer<typeof mealFormSchema>;
+
+const recipeIngredientFormSchema = z.object({
+  id: z.string().uuid().optional(),
+  foodId: z.string().uuid('Selecciona un alimento.'),
+  foodName: z.string().min(1),
+  preparationState: z.string().optional(),
+  quantity: z.coerce.number().positive('La cantidad debe ser mayor que cero.').refine((value) => (value.toString().split('.')[1]?.length ?? 0) <= 6, 'Usa hasta seis decimales.'),
+  unit: measurementUnitSchema,
+  servingId: z.string().uuid().nullable().optional(),
+  notes: z.string().max(500, 'La nota no puede superar 500 caracteres.').optional(),
+});
+
+export const recipeFormSchema = z.object({
+  name: z.string().trim().min(1, 'Escribe un nombre.').max(150),
+  description: z.string().max(2000).optional(),
+  category: z.string().max(50).optional(),
+  defaultServings: z.coerce.number().int().min(1).max(1000),
+  estimatedPreparationMinutes: z.coerce.number().int().positive().nullable().optional(),
+  ingredients: z.array(recipeIngredientFormSchema).min(1, 'Agrega al menos un ingrediente.'),
+  instructions: z.array(z.object({ id: z.string().uuid().optional(), description: z.string().trim().min(1, 'Escribe el paso.').max(2000) })),
+}).superRefine((value, context) => {
+  const keys = new Set<string>();
+  value.ingredients.forEach((ingredient, index) => {
+    if (ingredient.unit === 'SERVING' && !ingredient.servingId) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Selecciona una porción.', path: ['ingredients', index, 'servingId'] });
+    if (ingredient.unit !== 'SERVING' && ingredient.servingId) context.addIssue({ code: z.ZodIssueCode.custom, message: 'La porción solo aplica a esta unidad.', path: ['ingredients', index, 'servingId'] });
+    const key = `${ingredient.foodId}:${ingredient.unit}:${ingredient.servingId ?? ''}`;
+    if (keys.has(key)) context.addIssue({ code: z.ZodIssueCode.custom, message: 'No repitas el mismo alimento con la misma unidad.', path: ['ingredients', index, 'foodId'] });
+    keys.add(key);
+  });
+});
+
+export type RecipeFormValues = z.infer<typeof recipeFormSchema>;
