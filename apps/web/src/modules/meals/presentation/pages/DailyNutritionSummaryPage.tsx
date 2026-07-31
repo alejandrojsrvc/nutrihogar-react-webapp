@@ -105,8 +105,8 @@ function SummaryContent({ summary }: { summary: NonNullable<ReturnType<typeof us
       ) : null}
       <section className="nutrition-summary" aria-labelledby="nutrition-summary-title">
         <div className="section-heading"><div><p className="eyebrow">Balance nutricional</p><h2 id="nutrition-summary-title">Consumido frente al objetivo</h2></div></div>
-        <NutritionMetric label="Calorías" color="calories" consumed={summary.consumed.calories} goal={summary.goal?.calories} remaining={summary.remaining.calories} unit="kcal" />
-        {nutrients.map((nutrient) => <NutritionMetric key={nutrient.key} label={nutrient.label} color={nutrient.color} consumed={summary.consumed[nutrient.key]} goal={summary.goal?.[nutrient.key]} remaining={summary.remaining[nutrient.key]} unit="g" />)}
+        <NutritionMetric label="Calorías" color="calories" consumed={summary.consumed.calories} goal={summary.goal?.calories} remaining={summary.remaining?.calories ?? 0} unit="kcal" />
+        {nutrients.map((nutrient) => <NutritionMetric key={nutrient.key} label={nutrient.label} color={nutrient.color} consumed={summary.consumed[nutrient.key]} goal={summary.goal?.[nutrient.key]} remaining={summary.remaining?.[nutrient.key] ?? 0} unit="g" />)}
       </section>
       <section className="daily-meals" aria-labelledby="daily-meals-title">
         <div className="section-heading"><div><p className="eyebrow">Registro</p><h2 id="daily-meals-title">Comidas del día</h2></div></div>

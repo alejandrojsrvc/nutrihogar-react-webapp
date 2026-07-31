@@ -21,7 +21,7 @@ describe('DailyNutritionSummaryPage', () => {
       if (request.url.endsWith('/api/households')) return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar', timezone: 'UTC' }]);
       if (request.url.includes('daily-nutrition-summary')) return jsonResponse({
         consumed: { dailyCalories: 0, proteinGrams: 0, carbohydrateGrams: 0, fatGrams: 0, fiberGrams: 0 },
-        date: '2026-07-29', goal: null, meals: [], profile: { id: 'profile-2', name: 'Sofia' },
+        date: '2026-07-29', goal: null, meals: [], profileId: 'profile-2', profileName: 'Sofia',
         remaining: { dailyCalories: 0, proteinGrams: 0, carbohydrateGrams: 0, fatGrams: 0, fiberGrams: 0 },
       });
       if (request.url.includes('/adult-profiles')) return jsonResponse([profile('profile-1', 'Alejandro'), profile('profile-2', 'Sofia')]);

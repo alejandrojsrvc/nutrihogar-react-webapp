@@ -14,7 +14,7 @@ export interface DailyNutritionSummary {
   profile: { id: string; name: string };
   goal: DailyNutritionGoal | null;
   consumed: NutritionSummary;
-  remaining: NutritionSummary;
+  remaining: NutritionSummary | null;
   meals: DailyNutritionMeal[];
 }
 

@@ -52,7 +52,7 @@ function toRegisteredMeal(value: unknown): RegisteredMeal {
     consumedAt: String(source.consumedAt),
     id: String(source.id),
     mealType: String(source.mealType),
-    totals: Object.fromEntries(Object.entries(totals ?? {}).map(([key, item]) => [key, Number(item)])),
+    totals: toNutrientTotals(totals),
   };
 }
 
@@ -65,17 +65,27 @@ function toMealDetails(value: unknown): MealDetails {
       ? source.items.map((item) => {
           const current = item as Record<string, unknown>;
           return {
-            foodId: String(current.foodId),
-            foodName: String(current.foodName ?? current.name ?? 'Alimento'),
+            foodId: current.foodId == null ? null : String(current.foodId),
+            foodName: String(current.foodName ?? current.nameSnapshot ?? current.name ?? 'Alimento'),
+            foodServingId: current.foodServingId == null ? null : String(current.foodServingId),
             measurementMethod: String(current.measurementMethod ?? ''),
             quantity: Number(current.quantity ?? 0),
-            totals: Object.fromEntries(
-              Object.entries((current.totals ?? {}) as Record<string, unknown>).map(([key, amount]) => [key, Number(amount)]),
-            ),
+            totals: toNutrientTotals(current.totals as Record<string, unknown> | undefined),
             unit: String(current.unit ?? ''),
           };
         })
       : [],
     notes: source.notes == null ? null : String(source.notes),
+  };
+}
+
+function toNutrientTotals(value: Record<string, unknown> | undefined): Record<string, number> {
+  const source = value ?? {};
+  return {
+    calories: Number(source.calories ?? source.dailyCalories ?? source.ENERGY_KCAL ?? source.CALORIES ?? 0),
+    carbohydrateGrams: Number(source.carbohydrateGrams ?? source.CARBOHYDRATE ?? source.CARBS ?? 0),
+    fatGrams: Number(source.fatGrams ?? source.FAT ?? 0),
+    fiberGrams: Number(source.fiberGrams ?? source.FIBER ?? 0),
+    proteinGrams: Number(source.proteinGrams ?? source.PROTEIN ?? 0),
   };
 }

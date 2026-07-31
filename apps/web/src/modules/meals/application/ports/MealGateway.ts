@@ -15,8 +15,9 @@ export interface RegisteredMeal {
 export interface MealDetails extends RegisteredMeal {
   notes: string | null;
   items: Array<{
-    foodId: string;
+    foodId: string | null;
     foodName: string;
+    foodServingId: string | null;
     measurementMethod: string;
     quantity: number;
     unit: string;

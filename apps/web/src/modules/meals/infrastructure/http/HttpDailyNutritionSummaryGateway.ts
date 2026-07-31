@@ -34,14 +34,13 @@ export class HttpDailyNutritionSummaryGateway implements DailyNutritionSummaryGa
 
 function toDailyNutritionSummary(value: unknown): DailyNutritionSummary {
   const source = value as Record<string, unknown>;
-  const profile = (source.profile ?? {}) as Record<string, unknown>;
   return {
     consumed: toNutritionSummary(source.consumed),
     date: String(source.date),
     goal: source.goal ? toNutritionSummary(source.goal) : null,
     meals: Array.isArray(source.meals) ? source.meals.map(toMeal) : [],
-    profile: { id: String(profile.id), name: String(profile.name) },
-    remaining: toNutritionSummary(source.remaining),
+    profile: { id: String(source.profileId), name: String(source.profileName) },
+    remaining: source.remaining ? toNutritionSummary(source.remaining) : null,
   };
 }
 

@@ -13,7 +13,8 @@ describe('HttpDailyNutritionSummaryGateway', () => {
         date: '2026-07-29',
         goal: { dailyCalories: 2200, proteinGrams: 170 },
         meals: [],
-        profile: { id: 'profile-1', name: 'Alejandro' },
+        profileId: 'profile-1',
+        profileName: 'Alejandro',
         remaining: { dailyCalories: 750, proteinGrams: 60 },
       }), { headers: { 'Content-Type': 'application/json' }, status: 200 });
     });

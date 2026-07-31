@@ -37,7 +37,7 @@ describe('HttpMealGateway', () => {
       return new Response(JSON.stringify({
         consumedAt: '2026-07-31T12:00:00.000Z',
         id: 'meal-1',
-        items: [{ foodId: 'food-1', foodName: 'Arroz', quantity: 100, unit: 'GRAM' }],
+        items: [{ foodId: 'food-1', nameSnapshot: 'Arroz', quantity: 100, unit: 'GRAM' }],
         mealType: 'LUNCH',
         totals: { calories: 300 },
       }), { headers: { 'Content-Type': 'application/json' }, status: 200 });
