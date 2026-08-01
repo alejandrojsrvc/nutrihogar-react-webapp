@@ -7,6 +7,7 @@ import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute
 describe('InventoryListPage', () => {
   it('lists inventory and filters by type and search', async () => {
     const user = userEvent.setup();
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
       if (request.url.endsWith('/api/households')) return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar', timezone: 'UTC' }]);
@@ -31,6 +32,7 @@ describe('InventoryListPage', () => {
   });
 
   it('shows an empty state when the household has no inventory', async () => {
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
       if (request.url.endsWith('/api/households')) return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar', timezone: 'UTC' }]);
