@@ -10,7 +10,7 @@ import type {
   PendingInventoryOperation,
 } from '../ports/InventoryLocalRepository';
 import type { InventorySyncGateway } from '../ports/InventorySyncGateway';
-import type { InventoryItem } from '../../domain/Inventory';
+import type { InventoryFilters, InventoryItem } from '../../domain/Inventory';
 
 export class LoadInventoryUseCase {
   constructor(
@@ -19,14 +19,14 @@ export class LoadInventoryUseCase {
     private readonly connectivity: ConnectivityGateway,
   ) {}
 
-  async execute(householdId: string) {
+  async execute(householdId: string, filters: InventoryFilters = {}) {
     if (!this.connectivity.isOnline()) {
       const snapshot = await this.localRepository.getSnapshot(householdId);
       if (snapshot) return { items: snapshot, limit: snapshot.length, page: 1, total: snapshot.length };
       throw new Error('No hay un snapshot de inventario disponible sin conexión.');
     }
 
-    const result = await this.gateway.list(householdId);
+    const result = await this.gateway.list(householdId, filters);
     await this.localRepository.saveSnapshot(householdId, result.items);
     return result;
   }
@@ -129,6 +129,18 @@ export class SynchronizeInventoryUseCase {
     await this.localRepository.markOperationsSynchronized(result.processed);
     if (result.snapshot) await saveOptimisticSnapshot(this.localRepository, householdId, result.snapshot);
     return result;
+  }
+}
+
+export class GetInventorySyncStatusUseCase {
+  constructor(
+    private readonly localRepository: InventoryLocalRepository,
+    private readonly connectivity: ConnectivityGateway,
+  ) {}
+
+  async execute(householdId: string) {
+    const operations = await this.localRepository.listPendingOperations(householdId);
+    return { isOnline: this.connectivity.isOnline(), pendingCount: operations.length };
   }
 }
 

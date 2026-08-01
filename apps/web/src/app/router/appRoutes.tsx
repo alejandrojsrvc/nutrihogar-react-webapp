@@ -34,6 +34,7 @@ import { ConfirmServedPortionConsumptionPage } from '../../modules/recipes/prese
 import { CreatePreparedFoodLeftoverPage } from '../../modules/recipes/presentation/pages/CreatePreparedFoodLeftoverPage';
 import { PreparedFoodLeftoversPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoversPage';
 import { PreparedFoodLeftoverDetailPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoverDetailPage';
+import { InventoryListPage } from '../../modules/inventory/presentation/pages/InventoryListPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -94,6 +95,7 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/preparaciones/:batchId/sobrante', element: <CreatePreparedFoodLeftoverPage /> },
           { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
           { path: '/app/sobrantes/:leftoverId', element: <PreparedFoodLeftoverDetailPage /> },
+          { path: '/app/inventario', element: <InventoryListPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

@@ -48,16 +48,16 @@ El cliente OpenAPI generado ya contiene contratos para inventario, movimientos, 
 
 ### #42 - Listado Y Consulta
 
-- [ ] Crear la ruta `/app/inventario`.
-- [ ] Implementar búsqueda y filtros: todos, alimentos, preparados, bajo mínimo, agotados y próximos a vencer.
-- [ ] Mostrar cantidad, unidad, ubicación, vencimiento y estado.
-- [ ] Mostrar existencias de alimentos y preparaciones.
-- [ ] Mostrar snapshot local cuando no haya conexión.
-- [ ] Mostrar operaciones pendientes de sincronización.
-- [ ] Añadir acción primaria `Agregar existencia`.
-- [ ] Añadir acciones de ajustar y registrar consumo.
-- [ ] Cubrir estados de carga, vacío, error y offline.
-- [ ] Añadir tests de búsqueda, filtros y navegación.
+- [x] Crear la ruta `/app/inventario`.
+- [x] Implementar búsqueda y filtros: todos, alimentos, preparados, bajo mínimo, agotados y próximos a vencer.
+- [x] Mostrar cantidad, unidad, ubicación, vencimiento y estado.
+- [x] Mostrar existencias de alimentos y preparaciones.
+- [x] Mostrar snapshot local cuando no haya conexión.
+- [x] Mostrar operaciones pendientes de sincronización.
+- [x] Añadir acción primaria `Agregar existencia`.
+- [x] Añadir acciones de ajustar y registrar consumo.
+- [x] Cubrir estados de carga, vacío, error y offline.
+- [x] Añadir tests de búsqueda, filtros y navegación.
 
 ### #43 - Detalle E Historial
 
