@@ -60,8 +60,14 @@ import {
   ConsumeInventoryItemUseCase,
   CreateManualInventoryItemUseCase,
   GetInventorySyncStatusUseCase,
+  GetInventoryItemUseCase,
+  ArchiveInventoryItemUseCase,
+  ListInventoryMovementsUseCase,
+  ListPendingInventoryOperationsUseCase,
   LoadInventoryUseCase,
   SynchronizeInventoryUseCase,
+  UpdateInventoryItemUseCase,
+  WasteInventoryItemUseCase,
 } from '../../modules/inventory/application/use-cases/InventoryUseCases';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
@@ -206,6 +212,7 @@ export const loadInventoryUseCase = new LoadInventoryUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
+export const getInventoryItemUseCase = new GetInventoryItemUseCase(inventoryGateway);
 export const createManualInventoryItemUseCase = new CreateManualInventoryItemUseCase(
   inventoryGateway,
   connectivityGateway,
@@ -220,6 +227,11 @@ export const consumeInventoryItemUseCase = new ConsumeInventoryItemUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
+export const wasteInventoryItemUseCase = new WasteInventoryItemUseCase(inventoryGateway);
+export const updateInventoryItemUseCase = new UpdateInventoryItemUseCase(inventoryGateway);
+export const archiveInventoryItemUseCase = new ArchiveInventoryItemUseCase(inventoryGateway);
+export const listInventoryMovementsUseCase = new ListInventoryMovementsUseCase(inventoryGateway);
+export const listPendingInventoryOperationsUseCase = new ListPendingInventoryOperationsUseCase(inventoryLocalRepository);
 export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
   inventorySyncGateway,
   inventoryLocalRepository,

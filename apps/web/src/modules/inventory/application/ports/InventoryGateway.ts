@@ -24,6 +24,12 @@ export interface AdjustInventoryItemInput {
   occurredAt?: Date;
 }
 
+export interface UpdateInventoryItemInput {
+  minimumQuantity?: number | null;
+  location?: string | null;
+  expiresAt?: Date | null;
+}
+
 export interface ConsumeInventoryItemInput {
   quantity: number;
   unit: InventoryUnit;
@@ -37,6 +43,8 @@ export interface InventoryGateway {
   create(householdId: string, input: CreateManualInventoryItemInput): Promise<InventoryItem>;
   adjust(inventoryItemId: string, input: AdjustInventoryItemInput): Promise<InventoryItem>;
   consume(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
+  waste(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
+  update(inventoryItemId: string, input: UpdateInventoryItemInput): Promise<InventoryItem>;
   archive(inventoryItemId: string): Promise<void>;
   listMovements(inventoryItemId: string): Promise<InventoryMovement[]>;
 }

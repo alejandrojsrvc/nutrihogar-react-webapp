@@ -61,28 +61,28 @@ El cliente OpenAPI generado ya contiene contratos para inventario, movimientos, 
 
 ### #43 - Detalle E Historial
 
-- [ ] Crear la ruta `/app/inventario/:inventoryItemId`.
-- [ ] Mostrar nombre, tipo, cantidad, unidad, mínimo, ubicación, vencimiento, estado y origen.
-- [ ] Mostrar movimientos en orden descendente.
-- [ ] Diferenciar entradas y salidas con texto o iconos además del color.
-- [ ] Mostrar movimientos pendientes offline.
-- [ ] Mostrar trazabilidad hacia sobrantes o preparaciones.
-- [ ] Conectar acciones de ajuste, consumo, desperdicio, cambio de mínimo y archivado.
-- [ ] Cubrir estados agotado, archivado, error y sincronización.
-- [ ] Añadir tests de historial, acciones y navegación.
+- [x] Crear la ruta `/app/inventario/:inventoryItemId`.
+- [x] Mostrar nombre, tipo, cantidad, unidad, mínimo, ubicación, vencimiento, estado y origen.
+- [x] Mostrar movimientos en orden descendente.
+- [x] Diferenciar entradas y salidas con texto o iconos además del color.
+- [x] Mostrar movimientos pendientes offline.
+- [x] Mostrar trazabilidad hacia sobrantes o preparaciones.
+- [x] Conectar acciones de ajuste, consumo, desperdicio, cambio de mínimo y archivado.
+- [x] Cubrir estados agotado, archivado, error y sincronización.
+- [x] Añadir tests de historial, acciones y navegación.
 
 ### #44 - Crear Y Ajustar
 
-- [ ] Crear la ruta `/app/inventario/nuevo`.
-- [ ] Reutilizar el selector de alimentos.
-- [ ] Implementar cantidad, unidad, mínimo, ubicación, vencimiento y razón.
-- [ ] Crear la ruta `/app/inventario/:inventoryItemId/ajustar`.
-- [ ] Mostrar cantidad actual, nueva cantidad y diferencia.
-- [ ] Hacer obligatoria la razón del ajuste.
-- [ ] Explicar que el ajuste crea un movimiento y no edita el saldo directamente.
-- [ ] Permitir operaciones offline con estado pendiente.
-- [ ] Confirmar ajustes grandes.
-- [ ] Añadir tests de formularios, validaciones, modo offline y errores.
+- [x] Crear la ruta `/app/inventario/nuevo`.
+- [x] Reutilizar el selector de alimentos.
+- [x] Implementar cantidad, unidad, mínimo, ubicación, vencimiento y razón.
+- [x] Crear la ruta `/app/inventario/:inventoryItemId/ajustar`.
+- [x] Mostrar cantidad actual, nueva cantidad y diferencia.
+- [x] Hacer obligatoria la razón del ajuste.
+- [x] Explicar que el ajuste crea un movimiento y no edita el saldo directamente.
+- [x] Permitir operaciones offline con estado pendiente.
+- [x] Confirmar ajustes grandes.
+- [x] Añadir tests de formularios, validaciones, modo offline y errores.
 
 ## Contratos OpenAPI Relevantes
 

@@ -3,6 +3,7 @@ import type {
   ConsumeInventoryItemInput,
   CreateManualInventoryItemInput,
   InventoryGateway,
+  UpdateInventoryItemInput,
 } from '../ports/InventoryGateway';
 import type { ConnectivityGateway } from '../ports/ConnectivityGateway';
 import type {
@@ -29,6 +30,14 @@ export class LoadInventoryUseCase {
     const result = await this.gateway.list(householdId, filters);
     await this.localRepository.saveSnapshot(householdId, result.items);
     return result;
+  }
+}
+
+export class GetInventoryItemUseCase {
+  constructor(private readonly gateway: InventoryGateway) {}
+
+  execute(inventoryItemId: string) {
+    return this.gateway.getById(inventoryItemId);
   }
 }
 
@@ -110,6 +119,46 @@ export class ConsumeInventoryItemUseCase {
     const optimistic = optimisticItem(inventoryItem, -input.quantity);
     await saveOptimisticSnapshot(this.localRepository, householdId, optimistic);
     return optimistic;
+  }
+}
+
+export class WasteInventoryItemUseCase {
+  constructor(private readonly gateway: InventoryGateway) {}
+
+  execute(inventoryItemId: string, input: ConsumeInventoryItemInput) {
+    return this.gateway.waste(inventoryItemId, input);
+  }
+}
+
+export class UpdateInventoryItemUseCase {
+  constructor(private readonly gateway: InventoryGateway) {}
+
+  execute(inventoryItemId: string, input: UpdateInventoryItemInput) {
+    return this.gateway.update(inventoryItemId, input);
+  }
+}
+
+export class ArchiveInventoryItemUseCase {
+  constructor(private readonly gateway: InventoryGateway) {}
+
+  execute(inventoryItemId: string) {
+    return this.gateway.archive(inventoryItemId);
+  }
+}
+
+export class ListInventoryMovementsUseCase {
+  constructor(private readonly gateway: InventoryGateway) {}
+
+  execute(inventoryItemId: string) {
+    return this.gateway.listMovements(inventoryItemId);
+  }
+}
+
+export class ListPendingInventoryOperationsUseCase {
+  constructor(private readonly localRepository: InventoryLocalRepository) {}
+
+  execute(householdId: string) {
+    return this.localRepository.listPendingOperations(householdId);
   }
 }
 

@@ -35,6 +35,9 @@ import { CreatePreparedFoodLeftoverPage } from '../../modules/recipes/presentati
 import { PreparedFoodLeftoversPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoversPage';
 import { PreparedFoodLeftoverDetailPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoverDetailPage';
 import { InventoryListPage } from '../../modules/inventory/presentation/pages/InventoryListPage';
+import { InventoryDetailPage } from '../../modules/inventory/presentation/pages/InventoryDetailPage';
+import { InventoryCreatePage } from '../../modules/inventory/presentation/pages/InventoryCreatePage';
+import { InventoryAdjustPage } from '../../modules/inventory/presentation/pages/InventoryAdjustPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -96,6 +99,9 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
           { path: '/app/sobrantes/:leftoverId', element: <PreparedFoodLeftoverDetailPage /> },
           { path: '/app/inventario', element: <InventoryListPage /> },
+          { path: '/app/inventario/nuevo', element: <InventoryCreatePage /> },
+          { path: '/app/inventario/:inventoryItemId/ajustar', element: <InventoryAdjustPage /> },
+          { path: '/app/inventario/:inventoryItemId', element: <InventoryDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,
