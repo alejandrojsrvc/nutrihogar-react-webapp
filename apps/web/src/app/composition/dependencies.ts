@@ -59,6 +59,7 @@ import {
   AdjustInventoryItemUseCase,
   ConsumeInventoryItemUseCase,
   CreateManualInventoryItemUseCase,
+  GetInventorySyncStatusUseCase,
   LoadInventoryUseCase,
   SynchronizeInventoryUseCase,
 } from '../../modules/inventory/application/use-cases/InventoryUseCases';
@@ -224,6 +225,10 @@ export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
   inventoryLocalRepository,
   connectivityGateway,
   getInventoryDeviceId(),
+);
+export const getInventorySyncStatusUseCase = new GetInventorySyncStatusUseCase(
+  inventoryLocalRepository,
+  connectivityGateway,
 );
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
