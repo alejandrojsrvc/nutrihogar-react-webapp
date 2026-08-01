@@ -23,6 +23,7 @@ export function InventoryCreatePage() {
 
   if (households.isPending) return <p className="page-section" role="status">Cargando hogar...</p>;
   if (households.isError || !households.activeHousehold) return <p className="page-section" role="alert">No se pudo cargar el hogar activo.</p>;
+  const householdId = households.activeHousehold.id;
 
   const onFoodSelected = (selection: FoodSelection) => {
     const unit = selection.unit === 'SERVING' ? 'GRAM' : selection.unit;
@@ -36,7 +37,7 @@ export function InventoryCreatePage() {
   const onSubmit: SubmitHandler<CreateInventoryValues> = async (values) => {
     try {
       const item = await create.mutateAsync({
-        householdId: households.activeHousehold.id,
+        householdId,
         input: {
           expiresAt: parseDateInput(values.expiresAt),
           foodId: values.foodId,
@@ -48,6 +49,7 @@ export function InventoryCreatePage() {
           unit: values.unit,
         },
       });
+      if (!item) return;
       navigate(`/app/inventario/${item.id}`, { replace: true, state: { inventorySaved: true } });
     } catch {
       // El error de la mutación se muestra debajo del formulario.

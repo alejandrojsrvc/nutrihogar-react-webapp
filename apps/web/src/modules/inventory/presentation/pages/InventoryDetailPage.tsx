@@ -34,6 +34,7 @@ export function InventoryDetailPage() {
   if (households.isPending || item.isPending) return <p className="page-section" role="status">Cargando existencia...</p>;
   if (households.isError || !households.activeHousehold || item.isError || !item.data) return <section className="page-section" role="alert"><p>No se pudo cargar la existencia.</p><button className="button button--secondary" onClick={() => void item.refetch()} type="button">Reintentar</button></section>;
 
+  const householdId = households.activeHousehold.id;
   const value = item.data;
   const itemPending = pending.data?.filter((operation) => operation.inventoryItemId === value.id) ?? [];
   const sortedMovements = [...(movements.data ?? [])].sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
@@ -44,7 +45,7 @@ export function InventoryDetailPage() {
     if (!quantity || Number(quantity) <= 0) return;
     const input = { quantity: Number(quantity), reason: reason.trim() || undefined, unit: value.unit, occurredAt: new Date() };
     try {
-      if (kind === 'CONSUME') await consume.mutateAsync({ householdId: households.activeHousehold.id, input, item: value });
+      if (kind === 'CONSUME') await consume.mutateAsync({ householdId, input, item: value });
       else await waste.mutateAsync({ itemId: value.id, input });
       setAction(null); setQuantity(''); setReason('');
     } catch {
