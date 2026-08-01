@@ -12,7 +12,7 @@ import { toInventoryItem, toInventoryMovement } from '../mappers/InventoryApiMap
 type Result = { data?: unknown; error?: unknown; response?: Response };
 
 interface Client {
-  GET(path: string, options?: { params: { path: Record<string, string>; query?: Record<string, unknown> } }): Promise<Result>;
+  GET(path: string, options?: { params: { path: Record<string, string>; query?: InventoryFilters } }): Promise<Result>;
   POST(path: string, options: { params: { path: Record<string, string> }; body: unknown }): Promise<Result>;
   PATCH(path: string, options: { params: { path: Record<string, string> }; body: unknown }): Promise<Result>;
   DELETE(path: string, options: { params: { path: Record<string, string> } }): Promise<Result>;
