@@ -50,6 +50,18 @@ import { HttpHouseholdInvitationGateway } from '../../shared/infrastructure/http
 import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/storage/LocalStorageActiveHouseholdGateway';
 import { LocalStorageAdultProfileDraftStorage } from '../../shared/infrastructure/storage/LocalStorageAdultProfileDraftStorage';
 import { LocalStorageHouseholdInvitationLinkGateway } from '../../shared/infrastructure/storage/LocalStorageHouseholdInvitationLinkGateway';
+import { HttpInventoryGateway } from '../../modules/inventory/infrastructure/http/HttpInventoryGateway';
+import { HttpInventorySyncGateway } from '../../modules/inventory/infrastructure/http/HttpInventorySyncGateway';
+import { DexieInventoryLocalRepository } from '../../modules/inventory/infrastructure/storage/DexieInventoryLocalRepository';
+import { BrowserConnectivityGateway } from '../../modules/inventory/infrastructure/storage/BrowserConnectivityGateway';
+import { getInventoryDeviceId } from '../../modules/inventory/infrastructure/storage/InventoryDeviceId';
+import {
+  AdjustInventoryItemUseCase,
+  ConsumeInventoryItemUseCase,
+  CreateManualInventoryItemUseCase,
+  LoadInventoryUseCase,
+  SynchronizeInventoryUseCase,
+} from '../../modules/inventory/application/use-cases/InventoryUseCases';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
 import { CreateRecipeUseCase } from '../../modules/recipes/application/use-cases/CreateRecipeUseCase';
@@ -116,6 +128,10 @@ export const adultProfileDraftStorage =
   new LocalStorageAdultProfileDraftStorage();
 const householdInvitationLinkGateway =
   new LocalStorageHouseholdInvitationLinkGateway();
+const inventoryGateway = new HttpInventoryGateway(apiClient);
+const inventorySyncGateway = new HttpInventorySyncGateway(apiClient);
+const inventoryLocalRepository = new DexieInventoryLocalRepository();
+const connectivityGateway = new BrowserConnectivityGateway();
 
 export const syncCurrentUserUseCase = new SyncCurrentUserUseCase(
   currentUserGateway,
@@ -184,6 +200,31 @@ export const getHouseholdInvitationTokenUseCase =
   new GetHouseholdInvitationTokenUseCase(householdInvitationLinkGateway);
 export const rememberHouseholdInvitationTokenUseCase =
   new RememberHouseholdInvitationTokenUseCase(householdInvitationLinkGateway);
+export const loadInventoryUseCase = new LoadInventoryUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const createManualInventoryItemUseCase = new CreateManualInventoryItemUseCase(
+  inventoryGateway,
+  connectivityGateway,
+);
+export const adjustInventoryItemUseCase = new AdjustInventoryItemUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const consumeInventoryItemUseCase = new ConsumeInventoryItemUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
+  inventorySyncGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+  getInventoryDeviceId(),
+);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );
