@@ -5,6 +5,7 @@ import type {
   ConsumeInventoryItemInput,
   CreateManualInventoryItemInput,
   InventoryGateway,
+  UpdateInventoryItemInput,
 } from '../../application/ports/InventoryGateway';
 import type { InventoryFilters } from '../../domain/Inventory';
 import { toInventoryItem, toInventoryMovement } from '../mappers/InventoryApiMapper';
@@ -56,6 +57,20 @@ export class HttpInventoryGateway implements InventoryGateway {
     return toInventoryItem(await this.request(() => (this.apiClient as unknown as Client).POST(
       `/api/inventory/items/${inventoryItemId}/consumptions`,
       { body: { ...input, occurredAt: input.occurredAt?.toISOString() }, params: { path: { inventoryItemId } } },
+    )));
+  }
+
+  async waste(inventoryItemId: string, input: ConsumeInventoryItemInput) {
+    return toInventoryItem(await this.request(() => (this.apiClient as unknown as Client).POST(
+      `/api/inventory/items/${inventoryItemId}/waste`,
+      { body: { ...input, occurredAt: input.occurredAt?.toISOString() }, params: { path: { inventoryItemId } } },
+    )));
+  }
+
+  async update(inventoryItemId: string, input: UpdateInventoryItemInput) {
+    return toInventoryItem(await this.request(() => (this.apiClient as unknown as Client).PATCH(
+      `/api/inventory/items/${inventoryItemId}`,
+      { body: { ...input, expiresAt: input.expiresAt?.toISOString() }, params: { path: { inventoryItemId } } },
     )));
   }
 
