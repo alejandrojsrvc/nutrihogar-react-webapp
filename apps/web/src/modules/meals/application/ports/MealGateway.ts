@@ -36,12 +36,21 @@ export interface MealItemSnapshot {
   totals: Record<string, number>;
 }
 
+export interface MealPreparationReference {
+  preparedBatchId: string | null;
+  portionId: string | null;
+  recipeName: string | null;
+  servedWeight: number | null;
+  consumedWeight: number | null;
+}
+
 export interface MealDetails extends RegisteredMeal {
   notes: string | null;
   householdId: string | null;
   adultProfileId: string | null;
   status: string;
   source: string;
+  preparation: MealPreparationReference | null;
   items: MealItemSnapshot[];
 }
 

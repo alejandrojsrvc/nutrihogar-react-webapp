@@ -30,6 +30,10 @@ import { StartPreparedBatchPage } from '../../modules/recipes/presentation/pages
 import { FinalizePreparedBatchPage } from '../../modules/recipes/presentation/pages/FinalizePreparedBatchPage';
 import { PreparedBatchDetailPage } from '../../modules/recipes/presentation/pages/PreparedBatchDetailPage';
 import { ServePreparedBatchPortionsPage } from '../../modules/recipes/presentation/pages/ServePreparedBatchPortionsPage';
+import { ConfirmServedPortionConsumptionPage } from '../../modules/recipes/presentation/pages/ConfirmServedPortionConsumptionPage';
+import { CreatePreparedFoodLeftoverPage } from '../../modules/recipes/presentation/pages/CreatePreparedFoodLeftoverPage';
+import { PreparedFoodLeftoversPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoversPage';
+import { PreparedFoodLeftoverDetailPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoverDetailPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -86,6 +90,10 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/preparaciones/:batchId/finalizar', element: <FinalizePreparedBatchPage /> },
           { path: '/app/preparaciones/:batchId/servir', element: <ServePreparedBatchPortionsPage /> },
           { path: '/app/preparaciones/:batchId', element: <PreparedBatchDetailPage /> },
+          { path: '/app/porciones/:portionId/confirmar', element: <ConfirmServedPortionConsumptionPage /> },
+          { path: '/app/preparaciones/:batchId/sobrante', element: <CreatePreparedFoodLeftoverPage /> },
+          { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
+          { path: '/app/sobrantes/:leftoverId', element: <PreparedFoodLeftoverDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

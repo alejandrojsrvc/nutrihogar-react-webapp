@@ -60,6 +60,8 @@ import { ArchiveRecipeUseCase } from '../../modules/recipes/application/use-case
 import { LoadRecipeNutritionUseCase } from '../../modules/recipes/application/use-cases/LoadRecipeNutritionUseCase';
 import { HttpPreparedBatchGateway } from '../../modules/recipes/infrastructure/http/HttpPreparedBatchGateway';
 import { HttpServedPortionGateway } from '../../modules/recipes/infrastructure/http/HttpServedPortionGateway';
+import { HttpServedPortionConsumptionGateway } from '../../modules/recipes/infrastructure/http/HttpServedPortionConsumptionGateway';
+import { HttpPreparedFoodLeftoverGateway } from '../../modules/recipes/infrastructure/http/HttpPreparedFoodLeftoverGateway';
 import { LoadPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/LoadPreparedBatchUseCase';
 import { LoadPreparedBatchDetailsUseCase } from '../../modules/recipes/application/use-cases/LoadPreparedBatchDetailsUseCase';
 import { StartPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/StartPreparedBatchUseCase';
@@ -68,6 +70,13 @@ import { ConfirmPreparedBatchIngredientsUseCase } from '../../modules/recipes/ap
 import { FinalizePreparedBatchUseCase } from '../../modules/recipes/application/use-cases/FinalizePreparedBatchUseCase';
 import { CancelPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/CancelPreparedBatchUseCase';
 import { ServePreparedBatchPortionsUseCase } from '../../modules/recipes/application/use-cases/ServePreparedBatchPortionsUseCase';
+import { ConfirmServedPortionConsumptionUseCase } from '../../modules/recipes/application/use-cases/ConfirmServedPortionConsumptionUseCase';
+import {
+  CreatePreparedFoodLeftoverUseCase,
+  GetPreparedFoodLeftoverUseCase,
+  ListPreparedFoodLeftoversUseCase,
+  UpdatePreparedFoodLeftoverStatusUseCase,
+} from '../../modules/recipes/application/use-cases/PreparedFoodLeftoverUseCases';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -96,6 +105,8 @@ const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(apiCli
 const recipeGateway = new HttpRecipeGateway(apiClient);
 const preparedBatchGateway = new HttpPreparedBatchGateway(apiClient);
 const servedPortionGateway = new HttpServedPortionGateway(apiClient);
+const servedPortionConsumptionGateway = new HttpServedPortionConsumptionGateway(apiClient);
+const preparedFoodLeftoverGateway = new HttpPreparedFoodLeftoverGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -156,6 +167,11 @@ export const confirmPreparedBatchIngredientsUseCase = new ConfirmPreparedBatchIn
 export const finalizePreparedBatchUseCase = new FinalizePreparedBatchUseCase(preparedBatchGateway);
 export const cancelPreparedBatchUseCase = new CancelPreparedBatchUseCase(preparedBatchGateway);
 export const servePreparedBatchPortionsUseCase = new ServePreparedBatchPortionsUseCase(servedPortionGateway);
+export const confirmServedPortionConsumptionUseCase = new ConfirmServedPortionConsumptionUseCase(servedPortionConsumptionGateway);
+export const createPreparedFoodLeftoverUseCase = new CreatePreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
+export const listPreparedFoodLeftoversUseCase = new ListPreparedFoodLeftoversUseCase(preparedFoodLeftoverGateway);
+export const getPreparedFoodLeftoverUseCase = new GetPreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
+export const updatePreparedFoodLeftoverStatusUseCase = new UpdatePreparedFoodLeftoverStatusUseCase(preparedFoodLeftoverGateway);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =
