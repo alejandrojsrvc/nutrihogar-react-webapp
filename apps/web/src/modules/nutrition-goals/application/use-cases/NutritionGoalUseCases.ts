@@ -1,7 +1,7 @@
 import type {
   NutritionGoalGateway,
-  NutritionGoalValues,
 } from '../ports/NutritionGoalGateway';
+import type { NutritionGoalValues } from '@nutrihogar/schemas';
 
 export class GenerateNutritionGoalSuggestionUseCase {
   constructor(private readonly gateway: NutritionGoalGateway) {}

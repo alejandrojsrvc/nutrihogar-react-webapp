@@ -78,7 +78,7 @@ export function AdultProfilePage() {
     defaultValues: getDefaultFormValues(),
     resolver: zodResolver(adultProfileFormSchema),
   });
-  const watchedValues = useWatch({ control });
+  const watchedValues = useWatch<AdultProfileFormValues>({ control });
   const { append, fields, remove } = useFieldArray({
     control,
     keyName: 'formId',
@@ -701,11 +701,11 @@ function getNestedFieldError(
 ) {
   const error = errors[index];
 
-  if (typeof error !== 'object' || error === null || !(field in error)) {
+  if (typeof error !== 'object' || error === null) {
     return null;
   }
 
-  const fieldError = error[field];
+  const fieldError = (error as Record<string, unknown>)[field];
   if (
     typeof fieldError !== 'object' ||
     fieldError === null ||

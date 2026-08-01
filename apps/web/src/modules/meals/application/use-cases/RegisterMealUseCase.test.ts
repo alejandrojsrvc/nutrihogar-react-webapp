@@ -1,10 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { RegisterMealUseCase } from './RegisterMealUseCase';
+import type { MealGateway } from '../ports/MealGateway';
 
 describe('RegisterMealUseCase', () => {
   it('rejects an empty meal before calling the gateway', async () => {
-    const gateway = { register: vi.fn() };
+    const gateway: MealGateway = {
+      cancel: vi.fn(),
+      duplicate: vi.fn(),
+      getById: vi.fn(),
+      register: vi.fn(),
+      update: vi.fn(),
+    };
     const useCase = new RegisterMealUseCase(gateway);
 
     expect(() =>

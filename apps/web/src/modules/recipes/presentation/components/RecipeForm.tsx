@@ -1,4 +1,7 @@
 import { useState } from 'react';
+/* The form API exposes stable field helpers that React Compiler cannot memoize safely. */
+/* eslint-disable react-hooks/incompatible-library */
+/* eslint-disable react-refresh/only-export-components */
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router';

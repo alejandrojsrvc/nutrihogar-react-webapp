@@ -4,11 +4,16 @@ import {
   ConfirmNutritionGoalSuggestionUseCase,
   GenerateNutritionGoalSuggestionUseCase,
 } from './NutritionGoalUseCases';
+import type { NutritionGoalGateway } from '../ports/NutritionGoalGateway';
 
 describe('nutrition goal use cases', () => {
   it('generates a suggestion through the gateway', async () => {
     const suggestion = { id: 'suggestion-id' } as never;
-    const gateway = { generateSuggestion: vi.fn().mockResolvedValue(suggestion) };
+    const gateway: NutritionGoalGateway = {
+      confirmSuggestion: vi.fn(),
+      generateSuggestion: vi.fn().mockResolvedValue(suggestion),
+      getCurrent: vi.fn(),
+    };
 
     await expect(
       new GenerateNutritionGoalSuggestionUseCase(gateway).execute('profile-id'),
@@ -18,7 +23,11 @@ describe('nutrition goal use cases', () => {
 
   it('confirms edited values through the gateway', async () => {
     const goal = { id: 'goal-id' } as never;
-    const gateway = { confirmSuggestion: vi.fn().mockResolvedValue(goal) };
+    const gateway: NutritionGoalGateway = {
+      confirmSuggestion: vi.fn().mockResolvedValue(goal),
+      generateSuggestion: vi.fn(),
+      getCurrent: vi.fn(),
+    };
     const values = { dailyCalories: 2100 };
 
     await expect(

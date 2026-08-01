@@ -8,13 +8,8 @@ import {
   duplicateMealUseCase,
 } from '../../../../app/composition/dependencies';
 import type { DuplicateMealInput, RegisterMealInput, UpdateMealInput } from '../../application/ports/MealGateway';
+import { mealQueryKeys } from './mealQueryKeys';
 
-export const mealQueryKeys = {
-  all: ['meals'] as const,
-  detail: (mealId: string) => [...mealQueryKeys.all, 'detail', mealId] as const,
-  dailySummary: (profileId: string, date: string) =>
-    [...mealQueryKeys.all, 'daily-summary', profileId, date] as const,
-};
 
 export function useRegisterMeal() {
   const queryClient = useQueryClient();
