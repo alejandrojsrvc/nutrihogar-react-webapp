@@ -4,14 +4,17 @@ import { useState } from 'react';
 /* eslint-disable react-refresh/only-export-components */
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Link } from 'react-router';
 import { recipeFormSchema, type RecipeFormValues } from '@nutrihogar/schemas';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
 import type { FoodSelection } from '../../../food-catalog/application/ports/FoodCatalogGateway';
 import type { CreateRecipeInput } from '../../application/ports/RecipeGateway';
 
+type RecipeFormInput = z.input<typeof recipeFormSchema>;
+
 export function RecipeForm({ initialValues, isSubmitting, errorMessage, onSubmit, submitLabel, cancelTo }: { initialValues: RecipeFormValues; isSubmitting?: boolean; errorMessage?: string; onSubmit: (input: CreateRecipeInput) => void; submitLabel: string; cancelTo: string }) {
-  const form = useForm<RecipeFormValues>({ defaultValues: initialValues, resolver: zodResolver(recipeFormSchema) });
+  const form = useForm<RecipeFormInput, unknown, RecipeFormValues>({ defaultValues: initialValues, resolver: zodResolver(recipeFormSchema) });
   const ingredients = useFieldArray({ control: form.control, name: 'ingredients' });
   const instructions = useFieldArray({ control: form.control, name: 'instructions' });
   const [selectorOpen, setSelectorOpen] = useState(false);

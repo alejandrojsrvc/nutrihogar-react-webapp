@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { archiveRecipeUseCase, loadRecipeNutritionUseCase, loadRecipeUseCase, listRecipesUseCase, createRecipeUseCase, updateRecipeUseCase } from '../../../../app/composition/dependencies';
 import type { CreateRecipeInput, RecipeListCriteria, UpdateRecipeInput } from '../../application/ports/RecipeGateway';
+import type { Recipe, RecipeNutrition } from '../../domain/Recipe';
 
 export const recipeQueryKeys = {
   all: ['recipes'] as const,
@@ -19,7 +20,7 @@ export function useRecipes(householdId: string | undefined, criteria: RecipeList
 }
 
 export function useRecipeNutrition(recipeId: string | undefined) {
-  return useQuery({ enabled: Boolean(recipeId), queryKey: recipeId ? recipeQueryKeys.nutrition(recipeId) : recipeQueryKeys.all, queryFn: () => loadRecipeNutritionUseCase.execute(recipeId as string), retry: false });
+  return useQuery<RecipeNutrition>({ enabled: Boolean(recipeId), queryKey: recipeId ? recipeQueryKeys.nutrition(recipeId) : recipeQueryKeys.all, queryFn: () => loadRecipeNutritionUseCase.execute(recipeId as string), retry: false });
 }
 
 export function useCreateRecipe() {
@@ -39,9 +40,11 @@ export function useArchiveRecipe() {
 
 export function useRecipe(recipeId: string | undefined) {
   const queryClient = useQueryClient();
-  return useQuery({
+  return useQuery<Recipe>({
     enabled: Boolean(recipeId),
-    initialData: recipeId ? queryClient.getQueryData(recipeQueryKeys.detail(recipeId)) : undefined,
+    initialData: recipeId
+      ? queryClient.getQueryData<Recipe>(recipeQueryKeys.detail(recipeId))
+      : undefined,
     queryKey: recipeId ? recipeQueryKeys.detail(recipeId) : recipeQueryKeys.all,
     queryFn: () => loadRecipeUseCase.execute(recipeId as string),
     retry: false,

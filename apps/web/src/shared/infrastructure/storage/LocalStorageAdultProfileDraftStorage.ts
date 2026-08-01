@@ -97,6 +97,7 @@ function normalizeValues(value: Record<string, unknown>): AdultProfileDraftValue
       : [],
     hasKitchenScale: value.hasKitchenScale === true,
     heightCm: readString(value.heightCm),
+    weightKg: readString(value.weightKg),
     name: readString(value.name),
     primaryGoal: readString(value.primaryGoal),
   };

@@ -26,7 +26,7 @@ function createGateway(): HouseholdInvitationGateway {
   return {
     accept: vi.fn(async (token: string) => {
       void token;
-      return { ...invitation, status: 'ACCEPTED' };
+      return { ...invitation, status: 'ACCEPTED' as const };
     }),
     create: vi.fn(async () => invitation),
     list: vi.fn(async () => [invitation]),

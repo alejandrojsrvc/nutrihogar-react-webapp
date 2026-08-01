@@ -78,7 +78,7 @@ export function AdultProfilePage() {
     defaultValues: getDefaultFormValues(),
     resolver: zodResolver(adultProfileFormSchema),
   });
-  const watchedValues = useWatch<AdultProfileFormValues>({ control });
+  const watchedValues = useWatch({ control }) as AdultProfileFormValues;
   const { append, fields, remove } = useFieldArray({
     control,
     keyName: 'formId',
