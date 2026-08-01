@@ -1,5 +1,7 @@
 import type { NutritionGoalValues } from '@nutrihogar/schemas';
 
+export type { NutritionGoalValues } from '@nutrihogar/schemas';
+
 export interface NutritionGoalCalculation {
   bmr: number;
   activityFactor: number;

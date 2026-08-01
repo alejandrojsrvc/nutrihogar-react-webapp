@@ -1,10 +1,13 @@
-import { useForm } from 'react-hook-form';
+import { useForm, type UseFormRegister } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useNavigate } from 'react-router';
 
 import { nutritionGoalValuesSchema, type NutritionGoalValues } from '@nutrihogar/schemas';
 import { useConfirmNutritionGoalSuggestion } from '../hooks/useNutritionGoals';
 import type { NutritionGoalSuggestion } from '../../application/ports/NutritionGoalGateway';
+
+type NutritionGoalFormInput = z.input<typeof nutritionGoalValuesSchema>;
 
 export function NutritionGoalValuesForm({
   values,
@@ -19,7 +22,7 @@ export function NutritionGoalValuesForm({
 }) {
   const navigate = useNavigate();
   const confirm = useConfirmNutritionGoalSuggestion();
-  const form = useForm<NutritionGoalValues>({
+  const form = useForm<NutritionGoalFormInput, unknown, NutritionGoalValues>({
     defaultValues: values,
     resolver: zodResolver(nutritionGoalValuesSchema),
   });
@@ -58,7 +61,7 @@ export function NutritionGoalValuesForm({
   );
 }
 
-function NutritionValueInput({ name, label, unit, register, error }: { name: keyof NutritionGoalValues; label: string; unit: string; register: ReturnType<typeof useForm<NutritionGoalValues>>['register']; error?: string }) {
+function NutritionValueInput({ name, label, unit, register, error }: { name: keyof NutritionGoalValues; label: string; unit: string; register: UseFormRegister<NutritionGoalFormInput>; error?: string }) {
   return (
     <div className="form-field">
       <label htmlFor={`goal-${name}`}>{label} ({unit})</label>

@@ -111,7 +111,7 @@ function toAdultProfile(value: {
   birthDate: string;
    age: number;
    biologicalSex: AdultProfile['biologicalSex'];
-   weightKg?: number | null;
+   weightKg: unknown;
    heightCm: number;
   activityLevel: AdultProfile['activityLevel'];
   primaryGoal: AdultProfile['primaryGoal'];
@@ -141,7 +141,7 @@ function toAdultProfile(value: {
     })),
     hasKitchenScale: value.hasKitchenScale,
     heightCm: value.heightCm,
-    weightKg: value.weightKg ?? null,
+     weightKg: typeof value.weightKg === 'number' ? value.weightKg : null,
     householdId: value.householdId,
     id: value.id,
     name: value.name,
