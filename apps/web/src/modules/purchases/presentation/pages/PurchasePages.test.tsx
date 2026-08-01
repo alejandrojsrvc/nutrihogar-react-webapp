@@ -39,6 +39,8 @@ describe('Purchase pages', () => {
     });
 
     renderRoute('/app/compras/nueva', createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }));
+    await user.type(screen.getByLabelText('Comercio'), 'Mercado');
+    await user.type(screen.getByLabelText('Total'), '100');
     await user.click(await screen.findByRole('button', { name: 'Guardar borrador' }));
 
     expect(await screen.findByText('Agrega al menos un producto a la compra.')).toBeInTheDocument();
