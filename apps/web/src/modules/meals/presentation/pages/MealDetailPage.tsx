@@ -3,6 +3,7 @@ import { formatCalories, formatGrams } from '@nutrihogar/domain';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
+import { isPreparedMealSource } from '../../domain/MealOrigin';
 
 const mealTypeLabels: Record<string, string> = {
   BREAKFAST: 'Desayuno',
@@ -51,7 +52,7 @@ export function MealDetailPage() {
 
   const meal = query.data;
   function cancel() {
-    const warning = meal.preparation
+    const warning = isPreparedMealSource(meal.source) || meal.preparation
       ? 'Esta comida está vinculada a una porción de una preparación. Cancelarla no deshace el consumo de la preparación. ¿Quieres continuar?'
       : 'Cancelar esta comida hará que deje de contar en el resumen diario. ¿Quieres continuar?';
     if (!mealId || !window.confirm(warning)) return;
@@ -71,7 +72,7 @@ export function MealDetailPage() {
       ) : null}
       <dl className="meal-detail-meta">
         <div><dt>Integrante</dt><dd>{meal.adultProfileId ?? 'No disponible'}</dd></div>
-        <div><dt>Origen</dt><dd>{meal.preparation ? 'Preparación familiar' : meal.source === 'MANUAL' ? 'Registro manual' : meal.source}</dd></div>
+        <div><dt>Origen</dt><dd>{isPreparedMealSource(meal.source) || meal.preparation ? 'Preparación familiar' : meal.source === 'MANUAL' ? 'Registro manual' : meal.source}</dd></div>
         {meal.preparation?.recipeName ? <div><dt>Receta</dt><dd>{meal.preparation.recipeName}</dd></div> : null}
         {meal.preparation?.consumedWeight != null ? <div><dt>Peso consumido</dt><dd>{meal.preparation.consumedWeight} g · Pesado</dd></div> : null}
       </dl>

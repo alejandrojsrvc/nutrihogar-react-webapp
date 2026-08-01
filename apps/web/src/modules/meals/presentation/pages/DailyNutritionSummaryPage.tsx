@@ -11,6 +11,7 @@ import { PageHeader } from '../../../../shared/presentation/components/PageHeade
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useDailyNutritionSummary } from '../hooks/useMeals';
+import { isPreparedMealSource } from '../../domain/MealOrigin';
 
 const mealTypeLabels: Record<string, string> = {
   BREAKFAST: 'Desayuno',
@@ -110,7 +111,7 @@ function SummaryContent({ summary }: { summary: NonNullable<ReturnType<typeof us
       </section>
       <section className="daily-meals" aria-labelledby="daily-meals-title">
         <div className="section-heading"><div><p className="eyebrow">Registro</p><h2 id="daily-meals-title">Comidas del día</h2></div></div>
-       {summary.meals.length === 0 ? <EmptyState title="Todavía no hay comidas" description="Registra la primera comida de este día para verla aquí." /> : <div className="daily-meal-list">{summary.meals.map((meal) => <Link className="daily-meal" key={meal.id} to={`/app/comidas/${meal.id}`}><span><strong>{mealTypeLabels[meal.mealType] ?? meal.mealType}</strong><small>{formatTime(meal.consumedAt)}{meal.preparation ? ' · Preparación familiar' : ''}</small></span><span className="daily-meal__totals">{formatCalories(meal.totals.calories)}<small>Ver detalle</small></span></Link>)}</div>}
+       {summary.meals.length === 0 ? <EmptyState title="Todavía no hay comidas" description="Registra la primera comida de este día para verla aquí." /> : <div className="daily-meal-list">{summary.meals.map((meal) => <Link className="daily-meal" key={meal.id} to={`/app/comidas/${meal.id}`}><span><strong>{mealTypeLabels[meal.mealType] ?? meal.mealType}</strong><small>{formatTime(meal.consumedAt)}{isPreparedMealSource(meal.source) ? ' · Preparación familiar' : ''}</small></span><span className="daily-meal__totals">{formatCalories(meal.totals.calories)}<small>Ver detalle</small></span></Link>)}</div>}
       </section>
     </>
   );

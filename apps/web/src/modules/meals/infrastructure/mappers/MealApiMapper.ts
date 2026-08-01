@@ -5,6 +5,7 @@ import type {
   MealPreparationReference,
   RegisteredMeal,
 } from '../../application/ports/MealGateway';
+import { isPreparedMealSource } from '../../domain/MealOrigin';
 
 export function toRegisteredMeal(value: unknown): RegisteredMeal {
   const source = asRecord(value);
@@ -31,7 +32,7 @@ export function toMealDetails(value: unknown): MealDetails {
 }
 
 function toPreparationReference(source: Record<string, unknown>): MealPreparationReference | null {
-  if (source.source === 'MANUAL' && source.sourceReference == null && source.preparation == null) return null;
+  if (!isPreparedMealSource(toNullableString(source.source) ?? undefined) && source.sourceReference == null && source.preparation == null) return null;
   const reference = asRecord(source.sourceReference ?? source.preparation);
   if (Object.keys(reference).length === 0 && source.source === 'MANUAL') return null;
   return {
