@@ -4,6 +4,16 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
 
+vi.mock('../../../../modules/inventory/infrastructure/storage/DexieInventoryLocalRepository', () => ({
+  DexieInventoryLocalRepository: class {
+    getSnapshot = async () => null;
+    saveSnapshot = async () => undefined;
+    saveOperation = async () => undefined;
+    listPendingOperations = async () => [];
+    markOperationsSynchronized = async () => undefined;
+  },
+}));
+
 describe('InventoryListPage', () => {
   it('lists inventory and filters by type and search', async () => {
     const user = userEvent.setup();
@@ -31,11 +41,11 @@ describe('InventoryListPage', () => {
     expect(inventoryRequests).toHaveLength(1);
     expect(inventoryRequests[0]?.url).toContain('/api/households/household-1/inventory');
     await user.selectOptions(screen.getByLabelText('Tipo'), 'PREPARED_FOOD');
+    expect(await screen.findByRole('heading', { name: 'Tarta familiar' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Arroz' })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Tarta familiar' })).toBeInTheDocument();
     await user.clear(screen.getByLabelText('Buscar existencia'));
     await user.type(screen.getByLabelText('Buscar existencia'), 'arroz');
-    expect(screen.getByRole('heading', { name: 'No encontramos existencias' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'No encontramos existencias' })).toBeInTheDocument();
   });
 
   it('shows an empty state when the household has no inventory', async () => {
