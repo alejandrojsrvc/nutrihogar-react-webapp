@@ -7,7 +7,7 @@ import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute
 describe('InventoryListPage', () => {
   it('lists inventory and filters by type and search', async () => {
     const user = userEvent.setup();
-    vi.stubGlobal('navigator', { onLine: true });
+    setOnline();
     const inventoryRequests: Request[] = [];
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
@@ -20,7 +20,7 @@ describe('InventoryListPage', () => {
         { currentQuantity: 2, id: 'item-2', itemType: 'PREPARED_FOOD', name: 'Tarta familiar', status: 'ACTIVE', unit: 'UNIT', version: 1 },
         ], limit: 20, page: 1, total: 2 });
       }
-      return jsonResponse({ status: 'ok' });
+      throw new Error(`Unexpected request: ${request.url}`);
     });
 
     renderRoute('/app/inventario', createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }));
@@ -39,13 +39,13 @@ describe('InventoryListPage', () => {
   });
 
   it('shows an empty state when the household has no inventory', async () => {
-    vi.stubGlobal('navigator', { onLine: true });
+    setOnline();
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
       const pathname = new URL(request.url).pathname;
       if (pathname === '/api/households') return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar', timezone: 'UTC' }]);
       if (pathname === '/api/households/household-1/inventory') return jsonResponse({ items: [], limit: 20, page: 1, total: 0 });
-      return jsonResponse({ status: 'ok' });
+      throw new Error(`Unexpected request: ${request.url}`);
     });
 
     renderRoute('/app/inventario', createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }));
@@ -56,4 +56,11 @@ describe('InventoryListPage', () => {
 
 function jsonResponse(body: unknown) {
   return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' }, status: 200 });
+}
+
+function setOnline() {
+  Object.defineProperty(window.navigator, 'onLine', {
+    configurable: true,
+    get: () => true,
+  });
 }
