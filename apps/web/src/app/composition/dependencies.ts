@@ -96,6 +96,25 @@ import {
   ListPreparedFoodLeftoversUseCase,
   UpdatePreparedFoodLeftoverStatusUseCase,
 } from '../../modules/recipes/application/use-cases/PreparedFoodLeftoverUseCases';
+import { HttpPurchaseGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseGateway';
+import { HttpShoppingListGateway } from '../../modules/shopping-list/infrastructure/http/HttpShoppingListGateway';
+import {
+  CancelPurchaseUseCase,
+  ConfirmPurchaseUseCase,
+  CreatePurchaseUseCase,
+  ListPurchasesUseCase,
+  LoadPurchaseUseCase,
+  UpdatePurchaseUseCase,
+} from '../../modules/purchases/application/use-cases/PurchaseUseCases';
+import {
+  AddShoppingListItemUseCase,
+  ConvertShoppingListToPurchaseUseCase,
+  GenerateShoppingListUseCase,
+  LoadShoppingListUseCase,
+  MarkShoppingListItemPurchasedUseCase,
+  RemoveShoppingListItemUseCase,
+  UpdateShoppingListItemUseCase,
+} from '../../modules/shopping-list/application/use-cases/ShoppingListUseCases';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -139,6 +158,8 @@ const inventoryGateway = new HttpInventoryGateway(apiClient);
 const inventorySyncGateway = new HttpInventorySyncGateway(apiClient);
 const inventoryLocalRepository = new DexieInventoryLocalRepository();
 const connectivityGateway = new BrowserConnectivityGateway();
+const purchaseGateway = new HttpPurchaseGateway(apiClient);
+const shoppingListGateway = new HttpShoppingListGateway(apiClient);
 
 export const syncCurrentUserUseCase = new SyncCurrentUserUseCase(
   currentUserGateway,
@@ -242,6 +263,19 @@ export const getInventorySyncStatusUseCase = new GetInventorySyncStatusUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
+export const listPurchasesUseCase = new ListPurchasesUseCase(purchaseGateway);
+export const loadPurchaseUseCase = new LoadPurchaseUseCase(purchaseGateway);
+export const createPurchaseUseCase = new CreatePurchaseUseCase(purchaseGateway);
+export const updatePurchaseUseCase = new UpdatePurchaseUseCase(purchaseGateway);
+export const confirmPurchaseUseCase = new ConfirmPurchaseUseCase(purchaseGateway);
+export const cancelPurchaseUseCase = new CancelPurchaseUseCase(purchaseGateway);
+export const loadShoppingListUseCase = new LoadShoppingListUseCase(shoppingListGateway);
+export const addShoppingListItemUseCase = new AddShoppingListItemUseCase(shoppingListGateway);
+export const updateShoppingListItemUseCase = new UpdateShoppingListItemUseCase(shoppingListGateway);
+export const removeShoppingListItemUseCase = new RemoveShoppingListItemUseCase(shoppingListGateway);
+export const markShoppingListItemPurchasedUseCase = new MarkShoppingListItemPurchasedUseCase(shoppingListGateway);
+export const generateShoppingListUseCase = new GenerateShoppingListUseCase(shoppingListGateway);
+export const convertShoppingListToPurchaseUseCase = new ConvertShoppingListToPurchaseUseCase(shoppingListGateway);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );
