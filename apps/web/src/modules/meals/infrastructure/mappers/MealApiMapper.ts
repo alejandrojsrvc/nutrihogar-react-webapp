@@ -2,6 +2,7 @@ import type {
   MealDetails,
   MealItemSnapshot,
   MealNutrientSnapshot,
+  MealPreparationReference,
   RegisteredMeal,
 } from '../../application/ports/MealGateway';
 
@@ -23,8 +24,22 @@ export function toMealDetails(value: unknown): MealDetails {
     householdId: toNullableString(source.householdId),
     items: Array.isArray(source.items) ? source.items.map(toMealItemSnapshot) : [],
     notes: source.notes == null ? null : String(source.notes),
+    preparation: toPreparationReference(source),
     source: String(source.source ?? 'MANUAL'),
     status: String(source.status ?? 'CONFIRMED'),
+  };
+}
+
+function toPreparationReference(source: Record<string, unknown>): MealPreparationReference | null {
+  if (source.source === 'MANUAL' && source.sourceReference == null && source.preparation == null) return null;
+  const reference = asRecord(source.sourceReference ?? source.preparation);
+  if (Object.keys(reference).length === 0 && source.source === 'MANUAL') return null;
+  return {
+    consumedWeight: numberOrNull(reference.consumedWeight),
+    portionId: toNullableString(reference.portionId),
+    preparedBatchId: toNullableString(reference.preparedBatchId ?? reference.batchId),
+    recipeName: toNullableString(reference.recipeName ?? reference.recipeNameSnapshot),
+    servedWeight: numberOrNull(reference.servedWeight),
   };
 }
 
@@ -85,6 +100,10 @@ function numberFrom(source: Record<string, unknown>, keys: string[]) {
 
 function toNullableString(value: unknown): string | null {
   return value == null ? null : String(value);
+}
+
+function numberOrNull(value: unknown): number | null {
+  return typeof value === 'number' ? value : value == null ? null : Number(value);
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
