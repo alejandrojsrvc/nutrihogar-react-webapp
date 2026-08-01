@@ -32,7 +32,7 @@ export class HttpDailyNutritionSummaryGateway implements DailyNutritionSummaryGa
   }
 }
 
-function toDailyNutritionSummary(value: unknown): DailyNutritionSummary {
+export function toDailyNutritionSummary(value: unknown): DailyNutritionSummary {
   const source = value as Record<string, unknown>;
   return {
     consumed: toNutritionSummary(source.consumed),
