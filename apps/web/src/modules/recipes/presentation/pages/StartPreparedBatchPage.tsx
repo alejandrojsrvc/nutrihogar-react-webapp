@@ -22,7 +22,7 @@ export function StartPreparedBatchPage() {
   if (recipe.isPending || (batchId && batch.isPending)) return <p className="page-section" role="status">Cargando preparación...</p>;
   if (recipe.isError || !recipe.data || (batchId && (batch.isError || !batch.data))) return <p className="page-section" role="alert">No se pudo cargar la receta o preparación.</p>;
 
-  const ingredients = draftIngredients ?? (batch.data?.ingredients.map((item) => ({ id: item.id, foodId: item.foodId, notes: item.notes, position: item.position, quantity: item.quantity, servingId: item.servingId, unit: item.unit })) ?? recipe.data.ingredients.map((item, index) => ({ foodId: item.foodId, position: index + 1, quantity: item.quantity, servingId: item.servingId, unit: item.unit })));
+  const ingredients: PreparedBatchIngredientInput[] = draftIngredients ?? (batch.data?.ingredients.map((item) => ({ id: item.id, foodId: item.foodId, notes: item.notes, position: item.position, quantity: item.quantity, servingId: item.servingId, unit: item.unit })) ?? recipe.data.ingredients.map((item, index) => ({ foodId: item.foodId, position: index + 1, quantity: item.quantity, servingId: item.servingId, unit: item.unit })));
   const currentBatchId = batch.data?.id ?? '';
 
   function save(next: 'draft' | 'confirm') {
