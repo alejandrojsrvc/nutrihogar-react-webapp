@@ -1,4 +1,4 @@
-import { normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
+import { normalizeApiError, type ApiClient, type components } from '@nutrihogar/api-client';
 
 import type { PreparedBatchInventoryGateway } from '../../application/ports/PreparedBatchInventoryGateway';
 import type {
@@ -7,11 +7,13 @@ import type {
   PreparedBatchInventoryPreview,
 } from '../../domain/PreparedBatchInventory';
 
-type Result = { data?: unknown; error?: unknown; response?: Response };
+type Result<T = unknown> = { data?: T; error?: unknown; response?: Response };
+type PreviewResponse = components['schemas']['PreparedBatchInventoryPreviewResponseDto'];
+type ConfirmRequest = components['schemas']['ConfirmPreparedBatchInventoryConsumptionRequestDto'];
 
 interface Client {
-  GET(path: string, options: { params: { path: { batchId: string } } }): Promise<Result>;
-  POST(path: string, options: { params: { path: { batchId: string } }; body: unknown }): Promise<Result>;
+  GET(path: string, options: { params: { path: { batchId: string } } }): Promise<Result<PreviewResponse>>;
+  POST(path: string, options: { params: { path: { batchId: string } }; body: ConfirmRequest }): Promise<Result<unknown>>;
 }
 
 export class HttpPreparedBatchInventoryGateway implements PreparedBatchInventoryGateway {

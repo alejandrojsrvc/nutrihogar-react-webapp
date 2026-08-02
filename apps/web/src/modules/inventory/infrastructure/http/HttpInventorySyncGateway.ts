@@ -1,11 +1,13 @@
-import { normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
+import { normalizeApiError, type ApiClient, type components } from '@nutrihogar/api-client';
 
 import type { InventorySyncConflict, InventorySyncGateway } from '../../application/ports/InventorySyncGateway';
 import type { PendingInventoryOperation } from '../../application/ports/InventoryLocalRepository';
 import { toInventoryItem } from '../mappers/InventoryApiMapper';
 
-type Result = { data?: unknown; error?: unknown; response?: Response };
-interface Client { POST(path: string, options: { params: { path: { householdId: string } }; body: unknown }): Promise<Result>; }
+type Result<T = unknown> = { data?: T; error?: unknown; response?: Response };
+type SyncRequest = components['schemas']['InventorySyncRequestDto'];
+type SyncResponse = components['schemas']['InventorySyncResponseDto'];
+interface Client { POST(path: string, options: { params: { path: { householdId: string } }; body: SyncRequest }): Promise<Result<SyncResponse>>; }
 
 export class HttpInventorySyncGateway implements InventorySyncGateway {
   constructor(private readonly apiClient: ApiClient) {}

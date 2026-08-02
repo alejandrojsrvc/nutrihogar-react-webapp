@@ -1,4 +1,4 @@
-import type { InventoryItem } from '../../domain/Inventory';
+import type { InventoryItem, InventoryUnit } from '../../domain/Inventory';
 
 export type InventoryOperationType = 'MOVEMENT' | 'ABSOLUTE_ADJUSTMENT';
 export type InventoryOperationMovement = 'PURCHASE' | 'CONSUMPTION' | 'WASTE' | 'EXPIRATION' | 'REMAINDER_RETURN';
@@ -11,7 +11,7 @@ export interface PendingInventoryOperation {
   movementType?: InventoryOperationMovement;
   quantity?: number;
   newQuantity?: number;
-  unit: string;
+  unit: InventoryUnit;
   occurredAt: string;
   baseVersion: number;
   allowLastWriteWins: boolean;
