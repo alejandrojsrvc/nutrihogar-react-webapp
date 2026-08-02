@@ -1,6 +1,7 @@
 import {
   Apple,
   ClipboardList,
+  CalendarDays,
   House,
   Package,
   ReceiptText,
@@ -30,6 +31,7 @@ export const mainNavigation: NavigationGroup[] = [
     label: 'Tu día',
     items: [
       { end: true, icon: <House size={18} aria-hidden="true" />, label: 'Inicio', to: '/app' },
+      { icon: <CalendarDays size={18} aria-hidden="true" />, label: 'Plan semanal', to: '/app/plan-semanal' },
       { icon: <UtensilsCrossed size={18} aria-hidden="true" />, label: 'Registrar comida', primary: true, to: '/app/comidas/nueva' },
     ],
   },

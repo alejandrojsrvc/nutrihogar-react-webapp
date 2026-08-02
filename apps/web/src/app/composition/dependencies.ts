@@ -106,6 +106,8 @@ import {
 import { ConfirmPreparedBatchInventoryUseCase, LoadPreparedBatchInventoryPreviewUseCase } from '../../modules/recipes/application/use-cases/PreparedBatchInventoryUseCases';
 import { HttpPurchaseGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseGateway';
 import { HttpShoppingListGateway } from '../../modules/shopping-list/infrastructure/http/HttpShoppingListGateway';
+import { HttpMealPlanningGateway } from '../../modules/meal-planning/infrastructure/http/HttpMealPlanningGateway';
+import { ListWeeklyPlansUseCase, LoadWeeklyPlanUseCase, CreateWeeklyPlanUseCase, AddPlannedMealUseCase, UpdatePlannedMealUseCase } from '../../modules/meal-planning/application/use-cases/MealPlanningUseCases';
 import {
   CancelPurchaseUseCase,
   ConfirmPurchaseUseCase,
@@ -169,6 +171,7 @@ const inventoryLocalRepository = new DexieInventoryLocalRepository();
 const connectivityGateway = new BrowserConnectivityGateway();
 const purchaseGateway = new HttpPurchaseGateway(apiClient);
 const shoppingListGateway = new HttpShoppingListGateway(apiClient);
+const mealPlanningGateway = new HttpMealPlanningGateway(apiClient);
 
 export const syncCurrentUserUseCase = new SyncCurrentUserUseCase(
   currentUserGateway,
@@ -301,6 +304,11 @@ export const removeShoppingListItemUseCase = new RemoveShoppingListItemUseCase(s
 export const markShoppingListItemPurchasedUseCase = new MarkShoppingListItemPurchasedUseCase(shoppingListGateway);
 export const generateShoppingListUseCase = new GenerateShoppingListUseCase(shoppingListGateway);
 export const convertShoppingListToPurchaseUseCase = new ConvertShoppingListToPurchaseUseCase(shoppingListGateway);
+export const listWeeklyPlansUseCase = new ListWeeklyPlansUseCase(mealPlanningGateway);
+export const loadWeeklyPlanUseCase = new LoadWeeklyPlanUseCase(mealPlanningGateway);
+export const createWeeklyPlanUseCase = new CreateWeeklyPlanUseCase(mealPlanningGateway);
+export const addPlannedMealUseCase = new AddPlannedMealUseCase(mealPlanningGateway);
+export const updatePlannedMealUseCase = new UpdatePlannedMealUseCase(mealPlanningGateway);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );

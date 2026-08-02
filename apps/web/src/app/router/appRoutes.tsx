@@ -46,6 +46,8 @@ import { PurchaseDetailPage } from '../../modules/purchases/presentation/pages/P
 import { PurchaseFormPage } from '../../modules/purchases/presentation/pages/PurchaseFormPage';
 import { ShoppingListPage } from '../../modules/shopping-list/presentation/pages/ShoppingListPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
+import { WeeklyPlanPage } from '../../modules/meal-planning/presentation/pages/WeeklyPlanPage';
+import { PlannedMealFormPage } from '../../modules/meal-planning/presentation/pages/PlannedMealFormPage';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -117,6 +119,9 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/compras/:purchaseId/editar', element: <PurchaseFormPage /> },
           { path: '/app/compras/:purchaseId', element: <PurchaseDetailPage /> },
           { path: '/app/lista-de-compras', element: <ShoppingListPage /> },
+          { path: '/app/plan-semanal', element: <WeeklyPlanPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/comidas/nueva', element: <PlannedMealFormPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/editar', element: <PlannedMealFormPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

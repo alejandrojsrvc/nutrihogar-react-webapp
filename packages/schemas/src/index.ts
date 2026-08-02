@@ -70,3 +70,19 @@ export const recipeFormSchema = z.object({
 });
 
 export type RecipeFormValues = z.infer<typeof recipeFormSchema>;
+
+export const plannedMealFormSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Selecciona una fecha válida.'),
+  type: z.enum(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK']),
+  source: z.enum(['RECIPE', 'PREVIOUS_MEAL', 'FREE_MEAL', 'RESTAURANT', 'DELIVERY']),
+  recipeId: z.string().optional(),
+  previousMealId: z.string().optional(),
+  nameSnapshot: z.string().max(150).optional(),
+  notes: z.string().max(500).optional(),
+  position: z.coerce.number().int().min(0),
+}).superRefine((value, context) => {
+  if (value.source === 'RECIPE' && !value.recipeId) context.addIssue({ code: z.ZodIssueCode.custom, path: ['recipeId'], message: 'Selecciona una receta.' });
+  if (value.source === 'PREVIOUS_MEAL' && !value.previousMealId) context.addIssue({ code: z.ZodIssueCode.custom, path: ['previousMealId'], message: 'Selecciona una comida anterior.' });
+  if (['FREE_MEAL', 'RESTAURANT', 'DELIVERY'].includes(value.source) && !value.nameSnapshot?.trim()) context.addIssue({ code: z.ZodIssueCode.custom, path: ['nameSnapshot'], message: 'Escribe una descripción.' });
+});
+export type PlannedMealFormValues = z.infer<typeof plannedMealFormSchema>;

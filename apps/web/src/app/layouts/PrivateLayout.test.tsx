@@ -47,7 +47,7 @@ describe('PrivateLayout', () => {
     renderPrivateLayout();
 
     const bottomBar = screen.getByRole('navigation', { name: 'Acciones principales' });
-    expect(within(bottomBar).getByRole('link', { name: 'Lista' })).toHaveAttribute('href', '/app/lista-de-compras');
+    expect(within(bottomBar).getByRole('link', { name: 'Plan' })).toHaveAttribute('href', '/app/plan-semanal');
     expect(within(bottomBar).queryByRole('link', { name: 'Perfil' })).not.toBeInTheDocument();
   });
 

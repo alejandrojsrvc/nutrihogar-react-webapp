@@ -1,0 +1,29 @@
+import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import { useAddPlannedMeal, useUpdatePlannedMeal, useWeeklyPlan } from '../hooks/useMealPlanning';
+import { PlannedMealForm } from '../components/PlannedMealForm';
+import type { PlannedMealFormValues } from '@nutrihogar/schemas';
+import { weekDates } from '../../domain/week';
+
+export function PlannedMealFormPage() {
+  const { weeklyPlanId, plannedMealId } = useParams();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const households = useHouseholds();
+  const plan = useWeeklyPlan(weeklyPlanId);
+  const add = useAddPlannedMeal();
+  const update = useUpdatePlannedMeal();
+  const editing = Boolean(plannedMealId);
+  if (households.isPending || plan.isPending) return <p className="page-section" role="status">Cargando comida...</p>;
+  if (!households.activeHousehold || plan.isError || !plan.data) return <p className="page-section" role="alert">No se pudo cargar el plan semanal.</p>;
+  const meal = plan.data.meals.find((item) => item.id === plannedMealId);
+  if (editing && !meal) return <p className="page-section" role="alert">No se encontró la comida planificada.</p>;
+  const dates = weekDates(plan.data.weekStart);
+  const date = dates.includes(params.get('fecha') ?? '') ? params.get('fecha')! : meal?.date ?? plan.data.weekStart;
+  const type = (params.get('tipo') ?? meal?.type ?? 'BREAKFAST') as PlannedMealFormValues['type'];
+  const back = `/app/plan-semanal?semana=${plan.data.weekStart}`;
+  function submit(value: PlannedMealFormValues) { const input = { ...value, recipeId: value.recipeId || null, previousMealId: value.previousMealId || null, nameSnapshot: value.nameSnapshot || null }; if (editing && plannedMealId) update.mutate({ plannedMealId, input }, { onSuccess: () => navigate(back) }); else add.mutate({ weeklyPlanId: weeklyPlanId!, input }, { onSuccess: () => navigate(back) }); }
+  return <section className="page-section meal-planning-form-page" aria-labelledby="planned-meal-title"><BackButton fallback={back} /><PageHeader eyebrow="Plan semanal" title={editing ? 'Editar comida planificada' : 'Agregar comida planificada'} titleId="planned-meal-title" /><PlannedMealForm householdId={households.activeHousehold.id} initialDate={date} initialType={type} meal={meal} plan={plan.data} saving={add.isPending || update.isPending} error={add.isError || update.isError ? 'No se pudo guardar la comida. Tus datos siguen en el formulario.' : undefined} onCancel={() => navigate(back)} onSubmit={submit} /></section>;
+}

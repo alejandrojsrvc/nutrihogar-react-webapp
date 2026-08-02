@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { useState } from 'react';
-import { ClipboardList, House, UtensilsCrossed } from 'lucide-react';
+import { CalendarDays, House, UtensilsCrossed } from 'lucide-react';
 
 import { useAuth } from '../../modules/auth/presentation/providers/useAuth';
 import { useHouseholds } from '../../modules/households/presentation/hooks/useHouseholds';
@@ -42,7 +42,7 @@ export function PrivateLayout() {
       <nav className="mobile-bottom-bar" aria-label="Acciones principales">
         <NavLink end to="/app"><House size={18} aria-hidden="true" /><span>Inicio</span></NavLink>
         <NavLink className="mobile-bottom-bar__primary" to="/app/comidas/nueva"><UtensilsCrossed size={18} aria-hidden="true" /><span>Registrar</span></NavLink>
-        <NavLink to="/app/lista-de-compras"><ClipboardList size={18} aria-hidden="true" /><span>Lista</span></NavLink>
+        <NavLink to="/app/plan-semanal"><CalendarDays size={18} aria-hidden="true" /><span>Plan</span></NavLink>
       </nav>
       <MobileDrawer
         isOpen={isMenuOpen}
