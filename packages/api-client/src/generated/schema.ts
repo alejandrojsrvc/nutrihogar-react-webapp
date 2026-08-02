@@ -1077,8 +1077,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Lista los planes semanales de un hogar */
         get: operations["MealPlanningController_list"];
         put?: never;
+        /** Crea un plan semanal para un hogar */
         post: operations["MealPlanningController_create"];
         delete?: never;
         options?: never;
@@ -1093,12 +1095,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Obtiene un plan semanal */
         get: operations["MealPlanningController_get"];
         put?: never;
         post?: never;
+        /** Cancela un plan semanal */
         delete: operations["MealPlanningController_cancel"];
         options?: never;
         head?: never;
+        /** Actualiza el presupuesto de un plan semanal */
         patch: operations["MealPlanningController_update"];
         trace?: never;
     };
@@ -1111,6 +1116,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Activa un plan semanal */
         post: operations["MealPlanningController_activate"];
         delete?: never;
         options?: never;
@@ -1127,6 +1133,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Completa un plan semanal */
         post: operations["MealPlanningController_complete"];
         delete?: never;
         options?: never;
@@ -1143,6 +1150,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Agrega una comida planificada */
         post: operations["MealPlanningController_add"];
         delete?: never;
         options?: never;
@@ -1160,9 +1168,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
+        /** Elimina una comida planificada */
         delete: operations["MealPlanningController_deleteMeal"];
         options?: never;
         head?: never;
+        /** Edita una comida planificada */
         patch: operations["MealPlanningController_editMeal"];
         trace?: never;
     };
@@ -1175,6 +1185,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Reemplaza una comida planificada */
         post: operations["MealPlanningController_replace"];
         delete?: never;
         options?: never;
@@ -1191,6 +1202,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Asigna un adulto a una comida planificada */
         post: operations["MealPlanningController_assign"];
         delete?: never;
         options?: never;
@@ -1208,9 +1220,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
+        /** Elimina un participante de una comida */
         delete: operations["MealPlanningController_deleteParticipant"];
         options?: never;
         head?: never;
+        /** Actualiza cantidades de un participante */
         patch: operations["MealPlanningController_editParticipant"];
         trace?: never;
     };
@@ -1223,6 +1237,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Propone cantidades por participante */
         post: operations["MealPlanningController_propose"];
         delete?: never;
         options?: never;
@@ -1237,6 +1252,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Obtiene las cantidades sugeridas */
         get: operations["MealPlanningController_quantities"];
         put?: never;
         post?: never;
@@ -1255,6 +1271,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Acepta las cantidades sugeridas */
         post: operations["MealPlanningController_accept"];
         delete?: never;
         options?: never;
@@ -1269,6 +1286,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Calcula los requerimientos de ingredientes */
         get: operations["MealPlanningController_requirementsQuery"];
         put?: never;
         post?: never;
@@ -1285,6 +1303,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Compara los requerimientos con el inventario */
         get: operations["MealPlanningController_compareInventory"];
         put?: never;
         post?: never;
@@ -1301,8 +1320,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Obtiene la preparación de una comida */
         get: operations["MealPlanningController_preparation"];
         put?: never;
+        /** Inicia la preparación de una comida */
         post: operations["MealPlanningController_prepare"];
         delete?: never;
         options?: never;
@@ -1319,6 +1340,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Vincula una comida consumida con una comida planificada */
         post: operations["MealPlanningController_link"];
         delete?: never;
         options?: never;
@@ -1333,6 +1355,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Obtiene el consumo vinculado */
         get: operations["MealPlanningController_consumption"];
         put?: never;
         post?: never;
@@ -1349,6 +1372,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Calcula la adherencia de un plan semanal */
         get: operations["MealPlanningController_planAdherence"];
         put?: never;
         post?: never;
@@ -1365,6 +1389,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Calcula la adherencia del hogar */
         get: operations["MealPlanningController_householdAdherence"];
         put?: never;
         post?: never;
@@ -3163,14 +3188,110 @@ export interface components {
         CreateWeeklyPlanRequestDto: {
             /** @example 2026-08-03 */
             weekStart: string;
-            weeklyBudget?: Record<string, never> | null;
+            weeklyBudget?: number | null;
             /** @example ARS */
-            currency?: Record<string, never>;
+            currency?: string | null;
+        };
+        PlannedMealParticipantResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 1.5 */
+            suggestedQuantity?: string | null;
+            /** @example SERVING */
+            suggestedUnit?: string | null;
+            /** @example 1.25 */
+            confirmedQuantity?: string | null;
+            /** @example SERVING */
+            confirmedUnit?: string | null;
+            /** Format: uuid */
+            confirmedById?: string | null;
+            /** Format: date-time */
+            confirmedAt?: string | null;
+            confirmationSnapshot?: {
+                [key: string]: unknown;
+            } | null;
+            nutritionTargetSnapshot?: {
+                [key: string]: unknown;
+            } | null;
+            notes?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        PlannedMealResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            type: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK" | "EXTRA";
+            /** @enum {string} */
+            source: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
+            /** Format: uuid */
+            recipeId?: string | null;
+            /** @example Pollo con arroz */
+            nameSnapshot?: string | null;
+            notes?: string | null;
+            nutritionSnapshot?: {
+                [key: string]: unknown;
+            } | null;
+            /** @enum {string} */
+            status: "PLANNED" | "PREPARED" | "SERVED" | "CONSUMED" | "SKIPPED" | "REPLACED" | "CANCELLED";
+            participants: components["schemas"]["PlannedMealParticipantResponseDto"][];
+            /** @example 0 */
+            position: number;
+            /** Format: uuid */
+            replacedMealId?: string | null;
+            /** Format: uuid */
+            preparedBatchId?: string | null;
+            /** Format: uuid */
+            mealId?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        WeeklyPlanResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: date */
+            weekStart: string;
+            /** Format: date */
+            weekEnd: string;
+            /** @enum {string} */
+            status: "DRAFT" | "ACTIVE" | "COMPLETED" | "CANCELLED";
+            /** @example 25000.00 */
+            weeklyBudget?: string | null;
+            /** @example ARS */
+            currency?: string | null;
+            /** Format: uuid */
+            createdBy: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            publishedAt?: string | null;
+            meals: components["schemas"]["PlannedMealResponseDto"][];
+        };
+        WeeklyPlanListResponseDto: {
+            items: components["schemas"]["WeeklyPlanResponseDto"][];
+            /** @example 1 */
+            page: number;
+            /** @example 20 */
+            limit: number;
+            /** @example 3 */
+            total: number;
         };
         UpdateWeeklyPlanRequestDto: {
-            weeklyBudget?: Record<string, never> | null;
+            weeklyBudget?: number | null;
             /** @example ARS */
-            currency?: Record<string, never>;
+            currency?: string | null;
         };
         PlannedMealRequestDto: {
             date: string;
@@ -3179,9 +3300,9 @@ export interface components {
             /** @enum {string} */
             source: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
-            recipeId?: Record<string, never> | null;
-            nameSnapshot?: Record<string, never>;
-            notes?: Record<string, never>;
+            recipeId?: string | null;
+            nameSnapshot?: string | null;
+            notes?: string | null;
             position: number;
         };
         UpdatePlannedMealRequestDto: {
@@ -3191,9 +3312,9 @@ export interface components {
             /** @enum {string} */
             source?: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
-            recipeId?: Record<string, never> | null;
-            nameSnapshot?: Record<string, never>;
-            notes?: Record<string, never>;
+            recipeId?: string | null;
+            nameSnapshot?: string | null;
+            notes?: string | null;
             position?: number;
         };
         ReplacePlannedMealRequestDto: {
@@ -3203,29 +3324,132 @@ export interface components {
             /** @enum {string} */
             source?: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
-            recipeId?: Record<string, never> | null;
-            nameSnapshot?: Record<string, never>;
-            notes?: Record<string, never>;
+            recipeId?: string | null;
+            nameSnapshot?: string | null;
+            notes?: string | null;
             position?: number;
-            reason?: Record<string, never>;
+            reason?: string | null;
         };
         AssignParticipantRequestDto: {
             /** Format: uuid */
             adultProfileId: string;
-            notes?: Record<string, never>;
+            notes?: string | null;
         };
         UpdateParticipantRequestDto: {
-            suggestedQuantity?: Record<string, never>;
-            suggestedUnit?: Record<string, never>;
-            notes?: Record<string, never>;
-            confirmedQuantity?: Record<string, never>;
-            confirmedUnit?: Record<string, never>;
-            servingQuantity?: Record<string, never>;
-            servingUnit?: Record<string, never>;
+            suggestedQuantity?: number | null;
+            suggestedUnit?: string | null;
+            notes?: string | null;
+            confirmedQuantity?: number | null;
+            confirmedUnit?: string | null;
+            servingQuantity?: number | null;
+            servingUnit?: string | null;
+        };
+        QuantitySuggestionResponseDto: {
+            /** Format: uuid */
+            participantId: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 1.25 */
+            quantity: string;
+            /** @example SERVING */
+            unit: string;
+            /** Format: date-time */
+            goalValidFrom: string;
+            /** @example 650.000 */
+            targetCalories: string;
+        };
+        WeeklyRequirementResponseDto: {
+            /** Format: uuid */
+            foodId: string;
+            /** @example Arroz */
+            name: string;
+            /** @example GRAM */
+            unit: string;
+            /** @example 1200.000 */
+            required: string;
+        };
+        WeeklyRequirementsResponseDto: {
+            items: components["schemas"]["WeeklyRequirementResponseDto"][];
+            warnings: string[];
+        };
+        InventoryComparisonItemResponseDto: {
+            /** Format: uuid */
+            foodId: string;
+            /** @example Arroz */
+            name: string;
+            /** @example GRAM */
+            unit: string;
+            /** @example 1200.000 */
+            required: string;
+            /** @example 900.000 */
+            available: string;
+            /** @example 300.000 */
+            missing: string;
+            /** @example 0.75 */
+            coverage: string;
+            /** @enum {string} */
+            status: "COMPLETE" | "PARTIAL" | "MISSING" | "NOT_NEEDED";
+        };
+        InventoryComparisonResponseDto: {
+            items: components["schemas"]["InventoryComparisonItemResponseDto"][];
+            warnings: string[];
         };
         LinkConsumedMealRequestDto: {
             /** Format: uuid */
             plannedMealId: string;
+        };
+        AdherenceCountsResponseDto: {
+            /** @example 12 */
+            planned: number;
+            /** @example 8 */
+            consumed: number;
+            /** @example 2 */
+            skipped: number;
+            /** @example 1 */
+            cancelled: number;
+            /** @example 1 */
+            replaced: number;
+            /** @example 0 */
+            unplanned: number;
+        };
+        AdherencePercentagesResponseDto: {
+            /** @example 66.67 */
+            consumed: string;
+            /** @example 0 */
+            unplanned: string;
+        };
+        AdherenceNutritionResponseDto: {
+            /** @example 12000 */
+            plannedCalories: string;
+            /** @example 8500 */
+            consumedCalories: string;
+            /** @example 500 */
+            plannedProtein: string;
+            /** @example 350 */
+            consumedProtein: string;
+            /** @example 70.83 */
+            caloriePercentage: string;
+            /** @example 70 */
+            proteinPercentage: string;
+        };
+        AdherenceBreakdownResponseDto: {
+            byDay: {
+                [key: string]: unknown;
+            };
+            byAdult: {
+                [key: string]: unknown;
+            };
+        };
+        AdherenceResponseDto: {
+            /** Format: uuid */
+            weeklyPlanId: string;
+            /** Format: date */
+            weekStart: string;
+            counts: components["schemas"]["AdherenceCountsResponseDto"];
+            percentages: components["schemas"]["AdherencePercentagesResponseDto"];
+            nutrition: components["schemas"]["AdherenceNutritionResponseDto"];
+            breakdown: components["schemas"]["AdherenceBreakdownResponseDto"];
+            warnings: string[];
         };
         PurchaseItemRequestDto: {
             id?: string;
@@ -6929,8 +7153,8 @@ export interface operations {
         parameters: {
             query?: {
                 status?: "DRAFT" | "ACTIVE" | "COMPLETED" | "CANCELLED";
-                page?: components["schemas"]["Object"];
-                limit?: components["schemas"]["Object"];
+                page?: number;
+                limit?: number;
             };
             header?: never;
             path: {
@@ -6944,7 +7168,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanListResponseDto"];
+                };
             };
         };
     };
@@ -6963,12 +7189,14 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Weekly plan created. */
+            /** @description Plan semanal creado. */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -6987,7 +7215,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7002,6 +7232,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Plan semanal cancelado. */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -7029,7 +7260,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7044,11 +7277,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7063,11 +7298,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7090,7 +7327,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7105,6 +7344,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Comida planificada eliminada. */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -7132,7 +7372,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7151,11 +7393,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7174,11 +7418,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7193,6 +7439,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Participante eliminado. */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -7220,7 +7467,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7235,11 +7484,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["QuantitySuggestionResponseDto"][];
+                };
             };
         };
     };
@@ -7258,7 +7509,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["QuantitySuggestionResponseDto"][];
+                };
             };
         };
     };
@@ -7273,11 +7526,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7296,7 +7551,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyRequirementsResponseDto"];
+                };
             };
         };
     };
@@ -7315,7 +7572,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["InventoryComparisonResponseDto"];
+                };
             };
         };
     };
@@ -7334,7 +7593,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
             };
         };
     };
@@ -7353,7 +7614,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
             };
         };
     };
@@ -7372,11 +7635,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponseDto"];
+                };
             };
         };
     };
@@ -7395,7 +7660,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MealResponseDto"] | null;
+                };
             };
         };
     };
@@ -7414,7 +7681,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdherenceResponseDto"];
+                };
             };
         };
     };
@@ -7435,7 +7704,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdherenceResponseDto"];
+                };
             };
         };
     };
