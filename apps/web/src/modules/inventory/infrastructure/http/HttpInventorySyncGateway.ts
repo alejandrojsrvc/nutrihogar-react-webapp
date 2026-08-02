@@ -1,11 +1,13 @@
-import { normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
+import { normalizeApiError, type ApiClient, type components } from '@nutrihogar/api-client';
 
-import type { InventorySyncGateway } from '../../application/ports/InventorySyncGateway';
+import type { InventorySyncConflict, InventorySyncGateway } from '../../application/ports/InventorySyncGateway';
 import type { PendingInventoryOperation } from '../../application/ports/InventoryLocalRepository';
 import { toInventoryItem } from '../mappers/InventoryApiMapper';
 
-type Result = { data?: unknown; error?: unknown; response?: Response };
-interface Client { POST(path: string, options: { params: { path: { householdId: string } }; body: unknown }): Promise<Result>; }
+type Result<T = unknown> = { data?: T; error?: unknown; response?: Response };
+type SyncRequest = components['schemas']['InventorySyncRequestDto'];
+type SyncResponse = components['schemas']['InventorySyncResponseDto'];
+interface Client { POST(path: string, options: { params: { path: { householdId: string } }; body: SyncRequest }): Promise<Result<SyncResponse>>; }
 
 export class HttpInventorySyncGateway implements InventorySyncGateway {
   constructor(private readonly apiClient: ApiClient) {}
@@ -21,7 +23,7 @@ export class HttpInventorySyncGateway implements InventorySyncGateway {
       const processed = Array.isArray(source.processed) ? source.processed.map((item) => String(record(item).operationId)) : [];
       const conflicts = Array.isArray(source.conflicts) ? source.conflicts.map((item) => {
         const conflict = record(item);
-        return { operationId: String(conflict.operationId ?? ''), reason: conflict.reason == null ? null : String(conflict.reason), snapshot: conflict.snapshot ? toInventoryItem(conflict.snapshot) : null };
+        return { conflictCode: conflict.conflictCode == null ? null : String(conflict.conflictCode) as InventorySyncConflict['conflictCode'], operationId: String(conflict.operationId ?? ''), reason: conflict.reason == null ? null : String(conflict.reason), resultingVersion: conflict.resultingVersion == null ? null : Number(conflict.resultingVersion), retryable: Boolean(conflict.retryable), snapshot: conflict.snapshot ? toInventoryItem(conflict.snapshot) : null };
       }) : [];
       return { conflicts, processed, snapshot: source.snapshot ? toInventoryItem(source.snapshot) : null };
     } catch (error) {

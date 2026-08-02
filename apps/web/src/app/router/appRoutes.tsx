@@ -35,10 +35,12 @@ import { ConfirmServedPortionConsumptionPage } from '../../modules/recipes/prese
 import { CreatePreparedFoodLeftoverPage } from '../../modules/recipes/presentation/pages/CreatePreparedFoodLeftoverPage';
 import { PreparedFoodLeftoversPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoversPage';
 import { PreparedFoodLeftoverDetailPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoverDetailPage';
+import { PreparedBatchInventoryPage } from '../../modules/recipes/presentation/pages/PreparedBatchInventoryPage';
 import { InventoryListPage } from '../../modules/inventory/presentation/pages/InventoryListPage';
 import { InventoryDetailPage } from '../../modules/inventory/presentation/pages/InventoryDetailPage';
 import { InventoryCreatePage } from '../../modules/inventory/presentation/pages/InventoryCreatePage';
 import { InventoryAdjustPage } from '../../modules/inventory/presentation/pages/InventoryAdjustPage';
+import { ConsumePreparedFoodPage } from '../../modules/inventory/presentation/pages/ConsumePreparedFoodPage';
 import { PurchaseListPage } from '../../modules/purchases/presentation/pages/PurchaseListPage';
 import { PurchaseDetailPage } from '../../modules/purchases/presentation/pages/PurchaseDetailPage';
 import { PurchaseFormPage } from '../../modules/purchases/presentation/pages/PurchaseFormPage';
@@ -102,11 +104,13 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/preparaciones/:batchId', element: <PreparedBatchDetailPage /> },
           { path: '/app/porciones/:portionId/confirmar', element: <ConfirmServedPortionConsumptionPage /> },
           { path: '/app/preparaciones/:batchId/sobrante', element: <CreatePreparedFoodLeftoverPage /> },
+          { path: '/app/preparaciones/:batchId/inventario', element: <PreparedBatchInventoryPage /> },
           { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
           { path: '/app/sobrantes/:leftoverId', element: <PreparedFoodLeftoverDetailPage /> },
           { path: '/app/inventario', element: <InventoryListPage /> },
           { path: '/app/inventario/nuevo', element: <InventoryCreatePage /> },
           { path: '/app/inventario/:inventoryItemId/ajustar', element: <InventoryAdjustPage /> },
+          { path: '/app/inventario/:inventoryItemId/consumir-preparado', element: <ConsumePreparedFoodPage /> },
           { path: '/app/inventario/:inventoryItemId', element: <InventoryDetailPage /> },
           { path: '/app/compras', element: <PurchaseListPage /> },
           { path: '/app/compras/nueva', element: <PurchaseFormPage /> },

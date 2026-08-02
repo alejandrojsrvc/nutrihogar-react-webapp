@@ -3,6 +3,9 @@ import type { PendingInventoryOperation } from './InventoryLocalRepository';
 
 export interface InventorySyncConflict {
   operationId: string;
+  conflictCode: 'INSUFFICIENT_BALANCE' | 'ARCHIVED_ITEM' | 'INCOMPATIBLE_UNIT' | 'FORBIDDEN' | 'RETRYABLE' | null;
+  retryable: boolean;
+  resultingVersion: number | null;
   reason: string | null;
   snapshot: InventoryItem | null;
 }

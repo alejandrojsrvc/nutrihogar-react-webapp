@@ -336,6 +336,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/adult-profiles/{adultProfileId}/nutrition-goal-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consulta el estado de revisión de la meta nutricional */
+        get: operations["NutritionGoalReviewController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/nutrition-goal-review/generate-proposal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Genera una vista previa de propuesta para la revisión */
+        post: operations["NutritionGoalReviewController_generate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/nutrition-goal-review/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acepta explícitamente la propuesta de revisión */
+        post: operations["NutritionGoalReviewController_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/nutrition-goal-review/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NutritionGoalReviewController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/nutrition-goal-review/postpone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pospone la revisión hasta una fecha futura */
+        post: operations["NutritionGoalReviewController_postpone"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/households/{householdId}/meals": {
         parameters: {
             query?: never;
@@ -970,64 +1054,16 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/households/{householdId}/purchases": {
+    "/api/weekly-plans/{weeklyPlanId}/shopping-list/items": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["PurchaseController_listPurchases"];
+        get: operations["ShoppingListController_getMealPlanItems"];
         put?: never;
-        post: operations["PurchaseController_createPurchase"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/purchases/{purchaseId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["PurchaseController_getPurchase"];
-        put?: never;
-        post?: never;
-        delete: operations["PurchaseController_cancelPurchase"];
-        options?: never;
-        head?: never;
-        patch: operations["PurchaseController_updatePurchase"];
-        trace?: never;
-    };
-    "/api/purchases/{purchaseId}/confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["PurchaseController_confirmPurchase"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/households/{householdId}/shopping-list/convert-to-purchase": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["PurchaseController_convertShopping"];
+        post: operations["ShoppingListController_addMissingItems"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1176,6 +1212,709 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["MealPlanningController_editParticipant"];
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/quantities/propose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_propose"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/quantities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_quantities"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/quantities/accept-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}/requirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_requirementsQuery"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}/inventory-comparison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_compareInventory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/preparation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_preparation"];
+        put?: never;
+        post: operations["MealPlanningController_prepare"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/consumed-meals/{consumedMealId}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_link"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/consumption": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_consumption"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}/adherence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_planAdherence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/adherence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_householdAdherence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PurchaseController_listPurchases"];
+        put?: never;
+        post: operations["PurchaseController_createPurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/purchases/{purchaseId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PurchaseController_getPurchase"];
+        put?: never;
+        post?: never;
+        delete: operations["PurchaseController_cancelPurchase"];
+        options?: never;
+        head?: never;
+        patch: operations["PurchaseController_updatePurchase"];
+        trace?: never;
+    };
+    "/api/purchases/{purchaseId}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PurchaseController_confirmPurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/shopping-list/convert-to-purchase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PurchaseController_convertShopping"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/body-weight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_listBodyWeight"];
+        put?: never;
+        /** Registra el peso corporal */
+        post: operations["HealthTrackingController_registerBodyWeight"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/body-weight/{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_getBodyWeight"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/body-weight/{entryId}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HealthTrackingController_correctBodyWeight"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/body-weight/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_latestBodyWeight"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/measurement-configuration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_getMeasurementConfiguration"];
+        put: operations["HealthTrackingController_updateMeasurementConfiguration"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/body-measurements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_listBodyMeasurements"];
+        put?: never;
+        post: operations["HealthTrackingController_registerBodyMeasurements"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/body-measurements/{entryId}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HealthTrackingController_correctBodyMeasurement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/digestive-symptoms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_listDigestiveSymptoms"];
+        put?: never;
+        post: operations["HealthTrackingController_registerDigestiveSymptom"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/digestive-symptoms/{symptomId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_getDigestiveSymptom"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/digestive-symptoms/{symptomId}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HealthTrackingController_resolveDigestiveSymptom"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/digestive-symptoms/{symptomId}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HealthTrackingController_correctDigestiveSymptom"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/recent-meals-for-symptoms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthTrackingController_recentMealsForSymptoms"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/body-progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Calcula progreso corporal descriptivo */
+        get: operations["HealthTrackingController_getBodyProgress"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/digestive-symptom-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Muestra patrones descriptivos de síntomas digestivos */
+        get: operations["HealthTrackingController_getDigestiveSymptomInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/reports/nutrition/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el reporte nutricional diario */
+        get: operations["NutritionReportsController_getDaily"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/reports/nutrition/weekly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el reporte nutricional semanal */
+        get: operations["NutritionReportsController_getWeekly"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/reports/inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el reporte operativo de inventario */
+        get: operations["ReportsController_getInventory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/reports/purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el reporte operativo de compras */
+        get: operations["ReportsController_getPurchases"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/reports/waste": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el reporte operativo de desperdicio */
+        get: operations["ReportsController_getWaste"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/exports/body-tracking.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exporta seguimiento corporal en CSV */
+        get: operations["ExportsController_body"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/exports/nutrition.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exporta nutrientes de comidas en CSV */
+        get: operations["ExportsController_nutritionCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/adult-profiles/{adultProfileId}/exports/digestive-symptoms.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exporta síntomas digestivos en CSV */
+        get: operations["ExportsController_digestiveSymptoms"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/exports/inventory-movements.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exporta movimientos de inventario en CSV */
+        get: operations["ExportsController_inventoryCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/exports/purchases.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exporta compras en CSV */
+        get: operations["ExportsController_purchasesCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/ai/weekly-plan-proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Genera una propuesta de plan semanal con IA */
+        post: operations["AiRecommendationsController_generateWeekly"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/ai/recipe-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Genera sugerencias de recetas con IA */
+        post: operations["AiRecommendationsController_generateRecipe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/weekly-plan-proposals/{proposalId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AiRecommendationsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AiRecommendationsController_update"];
+        trace?: never;
+    };
+    "/api/ai/weekly-plan-proposals/{proposalId}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AiRecommendationsController_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/weekly-plan-proposals/{proposalId}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AiRecommendationsController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -1602,6 +2341,23 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        NutritionGoalReviewResponseDto: {
+            id: string;
+            adultProfileId: string;
+            outcome: string;
+            reasons: string[];
+            /** Format: date-time */
+            evaluatedAt: string;
+            postponedUntil?: Record<string, never>;
+            proposalSuggestionId?: Record<string, never>;
+            terminalAction?: Record<string, never>;
+            proposal?: Record<string, never>;
+            differences?: Record<string, never>;
+        };
+        PostponeNutritionGoalReviewRequestDto: {
+            /** Format: date-time */
+            postponedUntil: string;
+        };
         CreateMealItemRequestDto: {
             /** Format: uuid */
             foodId: string;
@@ -1677,10 +2433,11 @@ export interface components {
             consumedAt: string;
             /** @example CONFIRMED */
             status: string;
-            /** @example MANUAL */
-            source: string;
+            /** @enum {string} */
+            source: "MANUAL" | "DUPLICATED" | "PREPARED_BATCH" | "PREPARED_INVENTORY";
             notes?: Record<string, never> | null;
             /**
+             * @description Nutrientes confirmados a partir de los snapshots de los alimentos consumidos.
              * @example {
              *       "ENERGY_KCAL": 597,
              *       "PROTEIN": 73.06
@@ -2167,7 +2924,7 @@ export interface components {
             /** Format: uuid */
             inventoryItemId: string;
             /** @enum {string} */
-            movementType?: "PURCHASE" | "CONSUMPTION" | "WASTE" | "REMAINDER_RETURN";
+            movementType?: "PURCHASE" | "CONSUMPTION" | "WASTE" | "EXPIRATION" | "REMAINDER_RETURN";
             quantity?: number;
             newQuantity?: number;
             /** @enum {string} */
@@ -2213,6 +2970,10 @@ export interface components {
             operationId: string;
             /** @enum {string} */
             status: "APPLIED" | "CONFLICT";
+            /** @enum {string|null} */
+            conflictCode?: "INSUFFICIENT_BALANCE" | "ARCHIVED_ITEM" | "INCOMPATIBLE_UNIT" | "FORBIDDEN" | "RETRYABLE" | null;
+            /** @description El cliente puede reintentar la operacion con el estado actualizado. */
+            retryable: boolean;
             reason?: Record<string, never> | null;
             resultingVersion?: Record<string, never> | null;
             snapshot?: components["schemas"]["InventoryItemResponseDto"] | null;
@@ -2299,7 +3060,41 @@ export interface components {
             /** Format: date-time */
             consumedAt: string;
         };
-        PreparedBatchInventoryPreviewResponseDto: Record<string, never>;
+        PreparationInventoryCandidateResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            foodId?: Record<string, never> | null;
+            /** @example 500.000 */
+            quantity: string;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            /** @enum {string} */
+            status: "ACTIVE" | "DEPLETED" | "ARCHIVED";
+            location?: Record<string, never> | null;
+            /** Format: date-time */
+            expiresAt?: Record<string, never> | null;
+        };
+        PreparedBatchInventoryIngredientPreviewResponseDto: {
+            /** Format: uuid */
+            ingredientId: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example 500.000 */
+            quantity: string;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            /** @example 500.000 */
+            availableQuantity: string;
+            /** @enum {string} */
+            availability: "AVAILABLE" | "PARTIAL" | "UNAVAILABLE";
+            candidates: components["schemas"]["PreparationInventoryCandidateResponseDto"][];
+        };
+        PreparedBatchInventoryPreviewResponseDto: {
+            /** Format: uuid */
+            batchId: string;
+            ingredients: components["schemas"]["PreparedBatchInventoryIngredientPreviewResponseDto"][];
+        };
         PreparedBatchInventoryDecisionDto: {
             /** Format: uuid */
             ingredientId: string;
@@ -2310,6 +3105,22 @@ export interface components {
         };
         ConfirmPreparedBatchInventoryConsumptionRequestDto: {
             decisions: components["schemas"]["PreparedBatchInventoryDecisionDto"][];
+        };
+        ConfirmPreparedBatchInventoryConsumptionResponseDto: {
+            /** Format: uuid */
+            batchId: string;
+            /** @enum {string} */
+            status: "APPLIED" | "ALREADY_APPLIED";
+            /** @description Indica que una repeticion segura no aplicara el consumo otra vez. */
+            idempotent: boolean;
+        };
+        AddPreparedLeftoverToInventoryRequestDto: {
+            /** @example 420 */
+            quantity: number;
+            /** @example REFRIGERATOR */
+            location?: Record<string, never> | null;
+            /** Format: date-time */
+            expiresAt?: Record<string, never> | null;
         };
         ShoppingListItemResponseDto: Record<string, never>;
         ShoppingListResponseDto: {
@@ -2339,41 +3150,15 @@ export interface components {
             /** Format: uuid */
             sourceReferenceId?: string;
         };
-        PurchaseItemRequestDto: {
-            id?: string;
-            foodId?: string;
-            inventoryItemId?: string;
-            sourceShoppingItemId?: string;
-            nameSnapshot: string;
+        AddMissingIngredientRequestDto: {
+            /** Format: uuid */
+            foodId: string;
+            name?: string;
             unit: string;
-            quantity: number;
+            quantity?: number;
         };
-        CreatePurchaseRequestDto: {
-            storeName: string;
-            purchaseDate: string;
-            total: number;
-            currency?: string;
-            items: components["schemas"]["PurchaseItemRequestDto"][];
-        };
-        UpdatePurchaseRequestDto: {
-            storeName?: string;
-            purchaseDate?: string;
-            total?: number;
-            currency?: string;
-            items?: components["schemas"]["PurchaseItemRequestDto"][];
-        };
-        ConfirmPurchaseRequestDto: {
-            selections?: Record<string, never>;
-        };
-        ConvertShoppingListRequestDto: {
-            storeName: string;
-            purchaseDate: string;
-            total: number;
-            currency?: string;
-            items: components["schemas"]["PurchaseItemRequestDto"][];
-            itemIds: string[];
-            quantities?: Record<string, never>;
-            idempotencyKey?: string;
+        AddMissingIngredientsRequestDto: {
+            items: components["schemas"]["AddMissingIngredientRequestDto"][];
         };
         CreateWeeklyPlanRequestDto: {
             /** @example 2026-08-03 */
@@ -2433,6 +3218,201 @@ export interface components {
             suggestedQuantity?: Record<string, never>;
             suggestedUnit?: Record<string, never>;
             notes?: Record<string, never>;
+            confirmedQuantity?: Record<string, never>;
+            confirmedUnit?: Record<string, never>;
+            servingQuantity?: Record<string, never>;
+            servingUnit?: Record<string, never>;
+        };
+        LinkConsumedMealRequestDto: {
+            /** Format: uuid */
+            plannedMealId: string;
+        };
+        PurchaseItemRequestDto: {
+            id?: string;
+            foodId?: string;
+            inventoryItemId?: string;
+            sourceShoppingItemId?: string;
+            nameSnapshot: string;
+            unit: string;
+            quantity: number;
+        };
+        CreatePurchaseRequestDto: {
+            storeName: string;
+            purchaseDate: string;
+            total: number;
+            currency?: string;
+            items: components["schemas"]["PurchaseItemRequestDto"][];
+        };
+        UpdatePurchaseRequestDto: {
+            storeName?: string;
+            purchaseDate?: string;
+            total?: number;
+            currency?: string;
+            items?: components["schemas"]["PurchaseItemRequestDto"][];
+        };
+        ConfirmPurchaseRequestDto: {
+            selections?: Record<string, never>;
+        };
+        ConvertShoppingListRequestDto: {
+            storeName: string;
+            purchaseDate: string;
+            total: number;
+            currency?: string;
+            items: components["schemas"]["PurchaseItemRequestDto"][];
+            itemIds: string[];
+            quantities?: Record<string, never>;
+            idempotencyKey?: string;
+        };
+        BodyWeightRequestDto: {
+            value: number;
+            /** @enum {string} */
+            unit: "KG" | "LB";
+            recordedAt: string;
+            /**
+             * @default MANUAL
+             * @enum {string}
+             */
+            source: "MANUAL" | "IMPORTED" | "DEVICE";
+        };
+        HealthTrackingResponseDto: {
+            id: string;
+            adultProfileId: string;
+            value: string;
+            unit: string;
+            recordedAt: string;
+            source: string;
+            correctedFromId?: Record<string, never>;
+        };
+        HealthTrackingListResponseDto: {
+            items: components["schemas"]["HealthTrackingResponseDto"][];
+            page: number;
+            limit: number;
+            total: number;
+        };
+        MeasurementConfigurationRequestDto: {
+            enabledTypes?: ("WAIST" | "HIPS" | "CHEST" | "ARM_LEFT" | "ARM_RIGHT" | "THIGH_LEFT" | "THIGH_RIGHT" | "NECK" | "CALF_LEFT" | "CALF_RIGHT" | "CUSTOM")[];
+            units?: Record<string, never>;
+            customMeasurements?: Record<string, never>[];
+        };
+        BodyMeasurementRequestDto: {
+            /** @enum {string} */
+            type: "WAIST" | "HIPS" | "CHEST" | "ARM_LEFT" | "ARM_RIGHT" | "THIGH_LEFT" | "THIGH_RIGHT" | "NECK" | "CALF_LEFT" | "CALF_RIGHT" | "CUSTOM";
+            customMeasurementName?: string;
+            value: number;
+            /** @enum {string} */
+            unit: "CM" | "IN";
+            recordedAt: string;
+            /**
+             * @default MANUAL
+             * @enum {string}
+             */
+            source: "MANUAL" | "IMPORTED" | "DEVICE";
+        };
+        DigestiveSymptomFoodLinkDto: {
+            foodId: string;
+            /** @enum {string} */
+            source: "MEAL_SELECTED" | "FOOD_FROM_MEAL" | "MANUAL_HYPOTHESIS";
+            mealId?: string;
+            snapshot?: Record<string, never>;
+        };
+        DigestiveSymptomRequestDto: {
+            /** @enum {string} */
+            type: "GAS" | "BLOATING" | "ABDOMINAL_PAIN" | "HEARTBURN" | "NAUSEA" | "DIARRHEA" | "CONSTIPATION" | "OTHER";
+            name?: string;
+            intensity: number;
+            startAt: string;
+            endAt?: string;
+            notes?: string;
+            mealIds?: string[];
+            foodLinks?: components["schemas"]["DigestiveSymptomFoodLinkDto"][];
+        };
+        DigestiveSymptomResponseDto: {
+            id: string;
+            adultProfileId: string;
+            type: string;
+            name?: Record<string, never>;
+            intensity: number;
+            startAt: string;
+            endAt?: Record<string, never>;
+            notes?: Record<string, never>;
+            status: string;
+            correctedFromId?: Record<string, never>;
+            mealIds: string[];
+            foodLinks: components["schemas"]["DigestiveSymptomFoodLinkDto"][];
+            disclaimer: string;
+        };
+        DigestiveSymptomListResponseDto: {
+            items: components["schemas"]["DigestiveSymptomResponseDto"][];
+            page: number;
+            limit: number;
+            total: number;
+        };
+        BodyProgressResponseDto: {
+            periods: string[];
+            warnings: string[];
+        };
+        DigestiveSymptomInsightsResponseDto: {
+            disclaimer: string;
+            totalOccurrences: number;
+            byType: Record<string, never>;
+            associations: Record<string, never>;
+            symptomFreeDays: string[];
+        };
+        NutritionReportResponseDto: {
+            date: string;
+            timezone: string;
+            profile: Record<string, never>;
+            hasConsumptionData: boolean;
+            totals: Record<string, never>;
+            goal: Record<string, never> | null;
+            comparison: Record<string, never> | null;
+            meals: unknown[];
+            warnings: unknown[];
+            planning: Record<string, never> | null;
+        };
+        WeeklyNutritionReportResponseDto: {
+            weekStart: string;
+            weekEnd: string;
+            timezone: string;
+            profile: Record<string, never>;
+            days: unknown[];
+            totals: Record<string, never>;
+            averages: Record<string, never>;
+            recordedMealCount: number;
+            daysInTargetRange: Record<string, never> | null;
+            dataQuality: Record<string, never>;
+            previousWeek: Record<string, never>;
+            planning: Record<string, never> | null;
+            bodyWeight: Record<string, never>;
+            symptomCount: number;
+        };
+        GenerateWeeklyPlanProposalDto: {
+            weekStart: string;
+            mealTypes: string[];
+            /** @default [] */
+            adultProfileIds: string[];
+            preferences?: Record<string, never>;
+        };
+        GenerateRecipeSuggestionsDto: {
+            mealType: string;
+            adultProfileIds: string[];
+            maximumPreparationMinutes?: number;
+            /** @default 3 */
+            maximumSuggestions: Record<string, never>;
+            /** @default true */
+            prioritizeExpiringInventory: Record<string, never>;
+        };
+        UpdateAiProposalDto: {
+            payload: Record<string, never>;
+            mealTypes: string[];
+            adultProfileIds: string[];
+        };
+        AcceptAiProposalDto: {
+            selectedItems?: string[];
+            editedPayload?: Record<string, never>;
+        };
+        RejectAiProposalDto: {
+            reason?: string;
         };
     };
     responses: never;
@@ -3481,6 +4461,166 @@ export interface operations {
             };
             /** @description El usuario no puede acceder al perfil. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalReviewController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalReviewResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalReviewController_generate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalReviewResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalReviewController_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalReviewController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionGoalReviewController_postpone: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostponeNutritionGoalReviewRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionGoalReviewResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5523,12 +6663,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description El consumo fue aplicado. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ConfirmPreparedBatchInventoryConsumptionResponseDto"];
+                };
             };
             400: {
                 headers: {
@@ -5549,6 +6690,7 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description El consumo ya fue aplicado; no se vuelve a ejecutar. */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -5566,7 +6708,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddPreparedLeftoverToInventoryRequestDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
@@ -5737,17 +6883,12 @@ export interface operations {
             };
         };
     };
-    PurchaseController_listPurchases: {
+    ShoppingListController_getMealPlanItems: {
         parameters: {
-            query?: {
-                status?: string;
-                page?: number;
-                limit?: number;
-                storeName?: string;
-            };
+            query?: never;
             header?: never;
             path: {
-                householdId: string;
+                weeklyPlanId: string;
             };
             cookie?: never;
         };
@@ -5761,125 +6902,18 @@ export interface operations {
             };
         };
     };
-    PurchaseController_createPurchase: {
+    ShoppingListController_addMissingItems: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                householdId: string;
+                weeklyPlanId: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreatePurchaseRequestDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PurchaseController_getPurchase: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                purchaseId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PurchaseController_cancelPurchase: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                purchaseId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PurchaseController_updatePurchase: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                purchaseId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdatePurchaseRequestDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PurchaseController_confirmPurchase: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                purchaseId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConfirmPurchaseRequestDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PurchaseController_convertShopping: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                householdId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConvertShoppingListRequestDto"];
+                "application/json": components["schemas"]["AddMissingIngredientsRequestDto"];
             };
         };
         responses: {
@@ -6179,6 +7213,1475 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["UpdateParticipantRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_propose: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_quantities: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_requirementsQuery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_compareInventory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_preparation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_prepare: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_link: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                consumedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkConsumedMealRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_consumption: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_planAdherence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_householdAdherence: {
+        parameters: {
+            query: {
+                weekStart: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_listPurchases: {
+        parameters: {
+            query?: {
+                status?: string;
+                page?: number;
+                limit?: number;
+                storeName?: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_createPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePurchaseRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_getPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_cancelPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_updatePurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePurchaseRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_confirmPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPurchaseRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_convertShopping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConvertShoppingListRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_listBodyWeight: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                unit?: "KG" | "LB";
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingListResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_registerBodyWeight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BodyWeightRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_getBodyWeight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_correctBodyWeight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BodyWeightRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_latestBodyWeight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_getMeasurementConfiguration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_updateMeasurementConfiguration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeasurementConfigurationRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_listBodyMeasurements: {
+        parameters: {
+            query?: {
+                type?: "WAIST" | "HIPS" | "CHEST" | "ARM_LEFT" | "ARM_RIGHT" | "THIGH_LEFT" | "THIGH_RIGHT" | "NECK" | "CALF_LEFT" | "CALF_RIGHT" | "CUSTOM";
+                dateFrom?: string;
+                dateTo?: string;
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingListResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_registerBodyMeasurements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_correctBodyMeasurement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BodyMeasurementRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrackingResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_listDigestiveSymptoms: {
+        parameters: {
+            query?: {
+                type?: "GAS" | "BLOATING" | "ABDOMINAL_PAIN" | "HEARTBURN" | "NAUSEA" | "DIARRHEA" | "CONSTIPATION" | "OTHER";
+                status?: "ACTIVE" | "RESOLVED" | "CORRECTED" | "CANCELLED";
+                intensity?: number;
+                dateFrom?: string;
+                dateTo?: string;
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestiveSymptomListResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_registerDigestiveSymptom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DigestiveSymptomRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestiveSymptomResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_getDigestiveSymptom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                symptomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestiveSymptomResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_resolveDigestiveSymptom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                symptomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestiveSymptomResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_correctDigestiveSymptom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                symptomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DigestiveSymptomRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestiveSymptomResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_recentMealsForSymptoms: {
+        parameters: {
+            query?: {
+                hours?: number;
+                days?: number;
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_getBodyProgress: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                granularity?: "DAILY" | "WEEKLY" | "MONTHLY";
+                measurementTypes?: ("WAIST" | "HIPS" | "CHEST" | "ARM_LEFT" | "ARM_RIGHT" | "THIGH_LEFT" | "THIGH_RIGHT" | "NECK" | "CALF_LEFT" | "CALF_RIGHT" | "CUSTOM")[];
+                weightUnit?: "KG" | "LB";
+                lengthUnit?: "CM" | "IN";
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BodyProgressResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthTrackingController_getDigestiveSymptomInsights: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                symptomTypes?: ("GAS" | "BLOATING" | "ABDOMINAL_PAIN" | "HEARTBURN" | "NAUSEA" | "DIARRHEA" | "CONSTIPATION" | "OTHER")[];
+                minimumOccurrences?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestiveSymptomInsightsResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionReportsController_getDaily: {
+        parameters: {
+            query: {
+                date: string;
+                timezone?: string;
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionReportResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NutritionReportsController_getWeekly: {
+        parameters: {
+            query: {
+                weekStart: string;
+                timezone?: string;
+                targetMin?: string;
+                targetMax?: string;
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyNutritionReportResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_getInventory: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_getPurchases: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_getWaste: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_body: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                timezone?: string;
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid date range, timezone or locale. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_nutritionCsv: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                timezone?: string;
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid date range, timezone or locale. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_digestiveSymptoms: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                timezone?: string;
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                adultProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid date range, timezone or locale. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_inventoryCsv: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                timezone?: string;
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid date range, timezone or locale. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExportsController_purchasesCsv: {
+        parameters: {
+            query?: {
+                dateFrom?: string;
+                dateTo?: string;
+                timezone?: string;
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid date range, timezone or locale. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AiRecommendationsController_generateWeekly: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateWeeklyPlanProposalDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AiRecommendationsController_generateRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRecipeSuggestionsDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AiRecommendationsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposalId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AiRecommendationsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposalId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAiProposalDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AiRecommendationsController_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposalId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptAiProposalDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AiRecommendationsController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposalId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectAiProposalDto"];
             };
         };
         responses: {

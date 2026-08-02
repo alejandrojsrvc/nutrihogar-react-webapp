@@ -4,6 +4,7 @@ import type {
   CreateManualInventoryItemInput,
   InventoryGateway,
   UpdateInventoryItemInput,
+  ConsumePreparedFoodInput,
 } from '../ports/InventoryGateway';
 import type { ConnectivityGateway } from '../ports/ConnectivityGateway';
 import type {
@@ -28,7 +29,11 @@ export class LoadInventoryUseCase {
     }
 
     const result = await this.gateway.list(householdId, filters);
-    await this.localRepository.saveSnapshot(householdId, result.items);
+    try {
+      await this.localRepository.saveSnapshot(householdId, result.items);
+    } catch {
+      // La caché no debe ocultar un inventario remoto disponible.
+    }
     return result;
   }
 }
@@ -80,9 +85,8 @@ export class AdjustInventoryItemUseCase {
       type: 'ABSOLUTE_ADJUSTMENT',
       unit: input.unit,
     };
-    await this.localRepository.saveOperation(householdId, operation);
     const optimistic = optimisticItem(inventoryItem, input.quantity - inventoryItem.currentQuantity);
-    await saveOptimisticSnapshot(this.localRepository, householdId, optimistic);
+    await saveOperationAndOptimisticSnapshot(this.localRepository, householdId, operation, optimistic);
     return optimistic;
   }
 }
@@ -95,6 +99,7 @@ export class ConsumeInventoryItemUseCase {
   ) {}
 
   execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+    validateExit(inventoryItem, input);
     if (this.connectivity.isOnline()) return this.gateway.consume(inventoryItem.id, input);
     return this.queueConsumption(householdId, inventoryItem, input);
   }
@@ -115,18 +120,37 @@ export class ConsumeInventoryItemUseCase {
       type: 'MOVEMENT',
       unit: input.unit,
     };
-    await this.localRepository.saveOperation(householdId, operation);
     const optimistic = optimisticItem(inventoryItem, -input.quantity);
-    await saveOptimisticSnapshot(this.localRepository, householdId, optimistic);
+    await saveOperationAndOptimisticSnapshot(this.localRepository, householdId, operation, optimistic);
     return optimistic;
   }
 }
 
 export class WasteInventoryItemUseCase {
-  constructor(private readonly gateway: InventoryGateway) {}
+  constructor(
+    private readonly gateway: InventoryGateway,
+    private readonly localRepository: InventoryLocalRepository,
+    private readonly connectivity: ConnectivityGateway,
+  ) {}
 
-  execute(inventoryItemId: string, input: ConsumeInventoryItemInput) {
-    return this.gateway.waste(inventoryItemId, input);
+  execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+    validateExit(inventoryItem, input);
+    if (this.connectivity.isOnline()) return this.gateway.waste(inventoryItem.id, input);
+    return queueMovement(this.localRepository, householdId, inventoryItem, input, 'WASTE');
+  }
+}
+
+export class ExpireInventoryItemUseCase {
+  constructor(
+    private readonly gateway: InventoryGateway,
+    private readonly localRepository: InventoryLocalRepository,
+    private readonly connectivity: ConnectivityGateway,
+  ) {}
+
+  execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+    validateExit(inventoryItem, input);
+    if (this.connectivity.isOnline()) return this.gateway.expire(inventoryItem.id, input);
+    return queueMovement(this.localRepository, householdId, inventoryItem, input, 'EXPIRATION');
   }
 }
 
@@ -135,6 +159,18 @@ export class UpdateInventoryItemUseCase {
 
   execute(inventoryItemId: string, input: UpdateInventoryItemInput) {
     return this.gateway.update(inventoryItemId, input);
+  }
+}
+
+export class ConsumePreparedFoodUseCase {
+  constructor(private readonly gateway: InventoryGateway) {}
+
+  execute(inventoryItem: InventoryItem, input: ConsumePreparedFoodInput) {
+    if (inventoryItem.itemType !== 'PREPARED_FOOD') throw new Error('Solo puedes consumir alimentos preparados desde este flujo.');
+    if (input.quantity <= 0 || input.quantity > inventoryItem.currentQuantity) {
+      throw new Error('La cantidad debe ser mayor que cero y no superar la disponibilidad.');
+    }
+    return this.gateway.consumePrepared(inventoryItem.id, input);
   }
 }
 
@@ -162,11 +198,39 @@ export class ListPendingInventoryOperationsUseCase {
   }
 }
 
+export class ListInventoryConflictOperationsUseCase {
+  constructor(private readonly localRepository: InventoryLocalRepository) {}
+
+  execute(householdId: string) {
+    return this.localRepository.listConflictOperations
+      ? this.localRepository.listConflictOperations(householdId)
+      : Promise.resolve([]);
+  }
+}
+
+export class DiscardInventoryOperationUseCase {
+  constructor(private readonly localRepository: InventoryLocalRepository) {}
+
+  execute(operationId: string) {
+    if (!this.localRepository.discardOperation) throw new Error('No se puede descartar la operación en este dispositivo.');
+    return this.localRepository.discardOperation(operationId);
+  }
+}
+
+export class RetryInventoryOperationUseCase {
+  constructor(private readonly localRepository: InventoryLocalRepository) {}
+
+  execute(operationId: string, baseVersion: number) {
+    if (!this.localRepository.retryOperation) throw new Error('No se puede reintentar la operación en este dispositivo.');
+    return this.localRepository.retryOperation(operationId, baseVersion);
+  }
+}
+
 export class SynchronizeInventoryUseCase {
   constructor(
     private readonly gateway: InventorySyncGateway,
     private readonly localRepository: InventoryLocalRepository,
-    private readonly connectivity: ConnectivityGateway,
+  private readonly connectivity: ConnectivityGateway,
     private readonly deviceId: string,
   ) {}
 
@@ -174,10 +238,64 @@ export class SynchronizeInventoryUseCase {
     if (!this.connectivity.isOnline()) return { processed: [], conflicts: [], snapshot: null };
     const operations = await this.localRepository.listPendingOperations(householdId);
     if (operations.length === 0) return { processed: [], conflicts: [], snapshot: null };
-    const result = await this.gateway.synchronize(householdId, this.deviceId, operations);
+    if (this.localRepository.markOperationsSyncing) {
+      await this.localRepository.markOperationsSyncing(operations.map((operation) => operation.operationId));
+    }
+    let result: Awaited<ReturnType<InventorySyncGateway['synchronize']>>;
+    try {
+      result = await this.gateway.synchronize(householdId, this.deviceId, operations);
+    } catch (error) {
+      if (this.localRepository.markOperationsFailed) {
+        await this.localRepository.markOperationsFailed(operations.map((operation) => operation.operationId), error instanceof Error ? error.message : 'No se pudo sincronizar');
+      }
+      throw error;
+    }
     await this.localRepository.markOperationsSynchronized(result.processed);
+    const conflictIds = result.conflicts.map((conflict) => conflict.operationId);
+    if (conflictIds.length && this.localRepository.markOperationsConflicted) {
+      await this.localRepository.markOperationsConflicted(
+        conflictIds,
+        Object.fromEntries(result.conflicts.map((conflict) => [conflict.operationId, { conflictCode: conflict.conflictCode, reason: conflict.reason, resultingVersion: conflict.resultingVersion, retryable: conflict.retryable }])),
+      );
+    }
+    if (this.localRepository.saveSyncResults) {
+      await this.localRepository.saveSyncResults([
+        ...result.processed.map((operationId) => ({ createdAt: new Date().toISOString(), householdId, operationId, reason: null, status: 'APPLIED' as const })),
+        ...result.conflicts.map((conflict) => ({ createdAt: new Date().toISOString(), householdId, operationId: conflict.operationId, reason: conflict.reason, status: 'CONFLICT' as const })),
+      ]);
+    }
     if (result.snapshot) await saveOptimisticSnapshot(this.localRepository, householdId, result.snapshot);
     return result;
+  }
+}
+
+async function queueMovement(
+  repository: InventoryLocalRepository,
+  householdId: string,
+  inventoryItem: InventoryItem,
+  input: ConsumeInventoryItemInput,
+  movementType: 'WASTE' | 'EXPIRATION',
+) {
+  validateExit(inventoryItem, input);
+  const operation: PendingInventoryOperation = {
+    allowLastWriteWins: false,
+    baseVersion: inventoryItem.version,
+    inventoryItemId: inventoryItem.id,
+    movementType,
+    occurredAt: (input.occurredAt ?? new Date()).toISOString(),
+    operationId: crypto.randomUUID(),
+    quantity: input.quantity,
+    type: 'MOVEMENT',
+    unit: input.unit,
+  };
+  const optimistic = optimisticItem(inventoryItem, -input.quantity);
+  await saveOperationAndOptimisticSnapshot(repository, householdId, operation, optimistic);
+  return optimistic;
+}
+
+function validateExit(inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+  if (input.quantity <= 0 || input.quantity > inventoryItem.currentQuantity || input.unit !== inventoryItem.unit) {
+    throw new Error('La cantidad debe ser mayor que cero, usar la unidad disponible y no superar el saldo.');
   }
 }
 
@@ -189,8 +307,32 @@ export class GetInventorySyncStatusUseCase {
 
   async execute(householdId: string) {
     const operations = await this.localRepository.listPendingOperations(householdId);
-    return { isOnline: this.connectivity.isOnline(), pendingCount: operations.length };
+    const conflicts = this.localRepository.listConflictOperations
+      ? await this.localRepository.listConflictOperations(householdId)
+      : [];
+    const lastSyncAt = this.localRepository.getLastSyncAt
+      ? await this.localRepository.getLastSyncAt(householdId)
+      : null;
+    return { conflictsCount: conflicts.length, isOnline: this.connectivity.isOnline(), lastSyncAt, pendingCount: operations.length };
   }
+}
+
+async function saveOperationAndOptimisticSnapshot(
+  repository: InventoryLocalRepository,
+  householdId: string,
+  operation: PendingInventoryOperation,
+  item: InventoryItem,
+) {
+  const snapshot = await repository.getSnapshot(householdId);
+  const items = snapshot?.some((current) => current.id === item.id)
+    ? snapshot.map((current) => current.id === item.id ? item : current)
+    : [...(snapshot ?? []), item];
+  if (repository.saveOperationAndSnapshot) {
+    await repository.saveOperationAndSnapshot(householdId, operation, items);
+    return;
+  }
+  await repository.saveOperation(householdId, operation);
+  await repository.saveSnapshot(householdId, items);
 }
 
 async function saveOptimisticSnapshot(

@@ -5,6 +5,7 @@ import type {
   InventoryMovement,
   InventoryUnit,
 } from '../../domain/Inventory';
+import type { RegisteredMeal } from '../../../meals/application/ports/MealGateway';
 
 export interface CreateManualInventoryItemInput {
   foodId: string;
@@ -37,6 +38,13 @@ export interface ConsumeInventoryItemInput {
   occurredAt?: Date;
 }
 
+export interface ConsumePreparedFoodInput {
+  adultProfileId: string;
+  mealType: 'BREAKFAST' | 'LUNCH' | 'SNACK' | 'DINNER' | 'EXTRA';
+  quantity: number;
+  consumedAt: Date;
+}
+
 export interface InventoryGateway {
   list(householdId: string, filters?: InventoryFilters): Promise<InventoryListResult>;
   getById(inventoryItemId: string): Promise<InventoryItem>;
@@ -44,6 +52,8 @@ export interface InventoryGateway {
   adjust(inventoryItemId: string, input: AdjustInventoryItemInput): Promise<InventoryItem>;
   consume(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
   waste(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
+  expire(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
+  consumePrepared(inventoryItemId: string, input: ConsumePreparedFoodInput): Promise<RegisteredMeal>;
   update(inventoryItemId: string, input: UpdateInventoryItemInput): Promise<InventoryItem>;
   archive(inventoryItemId: string): Promise<void>;
   listMovements(inventoryItemId: string): Promise<InventoryMovement[]>;

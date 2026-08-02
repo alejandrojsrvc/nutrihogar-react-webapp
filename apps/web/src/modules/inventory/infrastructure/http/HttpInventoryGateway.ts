@@ -6,9 +6,11 @@ import type {
   CreateManualInventoryItemInput,
   InventoryGateway,
   UpdateInventoryItemInput,
+  ConsumePreparedFoodInput,
 } from '../../application/ports/InventoryGateway';
 import type { InventoryFilters } from '../../domain/Inventory';
 import { toInventoryItem, toInventoryMovement } from '../mappers/InventoryApiMapper';
+import { toRegisteredMeal } from '../../../meals/infrastructure/mappers/MealApiMapper';
 
 type Result = { data?: unknown; error?: unknown; response?: Response };
 
@@ -64,6 +66,20 @@ export class HttpInventoryGateway implements InventoryGateway {
     return toInventoryItem(await this.request(() => (this.apiClient as unknown as Client).POST(
       `/api/inventory/items/${inventoryItemId}/waste`,
       { body: { ...input, occurredAt: input.occurredAt?.toISOString() }, params: { path: { inventoryItemId } } },
+    )));
+  }
+
+  async expire(inventoryItemId: string, input: ConsumeInventoryItemInput) {
+    return toInventoryItem(await this.request(() => (this.apiClient as unknown as Client).POST(
+      `/api/inventory/items/${inventoryItemId}/expiration`,
+      { body: { ...input, occurredAt: input.occurredAt?.toISOString() }, params: { path: { inventoryItemId } } },
+    )));
+  }
+
+  async consumePrepared(inventoryItemId: string, input: ConsumePreparedFoodInput) {
+    return toRegisteredMeal(await this.request(() => (this.apiClient as unknown as Client).POST(
+      `/api/inventory/items/${inventoryItemId}/consume-prepared-food`,
+      { body: { ...input, consumedAt: input.consumedAt.toISOString() }, params: { path: { inventoryItemId } } },
     )));
   }
 

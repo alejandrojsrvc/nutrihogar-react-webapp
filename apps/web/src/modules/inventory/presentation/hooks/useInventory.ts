@@ -14,11 +14,17 @@ import {
   adjustInventoryItemUseCase,
   createManualInventoryItemUseCase,
   getInventoryItemUseCase,
+  expireInventoryItemUseCase,
+  consumePreparedFoodUseCase,
+  discardInventoryOperationUseCase,
+  listInventoryConflictOperationsUseCase,
+  retryInventoryOperationUseCase,
 } from '../../../../app/composition/dependencies';
 import type { InventoryFilters, InventoryItem } from '../../domain/Inventory';
 import type {
   AdjustInventoryItemInput,
   ConsumeInventoryItemInput,
+  ConsumePreparedFoodInput,
   CreateManualInventoryItemInput,
   UpdateInventoryItemInput,
 } from '../../application/ports/InventoryGateway';
@@ -68,6 +74,15 @@ export function usePendingInventoryOperations(householdId: string | undefined) {
   });
 }
 
+export function useInventoryConflicts(householdId: string | undefined) {
+  return useQuery({
+    enabled: Boolean(householdId),
+    queryKey: householdId ? [...inventoryQueryKeys.pending(householdId), 'conflicts'] : inventoryQueryKeys.all,
+    queryFn: () => listInventoryConflictOperationsUseCase.execute(householdId as string),
+    retry: false,
+  });
+}
+
 function useInventoryMutation<TInput>(
   mutationFn: (input: TInput) => Promise<InventoryItem | void>,
 ) {
@@ -107,8 +122,37 @@ export function useConsumeInventoryItem() {
   });
 }
 
+export function useConsumePreparedFood() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ item, input }: { item: InventoryItem; input: ConsumePreparedFoodInput }) => consumePreparedFoodUseCase.execute(item, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ['meals'] });
+    },
+  });
+}
+
 export function useWasteInventoryItem() {
-  return useInventoryMutation(({ itemId, input }: { itemId: string; input: ConsumeInventoryItemInput }) => wasteInventoryItemUseCase.execute(itemId, input));
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ householdId, item, input }: { householdId: string; item: InventoryItem; input: ConsumeInventoryItemInput }) => wasteInventoryItemUseCase.execute(householdId, item, input),
+    onSuccess: (updatedItem, variables) => {
+      queryClient.setQueryData(inventoryQueryKeys.detail(variables.item.id), updatedItem);
+      void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.all });
+    },
+  });
+}
+
+export function useExpireInventoryItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ householdId, item, input }: { householdId: string; item: InventoryItem; input: ConsumeInventoryItemInput }) => expireInventoryItemUseCase.execute(householdId, item, input),
+    onSuccess: (updatedItem, variables) => {
+      queryClient.setQueryData(inventoryQueryKeys.detail(variables.item.id), updatedItem);
+      void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.all });
+    },
+  });
 }
 
 export function useUpdateInventoryItem() {
@@ -127,10 +171,41 @@ export function useArchiveInventoryItem() {
 
 export function useSynchronizeInventory(householdId: string | undefined) {
   const queryClient = useQueryClient();
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: () => synchronizeInventoryUseCase.execute(householdId as string),
     onSuccess: () => {
-      if (householdId) void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.household(householdId) });
+      if (householdId) {
+        void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.household(householdId) });
+        void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.pending(householdId) });
+      }
+    },
+  });
+  useEffect(() => {
+    const synchronizeOnReconnect = () => {
+      if (householdId && navigator.onLine && !mutation.isPending) mutation.mutate();
+    };
+    window.addEventListener('online', synchronizeOnReconnect);
+    return () => window.removeEventListener('online', synchronizeOnReconnect);
+  }, [householdId, mutation]);
+  return mutation;
+}
+
+export function useDiscardInventoryOperation(householdId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (operationId: string) => discardInventoryOperationUseCase.execute(operationId),
+    onSuccess: () => {
+      if (householdId) void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.pending(householdId) });
+    },
+  });
+}
+
+export function useRetryInventoryOperation(householdId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ operationId, baseVersion }: { operationId: string; baseVersion: number }) => retryInventoryOperationUseCase.execute(operationId, baseVersion),
+    onSuccess: () => {
+      if (householdId) void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.pending(householdId) });
     },
   });
 }
