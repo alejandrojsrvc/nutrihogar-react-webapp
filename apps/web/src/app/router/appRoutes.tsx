@@ -39,6 +39,10 @@ import { InventoryListPage } from '../../modules/inventory/presentation/pages/In
 import { InventoryDetailPage } from '../../modules/inventory/presentation/pages/InventoryDetailPage';
 import { InventoryCreatePage } from '../../modules/inventory/presentation/pages/InventoryCreatePage';
 import { InventoryAdjustPage } from '../../modules/inventory/presentation/pages/InventoryAdjustPage';
+import { PurchaseListPage } from '../../modules/purchases/presentation/pages/PurchaseListPage';
+import { PurchaseDetailPage } from '../../modules/purchases/presentation/pages/PurchaseDetailPage';
+import { PurchaseFormPage } from '../../modules/purchases/presentation/pages/PurchaseFormPage';
+import { ShoppingListPage } from '../../modules/shopping-list/presentation/pages/ShoppingListPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -104,6 +108,11 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/inventario/nuevo', element: <InventoryCreatePage /> },
           { path: '/app/inventario/:inventoryItemId/ajustar', element: <InventoryAdjustPage /> },
           { path: '/app/inventario/:inventoryItemId', element: <InventoryDetailPage /> },
+          { path: '/app/compras', element: <PurchaseListPage /> },
+          { path: '/app/compras/nueva', element: <PurchaseFormPage /> },
+          { path: '/app/compras/:purchaseId/editar', element: <PurchaseFormPage /> },
+          { path: '/app/compras/:purchaseId', element: <PurchaseDetailPage /> },
+          { path: '/app/lista-de-compras', element: <ShoppingListPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,
