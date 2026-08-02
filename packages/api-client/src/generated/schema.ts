@@ -3232,6 +3232,8 @@ export interface components {
             source: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
             recipeId?: string | null;
+            /** Format: uuid */
+            previousMealId?: string | null;
             /** @example Pollo con arroz */
             nameSnapshot?: string | null;
             notes?: string | null;
@@ -3301,6 +3303,8 @@ export interface components {
             source: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
             recipeId?: string | null;
+            /** Format: uuid */
+            previousMealId?: string | null;
             nameSnapshot?: string | null;
             notes?: string | null;
             position: number;
@@ -3313,6 +3317,8 @@ export interface components {
             source?: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
             recipeId?: string | null;
+            /** Format: uuid */
+            previousMealId?: string | null;
             nameSnapshot?: string | null;
             notes?: string | null;
             position?: number;
@@ -3325,6 +3331,8 @@ export interface components {
             source?: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
             /** Format: uuid */
             recipeId?: string | null;
+            /** Format: uuid */
+            previousMealId?: string | null;
             nameSnapshot?: string | null;
             notes?: string | null;
             position?: number;
@@ -4859,9 +4867,9 @@ export interface operations {
                 dateFrom?: string;
                 dateTo?: string;
                 mealType?: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
-                page?: components["schemas"]["Object"];
-                limit?: components["schemas"]["Object"];
-                includeCancelled?: components["schemas"]["Object"];
+                page?: number;
+                limit?: number;
+                includeCancelled?: boolean;
             };
             header?: never;
             path: {
