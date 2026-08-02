@@ -150,7 +150,7 @@ describe('InventoryUseCases', () => {
 
     await expect(useCase.execute('household-1', item, { quantity: 500, unit: 'GRAM' })).resolves.toMatchObject({ currentQuantity: 0 });
     expect(local.saveOperation).toHaveBeenCalledWith('household-1', expect.objectContaining({ movementType: 'EXPIRATION' }));
-    expect(() => useCase.execute('household-1', item, { quantity: 501, unit: 'GRAM' })).toThrow('no superar');
+    await expect(useCase.execute('household-1', item, { quantity: 501, unit: 'GRAM' })).rejects.toThrow('no superar');
   });
 
   it('only allows prepared inventory items in the meal-producing flow', async () => {
