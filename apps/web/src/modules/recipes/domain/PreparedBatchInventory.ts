@@ -1,11 +1,14 @@
-export type PreparedBatchInventoryStatus = 'AVAILABLE' | 'INSUFFICIENT' | 'NO_INVENTORY' | 'IGNORED' | 'CONFIRMED';
+export type PreparedBatchInventoryAvailability = 'AVAILABLE' | 'PARTIAL' | 'UNAVAILABLE';
+export type PreparedBatchInventoryStatus = PreparedBatchInventoryAvailability | 'IGNORED' | 'CONFIRMED';
 
 export interface InventoryConsumptionOption {
   inventoryItemId: string;
-  name: string;
+  foodId: string | null;
   availableQuantity: number;
   unit: string;
   location: string | null;
+  expiresAt: string | null;
+  status: string;
 }
 
 export interface PreparedBatchInventoryIngredient {
@@ -14,6 +17,7 @@ export interface PreparedBatchInventoryIngredient {
   usedQuantity: number;
   unit: string;
   availableQuantity: number;
+  availability: PreparedBatchInventoryAvailability;
   status: PreparedBatchInventoryStatus;
   options: InventoryConsumptionOption[];
   selectedInventoryItemId: string | null;

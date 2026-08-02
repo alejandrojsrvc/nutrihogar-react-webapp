@@ -22,7 +22,8 @@ describe('prepared food leftover use cases', () => {
   it('adds a leftover to inventory through its gateway', async () => {
     const gateway = { addToInventory: vi.fn().mockResolvedValue({ id: 'inventory-1' }) } as unknown as PreparedFoodLeftoverGateway;
 
-    await expect(new AddPreparedFoodLeftoverToInventoryUseCase(gateway).execute('leftover-1')).resolves.toEqual({ id: 'inventory-1' });
-    expect(gateway.addToInventory).toHaveBeenCalledWith('leftover-1');
+    const input = { expiresAt: null, location: 'Refrigerador', quantity: 250 };
+    await expect(new AddPreparedFoodLeftoverToInventoryUseCase(gateway).execute('leftover-1', input)).resolves.toEqual({ id: 'inventory-1' });
+    expect(gateway.addToInventory).toHaveBeenCalledWith('leftover-1', input);
   });
 });

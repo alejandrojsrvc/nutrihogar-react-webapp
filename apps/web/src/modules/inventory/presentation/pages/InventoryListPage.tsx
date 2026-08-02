@@ -6,7 +6,7 @@ import { EmptyState } from '../../../../shared/presentation/components/EmptyStat
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { InventoryItem, InventoryItemType, InventoryItemStatus } from '../../domain/Inventory';
-import { useDiscardInventoryOperation, useInventory, useInventoryConflicts, useInventorySyncStatus, useSynchronizeInventory } from '../hooks/useInventory';
+import { useDiscardInventoryOperation, useInventory, useInventoryConflicts, useInventorySyncStatus, useRetryInventoryOperation, useSynchronizeInventory } from '../hooks/useInventory';
 
 type SpecialFilter = 'ALL' | 'BELOW_MINIMUM' | 'DEPLETED' | 'EXPIRING';
 
@@ -27,6 +27,7 @@ export function InventoryListPage() {
   const synchronize = useSynchronizeInventory(households.activeHousehold?.id);
   const conflicts = useInventoryConflicts(households.activeHousehold?.id);
   const discardConflict = useDiscardInventoryOperation(households.activeHousehold?.id);
+  const retryConflict = useRetryInventoryOperation(households.activeHousehold?.id);
   const visibleItems = useMemo(() => filterSnapshot(inventory.data?.items ?? [], search, itemType, specialFilter), [inventory.data?.items, itemType, search, specialFilter]);
 
   if (households.isPending) return <p className="page-section" role="status">Cargando hogar...</p>;
@@ -37,7 +38,7 @@ export function InventoryListPage() {
       <BackButton fallback="/app" />
       <PageHeader action={<Link className="button button--primary" to="/app/inventario/nuevo">Agregar existencia</Link>} eyebrow={households.activeHousehold.name} title="Inventario del hogar" titleId="inventory-title" description="Consulta lo que tienes disponible y mantenlo actualizado." />
       <SyncStatus conflictsCount={syncStatus.data?.conflictsCount ?? 0} isOnline={syncStatus.data?.isOnline ?? true} lastSyncAt={syncStatus.data?.lastSyncAt ?? null} pendingCount={syncStatus.data?.pendingCount ?? 0} isSyncing={synchronize.isPending} onSynchronize={() => synchronize.mutate()} />
-      {conflicts.data?.length ? <section className="inventory-conflicts" aria-labelledby="inventory-conflicts-title"><h2 id="inventory-conflicts-title">Revisa operaciones con conflicto</h2><ul>{conflicts.data.map((operation) => <li key={operation.operationId}><span>Operación pendiente sobre {operation.inventoryItemId}{operation.lastError ? `: ${operation.lastError}` : ''}</span><button className="button button--text" disabled={discardConflict.isPending} onClick={() => discardConflict.mutate(operation.operationId)} type="button">Descartar</button></li>)}</ul></section> : null}
+      {conflicts.data?.length ? <section className="inventory-conflicts" aria-labelledby="inventory-conflicts-title"><h2 id="inventory-conflicts-title">Revisa operaciones con conflicto</h2><ul>{conflicts.data.map((operation) => <li key={operation.operationId}><span>Operación sobre {operation.inventoryItemId}{operation.conflictCode ? ` · ${conflictLabel(operation.conflictCode)}` : ''}{operation.lastError ? `: ${operation.lastError}` : ''}</span>{operation.retryable ? <button className="button button--text" disabled={retryConflict.isPending} onClick={() => retryConflict.mutate({ baseVersion: operation.resultingVersion ?? 0, operationId: operation.operationId })} type="button">Reintentar</button> : null}<button className="button button--text" disabled={discardConflict.isPending} onClick={() => discardConflict.mutate(operation.operationId)} type="button">Descartar</button></li>)}</ul></section> : null}
       <div className="inventory-filters">
         <div className="form-field"><label htmlFor="inventory-search">Buscar existencia</label><input id="inventory-search" onChange={(event) => setSearch(event.target.value)} placeholder="Ej. arroz o freezer" type="search" value={search} /></div>
         <div className="form-field"><label htmlFor="inventory-type">Tipo</label><select id="inventory-type" onChange={(event) => setItemType(event.target.value as InventoryItemType | '')} value={itemType}><option value="">Todos</option><option value="FOOD">Alimentos</option><option value="PREPARED_FOOD">Preparaciones</option><option value="CUSTOM">Personalizados</option></select></div>
@@ -79,3 +80,4 @@ function formatQuantity(quantity: number, unit: string) { return `${quantity} ${
 function formatDate(value: string) { return new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date(value)); }
 function inThirtyDays() { return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); }
 function formatDateTime(value: string) { return new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)); }
+function conflictLabel(value: string) { return ({ INSUFFICIENT_BALANCE: 'Saldo insuficiente', ARCHIVED_ITEM: 'Existencia archivada', INCOMPATIBLE_UNIT: 'Unidad incompatible', FORBIDDEN: 'Permiso perdido', RETRYABLE: 'Reintentable' } as Record<string, string>)[value] ?? value; }

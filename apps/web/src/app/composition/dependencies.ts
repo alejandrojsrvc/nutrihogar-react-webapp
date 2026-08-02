@@ -66,6 +66,7 @@ import {
   ListPendingInventoryOperationsUseCase,
   ListInventoryConflictOperationsUseCase,
   DiscardInventoryOperationUseCase,
+  RetryInventoryOperationUseCase,
   LoadInventoryUseCase,
   SynchronizeInventoryUseCase,
   UpdateInventoryItemUseCase,
@@ -276,6 +277,7 @@ export const listInventoryMovementsUseCase = new ListInventoryMovementsUseCase(i
 export const listPendingInventoryOperationsUseCase = new ListPendingInventoryOperationsUseCase(inventoryLocalRepository);
 export const listInventoryConflictOperationsUseCase = new ListInventoryConflictOperationsUseCase(inventoryLocalRepository);
 export const discardInventoryOperationUseCase = new DiscardInventoryOperationUseCase(inventoryLocalRepository);
+export const retryInventoryOperationUseCase = new RetryInventoryOperationUseCase(inventoryLocalRepository);
 export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
   inventorySyncGateway,
   inventoryLocalRepository,

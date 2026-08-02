@@ -9,6 +9,7 @@ import {
 } from '../../../../app/composition/dependencies';
 import type {
   CreatePreparedFoodLeftoverInput,
+  AddPreparedFoodLeftoverToInventoryInput,
   PreparedFoodLeftoverStatus,
 } from '../../application/ports/PreparedFoodLeftoverGateway';
 
@@ -63,7 +64,7 @@ export function useUpdatePreparedFoodLeftoverStatus() {
 export function useAddPreparedFoodLeftoverToInventory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (leftoverId: string) => addPreparedFoodLeftoverToInventoryUseCase.execute(leftoverId),
+    mutationFn: ({ leftoverId, input }: { leftoverId: string; input: AddPreparedFoodLeftoverToInventoryInput }) => addPreparedFoodLeftoverToInventoryUseCase.execute(leftoverId, input),
     onSuccess: (_, leftoverId) => {
       void queryClient.invalidateQueries({ queryKey: preparedFoodLeftoverQueryKeys.all });
       void queryClient.invalidateQueries({ queryKey: ['inventory'] });

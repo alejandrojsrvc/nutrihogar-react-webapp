@@ -86,12 +86,12 @@ describe('InventoryUseCases', () => {
     local.markOperationsConflicted = vi.fn();
     local.saveSyncResults = vi.fn();
     vi.mocked(local.listPendingOperations).mockResolvedValue([{ allowLastWriteWins: false, baseVersion: 2, inventoryItemId: 'item-1', quantity: 100, occurredAt: '2026-08-01T12:00:00.000Z', operationId: 'operation-2', type: 'MOVEMENT', unit: 'GRAM' }]);
-    const gateway: InventorySyncGateway = { synchronize: vi.fn().mockResolvedValue({ conflicts: [{ operationId: 'operation-2', reason: 'Cantidad insuficiente', snapshot: item }], processed: [], snapshot: item }) };
+    const gateway: InventorySyncGateway = { synchronize: vi.fn().mockResolvedValue({ conflicts: [{ conflictCode: 'INSUFFICIENT_BALANCE', operationId: 'operation-2', reason: 'Cantidad insuficiente', resultingVersion: 3, retryable: false, snapshot: item }], processed: [], snapshot: item }) };
     const connectivity: ConnectivityGateway = { isOnline: () => true };
 
     await new SynchronizeInventoryUseCase(gateway, local, connectivity, 'device-1').execute('household-1');
 
-    expect(local.markOperationsConflicted).toHaveBeenCalledWith(['operation-2'], { 'operation-2': 'Cantidad insuficiente' });
+    expect(local.markOperationsConflicted).toHaveBeenCalledWith(['operation-2'], { 'operation-2': { conflictCode: 'INSUFFICIENT_BALANCE', reason: 'Cantidad insuficiente', resultingVersion: 3, retryable: false } });
     expect(local.saveSyncResults).toHaveBeenCalledWith([expect.objectContaining({ operationId: 'operation-2', status: 'CONFLICT' })]);
     expect(local.markOperationsSynchronized).toHaveBeenCalledWith([]);
   });

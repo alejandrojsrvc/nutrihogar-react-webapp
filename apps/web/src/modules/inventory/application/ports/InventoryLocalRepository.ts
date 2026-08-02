@@ -21,6 +21,9 @@ export interface PendingInventoryOperation {
   syncStatus?: InventoryOperationSyncStatus;
   retryCount?: number;
   lastError?: string | null;
+  conflictCode?: string | null;
+  retryable?: boolean;
+  resultingVersion?: number | null;
 }
 
 export interface InventorySyncResultRecord {
@@ -39,10 +42,11 @@ export interface InventoryLocalRepository {
   markOperationsSynchronized(operationIds: string[]): Promise<void>;
   markOperationsSyncing?(operationIds: string[]): Promise<void>;
   saveOperationAndSnapshot?(householdId: string, operation: PendingInventoryOperation, items: InventoryItem[]): Promise<void>;
-  markOperationsConflicted?(operationIds: string[], reasonById: Record<string, string | null>): Promise<void>;
+  markOperationsConflicted?(operationIds: string[], detailsById: Record<string, { reason: string | null; conflictCode: string | null; retryable: boolean; resultingVersion: number | null }>): Promise<void>;
   markOperationsFailed?(operationIds: string[], error: string): Promise<void>;
   saveSyncResults?(results: InventorySyncResultRecord[]): Promise<void>;
   listConflictOperations?(householdId: string): Promise<PendingInventoryOperation[]>;
   discardOperation?(operationId: string): Promise<void>;
+  retryOperation?(operationId: string, baseVersion: number): Promise<void>;
   getLastSyncAt?(householdId: string): Promise<string | null>;
 }

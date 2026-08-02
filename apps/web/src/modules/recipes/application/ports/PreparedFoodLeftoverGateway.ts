@@ -10,6 +10,12 @@ export interface CreatePreparedFoodLeftoverInput {
   notes?: string;
 }
 
+export interface AddPreparedFoodLeftoverToInventoryInput {
+  quantity: number;
+  location?: string | null;
+  expiresAt?: Date | null;
+}
+
 export interface PreparedFoodLeftoverGateway {
   create(
     batchId: string,
@@ -17,7 +23,7 @@ export interface PreparedFoodLeftoverGateway {
   ): Promise<PreparedFoodLeftover>;
   list(householdId: string): Promise<PreparedFoodLeftover[]>;
   getById(leftoverId: string): Promise<PreparedFoodLeftover>;
-  addToInventory(leftoverId: string): Promise<InventoryItem>;
+  addToInventory(leftoverId: string, input: AddPreparedFoodLeftoverToInventoryInput): Promise<InventoryItem>;
   updateStatus(
     leftoverId: string,
     status: PreparedFoodLeftoverStatus,

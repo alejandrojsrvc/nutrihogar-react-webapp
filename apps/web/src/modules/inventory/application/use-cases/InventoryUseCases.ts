@@ -213,6 +213,15 @@ export class DiscardInventoryOperationUseCase {
   }
 }
 
+export class RetryInventoryOperationUseCase {
+  constructor(private readonly localRepository: InventoryLocalRepository) {}
+
+  execute(operationId: string, baseVersion: number) {
+    if (!this.localRepository.retryOperation) throw new Error('No se puede reintentar la operación en este dispositivo.');
+    return this.localRepository.retryOperation(operationId, baseVersion);
+  }
+}
+
 export class SynchronizeInventoryUseCase {
   constructor(
     private readonly gateway: InventorySyncGateway,
@@ -242,7 +251,7 @@ export class SynchronizeInventoryUseCase {
     if (conflictIds.length && this.localRepository.markOperationsConflicted) {
       await this.localRepository.markOperationsConflicted(
         conflictIds,
-        Object.fromEntries(result.conflicts.map((conflict) => [conflict.operationId, conflict.reason])),
+        Object.fromEntries(result.conflicts.map((conflict) => [conflict.operationId, { conflictCode: conflict.conflictCode, reason: conflict.reason, resultingVersion: conflict.resultingVersion, retryable: conflict.retryable }])),
       );
     }
     if (this.localRepository.saveSyncResults) {

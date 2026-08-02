@@ -2,6 +2,7 @@ import { normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
 
 import type {
   CreatePreparedFoodLeftoverInput,
+  AddPreparedFoodLeftoverToInventoryInput,
   PreparedFoodLeftoverGateway,
   PreparedFoodLeftoverStatus,
 } from '../../application/ports/PreparedFoodLeftoverGateway';
@@ -49,10 +50,10 @@ export class HttpPreparedFoodLeftoverGateway implements PreparedFoodLeftoverGate
     ));
   }
 
-  async addToInventory(leftoverId: string) {
+  async addToInventory(leftoverId: string, input: AddPreparedFoodLeftoverToInventoryInput) {
     const result = await this.requestRaw(() => (this.apiClient as unknown as Client).POST(
       `/api/prepared-leftovers/${leftoverId}/add-to-inventory`,
-      { params: { path: { leftoverId } }, body: undefined },
+      { params: { path: { leftoverId } }, body: { expiresAt: input.expiresAt?.toISOString() ?? null, location: input.location ?? null, quantity: input.quantity } },
     ));
     return toInventoryItem(result);
   }

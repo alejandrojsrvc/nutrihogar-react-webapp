@@ -18,6 +18,7 @@ import {
   consumePreparedFoodUseCase,
   discardInventoryOperationUseCase,
   listInventoryConflictOperationsUseCase,
+  retryInventoryOperationUseCase,
 } from '../../../../app/composition/dependencies';
 import type { InventoryFilters, InventoryItem } from '../../domain/Inventory';
 import type {
@@ -193,6 +194,16 @@ export function useDiscardInventoryOperation(householdId: string | undefined) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (operationId: string) => discardInventoryOperationUseCase.execute(operationId),
+    onSuccess: () => {
+      if (householdId) void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.pending(householdId) });
+    },
+  });
+}
+
+export function useRetryInventoryOperation(householdId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ operationId, baseVersion }: { operationId: string; baseVersion: number }) => retryInventoryOperationUseCase.execute(operationId, baseVersion),
     onSuccess: () => {
       if (householdId) void queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.pending(householdId) });
     },

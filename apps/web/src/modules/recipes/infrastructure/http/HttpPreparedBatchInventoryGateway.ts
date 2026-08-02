@@ -61,9 +61,11 @@ function toIngredient(value: unknown): PreparedBatchInventoryIngredient {
   const optionsValue = source.options ?? source.inventoryOptions ?? source.inventoryItems ?? source.existences;
   const options = Array.isArray(optionsValue) ? optionsValue.map(toOption) : [];
   const availableQuantity = number(source.availableQuantity ?? source.available ?? options[0]?.availableQuantity);
-  const status = statusValue(source.status, availableQuantity, options.length);
+  const availability = availabilityValue(source.availability, source.status, availableQuantity, number(source.quantity ?? source.requiredQuantity), options.length);
+  const status = statusValue(source.status, availability);
   return {
     availableQuantity,
+    availability,
     ingredientId: string(source.ingredientId ?? source.id),
     name: string(source.ingredientName ?? source.name ?? source.foodName ?? 'Ingrediente'),
     options,
@@ -80,14 +82,22 @@ function toOption(value: unknown) {
     availableQuantity: number(source.availableQuantity ?? source.currentQuantity ?? source.quantity),
     inventoryItemId: string(source.inventoryItemId ?? source.id),
     location: nullableString(source.location),
-    name: string(source.name ?? source.foodName ?? 'Existencia'),
+    foodId: nullableString(source.foodId),
     unit: string(source.unit),
+    expiresAt: nullableString(source.expiresAt),
+    status: string(source.status ?? 'ACTIVE'),
   };
 }
 
-function statusValue(value: unknown, available: number, optionCount: number): PreparedBatchInventoryIngredient['status'] {
-  if (value === 'IGNORED' || value === 'CONFIRMED' || value === 'INSUFFICIENT' || value === 'NO_INVENTORY' || value === 'AVAILABLE') return value;
-  return optionCount === 0 ? 'NO_INVENTORY' : available > 0 ? 'AVAILABLE' : 'INSUFFICIENT';
+function availabilityValue(value: unknown, status: unknown, available: number, required: number, optionCount: number): PreparedBatchInventoryIngredient['availability'] {
+  if (value === 'AVAILABLE' || value === 'PARTIAL' || value === 'UNAVAILABLE') return value;
+  if (status === 'AVAILABLE' || status === 'PARTIAL' || status === 'UNAVAILABLE') return status;
+  return optionCount === 0 ? 'UNAVAILABLE' : available >= required ? 'AVAILABLE' : 'PARTIAL';
+}
+
+function statusValue(value: unknown, availability: PreparedBatchInventoryIngredient['availability']): PreparedBatchInventoryIngredient['status'] {
+  if (value === 'IGNORED' || value === 'CONFIRMED') return value;
+  return availability;
 }
 
 function record(value: unknown): Record<string, unknown> {

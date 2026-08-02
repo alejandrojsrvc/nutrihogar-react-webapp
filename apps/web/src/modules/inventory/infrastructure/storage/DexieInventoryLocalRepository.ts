@@ -108,11 +108,17 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
     }
   }
 
-  async markOperationsConflicted(operationIds: string[], reasonById: Record<string, string | null>) {
+  async markOperationsConflicted(operationIds: string[], detailsById: Record<string, { reason: string | null; conflictCode: string | null; retryable: boolean; resultingVersion: number | null }>) {
     for (const operationId of operationIds) {
       const operation = await database.pendingInventoryOperations.get(operationId);
-      if (operation) await database.pendingInventoryOperations.put({ ...operation, syncStatus: 'CONFLICT', lastError: reasonById[operationId] ?? 'Conflicto de sincronización' });
+      const details = detailsById[operationId];
+      if (operation) await database.pendingInventoryOperations.put({ ...operation, conflictCode: details?.conflictCode ?? null, lastError: details?.reason ?? 'Conflicto de sincronización', resultingVersion: details?.resultingVersion ?? null, retryable: details?.retryable ?? false, syncStatus: 'CONFLICT' });
     }
+  }
+
+  async retryOperation(operationId: string, baseVersion: number) {
+    const operation = await database.pendingInventoryOperations.get(operationId);
+    if (operation) await database.pendingInventoryOperations.put({ ...operation, baseVersion, conflictCode: null, lastError: null, retryable: false, syncStatus: 'PENDING' });
   }
 
   async markOperationsFailed(operationIds: string[], error: string) {
@@ -150,6 +156,7 @@ function normalizeOperation(operation: Partial<OperationRow> & { householdId: st
     allowLastWriteWins: operation.allowLastWriteWins ?? false,
     baseVersion: operation.baseVersion ?? 0,
     createdAt: operation.createdAt ?? new Date().toISOString(),
+    conflictCode: operation.conflictCode ?? null,
     deviceId: operation.deviceId ?? getInventoryDeviceId(),
     householdId: operation.householdId,
     inventoryItemId: operation.inventoryItemId ?? '',
@@ -161,6 +168,8 @@ function normalizeOperation(operation: Partial<OperationRow> & { householdId: st
     payload: operation.payload,
     quantity: operation.quantity,
     retryCount: operation.retryCount ?? 0,
+    retryable: operation.retryable ?? false,
+    resultingVersion: operation.resultingVersion ?? null,
     syncStatus: operation.syncStatus ?? 'PENDING',
     type: operation.type ?? 'MOVEMENT',
     unit: operation.unit ?? 'UNIT',
