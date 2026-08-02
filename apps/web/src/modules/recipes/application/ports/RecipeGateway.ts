@@ -3,7 +3,6 @@ import type { Recipe, RecipeNutrition } from '../../domain/Recipe';
 export interface RecipeListCriteria {
   query?: string;
   category?: string;
-  status?: string;
   page: number;
   limit: number;
 }

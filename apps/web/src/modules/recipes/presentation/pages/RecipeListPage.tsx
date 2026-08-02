@@ -15,7 +15,7 @@ export function RecipeListPage() {
   const [status, setStatus] = useState('ACTIVE');
   const [page, setPage] = useState(1);
   useEffect(() => { const timer = window.setTimeout(() => { setQuery(search); setPage(1); }, 350); return () => window.clearTimeout(timer); }, [search]);
-  const recipes = useRecipes(households.activeHousehold?.id, { category: category || undefined, limit: pageSize, page, query: query || undefined, status: status || undefined });
+  const recipes = useRecipes(households.activeHousehold?.id, { category: category || undefined, limit: pageSize, page, query: query || undefined });
 
   if (households.isPending) return <p className="page-section" role="status">Cargando hogar...</p>;
   if (households.isError || !households.activeHousehold) return <p className="page-section" role="alert">No se pudo cargar el hogar activo.</p>;

@@ -20,6 +20,7 @@ describe('RecipeListPage', () => {
     await user.type(screen.getByLabelText('Buscar receta'), 'arroz');
     await user.selectOptions(screen.getByLabelText('Categoría'), 'LUNCH');
     await waitFor(() => expect(requests.some((url) => url.searchParams.get('category') === 'LUNCH' && url.searchParams.get('query') === 'arroz')).toBe(true));
+    expect(requests.every((url) => url.searchParams.get('status') === null)).toBe(true);
   });
 });
 

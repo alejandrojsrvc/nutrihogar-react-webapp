@@ -40,7 +40,7 @@ export class HttpRecipeGateway implements RecipeGateway {
 
   async list(householdId: string, criteria: RecipeListCriteria): Promise<RecipeListResult> {
     try {
-      const result = await (this.apiClient as unknown as RecipeApiClient).GET(`/api/households/${householdId}/recipes`, { params: { path: { householdId }, query: { category: criteria.category || undefined, limit: criteria.limit, page: criteria.page, query: criteria.query || undefined, status: criteria.status || undefined } } });
+      const result = await (this.apiClient as unknown as RecipeApiClient).GET(`/api/households/${householdId}/recipes`, { params: { path: { householdId }, query: { category: criteria.category || undefined, limit: criteria.limit, page: criteria.page, query: criteria.query || undefined } } });
       if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
       const source = result.data as Record<string, unknown> | undefined;
       if (!source) throw new ApiClientError('unknown', 'La API no devolvio las recetas.');
