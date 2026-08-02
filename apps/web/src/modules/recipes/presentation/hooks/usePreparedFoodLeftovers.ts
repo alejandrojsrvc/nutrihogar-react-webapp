@@ -65,7 +65,7 @@ export function useAddPreparedFoodLeftoverToInventory() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ leftoverId, input }: { leftoverId: string; input: AddPreparedFoodLeftoverToInventoryInput }) => addPreparedFoodLeftoverToInventoryUseCase.execute(leftoverId, input),
-    onSuccess: (_, leftoverId) => {
+    onSuccess: (_, { leftoverId }) => {
       void queryClient.invalidateQueries({ queryKey: preparedFoodLeftoverQueryKeys.all });
       void queryClient.invalidateQueries({ queryKey: ['inventory'] });
       void queryClient.invalidateQueries({ queryKey: preparedFoodLeftoverQueryKeys.detail(leftoverId) });
