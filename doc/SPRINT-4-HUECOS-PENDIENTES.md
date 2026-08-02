@@ -1,6 +1,13 @@
 # Sprint 4: Huecos Pendientes
 
-Este documento registra lo que todavía falta para considerar completamente cerrado el flujo de Sprint 4. La implementación actual está en el PR `#117`.
+Este documento registra lo que todavía falta para considerar completamente cerrado el flujo de Sprint 4. La implementación base de `#54–#56` se continúa en un PR posterior a `#117`; `#57` permanece fuera de este bloque por requerir QA manual completo.
+
+## Estado Del Bloque #54–#56
+
+- `#54`: persistencia de snapshots, detalle offline, operaciones atómicas y recuperación local implementadas; pendiente validación de CI y navegador real.
+- `#55`: sincronización inicial, recuperación de operaciones interrumpidas, snapshots de conflictos, descarte y estado global implementados; pendiente validar conflictos y reintentos contra backend.
+- `#56`: dashboard con consultas filtradas, estados independientes, acciones rápidas, filtros por URL e indicador global implementado; pendiente validación responsive y CI.
+- Offline queda limitado a ajustes, consumos, desperdicios y vencimientos. Creación, edición de metadatos, archivo y consumo preparado siguen requiriendo conexión.
 
 ## Estado de Validación
 

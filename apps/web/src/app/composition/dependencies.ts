@@ -245,7 +245,7 @@ export const loadInventoryUseCase = new LoadInventoryUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
-export const getInventoryItemUseCase = new GetInventoryItemUseCase(inventoryGateway);
+export const getInventoryItemUseCase = new GetInventoryItemUseCase(inventoryGateway, inventoryLocalRepository, connectivityGateway);
 export const createManualInventoryItemUseCase = new CreateManualInventoryItemUseCase(
   inventoryGateway,
   connectivityGateway,

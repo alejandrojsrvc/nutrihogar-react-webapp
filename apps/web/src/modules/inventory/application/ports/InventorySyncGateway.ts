@@ -12,6 +12,7 @@ export interface InventorySyncConflict {
 
 export interface InventorySyncResult {
   processed: string[];
+  processedSnapshots?: Record<string, InventoryItem>;
   conflicts: InventorySyncConflict[];
   snapshot: InventoryItem | null;
 }

@@ -22,6 +22,7 @@ interface OperationRow extends PendingInventoryOperation {
   syncStatus: InventoryOperationSyncStatus;
   retryCount: number;
   lastError: string | null;
+  discarded: boolean;
 }
 
 interface SyncResultRow extends InventorySyncResultRecord {
@@ -72,6 +73,11 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
     return database.inventorySnapshots.get(householdId).then((row) => row?.items ?? null);
   }
 
+  async getSnapshotForItem(inventoryItemId: string) {
+    const rows = await database.inventorySnapshots.toArray();
+    return rows.flatMap((row) => row.items).find((item) => item.id === inventoryItemId) ?? null;
+  }
+
   async saveSnapshot(householdId: string, items: InventoryItem[]) {
     await database.inventorySnapshots.put({ householdId, items, updatedAt: new Date().toISOString() });
   }
@@ -89,7 +95,7 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
 
   async listPendingOperations(householdId: string) {
     const operations = await database.pendingInventoryOperations.where('householdId').equals(householdId).toArray();
-    return operations.filter((operation) => operation.syncStatus === 'PENDING' || operation.syncStatus === 'FAILED');
+    return operations.filter((operation) => !operation.discarded && (operation.syncStatus === 'PENDING' || operation.syncStatus === 'FAILED'));
   }
 
   async markOperationsSynchronized(operationIds: string[]) {
@@ -101,6 +107,13 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
     });
   }
 
+  async saveOperationSnapshots(snapshotsById: Record<string, InventoryItem>) {
+    for (const [operationId, snapshot] of Object.entries(snapshotsById)) {
+      const operation = await database.pendingInventoryOperations.get(operationId);
+      if (operation) await database.pendingInventoryOperations.put({ ...operation, snapshot });
+    }
+  }
+
   async markOperationsSyncing(operationIds: string[]) {
     for (const operationId of operationIds) {
       const operation = await database.pendingInventoryOperations.get(operationId);
@@ -108,17 +121,26 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
     }
   }
 
-  async markOperationsConflicted(operationIds: string[], detailsById: Record<string, { reason: string | null; conflictCode: string | null; retryable: boolean; resultingVersion: number | null }>) {
+  async recoverSyncingOperations(householdId: string) {
+    const operations = await database.pendingInventoryOperations.where('householdId').equals(householdId).toArray();
+    await database.transaction('rw', database.pendingInventoryOperations, async () => {
+      for (const operation of operations) {
+        if (operation.syncStatus === 'SYNCING') await database.pendingInventoryOperations.put({ ...operation, syncStatus: 'PENDING', lastError: 'Sincronización interrumpida; se reintentará.' });
+      }
+    });
+  }
+
+  async markOperationsConflicted(operationIds: string[], detailsById: Record<string, { reason: string | null; conflictCode: string | null; retryable: boolean; resultingVersion: number | null; snapshot?: InventoryItem | null }>) {
     for (const operationId of operationIds) {
       const operation = await database.pendingInventoryOperations.get(operationId);
       const details = detailsById[operationId];
-      if (operation) await database.pendingInventoryOperations.put({ ...operation, conflictCode: details?.conflictCode ?? null, lastError: details?.reason ?? 'Conflicto de sincronización', resultingVersion: details?.resultingVersion ?? null, retryable: details?.retryable ?? false, syncStatus: 'CONFLICT' });
+      if (operation) await database.pendingInventoryOperations.put({ ...operation, conflictCode: details?.conflictCode ?? null, lastError: details?.reason ?? 'Conflicto de sincronización', resultingVersion: details?.resultingVersion ?? null, retryable: details?.retryable ?? false, snapshot: details?.snapshot ?? null, syncStatus: 'CONFLICT' });
     }
   }
 
   async retryOperation(operationId: string, baseVersion: number) {
     const operation = await database.pendingInventoryOperations.get(operationId);
-    if (operation) await database.pendingInventoryOperations.put({ ...operation, baseVersion, conflictCode: null, lastError: null, retryable: false, syncStatus: 'PENDING' });
+    if (operation) await database.pendingInventoryOperations.put({ ...operation, baseVersion, conflictCode: null, discarded: false, lastError: null, retryable: false, syncStatus: 'PENDING' });
   }
 
   async markOperationsFailed(operationIds: string[], error: string) {
@@ -131,7 +153,8 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
   async saveSyncResults(results: InventorySyncResultRecord[]) {
     await database.inventorySyncResults.bulkAdd(results);
     for (const result of results) {
-      await database.metadata.put({ householdId: result.householdId, key: 'lastSyncAt', value: result.createdAt });
+      const current = await this.getLastSyncAt(result.householdId);
+      if (!current || result.createdAt > current) await database.metadata.put({ householdId: result.householdId, key: 'lastSyncAt', value: result.createdAt });
     }
   }
 
@@ -142,12 +165,12 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
 
   async discardOperation(operationId: string) {
     const operation = await database.pendingInventoryOperations.get(operationId);
-    if (operation) await database.pendingInventoryOperations.put({ ...operation, syncStatus: 'FAILED', lastError: 'Operación descartada por la persona usuaria' });
+    if (operation) await database.pendingInventoryOperations.put({ ...operation, discarded: true, syncStatus: 'FAILED', lastError: 'Operación descartada por la persona usuaria' });
   }
 
   async getLastSyncAt(householdId: string) {
     const rows = await database.metadata.where({ householdId, key: 'lastSyncAt' }).toArray();
-    return rows[0]?.value ?? null;
+    return rows.reduce<string | null>((latest, row) => !latest || row.value > latest ? row.value : latest, null);
   }
 }
 
@@ -169,6 +192,7 @@ function normalizeOperation(operation: Partial<OperationRow> & { householdId: st
     quantity: operation.quantity,
     retryCount: operation.retryCount ?? 0,
     retryable: operation.retryable ?? false,
+    discarded: operation.discarded ?? false,
     resultingVersion: operation.resultingVersion ?? null,
     syncStatus: operation.syncStatus ?? 'PENDING',
     type: operation.type ?? 'MOVEMENT',

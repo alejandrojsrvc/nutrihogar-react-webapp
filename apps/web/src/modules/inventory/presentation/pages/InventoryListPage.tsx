@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
@@ -12,9 +12,10 @@ type SpecialFilter = 'ALL' | 'BELOW_MINIMUM' | 'DEPLETED' | 'EXPIRING';
 
 export function InventoryListPage() {
   const households = useHouseholds();
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get('query') ?? '');
   const [itemType, setItemType] = useState<InventoryItemType | ''>('');
-  const [specialFilter, setSpecialFilter] = useState<SpecialFilter>('ALL');
+  const [specialFilter, setSpecialFilter] = useState<SpecialFilter>(() => searchParams.get('status') === 'DEPLETED' ? 'DEPLETED' : searchParams.get('belowMinimum') === 'true' ? 'BELOW_MINIMUM' : searchParams.has('expiresBefore') ? 'EXPIRING' : 'ALL');
   const filters = {
     belowMinimum: specialFilter === 'BELOW_MINIMUM' ? true : undefined,
     expiresBefore: specialFilter === 'EXPIRING' ? inThirtyDays() : undefined,
@@ -38,7 +39,7 @@ export function InventoryListPage() {
       <BackButton fallback="/app" />
       <PageHeader action={<Link className="button button--primary" to="/app/inventario/nuevo">Agregar existencia</Link>} eyebrow={households.activeHousehold.name} title="Inventario del hogar" titleId="inventory-title" description="Consulta lo que tienes disponible y mantenlo actualizado." />
       <SyncStatus conflictsCount={syncStatus.data?.conflictsCount ?? 0} isOnline={syncStatus.data?.isOnline ?? true} lastSyncAt={syncStatus.data?.lastSyncAt ?? null} pendingCount={syncStatus.data?.pendingCount ?? 0} isSyncing={synchronize.isPending} onSynchronize={() => synchronize.mutate()} />
-      {conflicts.data?.length ? <section className="inventory-conflicts" aria-labelledby="inventory-conflicts-title"><h2 id="inventory-conflicts-title">Revisa operaciones con conflicto</h2><ul>{conflicts.data.map((operation) => <li key={operation.operationId}><span>Operación sobre {operation.inventoryItemId}{operation.conflictCode ? ` · ${conflictLabel(operation.conflictCode)}` : ''}{operation.lastError ? `: ${operation.lastError}` : ''}</span>{operation.retryable ? <button className="button button--text" disabled={retryConflict.isPending} onClick={() => retryConflict.mutate({ baseVersion: operation.resultingVersion ?? 0, operationId: operation.operationId })} type="button">Reintentar</button> : null}<button className="button button--text" disabled={discardConflict.isPending} onClick={() => discardConflict.mutate(operation.operationId)} type="button">Descartar</button></li>)}</ul></section> : null}
+      {conflicts.data?.length ? <section className="inventory-conflicts" aria-labelledby="inventory-conflicts-title"><h2 id="inventory-conflicts-title">Revisa operaciones con conflicto</h2><ul>{conflicts.data.map((operation) => { const itemName = inventory.data?.items.find((item) => item.id === operation.inventoryItemId)?.name ?? operation.snapshot?.name ?? 'una existencia'; const baseVersion = operation.resultingVersion ?? operation.snapshot?.version; return <li key={operation.operationId}><span>Operación sobre {itemName}{operation.conflictCode ? ` · ${conflictLabel(operation.conflictCode)}` : ''}{operation.lastError ? `: ${operation.lastError}` : ''}</span>{operation.retryable && baseVersion != null ? <button className="button button--text" disabled={retryConflict.isPending} onClick={() => retryConflict.mutate({ baseVersion, operationId: operation.operationId })} type="button">Reintentar</button> : null}<button className="button button--text" disabled={discardConflict.isPending} onClick={() => discardConflict.mutate(operation.operationId)} type="button">Descartar</button></li>; })}</ul></section> : null}
       <div className="inventory-filters">
         <div className="form-field"><label htmlFor="inventory-search">Buscar existencia</label><input id="inventory-search" onChange={(event) => setSearch(event.target.value)} placeholder="Ej. arroz o freezer" type="search" value={search} /></div>
         <div className="form-field"><label htmlFor="inventory-type">Tipo</label><select id="inventory-type" onChange={(event) => setItemType(event.target.value as InventoryItemType | '')} value={itemType}><option value="">Todos</option><option value="FOOD">Alimentos</option><option value="PREPARED_FOOD">Preparaciones</option><option value="CUSTOM">Personalizados</option></select></div>

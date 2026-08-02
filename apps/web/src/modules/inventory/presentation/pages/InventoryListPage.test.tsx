@@ -62,6 +62,21 @@ describe('InventoryListPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Todavía no hay existencias' })).toBeInTheDocument();
   });
+
+  it('initializes the special filter from the dashboard link', async () => {
+    setOnline();
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+      const pathname = new URL(request.url).pathname;
+      if (pathname === '/api/households') return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar', timezone: 'UTC' }]);
+      if (pathname === '/api/households/household-1/inventory') return jsonResponse({ items: [], limit: 1, page: 1, total: 0 });
+      throw new Error(`Unexpected request: ${request.url}`);
+    });
+
+    renderRoute('/app/inventario?status=DEPLETED', createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }));
+
+    expect(await screen.findByLabelText('Estado')).toHaveValue('DEPLETED');
+  });
 });
 
 function jsonResponse(body: unknown) {

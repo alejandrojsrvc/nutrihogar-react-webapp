@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -45,6 +45,15 @@ export function useInventory(householdId: string | undefined, filters: Inventory
     queryFn: () => loadInventoryUseCase.execute(householdId as string, filters),
     retry: false,
   });
+}
+
+export function useInventoryDashboard(householdId: string | undefined) {
+  const [expiryDate] = useState(dashboardExpiryDate);
+  const inventory = useInventory(householdId, { limit: 20 });
+  const depleted = useInventory(householdId, { limit: 1, status: 'DEPLETED' });
+  const belowMinimum = useInventory(householdId, { belowMinimum: true, limit: 1 });
+  const expiring = useInventory(householdId, { expiresBefore: expiryDate, limit: 1 });
+  return { belowMinimum, depleted, expiring, inventory };
 }
 
 export function useInventoryItem(inventoryItemId: string | undefined) {
@@ -171,6 +180,7 @@ export function useArchiveInventoryItem() {
 
 export function useSynchronizeInventory(householdId: string | undefined) {
   const queryClient = useQueryClient();
+  const startedForHousehold = useRef<string | undefined>(undefined);
   const mutation = useMutation({
     mutationFn: () => synchronizeInventoryUseCase.execute(householdId as string),
     onSuccess: () => {
@@ -181,6 +191,10 @@ export function useSynchronizeInventory(householdId: string | undefined) {
     },
   });
   useEffect(() => {
+    if (householdId && navigator.onLine && startedForHousehold.current !== householdId) {
+      startedForHousehold.current = householdId;
+      mutation.mutate();
+    }
     const synchronizeOnReconnect = () => {
       if (householdId && navigator.onLine && !mutation.isPending) mutation.mutate();
     };
@@ -227,4 +241,8 @@ export function useInventorySyncStatus(householdId: string | undefined) {
     queryFn: async () => ({ ...(await getInventorySyncStatusUseCase.execute(householdId as string)), isOnline }),
     retry: false,
   });
+}
+
+function dashboardExpiryDate() {
+  return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 }

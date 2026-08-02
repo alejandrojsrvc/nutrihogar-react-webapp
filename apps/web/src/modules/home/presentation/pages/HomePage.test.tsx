@@ -138,6 +138,9 @@ describe('HomePage', () => {
     expect(await screen.findByRole('heading', { name: 'Lo que requiere atención' })).toBeInTheDocument();
     expect(screen.getByText('Agotados')).toBeInTheDocument();
     expect(screen.getByText('Por comprar')).toBeInTheDocument();
+    expect(screen.getByText('Por vencer')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Agregar compra' })).toHaveAttribute('href', '/app/compras/nueva');
+    expect(screen.getByRole('link', { name: 'Ajustar inventario' })).toHaveAttribute('href', '/app/inventario');
     expect(await screen.findByText('Arroz')).toBeInTheDocument();
   });
 });

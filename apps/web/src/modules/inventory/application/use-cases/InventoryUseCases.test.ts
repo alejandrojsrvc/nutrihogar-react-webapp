@@ -10,6 +10,7 @@ import {
   ExpireInventoryItemUseCase,
   WasteInventoryItemUseCase,
   ConsumePreparedFoodUseCase,
+  GetInventoryItemUseCase,
   LoadInventoryUseCase,
   SynchronizeInventoryUseCase,
 } from './InventoryUseCases';
@@ -61,6 +62,26 @@ describe('InventoryUseCases', () => {
     await expect(new LoadInventoryUseCase(gateway, local, connectivity).execute('household-1')).resolves.toMatchObject({ items: [item] });
   });
 
+  it('merges a filtered remote page into the complete local snapshot', async () => {
+    const gateway = { list: vi.fn().mockResolvedValue({ items: [{ ...item, id: 'item-2', name: 'Lentejas' }], limit: 1, page: 1, total: 2 }) } as unknown as InventoryGateway;
+    const local = localRepository();
+    vi.mocked(local.getSnapshot).mockResolvedValue([item]);
+    const connectivity: ConnectivityGateway = { isOnline: () => true };
+
+    await new LoadInventoryUseCase(gateway, local, connectivity).execute('household-1', { query: 'lentejas' });
+
+    expect(local.saveSnapshot).toHaveBeenCalledWith('household-1', [item, expect.objectContaining({ id: 'item-2' })]);
+  });
+
+  it('loads an inventory detail from the local snapshot while offline', async () => {
+    const local = localRepository();
+    local.getSnapshotForItem = vi.fn().mockResolvedValue(item);
+    const gateway = { getById: vi.fn() } as unknown as InventoryGateway;
+
+    await expect(new GetInventoryItemUseCase(gateway, local, { isOnline: () => false }).execute(item.id)).resolves.toEqual(item);
+    expect(gateway.getById).not.toHaveBeenCalled();
+  });
+
   it('returns a local snapshot while offline', async () => {
     const gateway = { list: vi.fn() } as unknown as InventoryGateway;
     const local = localRepository();
@@ -77,7 +98,16 @@ describe('InventoryUseCases', () => {
     const connectivity: ConnectivityGateway = { isOnline: () => false };
 
     await expect(new AdjustInventoryItemUseCase(gateway, local, connectivity).execute('household-1', item, { quantity: 750, reason: 'Conteo', unit: 'GRAM' })).resolves.toMatchObject({ currentQuantity: 750 });
-    expect(local.saveOperation).toHaveBeenCalledWith('household-1', expect.objectContaining({ newQuantity: 750, type: 'ABSOLUTE_ADJUSTMENT' }));
+    expect(local.saveOperation).toHaveBeenCalledWith('household-1', expect.objectContaining({ newQuantity: 750, payload: { reason: 'Conteo' }, type: 'ABSOLUTE_ADJUSTMENT' }));
+  });
+
+  it('reactivates an optimistically adjusted depleted item and keeps the reason locally', async () => {
+    const local = localRepository();
+    const depleted = { ...item, currentQuantity: 0, status: 'DEPLETED' as const };
+    const optimistic = await new AdjustInventoryItemUseCase({} as InventoryGateway, local, { isOnline: () => false }).execute('household-1', depleted, { quantity: 50, reason: 'Reposición', unit: 'GRAM' });
+
+    expect(optimistic).toMatchObject({ currentQuantity: 50, status: 'ACTIVE' });
+    expect(local.saveOperation).toHaveBeenCalledWith('household-1', expect.objectContaining({ payload: { reason: 'Reposición' } }));
   });
 
   it('synchronizes pending operations and marks processed ids', async () => {
@@ -100,7 +130,7 @@ describe('InventoryUseCases', () => {
 
     await new SynchronizeInventoryUseCase(gateway, local, connectivity, 'device-1').execute('household-1');
 
-    expect(local.markOperationsConflicted).toHaveBeenCalledWith(['operation-2'], { 'operation-2': { conflictCode: 'INSUFFICIENT_BALANCE', reason: 'Cantidad insuficiente', resultingVersion: 3, retryable: false } });
+    expect(local.markOperationsConflicted).toHaveBeenCalledWith(['operation-2'], { 'operation-2': { conflictCode: 'INSUFFICIENT_BALANCE', reason: 'Cantidad insuficiente', resultingVersion: 3, retryable: false, snapshot: item } });
     expect(local.saveSyncResults).toHaveBeenCalledWith([expect.objectContaining({ operationId: 'operation-2', status: 'CONFLICT' })]);
     expect(local.markOperationsSynchronized).toHaveBeenCalledWith([]);
   });
