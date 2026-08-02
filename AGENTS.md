@@ -119,6 +119,14 @@ Despues de abrirlo, devolver la URL y detenerse. No esperar GitHub Actions, hace
 
 ## Pruebas
 
+- Crear o actualizar unicamente las pruebas necesarias para el comportamiento modificado y los criterios de aceptacion.
+- Elegir el nivel minimo adecuado: dominio, aplicacion, infraestructura, componente o flujo.
+- No duplicar el mismo comportamiento entre capas salvo que cada prueba compruebe un resultado diferente.
+- Reservar `renderRoute` para comportamientos que dependan realmente de routing, autenticacion o providers.
+- Despues de un render asincrono, usar `findBy*` o `waitFor`; no usar `getBy*` como mecanismo de espera.
+- Probar resultados observables, accesibilidad, validaciones y estados relevantes; no detalles internos.
+- El agente debe escribir las pruebas necesarias, pero no ejecutar Vitest ni build localmente.
+- La verificacion completa de lint, tests y build corresponde a GitHub Actions.
 - Dominio y utilidades: unitarias puras.
 - Casos de uso y hooks: exito, error y transiciones relevantes.
 - Componentes: comportamiento observable y accesibilidad.
