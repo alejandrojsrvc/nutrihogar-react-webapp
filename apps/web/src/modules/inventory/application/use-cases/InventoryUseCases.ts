@@ -30,7 +30,16 @@ export class LoadInventoryUseCase {
 
     const result = await this.gateway.list(householdId, filters);
     try {
-      await this.localRepository.saveSnapshot(householdId, result.items);
+      const hasFilters = Object.entries(filters).some(([, value]) => value !== undefined);
+      const isComplete = !hasFilters && (!filters.page || filters.page === 1) && (!filters.limit || result.items.length >= result.total);
+      if (isComplete) {
+        await this.localRepository.saveSnapshot(householdId, result.items);
+      } else {
+        const current = await this.localRepository.getSnapshot(householdId);
+        const byId = new Map((current ?? []).map((item) => [item.id, item]));
+        result.items.forEach((item) => byId.set(item.id, item));
+        await this.localRepository.saveSnapshot(householdId, [...byId.values()]);
+      }
     } catch {
       // La caché no debe ocultar un inventario remoto disponible.
     }
@@ -39,9 +48,14 @@ export class LoadInventoryUseCase {
 }
 
 export class GetInventoryItemUseCase {
-  constructor(private readonly gateway: InventoryGateway) {}
+  constructor(private readonly gateway: InventoryGateway, private readonly localRepository: InventoryLocalRepository, private readonly connectivity: ConnectivityGateway) {}
 
-  execute(inventoryItemId: string) {
+  async execute(inventoryItemId: string) {
+    if (!this.connectivity.isOnline()) {
+      const item = await this.localRepository.getSnapshotForItem?.(inventoryItemId);
+      if (item) return item;
+      throw new Error('No hay una existencia disponible sin conexión.');
+    }
     return this.gateway.getById(inventoryItemId);
   }
 }
@@ -65,8 +79,12 @@ export class AdjustInventoryItemUseCase {
     private readonly connectivity: ConnectivityGateway,
   ) {}
 
-  execute(householdId: string, inventoryItem: InventoryItem, input: AdjustInventoryItemInput) {
-    if (this.connectivity.isOnline()) return this.gateway.adjust(inventoryItem.id, input);
+  async execute(householdId: string, inventoryItem: InventoryItem, input: AdjustInventoryItemInput) {
+    if (this.connectivity.isOnline()) {
+      const result = await this.gateway.adjust(inventoryItem.id, input);
+      await saveRemoteSnapshot(this.localRepository, householdId, result);
+      return result;
+    }
     return this.queueAdjustment(householdId, inventoryItem, input);
   }
 
@@ -82,6 +100,7 @@ export class AdjustInventoryItemUseCase {
       occurredAt: (input.occurredAt ?? new Date()).toISOString(),
       operationId: crypto.randomUUID(),
       newQuantity: input.quantity,
+      payload: { reason: input.reason },
       type: 'ABSOLUTE_ADJUSTMENT',
       unit: input.unit,
     };
@@ -98,9 +117,13 @@ export class ConsumeInventoryItemUseCase {
     private readonly connectivity: ConnectivityGateway,
   ) {}
 
-  execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+  async execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
     validateExit(inventoryItem, input);
-    if (this.connectivity.isOnline()) return this.gateway.consume(inventoryItem.id, input);
+    if (this.connectivity.isOnline()) {
+      const result = await this.gateway.consume(inventoryItem.id, input);
+      await saveRemoteSnapshot(this.localRepository, householdId, result);
+      return result;
+    }
     return this.queueConsumption(householdId, inventoryItem, input);
   }
 
@@ -116,6 +139,7 @@ export class ConsumeInventoryItemUseCase {
       movementType: 'CONSUMPTION',
       occurredAt: (input.occurredAt ?? new Date()).toISOString(),
       operationId: crypto.randomUUID(),
+      payload: input.reason ? { reason: input.reason } : undefined,
       quantity: input.quantity,
       type: 'MOVEMENT',
       unit: input.unit,
@@ -133,9 +157,13 @@ export class WasteInventoryItemUseCase {
     private readonly connectivity: ConnectivityGateway,
   ) {}
 
-  execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+  async execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
     validateExit(inventoryItem, input);
-    if (this.connectivity.isOnline()) return this.gateway.waste(inventoryItem.id, input);
+    if (this.connectivity.isOnline()) {
+      const result = await this.gateway.waste(inventoryItem.id, input);
+      await saveRemoteSnapshot(this.localRepository, householdId, result);
+      return result;
+    }
     return queueMovement(this.localRepository, householdId, inventoryItem, input, 'WASTE');
   }
 }
@@ -147,9 +175,13 @@ export class ExpireInventoryItemUseCase {
     private readonly connectivity: ConnectivityGateway,
   ) {}
 
-  execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
+  async execute(householdId: string, inventoryItem: InventoryItem, input: ConsumeInventoryItemInput) {
     validateExit(inventoryItem, input);
-    if (this.connectivity.isOnline()) return this.gateway.expire(inventoryItem.id, input);
+    if (this.connectivity.isOnline()) {
+      const result = await this.gateway.expire(inventoryItem.id, input);
+      await saveRemoteSnapshot(this.localRepository, householdId, result);
+      return result;
+    }
     return queueMovement(this.localRepository, householdId, inventoryItem, input, 'EXPIRATION');
   }
 }
@@ -236,6 +268,7 @@ export class SynchronizeInventoryUseCase {
 
   async execute(householdId: string) {
     if (!this.connectivity.isOnline()) return { processed: [], conflicts: [], snapshot: null };
+    if (this.localRepository.recoverSyncingOperations) await this.localRepository.recoverSyncingOperations(householdId);
     const operations = await this.localRepository.listPendingOperations(householdId);
     if (operations.length === 0) return { processed: [], conflicts: [], snapshot: null };
     if (this.localRepository.markOperationsSyncing) {
@@ -251,12 +284,21 @@ export class SynchronizeInventoryUseCase {
       throw error;
     }
     await this.localRepository.markOperationsSynchronized(result.processed);
+    if (result.processedSnapshots && this.localRepository.saveOperationSnapshots) {
+      await this.localRepository.saveOperationSnapshots(result.processedSnapshots);
+    }
+    for (const snapshot of Object.values(result.processedSnapshots ?? {})) {
+      await saveOptimisticSnapshot(this.localRepository, householdId, snapshot);
+    }
     const conflictIds = result.conflicts.map((conflict) => conflict.operationId);
     if (conflictIds.length && this.localRepository.markOperationsConflicted) {
       await this.localRepository.markOperationsConflicted(
         conflictIds,
-        Object.fromEntries(result.conflicts.map((conflict) => [conflict.operationId, { conflictCode: conflict.conflictCode, reason: conflict.reason, resultingVersion: conflict.resultingVersion, retryable: conflict.retryable }])),
+        Object.fromEntries(result.conflicts.map((conflict) => [conflict.operationId, { conflictCode: conflict.conflictCode, reason: conflict.reason, resultingVersion: conflict.resultingVersion, retryable: conflict.retryable, snapshot: conflict.snapshot }])),
       );
+    }
+    for (const conflict of result.conflicts) {
+      if (conflict.snapshot) await saveOptimisticSnapshot(this.localRepository, householdId, conflict.snapshot);
     }
     if (this.localRepository.saveSyncResults) {
       await this.localRepository.saveSyncResults([
@@ -284,6 +326,7 @@ async function queueMovement(
     movementType,
     occurredAt: (input.occurredAt ?? new Date()).toISOString(),
     operationId: crypto.randomUUID(),
+    payload: input.reason ? { reason: input.reason } : undefined,
     quantity: input.quantity,
     type: 'MOVEMENT',
     unit: input.unit,
@@ -335,6 +378,18 @@ async function saveOperationAndOptimisticSnapshot(
   await repository.saveSnapshot(householdId, items);
 }
 
+async function saveRemoteSnapshot(repository: InventoryLocalRepository, householdId: string, item: InventoryItem) {
+  try {
+    const snapshot = await repository.getSnapshot(householdId);
+    const items = snapshot?.some((current) => current.id === item.id)
+      ? snapshot.map((current) => current.id === item.id ? item : current)
+      : [...(snapshot ?? []), item];
+    await repository.saveSnapshot(householdId, items);
+  } catch {
+    // La caché no debe convertir una mutación remota exitosa en un error.
+  }
+}
+
 async function saveOptimisticSnapshot(
   repository: InventoryLocalRepository,
   householdId: string,
@@ -348,10 +403,11 @@ async function saveOptimisticSnapshot(
 }
 
 function optimisticItem(item: InventoryItem, delta: number): InventoryItem {
+  const quantity = Math.max(0, item.currentQuantity + delta);
   return {
     ...item,
-    currentQuantity: Math.max(0, item.currentQuantity + delta),
-    status: item.currentQuantity + delta <= 0 ? 'DEPLETED' : item.status,
+    currentQuantity: quantity,
+    status: quantity <= 0 ? 'DEPLETED' : 'ACTIVE',
     updatedAt: new Date().toISOString(),
   };
 }
