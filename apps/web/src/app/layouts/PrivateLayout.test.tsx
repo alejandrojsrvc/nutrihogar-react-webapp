@@ -99,7 +99,10 @@ function renderPrivateLayout() {
     [
       {
         element: <PrivateLayout />,
-        children: [{ path: '/app', element: <p>Contenido privado</p> }],
+        children: [
+          { path: '/app', element: <p>Contenido privado</p> },
+          { path: '/app/inventario', element: <p>Inventario</p> },
+        ],
       },
     ],
     { initialEntries: ['/app'] },
