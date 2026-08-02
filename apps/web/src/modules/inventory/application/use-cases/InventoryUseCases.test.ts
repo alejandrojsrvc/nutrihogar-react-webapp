@@ -52,6 +52,15 @@ describe('InventoryUseCases', () => {
     expect(local.saveSnapshot).toHaveBeenCalledWith('household-1', [item]);
   });
 
+  it('keeps remote inventory available when local caching fails', async () => {
+    const gateway = { list: vi.fn().mockResolvedValue({ items: [item], limit: 20, page: 1, total: 1 }) } as unknown as InventoryGateway;
+    const local = localRepository();
+    vi.mocked(local.saveSnapshot).mockRejectedValue(new Error('IndexedDB unavailable'));
+    const connectivity: ConnectivityGateway = { isOnline: () => true };
+
+    await expect(new LoadInventoryUseCase(gateway, local, connectivity).execute('household-1')).resolves.toMatchObject({ items: [item] });
+  });
+
   it('returns a local snapshot while offline', async () => {
     const gateway = { list: vi.fn() } as unknown as InventoryGateway;
     const local = localRepository();
@@ -111,16 +120,18 @@ describe('InventoryUseCases', () => {
 
     await expect(useCase.execute('household-1', item, { quantity: 500, unit: 'GRAM' })).resolves.toMatchObject({ currentQuantity: 0 });
     expect(local.saveOperation).toHaveBeenCalledWith('household-1', expect.objectContaining({ movementType: 'EXPIRATION' }));
-    await expect(useCase.execute('household-1', item, { quantity: 501, unit: 'GRAM' })).rejects.toThrow('no superar');
+    expect(() => useCase.execute('household-1', item, { quantity: 501, unit: 'GRAM' })).toThrow('no superar');
   });
 
   it('only allows prepared inventory items in the meal-producing flow', async () => {
-    const gateway = { consumePrepared: vi.fn() } as unknown as InventoryGateway;
+    const gateway = {
+      consumePrepared: vi.fn().mockResolvedValue({ consumedAt: '2026-08-02T12:00:00.000Z', id: 'meal-1', mealType: 'LUNCH', totals: {} }),
+    } as unknown as InventoryGateway;
     const prepared = { ...item, itemType: 'PREPARED_FOOD' as const };
     const useCase = new ConsumePreparedFoodUseCase(gateway);
 
-    await expect(useCase.execute(prepared, { adultProfileId: 'profile-1', consumedAt: new Date(), mealType: 'LUNCH', quantity: 100 })).resolves.toBeUndefined();
+    await expect(useCase.execute(prepared, { adultProfileId: 'profile-1', consumedAt: new Date(), mealType: 'LUNCH', quantity: 100 })).resolves.toMatchObject({ id: 'meal-1', mealType: 'LUNCH' });
     expect(gateway.consumePrepared).toHaveBeenCalled();
-    await expect(useCase.execute(item, { adultProfileId: 'profile-1', consumedAt: new Date(), mealType: 'LUNCH', quantity: 10 })).rejects.toThrow('alimentos preparados');
+    expect(() => useCase.execute(item, { adultProfileId: 'profile-1', consumedAt: new Date(), mealType: 'LUNCH', quantity: 10 })).toThrow('alimentos preparados');
   });
 });

@@ -124,7 +124,7 @@ describe('HomePage', () => {
   it('shows a compact inventory pulse with shopping and sync context', async () => {
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
-      const pathname = new URL(request.url).pathname;
+      const pathname = new URL(request.url).pathname.replace(/\/+$/, '');
       if (pathname.endsWith('/api/households')) return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar Sojo', timezone: 'UTC' }]);
       if (pathname.includes('/adult-profiles')) return jsonResponse([{ activityLevel: 'MODERATE', age: 36, biologicalSex: 'MALE', birthDate: '1990-05-20', dietaryRestrictions: [], hasKitchenScale: true, heightCm: 175, householdId: 'household-1', id: 'profile-1', isActive: true, name: 'Alejandro', primaryGoal: 'MAINTENANCE', updatedAt: '2026-08-01T12:00:00.000Z', createdAt: '2026-08-01T12:00:00.000Z', userId: 'user-1' }]);
       if (pathname.endsWith('/inventory')) return jsonResponse({ items: [{ currentQuantity: 0, id: 'item-1', itemType: 'FOOD', name: 'Arroz', status: 'DEPLETED', unit: 'GRAM', version: 1 }], limit: 20, page: 1, total: 1 });
@@ -138,7 +138,7 @@ describe('HomePage', () => {
     expect(await screen.findByRole('heading', { name: 'Lo que requiere atención' })).toBeInTheDocument();
     expect(screen.getByText('Agotados')).toBeInTheDocument();
     expect(screen.getByText('Por comprar')).toBeInTheDocument();
-    expect(screen.getByText('Arroz')).toBeInTheDocument();
+    expect(await screen.findByText('Arroz')).toBeInTheDocument();
   });
 });
 

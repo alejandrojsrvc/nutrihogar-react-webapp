@@ -29,7 +29,11 @@ export class LoadInventoryUseCase {
     }
 
     const result = await this.gateway.list(householdId, filters);
-    await this.localRepository.saveSnapshot(householdId, result.items);
+    try {
+      await this.localRepository.saveSnapshot(householdId, result.items);
+    } catch {
+      // La caché no debe ocultar un inventario remoto disponible.
+    }
     return result;
   }
 }

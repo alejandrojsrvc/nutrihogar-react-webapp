@@ -15,7 +15,7 @@ describe('prepared batch inventory use cases', () => {
     const gateway = { confirm: vi.fn().mockResolvedValue(undefined) } as PreparedBatchInventoryGateway;
     const useCase = new ConfirmPreparedBatchInventoryUseCase(gateway);
 
-    await expect(useCase.execute('batch-1', [])).rejects.toThrow('ingredientes');
+    expect(() => useCase.execute('batch-1', [])).toThrow('ingredientes');
     await expect(useCase.execute('batch-1', [{ action: 'IGNORE', ingredientId: 'ingredient-1' }])).resolves.toBeUndefined();
     expect(gateway.confirm).toHaveBeenCalledWith('batch-1', [{ action: 'IGNORE', ingredientId: 'ingredient-1' }]);
   });
