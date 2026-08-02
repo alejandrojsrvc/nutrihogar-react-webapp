@@ -1,22 +1,26 @@
-import { Apple, ClipboardList, House, LogOut, Soup, UserRound, UtensilsCrossed } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { NavLink } from 'react-router';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
 import { ThemeControl } from './ThemeControl';
+import { mainNavigation } from '../navigation/mainNavigation';
 
 function NavigationLink({
   children,
   icon,
   to,
+  end,
+  primary,
 }: {
   children: string;
   icon: ReactNode;
   to: string;
+  end?: boolean;
+  primary?: boolean;
 }) {
   return (
-    <NavLink className="sidebar__link" to={to}>
-      {icon}
-      <span>{children}</span>
+    <NavLink className={`sidebar__link${primary ? ' sidebar__link--primary' : ''}`} end={end} to={to}>
+      {icon}<span>{children}</span>
     </NavLink>
   );
 }
@@ -30,18 +34,10 @@ export function Sidebar({
 }) {
   return (
     <nav className="sidebar" aria-label="Navegacion principal">
-      <div className="sidebar__section">
-        <p className="sidebar__label">Tu espacio</p>
-        <NavigationLink icon={<House size={18} aria-hidden="true" />} to="/app">Inicio</NavigationLink>
-        <NavLink className="sidebar__link sidebar__link--primary" to="/app/comidas/nueva"><UtensilsCrossed size={18} aria-hidden="true" /><span>Registrar comida</span></NavLink>
-        <NavigationLink icon={<UserRound size={18} aria-hidden="true" />} to="/app/perfil">Perfil</NavigationLink>
-      </div>
-      <div className="sidebar__section">
-        <p className="sidebar__label">Organizar</p>
-        <NavigationLink icon={<Apple size={18} aria-hidden="true" />} to="/app/alimentos">Alimentos</NavigationLink>
-        <NavigationLink icon={<Soup size={18} aria-hidden="true" />} to="/app/recetas">Recetas</NavigationLink>
-        <span className="sidebar__link sidebar__link--disabled" aria-disabled="true"><ClipboardList size={18} aria-hidden="true" /><span>Plan</span><small>Próximamente</small></span>
-      </div>
+      {mainNavigation.map((group) => <div className="sidebar__section" key={group.label}>
+        <p className="sidebar__label">{group.label}</p>
+        {group.items.map((item) => <NavigationLink end={item.end} icon={item.icon} key={item.to} primary={item.primary} to={item.to}>{item.label}</NavigationLink>)}
+      </div>)}
       <ThemeControl />
       <Button className="sidebar__logout" disabled={isSigningOut} onClick={onLogout} type="button" variant="tertiary">
         <LogOut size={17} aria-hidden="true" />

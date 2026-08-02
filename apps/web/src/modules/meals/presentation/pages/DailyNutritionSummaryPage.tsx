@@ -57,7 +57,7 @@ export function DailyNutritionSummaryPage() {
       <section className="page-section" aria-labelledby="summary-empty-profile-title">
         <PageHeader eyebrow="Resumen diario" title="Configura un adulto primero" titleId="summary-empty-profile-title" />
         <p className="lead">Necesitas un perfil adulto para consultar el consumo del día.</p>
-        <Link className="button button--primary" to="/app/perfil">Configurar perfil</Link>
+        <Link className="button button--primary" to="/app/perfil/editar">Configurar perfil</Link>
       </section>
     );
   }

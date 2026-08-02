@@ -82,6 +82,9 @@ describe('HomePage', () => {
     expect(screen.getByText('Hogar Sojo')).toBeInTheDocument();
     expect(await screen.findByText('Alejandro')).toBeInTheDocument();
     expect(screen.getByText('Integrantes')).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: /Inventario/ }).some((link) => link.getAttribute('href') === '/app/inventario')).toBe(true);
+    expect(screen.getAllByRole('link', { name: /Lista de compras/ }).some((link) => link.getAttribute('href') === '/app/lista-de-compras')).toBe(true);
+    expect(screen.getAllByRole('link', { name: /Historial de compras/ }).some((link) => link.getAttribute('href') === '/app/compras')).toBe(true);
   });
 
   it('shows a readable message when the API is unavailable', async () => {

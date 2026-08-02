@@ -16,6 +16,7 @@ export function HouseholdInvitationsPage() {
   const [revealedInvitationId, setRevealedInvitationId] = useState<
     string | null
   >(null);
+  const [formOpen, setFormOpen] = useState(false);
   const households = useHouseholds();
   const invitations = useHouseholdInvitations(
     households.activeHousehold?.id,
@@ -108,14 +109,13 @@ export function HouseholdInvitationsPage() {
   return (
     <section className="page-section" aria-labelledby="invitations-title">
       <BackButton fallback="/app" />
-      <p className="eyebrow">{households.activeHousehold.name}</p>
-      <h1 id="invitations-title">Invita a tu familia</h1>
+      <div className="page-heading"><div><p className="eyebrow">{households.activeHousehold.name}</p><h1 id="invitations-title">Invita a tu familia</h1></div><button className="button button--primary" onClick={() => setFormOpen(true)} type="button">Invitar a alguien</button></div>
       <p className="lead">
         Comparte el hogar con otro adulto para que pueda participar en su
         organizacion.
       </p>
 
-      <div className="invitation-section">
+      {formOpen ? <div className="invitation-section">
         <h2>Enviar invitacion</h2>
         <form
           className="auth-form invitation-form"
@@ -158,6 +158,7 @@ export function HouseholdInvitationsPage() {
               ? 'Creando invitacion...'
               : 'Crear invitacion'}
           </button>
+          <button className="button button--secondary" onClick={() => setFormOpen(false)} type="button">Cancelar</button>
         </form>
         {invitations.createInvitationError ? (
           <p className="auth-error" role="alert">
@@ -170,7 +171,7 @@ export function HouseholdInvitationsPage() {
         {invitations.createdInvitation ? (
           <CreatedInvitation invitation={invitations.createdInvitation} />
         ) : null}
-      </div>
+      </div> : null}
 
       <div className="invitation-section" aria-labelledby="pending-title">
         <h2 id="pending-title">Invitaciones pendientes</h2>
@@ -215,9 +216,7 @@ export function HouseholdInvitationsPage() {
         )}
       </div>
 
-      <Link className="button button--secondary" to="/app">
-        Volver al inicio
-      </Link>
+      <Link className="button button--secondary" to="/app">Volver al inicio</Link>
     </section>
   );
 }

@@ -15,7 +15,7 @@ export function BackButton({
 
   function handleBack() {
     if (location.key === 'default') {
-      navigate(fallback);
+      navigate(fallback, { replace: true });
       return;
     }
 

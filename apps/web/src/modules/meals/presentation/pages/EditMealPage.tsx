@@ -35,7 +35,7 @@ export function EditMealPage() {
     } }, { onSuccess: () => navigate(`/app/comidas/${mealId}`, { state: { mealUpdated: true } }) });
   }
 
-  return <section className="page-section meal-page" aria-labelledby="edit-meal-title"><BackButton fallback={`/app/comidas/${meal.id}`} /><PageHeader eyebrow="Registro de comida" title="Edita la comida" titleId="edit-meal-title" /><MealForm key={meal.id} initialItems={initialItems} initialValues={initialValues} isSubmitting={updateMeal.isPending} onSubmit={submit} profiles={profiles.profiles.filter((profile) => profile.isActive !== false)} submitLabel="Guardar cambios" errorMessage={updateMeal.isError ? 'No se pudieron guardar los cambios. Inténtalo nuevamente.' : undefined} /></section>;
+  return <section className="page-section meal-page" aria-labelledby="edit-meal-title"><BackButton fallback={`/app/comidas/${meal.id}`} /><PageHeader eyebrow="Registro de comida" title="Edita la comida" titleId="edit-meal-title" /><MealForm cancelTo={`/app/comidas/${meal.id}`} key={meal.id} initialItems={initialItems} initialValues={initialValues} isSubmitting={updateMeal.isPending} onSubmit={submit} profiles={profiles.profiles.filter((profile) => profile.isActive !== false)} readOnlyProfile submitLabel="Guardar cambios" errorMessage={updateMeal.isError ? 'No se pudieron guardar los cambios. Inténtalo nuevamente.' : undefined} /></section>;
 }
 
 function toFormValues(meal: MealDetails): MealFormValues {

@@ -12,6 +12,7 @@ import { ReviewEmailPage } from '../../modules/auth/presentation/pages/ReviewEma
 import { OnboardingPage } from '../../modules/onboarding/presentation/pages/OnboardingPage';
 import { AcceptHouseholdInvitationPage } from '../../modules/households/presentation/pages/AcceptHouseholdInvitationPage';
 import { AdultProfilePage } from '../../modules/households/presentation/pages/AdultProfilePage';
+import { AdultProfileOverviewPage } from '../../modules/households/presentation/pages/AdultProfileOverviewPage';
 import { HouseholdInvitationsPage } from '../../modules/households/presentation/pages/HouseholdInvitationsPage';
 import { FoodCatalogPage } from '../../modules/food-catalog/presentation/pages/FoodCatalogPage';
 import { FoodDetailPage } from '../../modules/food-catalog/presentation/pages/FoodDetailPage';
@@ -55,7 +56,8 @@ export const appRoutes: RouteObject[] = [
         element: <PrivateLayout />,
         children: [
           { path: '/onboarding', element: <OnboardingPage /> },
-          { path: '/app/perfil', element: <AdultProfilePage /> },
+          { path: '/app/perfil', element: <AdultProfileOverviewPage /> },
+          { path: '/app/perfil/editar', element: <AdultProfilePage /> },
           {
             path: '/app/alimentos',
             element: <FoodCatalogPage />,

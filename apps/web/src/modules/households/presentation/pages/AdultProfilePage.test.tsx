@@ -20,6 +20,7 @@ const profile = {
   ],
   hasKitchenScale: true,
   heightCm: 175.5,
+  weightKg: 79,
   householdId: 'household-1',
   id: 'profile-1',
   isActive: true,
@@ -31,6 +32,23 @@ const profile = {
 };
 
 describe('AdultProfilePage', () => {
+  it('shows profile data before exposing the edit form', async () => {
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+      if (request.url.endsWith('/api/households')) return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar Sojo', timezone: 'America/Argentina/Buenos_Aires' }]);
+      if (request.url.includes('/adult-profiles')) return jsonResponse([profile]);
+      return jsonResponse({ status: 'ok' });
+    });
+
+    renderRoute('/app/perfil', createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }));
+
+    expect(await screen.findByRole('heading', { name: 'Tu perfil' })).toBeInTheDocument();
+    expect(screen.getByText('Peso actual')).toBeInTheDocument();
+    expect(screen.getByText('79 kg')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Nombre')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Editar perfil' })).toHaveAttribute('href', '/app/perfil/editar');
+  });
+
   it('creates a profile with dietary restrictions and redirects home', async () => {
     const user = userEvent.setup();
     let profileCreated = false;
@@ -64,7 +82,7 @@ describe('AdultProfilePage', () => {
     });
 
     renderRoute(
-      '/app/perfil',
+      '/app/perfil/editar',
       createTestAuthGateway({
         accessToken: 'test-token',
         userId: 'user-1',
@@ -118,7 +136,7 @@ describe('AdultProfilePage', () => {
     const user = userEvent.setup();
 
     renderRoute(
-      '/app/perfil',
+      '/app/perfil/editar',
       createTestAuthGateway({
         accessToken: 'test-token',
         userId: 'user-1',
@@ -141,7 +159,7 @@ describe('AdultProfilePage', () => {
     const user = userEvent.setup();
 
     const firstRender = renderRoute(
-      '/app/perfil',
+      '/app/perfil/editar',
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
@@ -156,7 +174,7 @@ describe('AdultProfilePage', () => {
     firstRender.unmount();
 
     renderRoute(
-      '/app/perfil',
+      '/app/perfil/editar',
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
@@ -169,7 +187,7 @@ describe('AdultProfilePage', () => {
     const user = userEvent.setup();
 
     renderRoute(
-      '/app/perfil',
+      '/app/perfil/editar',
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
@@ -216,7 +234,7 @@ describe('AdultProfilePage', () => {
     });
 
     renderRoute(
-      '/app/perfil',
+      '/app/perfil/editar',
       createTestAuthGateway({
         accessToken: 'test-token',
         userId: 'supabase-user-1',

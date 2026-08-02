@@ -19,6 +19,8 @@ export function MealForm({
   profiles,
   submitLabel,
   errorMessage,
+  cancelTo = '/app',
+  readOnlyProfile = false,
 }: {
   initialItems?: MealDraftItem[];
   initialValues: MealFormValues;
@@ -27,6 +29,8 @@ export function MealForm({
   profiles: Array<{ id: string; name: string }>;
   submitLabel: string;
   errorMessage?: string;
+  cancelTo?: string;
+  readOnlyProfile?: boolean;
 }) {
   const [items, setItems] = useState(initialItems);
   const [showSelector, setShowSelector] = useState(false);
@@ -59,7 +63,7 @@ export function MealForm({
   return (
     <>
       <form className="meal-form" onSubmit={form.handleSubmit((values) => onSubmit(values, items))}>
-        <div className="form-field"><label htmlFor="meal-profile">Adulto</label><select id="meal-profile" {...form.register('profileId')}><option value="">Selecciona un adulto</option><MealProfileOptions profiles={profiles} /></select>{form.formState.errors.profileId ? <p className="form-field__error">{form.formState.errors.profileId.message}</p> : null}</div>
+        <div className="form-field"><label htmlFor="meal-profile">Adulto</label><select disabled={readOnlyProfile} id="meal-profile" {...form.register('profileId')}><option value="">Selecciona un adulto</option><MealProfileOptions profiles={profiles} /></select>{readOnlyProfile ? <p className="supporting-text">El integrante no se puede cambiar al editar una comida.</p> : null}{form.formState.errors.profileId ? <p className="form-field__error">{form.formState.errors.profileId.message}</p> : null}</div>
         <div className="form-field"><label htmlFor="meal-type">Tipo de comida</label><select id="meal-type" {...form.register('mealType')}>{Object.entries(mealTypeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
         <div className="form-field"><label htmlFor="meal-date">Fecha y hora</label><input id="meal-date" type="datetime-local" {...form.register('consumedAt', { valueAsDate: true })} /></div>
         <div className="form-field"><label htmlFor="meal-notes">Nota (opcional)</label><textarea id="meal-notes" {...form.register('notes')} /></div>
@@ -70,7 +74,7 @@ export function MealForm({
         <NutritionPreview summary={summary} />
         {form.formState.errors.items ? <p className="form-field__error" role="alert">{form.formState.errors.items.message}</p> : null}
         {errorMessage ? <p role="alert">{errorMessage}</p> : null}
-        <div className="meal-form__actions"><Link className="button button--secondary" to="/app">Cancelar</Link><button className="button button--primary" disabled={Boolean(isSubmitting) || !selectedProfileId || items.length === 0} type="submit">{isSubmitting ? 'Guardando...' : submitLabel}</button></div>
+        <div className="meal-form__actions"><Link className="button button--secondary" to={cancelTo}>Cancelar</Link><button className="button button--primary" disabled={Boolean(isSubmitting) || !selectedProfileId || items.length === 0} type="submit">{isSubmitting ? 'Guardando...' : submitLabel}</button></div>
       </form>
       {showSelector ? <FoodSelector onClose={() => { setEditingItemId(null); setShowSelector(false); }} onSelect={selectItem} /> : null}
     </>

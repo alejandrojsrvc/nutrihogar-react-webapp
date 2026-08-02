@@ -38,7 +38,7 @@ export function OnboardingPage() {
     }
 
     if (onboarding.step === 'complete-profile') {
-      navigate('/app/perfil', { replace: true });
+      navigate('/app/perfil/editar', { replace: true });
     }
 
     if (onboarding.step === 'ready') {
@@ -53,7 +53,7 @@ export function OnboardingPage() {
         name: values.name.trim(),
         timezone: values.timezone.trim(),
       });
-      navigate('/app/perfil', { replace: true });
+      navigate('/app/perfil/editar', { replace: true });
     } catch {
       // El error de la mutacion se muestra debajo del formulario.
     }

@@ -88,6 +88,7 @@ describe('HouseholdInvitationsPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
+    await user.click(await screen.findByRole('button', { name: 'Invitar a alguien' }));
     await user.type(
       await screen.findByLabelText('Correo electronico'),
       'adult@example.com',
@@ -142,6 +143,7 @@ describe('HouseholdInvitationsPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
+    await user.click(await screen.findByRole('button', { name: 'Invitar a alguien' }));
     await user.type(
       await screen.findByLabelText('Correo electronico'),
       'adult@example.com',
