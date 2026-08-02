@@ -34,7 +34,7 @@ export function usePurchase(purchaseId: string | undefined) {
   });
 }
 
-function usePurchaseMutation<TInput>(mutationFn: (input: TInput) => Promise<unknown>) {
+function usePurchaseMutation<TInput, TResult>(mutationFn: (input: TInput) => Promise<TResult>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn,

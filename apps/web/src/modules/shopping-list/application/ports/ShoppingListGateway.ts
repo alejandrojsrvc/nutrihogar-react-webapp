@@ -1,4 +1,5 @@
-import type { Purchase, PurchaseInput } from '../../../purchases/application/ports/PurchaseGateway';
+import type { PurchaseInput } from '../../../purchases/application/ports/PurchaseGateway';
+import type { Purchase } from '../../../purchases/domain/Purchase';
 import type { ShoppingListItem, ShoppingListResult, ShoppingListSource } from '../../domain/ShoppingList';
 
 export interface ShoppingListItemInput {

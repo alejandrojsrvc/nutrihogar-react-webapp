@@ -36,6 +36,7 @@ export function PurchaseFormPage() {
   if (households.isError || !households.activeHousehold || (isEditing && (purchase.isError || !purchase.data))) return <p className="page-section" role="alert">No se pudo cargar la compra.</p>;
   if (isEditing && purchase.data?.status !== 'DRAFT') return <p className="page-section" role="alert">Solo puedes editar compras en borrador.</p>;
 
+  const householdId = households.activeHousehold.id;
   const loadedItems = purchase.data?.items.map((item) => ({ foodId: item.foodId ?? undefined, inventoryItemId: item.inventoryItemId ?? undefined, nameSnapshot: item.nameSnapshot, quantity: item.quantity, sourceShoppingItemId: item.sourceShoppingItemId ?? undefined, unit: item.unit })) ?? [];
   const items = draftItems ?? (isEditing ? loadedItems : []);
 
@@ -52,7 +53,7 @@ export function PurchaseFormPage() {
     }
     const input = { currency: values.currency.trim(), items, purchaseDate: parseDateInput(values.purchaseDate), storeName: values.storeName.trim(), total: Number(values.total) };
     try {
-      const result = isEditing ? await update.mutateAsync({ input, purchaseId: purchaseId as string }) : await create.mutateAsync({ householdId: households.activeHousehold.id, input });
+      const result = isEditing ? await update.mutateAsync({ input, purchaseId: purchaseId as string }) : await create.mutateAsync({ householdId, input });
       navigate(`/app/compras/${result.id}`, { replace: true });
     } catch {
       // El error de la mutación se muestra debajo del formulario.

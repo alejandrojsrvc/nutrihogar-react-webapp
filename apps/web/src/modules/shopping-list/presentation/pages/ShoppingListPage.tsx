@@ -38,11 +38,12 @@ export function ShoppingListPage() {
   if (households.isPending) return <p className="page-section" role="status">Cargando hogar...</p>;
   if (households.isError || !households.activeHousehold) return <p className="page-section" role="alert">No se pudo cargar el hogar activo.</p>;
 
+  const householdId = households.activeHousehold.id;
   const items = list.data?.items ?? [];
   const pendingItems = items.filter((item) => !item.purchased);
   const onAdd: SubmitHandler<ShoppingListItemFormValues> = async (values) => {
     try {
-      await add.mutateAsync({ householdId: households.activeHousehold.id, input: { name: values.name.trim(), quantity: Number(values.quantity), unit: values.unit, source: 'MANUAL' } });
+      await add.mutateAsync({ householdId, input: { name: values.name.trim(), quantity: Number(values.quantity), unit: values.unit, source: 'MANUAL' } });
       reset();
     } catch {
       // El error de la mutación se muestra debajo del formulario.
@@ -70,7 +71,7 @@ export function ShoppingListPage() {
     const selectedItems = pendingItems.filter((item) => selected.includes(item.id));
     if (!selectedItems.length || !storeName.trim() || Number(total) <= 0) return;
     try {
-      const purchase = await convert.mutateAsync({ householdId: households.activeHousehold.id, input: { currency, itemIds: selected, items: selectedItems.map((item) => ({ foodId: item.foodId ?? undefined, nameSnapshot: item.name, quantity: Number(drafts[item.id]?.quantity ?? item.quantity), sourceShoppingItemId: item.id, unit: drafts[item.id]?.unit ?? item.unit })), purchaseDate: new Date(purchaseDate), storeName: storeName.trim(), total: Number(total) } });
+      const purchase = await convert.mutateAsync({ householdId, input: { currency, itemIds: selected, items: selectedItems.map((item) => ({ foodId: item.foodId ?? undefined, nameSnapshot: item.name, quantity: Number(drafts[item.id]?.quantity ?? item.quantity), sourceShoppingItemId: item.id, unit: drafts[item.id]?.unit ?? item.unit })), purchaseDate: new Date(purchaseDate), storeName: storeName.trim(), total: Number(total) } });
       navigate(`/app/compras/${purchase.id}`);
     } catch {
       // El error se muestra debajo del flujo de conversión.
@@ -81,7 +82,7 @@ export function ShoppingListPage() {
     <section className="page-section shopping-list-page" aria-labelledby="shopping-list-title">
       <PageHeader action={<Link className="button button--secondary" to="/app/compras">Ver compras</Link>} eyebrow={households.activeHousehold.name} title="Lista de compras" titleId="shopping-list-title" description="Organiza lo pendiente sin confundir comprar con actualizar el inventario." />
       <form className="shopping-list-add-form" noValidate onSubmit={handleSubmit(onAdd)}><Field error={errors.name?.message} id="shopping-name" label="Producto"><input id="shopping-name" {...register('name')} /></Field><Field error={errors.quantity?.message} id="shopping-quantity" label="Cantidad"><input id="shopping-quantity" inputMode="decimal" min="0" step="any" type="number" {...register('quantity')} /></Field><Field error={errors.unit?.message} id="shopping-unit" label="Unidad"><input id="shopping-unit" {...register('unit')} /></Field><button className="button button--primary" disabled={add.isPending} type="submit">{add.isPending ? 'Agregando...' : 'Agregar a la lista'}</button></form>
-      <div className="shopping-list-actions"><button className="button button--secondary" disabled={generate.isPending} onClick={() => generate.mutate(households.activeHousehold.id)} type="button">{generate.isPending ? 'Revisando inventario...' : 'Generar desde inventario'}</button>{selected.length ? <button className="button button--primary" onClick={() => setConversionOpen(true)} type="button">Registrar compra ({selected.length})</button> : null}</div>
+      <div className="shopping-list-actions"><button className="button button--secondary" disabled={generate.isPending} onClick={() => generate.mutate(householdId)} type="button">{generate.isPending ? 'Revisando inventario...' : 'Generar desde inventario'}</button>{selected.length ? <button className="button button--primary" onClick={() => setConversionOpen(true)} type="button">Registrar compra ({selected.length})</button> : null}</div>
       {list.isPending ? <p role="status">Cargando lista...</p> : null}{list.isError ? <div role="alert"><p>No se pudo cargar la lista de compras.</p><button className="button button--secondary" onClick={() => void list.refetch()} type="button">Reintentar</button></div> : null}
       {!list.isPending && !list.isError && items.length === 0 ? <section className="empty-state-card"><h2>Tu lista está vacía</h2><p>Agrega un producto o genera faltantes desde el inventario.</p></section> : null}
       {items.length ? <ul className="shopping-list-items">{items.map((item) => <li className={item.purchased ? 'is-purchased' : ''} key={item.id}><label><input checked={selected.includes(item.id)} disabled={item.purchased} onChange={(event) => setSelected((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} type="checkbox" /> <span>{item.name}</span></label><span className="shopping-list-source">{sourceLabel(item.source)}</span><div className="shopping-list-item-fields"><input aria-label={`${item.name} cantidad`} onChange={(event) => updateDraft(item, { quantity: event.target.value })} type="number" value={draftFor(item).quantity} /><input aria-label={`${item.name} unidad`} onChange={(event) => updateDraft(item, { unit: event.target.value })} value={draftFor(item).unit} /><button className="button button--text" disabled={update.isPending || item.purchased} onClick={() => void saveItem(item)} type="button">Guardar</button></div><div className="shopping-list-item-actions">{!item.purchased ? <button className="button button--secondary" disabled={markPurchased.isPending} onClick={() => markPurchased.mutate(item.id)} type="button">Marcar comprado</button> : <span>Comprado</span>}<button className="button button--text" disabled={remove.isPending} onClick={() => remove.mutate(item.id)} type="button">Eliminar</button></div></li>)}</ul> : null}
