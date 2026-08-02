@@ -24,7 +24,10 @@ const invitation: HouseholdInvitation = {
 
 function createGateway(): HouseholdInvitationGateway {
   return {
-    accept: vi.fn(async () => ({ ...invitation, status: 'ACCEPTED' })),
+    accept: vi.fn(async (token: string) => {
+      void token;
+      return { ...invitation, status: 'ACCEPTED' as const };
+    }),
     create: vi.fn(async () => invitation),
     list: vi.fn(async () => [invitation]),
   };

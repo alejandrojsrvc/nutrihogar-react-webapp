@@ -1,7 +1,7 @@
 import { ApiClientError, normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
 import type { CreateRecipeInput, RecipeGateway, RecipeListCriteria, RecipeListResult, UpdateRecipeInput } from '../../application/ports/RecipeGateway';
 import type { Recipe } from '../../domain/Recipe';
-import { toRecipe } from '../mappers/RecipeApiMapper';
+import { toRecipe, toRecipeNutrition } from '../mappers/RecipeApiMapper';
 
 type ApiResult<T> = { data?: T; error?: unknown; response?: Response };
 
@@ -9,6 +9,7 @@ interface RecipeApiClient {
   GET(path: string, options: { params: { path: { householdId?: string; recipeId?: string }; query?: Record<string, unknown> } }): Promise<ApiResult<unknown>>;
   POST(path: string, options: { params: { path: { householdId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
   PATCH(path: string, options: { params: { path: { recipeId: string } }; body: unknown }): Promise<ApiResult<unknown>>;
+  DELETE(path: string, options: { params: { path: { recipeId: string } } }): Promise<ApiResult<unknown>>;
 }
 
 export class HttpRecipeGateway implements RecipeGateway {
@@ -26,6 +27,17 @@ export class HttpRecipeGateway implements RecipeGateway {
     return this.request(() => (this.apiClient as unknown as RecipeApiClient).GET(`/api/recipes/${recipeId}`, { params: { path: { recipeId } } }), 'cargar');
   }
 
+  async getNutrition(recipeId: string) {
+    return this.requestMapped(() => (this.apiClient as unknown as RecipeApiClient).GET(`/api/recipes/${recipeId}/nutrition`, { params: { path: { recipeId } } }), toRecipeNutrition, 'cargar la nutrición');
+  }
+
+  async archive(recipeId: string): Promise<void> {
+    try {
+      const result = await (this.apiClient as unknown as RecipeApiClient).DELETE(`/api/recipes/${recipeId}`, { params: { path: { recipeId } } });
+      if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
+    } catch (error) { throw normalizeApiError(error); }
+  }
+
   async list(householdId: string, criteria: RecipeListCriteria): Promise<RecipeListResult> {
     try {
       const result = await (this.apiClient as unknown as RecipeApiClient).GET(`/api/households/${householdId}/recipes`, { params: { path: { householdId }, query: { category: criteria.category || undefined, limit: criteria.limit, page: criteria.page, query: criteria.query || undefined, status: criteria.status || undefined } } });
@@ -39,11 +51,15 @@ export class HttpRecipeGateway implements RecipeGateway {
   }
 
   private async request(request: () => Promise<ApiResult<unknown>>, action: string): Promise<Recipe> {
+    return this.requestMapped(request, toRecipe, action);
+  }
+
+  private async requestMapped<T>(request: () => Promise<ApiResult<unknown>>, mapper: (value: unknown) => T, action: string): Promise<T> {
     try {
       const result = await request();
       if (result.error !== undefined) throw normalizeApiError(result.error, result.response);
       if (!result.data) throw new ApiClientError('unknown', `La API no devolvio la receta al ${action}la.`);
-      return toRecipe(result.data);
+      return mapper(result.data);
     } catch (error) {
       throw normalizeApiError(error);
     }

@@ -461,6 +461,723 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/recipes/{recipeId}/prepared-batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inicia una preparacion desde una receta */
+        post: operations["PreparedBatchesController_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene una preparacion */
+        get: operations["PreparedBatchesController_get"];
+        put?: never;
+        post?: never;
+        /** Cancela una preparacion */
+        delete: operations["PreparedBatchesController_cancel"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle operativo de una preparacion */
+        get: operations["PreparedBatchesController_getDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/ingredients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edita los ingredientes reales de una preparacion */
+        patch: operations["PreparedBatchesController_update"];
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/confirm-ingredients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma ingredientes y crea snapshots nutricionales */
+        post: operations["PreparedBatchesController_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finaliza una preparacion y calcula su densidad */
+        post: operations["PreparedBatchesController_finalize"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/served-portions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Asigna porciones de una preparacion a adultos */
+        post: operations["ServedPortionsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/served-portions/{portionId}/confirm-consumption": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma el consumo real de una porcion */
+        post: operations["ServedPortionsController_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/leftovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra un sobrante disponible de una preparacion */
+        post: operations["PreparedFoodLeftoversController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/prepared-leftovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consulta los sobrantes preparados de un hogar */
+        get: operations["PreparedFoodLeftoversController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-leftovers/{leftoverId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene un sobrante preparado */
+        get: operations["PreparedFoodLeftoversController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-leftovers/{leftoverId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualiza el estado de un sobrante preparado */
+        patch: operations["PreparedFoodLeftoversController_changeStatus"];
+        trace?: never;
+    };
+    "/api/households/{householdId}/inventory/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sincroniza operaciones offline de inventario */
+        post: operations["InventoryController_sync"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista el inventario de un hogar */
+        get: operations["InventoryController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/inventory/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crea manualmente una existencia de alimento */
+        post: operations["InventoryController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene una existencia de inventario */
+        get: operations["InventoryController_get"];
+        put?: never;
+        post?: never;
+        /** Archiva una existencia sin eliminar su historial */
+        delete: operations["InventoryController_archive"];
+        options?: never;
+        head?: never;
+        /** Actualiza minimo, ubicacion o vencimiento de una existencia */
+        patch: operations["InventoryController_update"];
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ajusta de forma absoluta la cantidad de una existencia */
+        post: operations["InventoryController_adjust"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista los movimientos de una existencia */
+        get: operations["InventoryController_movements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}/consumptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra un consumo manual de inventario */
+        post: operations["InventoryController_consume"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}/consume-prepared-food": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Consume un sobrante preparado y registra una comida */
+        post: operations["InventoryController_consumePrepared"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}/waste": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra desperdicio manual de inventario */
+        post: operations["InventoryController_waste"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inventory/items/{inventoryItemId}/expiration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra una baja por vencimiento */
+        post: operations["InventoryController_expiration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/inventory-consumption-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Propone el consumo de inventario de una preparacion */
+        get: operations["PreparationInventoryController_previewBatch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-batches/{batchId}/inventory-consumption": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma el consumo de ingredientes del inventario */
+        post: operations["PreparationInventoryController_confirmBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prepared-leftovers/{leftoverId}/add-to-inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Incorpora un sobrante preparado al inventario */
+        post: operations["PreparationInventoryController_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/shopping-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consulta la lista compartida del hogar */
+        get: operations["ShoppingListController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/shopping-list/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ShoppingListController_addItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/shopping-list/items/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["ShoppingListController_delete"];
+        options?: never;
+        head?: never;
+        patch: operations["ShoppingListController_updateItem"];
+        trace?: never;
+    };
+    "/api/shopping-list/items/{itemId}/mark-purchased": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ShoppingListController_markPurchased"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/shopping-list/generate-from-inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ShoppingListController_generateItems"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PurchaseController_listPurchases"];
+        put?: never;
+        post: operations["PurchaseController_createPurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/purchases/{purchaseId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PurchaseController_getPurchase"];
+        put?: never;
+        post?: never;
+        delete: operations["PurchaseController_cancelPurchase"];
+        options?: never;
+        head?: never;
+        patch: operations["PurchaseController_updatePurchase"];
+        trace?: never;
+    };
+    "/api/purchases/{purchaseId}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PurchaseController_confirmPurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/shopping-list/convert-to-purchase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PurchaseController_convertShopping"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/households/{householdId}/weekly-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_list"];
+        put?: never;
+        post: operations["MealPlanningController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanningController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["MealPlanningController_cancel"];
+        options?: never;
+        head?: never;
+        patch: operations["MealPlanningController_update"];
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_activate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weekly-plans/{weeklyPlanId}/meals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["MealPlanningController_deleteMeal"];
+        options?: never;
+        head?: never;
+        patch: operations["MealPlanningController_editMeal"];
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/replace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_replace"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meals/{plannedMealId}/participants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanningController_assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planned-meal-participants/{participantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["MealPlanningController_deleteParticipant"];
+        options?: never;
+        head?: never;
+        patch: operations["MealPlanningController_editParticipant"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1174,6 +1891,548 @@ export interface components {
             tags?: string[];
             ingredients?: components["schemas"]["RecipeIngredientRequestDto"][];
             instructions?: components["schemas"]["RecipeInstructionRequestDto"][];
+        };
+        StartPreparedBatchRequestDto: {
+            /** Format: date-time */
+            preparedAt?: string;
+        };
+        PreparedBatchIngredientResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            foodId: string;
+            /** Format: uuid */
+            servingId?: Record<string, never> | null;
+            /** @example 600 */
+            quantity: number;
+            /** @example GRAM */
+            unit: string;
+            /** @example 1 */
+            position: number;
+            notes?: Record<string, never> | null;
+            foodNameSnapshot?: Record<string, never> | null;
+            brandSnapshot?: Record<string, never> | null;
+            preparationStateSnapshot?: Record<string, never> | null;
+            confidenceLevel?: Record<string, never> | null;
+            baseQuantity?: Record<string, never> | null;
+            baseUnit?: Record<string, never> | null;
+            nutrients: {
+                [key: string]: number;
+            };
+        };
+        PreparedBatchWarningResponseDto: {
+            /** Format: uuid */
+            ingredientId: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example NUTRIENTS_UNAVAILABLE */
+            code: string;
+            /** @example No nutritional data is available for this ingredient. */
+            message: string;
+        };
+        PreparedBatchResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: uuid */
+            recipeId?: Record<string, never> | null;
+            /** @example Arroz con pollo */
+            recipeNameSnapshot: string;
+            /** Format: date-time */
+            preparedAt: string;
+            /** @enum {string} */
+            status: "DRAFT" | "INGREDIENTS_CONFIRMED" | "FINALIZED" | "CANCELLED";
+            ingredients: components["schemas"]["PreparedBatchIngredientResponseDto"][];
+            totalNutrients: {
+                [key: string]: number;
+            };
+            /** @example 1650 */
+            finalCookedWeight?: Record<string, never> | null;
+            nutrientsPerGram: {
+                [key: string]: number;
+            };
+            nutrientsPer100Grams: {
+                [key: string]: number;
+            };
+            warnings: components["schemas"]["PreparedBatchWarningResponseDto"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            finalizedAt?: Record<string, never> | null;
+            /** Format: date-time */
+            cancelledAt?: Record<string, never> | null;
+        };
+        PreparedBatchAvailabilityResponseDto: {
+            /** @example 1650 */
+            finalCookedWeight: number;
+            /** @example 900 */
+            servedWeight: number;
+            /** @example 500 */
+            storedLeftoverWeight: number;
+            /** @example 40 */
+            savedRemainderWeight: number;
+            /** @example 0 */
+            discardedWeight: number;
+            /** @example 250 */
+            availableWeight: number;
+        };
+        PreparedBatchPortionRemainderResponseDto: {
+            /** @example 40 */
+            weight: number;
+            /** @enum {string} */
+            disposition: "SAVED" | "DISCARDED" | "SHARED" | "CONSUMED_LATER";
+            /** Format: date-time */
+            createdAt: string;
+        };
+        PreparedBatchServedPortionResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+            /** Format: date-time */
+            servedAt: string;
+            /** @enum {string} */
+            status: "SERVED" | "CONSUMED" | "CANCELLED";
+            /** @example 480 */
+            consumedWeight?: Record<string, never> | null;
+            remainder?: components["schemas"]["PreparedBatchPortionRemainderResponseDto"] | null;
+            /** Format: uuid */
+            mealId?: Record<string, never> | null;
+            nutritionSnapshot: {
+                [key: string]: number;
+            };
+        };
+        PreparedBatchLeftoverDetailResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            preparedBatchId: string;
+            /** @example 500 */
+            availableWeight: number;
+            nutrientDensitySnapshot: {
+                [key: string]: number;
+            };
+            /** Format: date-time */
+            storedAt: string;
+            storageLocation?: Record<string, never> | null;
+            notes?: Record<string, never> | null;
+            /** @enum {string} */
+            status: "AVAILABLE" | "CONSUMED" | "DISCARDED" | "EXPIRED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        PreparedBatchDetailsResponseDto: {
+            batch: components["schemas"]["PreparedBatchResponseDto"];
+            availability?: components["schemas"]["PreparedBatchAvailabilityResponseDto"] | null;
+            servedPortions: components["schemas"]["PreparedBatchServedPortionResponseDto"][];
+            leftovers: components["schemas"]["PreparedBatchLeftoverDetailResponseDto"][];
+        };
+        PreparedBatchIngredientRequestDto: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            foodId: string;
+            /** @example 600 */
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT" | "SERVING";
+            /** Format: uuid */
+            servingId?: Record<string, never> | null;
+            /** @example 1 */
+            position: number;
+            notes?: Record<string, never> | null;
+        };
+        UpdatePreparedBatchIngredientsRequestDto: {
+            ingredients: components["schemas"]["PreparedBatchIngredientRequestDto"][];
+        };
+        FinalizePreparedBatchRequestDto: {
+            /** @example 1650 */
+            finalCookedWeight: number;
+            /**
+             * @default GRAM
+             * @enum {string}
+             */
+            unit: "GRAM";
+        };
+        ServedPortionRequestDto: {
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+        };
+        ServePreparedBatchPortionsRequestDto: {
+            portions: components["schemas"]["ServedPortionRequestDto"][];
+            /** Format: date-time */
+            servedAt?: string;
+        };
+        ServedPortionResultResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+            estimatedNutrition: {
+                [key: string]: number;
+            };
+        };
+        ServePreparedBatchPortionsResponseDto: {
+            /** Format: uuid */
+            preparedBatchId: string;
+            portions: components["schemas"]["ServedPortionResultResponseDto"][];
+            /** @example 750 */
+            availableWeight: number;
+        };
+        ConfirmServedPortionConsumptionRequestDto: {
+            /** @example 40 */
+            remainderWeight?: number;
+            /** @enum {string} */
+            remainderDisposition?: "SAVED" | "DISCARDED" | "SHARED" | "CONSUMED_LATER";
+            /**
+             * @example LUNCH
+             * @enum {string}
+             */
+            mealType: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+            /** Format: date-time */
+            consumedAt: string;
+        };
+        ConfirmServedPortionConsumptionResponseDto: {
+            /** Format: uuid */
+            portionId: string;
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @example 520 */
+            servedWeight: number;
+            /** @example 480 */
+            consumedWeight: number;
+            /** @example 40 */
+            remainderWeight?: Record<string, never> | null;
+            /** @enum {string|null} */
+            remainderDisposition?: "SAVED" | "DISCARDED" | "SHARED" | "CONSUMED_LATER" | null;
+            /** Format: uuid */
+            mealId?: Record<string, never> | null;
+            nutrients: {
+                [key: string]: number;
+            };
+        };
+        RegisterPreparedFoodLeftoverRequestDto: {
+            /** @example 750 */
+            weight: number;
+            /** Format: date-time */
+            storedAt: string;
+            /** @example REFRIGERATOR */
+            storageLocation?: string;
+            /** @example Guardar para manana */
+            notes?: string;
+        };
+        PreparedFoodLeftoverResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            preparedBatchId: string;
+            /** Format: uuid */
+            householdId: string;
+            /** @example 750 */
+            availableWeight: number;
+            nutrientDensitySnapshot: {
+                [key: string]: number;
+            };
+            /** Format: date-time */
+            storedAt: string;
+            storageLocation?: Record<string, never> | null;
+            notes?: Record<string, never> | null;
+            /** @enum {string} */
+            status: "AVAILABLE" | "CONSUMED" | "DISCARDED" | "EXPIRED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdatePreparedFoodLeftoverStatusRequestDto: {
+            /** @enum {string} */
+            status: "CONSUMED" | "DISCARDED" | "EXPIRED";
+        };
+        InventorySyncOperationRequestDto: {
+            /** Format: uuid */
+            operationId: string;
+            /** @enum {string} */
+            type: "MOVEMENT" | "ABSOLUTE_ADJUSTMENT";
+            /** Format: uuid */
+            inventoryItemId: string;
+            /** @enum {string} */
+            movementType?: "PURCHASE" | "CONSUMPTION" | "WASTE" | "REMAINDER_RETURN";
+            quantity?: number;
+            newQuantity?: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            /** Format: date-time */
+            occurredAt: string;
+            baseVersion: number;
+            /** @default false */
+            allowLastWriteWins: boolean;
+        };
+        InventorySyncRequestDto: {
+            deviceId: string;
+            operations: components["schemas"]["InventorySyncOperationRequestDto"][];
+        };
+        InventoryItemResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            householdId: string;
+            /** Format: uuid */
+            foodId?: Record<string, never> | null;
+            /** Format: uuid */
+            preparedFoodLeftoverId?: Record<string, never> | null;
+            name: string;
+            /** @enum {string} */
+            itemType: "FOOD" | "PREPARED_FOOD" | "CUSTOM";
+            currentQuantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            minimumQuantity?: Record<string, never> | null;
+            location?: Record<string, never> | null;
+            /** Format: date-time */
+            expiresAt?: Record<string, never> | null;
+            /** @enum {string} */
+            status: "ACTIVE" | "DEPLETED" | "ARCHIVED";
+            version: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        InventorySyncOperationResponseDto: {
+            operationId: string;
+            /** @enum {string} */
+            status: "APPLIED" | "CONFLICT";
+            reason?: Record<string, never> | null;
+            resultingVersion?: Record<string, never> | null;
+            snapshot?: components["schemas"]["InventoryItemResponseDto"] | null;
+        };
+        InventorySyncResponseDto: {
+            processed: components["schemas"]["InventorySyncOperationResponseDto"][];
+            conflicts: components["schemas"]["InventorySyncOperationResponseDto"][];
+            snapshot?: components["schemas"]["InventoryItemResponseDto"] | null;
+        };
+        InventoryItemListResponseDto: {
+            items: components["schemas"]["InventoryItemResponseDto"][];
+            page: number;
+            limit: number;
+            total: number;
+        };
+        CreateManualInventoryItemRequestDto: {
+            /** Format: uuid */
+            foodId: string;
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            minimumQuantity?: Record<string, never> | null;
+            location?: Record<string, never> | null;
+            /** Format: date-time */
+            expiresAt?: Record<string, never> | null;
+            reason?: string;
+            /** Format: date-time */
+            occurredAt?: string;
+        };
+        UpdateInventoryItemRequestDto: {
+            minimumQuantity?: Record<string, never> | null;
+            location?: Record<string, never> | null;
+            /** Format: date-time */
+            expiresAt?: Record<string, never> | null;
+        };
+        AdjustInventoryItemRequestDto: {
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            reason: string;
+            /** Format: date-time */
+            occurredAt?: string;
+        };
+        InventoryMovementResponseDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            inventoryItemId: string;
+            /** @enum {string} */
+            type: "PURCHASE" | "CONSUMPTION" | "ADJUSTMENT_INCREASE" | "ADJUSTMENT_DECREASE" | "WASTE" | "EXPIRATION" | "PREPARATION_CONSUMPTION" | "REMAINDER_RETURN" | "MANUAL_ENTRY";
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            /** Format: date-time */
+            occurredAt: string;
+            sourceType?: Record<string, never> | null;
+            sourceId?: Record<string, never> | null;
+            reason?: Record<string, never> | null;
+            /** Format: uuid */
+            actorId?: Record<string, never> | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        InventoryMovementListResponseDto: {
+            items: components["schemas"]["InventoryMovementResponseDto"][];
+            page: number;
+            limit: number;
+            total: number;
+        };
+        RegisterInventoryExitRequestDto: {
+            quantity: number;
+            /** @enum {string} */
+            unit: "GRAM" | "MILLILITER" | "UNIT";
+            reason?: string;
+            /** Format: date-time */
+            occurredAt?: string;
+        };
+        ConsumePreparedInventoryItemRequestDto: {
+            /** Format: uuid */
+            adultProfileId: string;
+            /** @enum {string} */
+            mealType: "BREAKFAST" | "LUNCH" | "SNACK" | "DINNER" | "EXTRA";
+            quantity: number;
+            /** Format: date-time */
+            consumedAt: string;
+        };
+        PreparedBatchInventoryPreviewResponseDto: Record<string, never>;
+        PreparedBatchInventoryDecisionDto: {
+            /** Format: uuid */
+            ingredientId: string;
+            /** @enum {string} */
+            action: "CONSUME" | "IGNORE";
+            /** Format: uuid */
+            inventoryItemId?: string;
+        };
+        ConfirmPreparedBatchInventoryConsumptionRequestDto: {
+            decisions: components["schemas"]["PreparedBatchInventoryDecisionDto"][];
+        };
+        ShoppingListItemResponseDto: Record<string, never>;
+        ShoppingListResponseDto: {
+            items: components["schemas"]["ShoppingListItemResponseDto"][];
+        };
+        AddShoppingListItemRequestDto: {
+            /** Format: uuid */
+            foodId?: string;
+            name: string;
+            quantity: number;
+            /** @example UNIT */
+            unit: string;
+            /** @enum {string} */
+            source?: "MANUAL" | "BELOW_MINIMUM" | "DEPLETED" | "MEAL_PLAN";
+            /** Format: uuid */
+            sourceReferenceId?: string;
+        };
+        UpdateShoppingListItemRequestDto: {
+            /** Format: uuid */
+            foodId?: string;
+            name?: string;
+            quantity?: number;
+            /** @example UNIT */
+            unit?: string;
+            /** @enum {string} */
+            source?: "MANUAL" | "BELOW_MINIMUM" | "DEPLETED" | "MEAL_PLAN";
+            /** Format: uuid */
+            sourceReferenceId?: string;
+        };
+        PurchaseItemRequestDto: {
+            id?: string;
+            foodId?: string;
+            inventoryItemId?: string;
+            sourceShoppingItemId?: string;
+            nameSnapshot: string;
+            unit: string;
+            quantity: number;
+        };
+        CreatePurchaseRequestDto: {
+            storeName: string;
+            purchaseDate: string;
+            total: number;
+            currency?: string;
+            items: components["schemas"]["PurchaseItemRequestDto"][];
+        };
+        UpdatePurchaseRequestDto: {
+            storeName?: string;
+            purchaseDate?: string;
+            total?: number;
+            currency?: string;
+            items?: components["schemas"]["PurchaseItemRequestDto"][];
+        };
+        ConfirmPurchaseRequestDto: {
+            selections?: Record<string, never>;
+        };
+        ConvertShoppingListRequestDto: {
+            storeName: string;
+            purchaseDate: string;
+            total: number;
+            currency?: string;
+            items: components["schemas"]["PurchaseItemRequestDto"][];
+            itemIds: string[];
+            quantities?: Record<string, never>;
+            idempotencyKey?: string;
+        };
+        CreateWeeklyPlanRequestDto: {
+            /** @example 2026-08-03 */
+            weekStart: string;
+            weeklyBudget?: Record<string, never> | null;
+            /** @example ARS */
+            currency?: Record<string, never>;
+        };
+        UpdateWeeklyPlanRequestDto: {
+            weeklyBudget?: Record<string, never> | null;
+            /** @example ARS */
+            currency?: Record<string, never>;
+        };
+        PlannedMealRequestDto: {
+            date: string;
+            /** @enum {string} */
+            type: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK";
+            /** @enum {string} */
+            source: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
+            /** Format: uuid */
+            recipeId?: Record<string, never> | null;
+            nameSnapshot?: Record<string, never>;
+            notes?: Record<string, never>;
+            position: number;
+        };
+        UpdatePlannedMealRequestDto: {
+            date?: string;
+            /** @enum {string} */
+            type?: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK";
+            /** @enum {string} */
+            source?: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
+            /** Format: uuid */
+            recipeId?: Record<string, never> | null;
+            nameSnapshot?: Record<string, never>;
+            notes?: Record<string, never>;
+            position?: number;
+        };
+        ReplacePlannedMealRequestDto: {
+            date?: string;
+            /** @enum {string} */
+            type?: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK";
+            /** @enum {string} */
+            source?: "RECIPE" | "PREVIOUS_MEAL" | "FREE_MEAL" | "RESTAURANT" | "DELIVERY" | "UNPLANNED" | "EMPTY";
+            /** Format: uuid */
+            recipeId?: Record<string, never> | null;
+            nameSnapshot?: Record<string, never>;
+            notes?: Record<string, never>;
+            position?: number;
+            reason?: Record<string, never>;
+        };
+        AssignParticipantRequestDto: {
+            /** Format: uuid */
+            adultProfileId: string;
+            notes?: Record<string, never>;
+        };
+        UpdateParticipantRequestDto: {
+            suggestedQuantity?: Record<string, never>;
+            suggestedUnit?: Record<string, never>;
+            notes?: Record<string, never>;
         };
     };
     responses: never;
@@ -2870,6 +4129,2060 @@ export interface operations {
             };
             /** @description La receta o un alimento no existe. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartPreparedBatchRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description La fecha o los datos son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta o un alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La receta esta archivada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description La preparacion fue cancelada. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede cancelar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no puede cancelarse. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_getDetails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchDetailsResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePreparedBatchIngredientsRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description Los ingredientes son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede editar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion o un alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion ya no esta en borrador. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description Los ingredientes o equivalencias son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede confirmar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion o un alimento no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion ya fue confirmada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedBatchesController_finalize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinalizePreparedBatchRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchResponseDto"];
+                };
+            };
+            /** @description El peso cocido es invalido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede finalizar la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no puede finalizarse. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ServedPortionsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServePreparedBatchPortionsRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServePreparedBatchPortionsResponseDto"];
+                };
+            };
+            /** @description Las porciones o la fecha son invalidas. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion o el perfil adulto no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no tiene disponibilidad suficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ServedPortionsController_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                portionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmServedPortionConsumptionRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfirmServedPortionConsumptionResponseDto"];
+                };
+            };
+            /** @description El resto, tipo de comida o fecha son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la porcion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La porcion o la preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La porcion ya fue confirmada o no esta disponible. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterPreparedFoodLeftoverRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"];
+                };
+            };
+            /** @description El peso o la fecha son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder a la preparacion. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La preparacion no tiene disponibilidad suficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_list: {
+        parameters: {
+            query?: {
+                status?: "AVAILABLE" | "CONSUMED" | "DISCARDED" | "EXPIRED";
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"][];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                leftoverId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al sobrante. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El sobrante no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparedFoodLeftoversController_changeStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                leftoverId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePreparedFoodLeftoverStatusRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedFoodLeftoverResponseDto"];
+                };
+            };
+            /** @description El estado es invalido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al sobrante. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El sobrante no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El sobrante ya fue cerrado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_sync: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InventorySyncRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventorySyncResponseDto"];
+                };
+            };
+            /** @description La operacion de sincronizacion es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece activamente al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Los conflictos por operacion se devuelven en el cuerpo de la respuesta. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_list: {
+        parameters: {
+            query?: {
+                query?: string;
+                itemType?: "FOOD" | "PREPARED_FOOD" | "CUSTOM";
+                status?: "ACTIVE" | "DEPLETED" | "ARCHIVED";
+                location?: string;
+                belowMinimum?: boolean;
+                expiresBefore?: string;
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemListResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no pertenece activamente al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateManualInventoryItemRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description La cantidad o unidad es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden crear existencias. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El alimento no esta disponible para el hogar. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya existe una existencia compatible. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description La existencia fue archivada. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden archivar existencias. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateInventoryItemRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description Los metadatos son invalidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden editar existencias. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia esta archivada o cambio en paralelo. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_adjust: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdjustInventoryItemRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description La cantidad o unidad es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Solo administradores pueden ajustar existencias. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia esta archivada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_movements: {
+        parameters: {
+            query?: {
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryMovementListResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_consume: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterInventoryExitRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description La cantidad o unidad es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La cantidad disponible es insuficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_consumePrepared: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsumePreparedInventoryItemRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealResponseDto"];
+                };
+            };
+            /** @description El alimento no es preparado o la cantidad es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario o perfil no pertenece al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia o sobrante no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La cantidad disponible es insuficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_waste: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterInventoryExitRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description La cantidad o unidad es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La cantidad disponible es insuficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InventoryController_expiration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inventoryItemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterInventoryExitRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            /** @description La cantidad o unidad es invalida. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no puede acceder al hogar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La existencia no existe. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description La cantidad disponible es insuficiente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparationInventoryController_previewBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreparedBatchInventoryPreviewResponseDto"];
+                };
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparationInventoryController_confirmBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batchId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPreparedBatchInventoryConsumptionRequestDto"];
+            };
+        };
+        responses: {
+            /** @description El consumo fue aplicado. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PreparationInventoryController_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                leftoverId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItemResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired access token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ShoppingListController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShoppingListResponseDto"];
+                };
+            };
+        };
+    };
+    ShoppingListController_addItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddShoppingListItemRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    ShoppingListController_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ShoppingListController_updateItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateShoppingListItemRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ShoppingListController_markPurchased: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                itemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ShoppingListController_generateItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShoppingListResponseDto"];
+                };
+            };
+        };
+    };
+    PurchaseController_listPurchases: {
+        parameters: {
+            query?: {
+                status?: string;
+                page?: number;
+                limit?: number;
+                storeName?: string;
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_createPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePurchaseRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_getPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_cancelPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_updatePurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePurchaseRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_confirmPurchase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPurchaseRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PurchaseController_convertShopping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConvertShoppingListRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_list: {
+        parameters: {
+            query?: {
+                status?: "DRAFT" | "ACTIVE" | "COMPLETED" | "CANCELLED";
+                page?: components["schemas"]["Object"];
+                limit?: components["schemas"]["Object"];
+            };
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                householdId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWeeklyPlanRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Weekly plan created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateWeeklyPlanRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weeklyPlanId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlannedMealRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_deleteMeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_editMeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePlannedMealRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_replace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplacePlannedMealRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plannedMealId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignParticipantRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_deleteParticipant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                participantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanningController_editParticipant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                participantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateParticipantRequestDto"];
+            };
+        };
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

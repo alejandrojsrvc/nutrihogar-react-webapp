@@ -30,4 +30,27 @@ describe('MealApiMapper', () => {
     expect(meal.items[0]?.nutrients[0]?.amount).toBe(130);
     expect(meal.items[0]?.totals.calories).toBe(130);
   });
+
+  it('maps preparation origin without changing manual meals', () => {
+    const meal = toMealDetails({
+      id: 'meal-2',
+      source: 'PREPARED_BATCH',
+      sourceReference: {
+        consumedWeight: 180,
+        portionId: 'portion-1',
+        preparedBatchId: 'batch-1',
+        recipeName: 'Arroz familiar',
+        servedWeight: 220,
+      },
+    });
+
+    expect(meal.preparation).toEqual({
+      consumedWeight: 180,
+      portionId: 'portion-1',
+      preparedBatchId: 'batch-1',
+      recipeName: 'Arroz familiar',
+      servedWeight: 220,
+    });
+    expect(toMealDetails({ id: 'meal-3', source: 'MANUAL' }).preparation).toBeNull();
+  });
 });

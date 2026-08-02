@@ -3,6 +3,7 @@ import { formatCalories, formatGrams } from '@nutrihogar/domain';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
+import { isPreparedMealSource } from '../../domain/MealOrigin';
 
 const mealTypeLabels: Record<string, string> = {
   BREAKFAST: 'Desayuno',
@@ -51,7 +52,10 @@ export function MealDetailPage() {
 
   const meal = query.data;
   function cancel() {
-    if (!mealId || !window.confirm('Cancelar esta comida hará que deje de contar en el resumen diario. ¿Quieres continuar?')) return;
+    const warning = isPreparedMealSource(meal.source) || meal.preparation
+      ? 'Esta comida está vinculada a una porción de una preparación. Cancelarla no deshace el consumo de la preparación. ¿Quieres continuar?'
+      : 'Cancelar esta comida hará que deje de contar en el resumen diario. ¿Quieres continuar?';
+    if (!mealId || !window.confirm(warning)) return;
     cancelMeal.mutate(mealId, { onSuccess: () => navigate(`/app/resumen/${meal.consumedAt.slice(0, 10)}`, { state: { mealCancelled: true } }) });
   }
   return (
@@ -68,7 +72,9 @@ export function MealDetailPage() {
       ) : null}
       <dl className="meal-detail-meta">
         <div><dt>Integrante</dt><dd>{meal.adultProfileId ?? 'No disponible'}</dd></div>
-        <div><dt>Origen</dt><dd>{meal.source === 'MANUAL' ? 'Registro manual' : meal.source}</dd></div>
+        <div><dt>Origen</dt><dd>{isPreparedMealSource(meal.source) || meal.preparation ? 'Preparación familiar' : meal.source === 'MANUAL' ? 'Registro manual' : meal.source}</dd></div>
+        {meal.preparation?.recipeName ? <div><dt>Receta</dt><dd>{meal.preparation.recipeName}</dd></div> : null}
+        {meal.preparation?.consumedWeight != null ? <div><dt>Peso consumido</dt><dd>{meal.preparation.consumedWeight} g · Pesado</dd></div> : null}
       </dl>
       <section className="meal-detail-summary" aria-labelledby="meal-detail-summary-title">
         <p className="eyebrow">Resumen confirmado</p>
@@ -106,6 +112,7 @@ export function MealDetailPage() {
         )}
       </section>
       {meal.notes ? <p className="meal-detail-notes"><strong>Nota:</strong> {meal.notes}</p> : null}
+      {meal.preparation?.preparedBatchId ? <Link className="button button--secondary" to={`/app/preparaciones/${meal.preparation.preparedBatchId}`}>Ver preparación original</Link> : null}
       <div className="meal-detail-actions">
         <Link className="button button--primary" to={`/app/comidas/${meal.id}/editar`}>Editar comida</Link>
         <Link className="button button--secondary" to={`/app/comidas/${meal.id}/repetir`}>Repetir comida</Link>

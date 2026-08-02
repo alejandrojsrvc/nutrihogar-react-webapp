@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Link } from 'react-router';
 import { calculateNutritionPreview, roundNutritionSummary } from '@nutrihogar/nutrition-engine';
 import { mealFormSchema, type MealFormValues } from '@nutrihogar/schemas';
@@ -10,6 +11,7 @@ import type { FoodSelection } from '../../../food-catalog/application/ports/Food
 import type { MealDraftItem } from '../../application/ports/MealGateway';
 
 const mealTypeLabels = { BREAKFAST: 'Desayuno', LUNCH: 'Almuerzo', SNACK: 'Merienda', DINNER: 'Cena', EXTRA: 'Extra' };
+type MealFormInput = z.input<typeof mealFormSchema>;
 
 export function MealForm({
   initialItems = [],
@@ -35,7 +37,7 @@ export function MealForm({
   const [items, setItems] = useState(initialItems);
   const [showSelector, setShowSelector] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const form = useForm<MealFormValues>({ defaultValues: { ...initialValues, items: initialItems.map(toFormItem) }, resolver: zodResolver(mealFormSchema) });
+  const form = useForm<MealFormInput, unknown, MealFormValues>({ defaultValues: { ...initialValues, items: initialItems.map(toFormItem) }, resolver: zodResolver(mealFormSchema) });
   const selectedProfileId = useWatch({ control: form.control, name: 'profileId' });
   const summary = roundNutritionSummary(calculateNutritionPreview(items.map(toPreviewItem)));
 

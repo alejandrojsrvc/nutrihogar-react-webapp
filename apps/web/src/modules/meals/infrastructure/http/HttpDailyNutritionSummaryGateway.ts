@@ -32,7 +32,7 @@ export class HttpDailyNutritionSummaryGateway implements DailyNutritionSummaryGa
   }
 }
 
-function toDailyNutritionSummary(value: unknown): DailyNutritionSummary {
+export function toDailyNutritionSummary(value: unknown): DailyNutritionSummary {
   const source = value as Record<string, unknown>;
   return {
     consumed: toNutritionSummary(source.consumed),
@@ -46,10 +46,19 @@ function toDailyNutritionSummary(value: unknown): DailyNutritionSummary {
 
 function toMeal(value: unknown) {
   const source = value as Record<string, unknown>;
+  const reference = source.sourceReference ?? source.preparation;
+  const preparation = reference && typeof reference === 'object'
+    ? reference as Record<string, unknown>
+    : null;
   return {
     consumedAt: String(source.consumedAt),
     id: String(source.id),
     mealType: String(source.mealType),
+    preparation: preparation ? {
+      preparedBatchId: preparation.preparedBatchId == null ? null : String(preparation.preparedBatchId ?? preparation.batchId),
+      recipeName: preparation.recipeName == null ? null : String(preparation.recipeName ?? preparation.recipeNameSnapshot),
+    } : null,
+    source: source.source == null ? undefined : String(source.source),
     totals: toNutritionSummary(source.totals),
   };
 }

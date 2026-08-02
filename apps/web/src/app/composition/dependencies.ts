@@ -50,12 +50,52 @@ import { HttpHouseholdInvitationGateway } from '../../shared/infrastructure/http
 import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/storage/LocalStorageActiveHouseholdGateway';
 import { LocalStorageAdultProfileDraftStorage } from '../../shared/infrastructure/storage/LocalStorageAdultProfileDraftStorage';
 import { LocalStorageHouseholdInvitationLinkGateway } from '../../shared/infrastructure/storage/LocalStorageHouseholdInvitationLinkGateway';
+import { HttpInventoryGateway } from '../../modules/inventory/infrastructure/http/HttpInventoryGateway';
+import { HttpInventorySyncGateway } from '../../modules/inventory/infrastructure/http/HttpInventorySyncGateway';
+import { DexieInventoryLocalRepository } from '../../modules/inventory/infrastructure/storage/DexieInventoryLocalRepository';
+import { BrowserConnectivityGateway } from '../../modules/inventory/infrastructure/storage/BrowserConnectivityGateway';
+import { getInventoryDeviceId } from '../../modules/inventory/infrastructure/storage/InventoryDeviceId';
+import {
+  AdjustInventoryItemUseCase,
+  ConsumeInventoryItemUseCase,
+  CreateManualInventoryItemUseCase,
+  GetInventorySyncStatusUseCase,
+  GetInventoryItemUseCase,
+  ArchiveInventoryItemUseCase,
+  ListInventoryMovementsUseCase,
+  ListPendingInventoryOperationsUseCase,
+  LoadInventoryUseCase,
+  SynchronizeInventoryUseCase,
+  UpdateInventoryItemUseCase,
+  WasteInventoryItemUseCase,
+} from '../../modules/inventory/application/use-cases/InventoryUseCases';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
 import { CreateRecipeUseCase } from '../../modules/recipes/application/use-cases/CreateRecipeUseCase';
 import { UpdateRecipeUseCase } from '../../modules/recipes/application/use-cases/UpdateRecipeUseCase';
 import { LoadRecipeUseCase } from '../../modules/recipes/application/use-cases/LoadRecipeUseCase';
 import { ListRecipesUseCase } from '../../modules/recipes/application/use-cases/ListRecipesUseCase';
+import { ArchiveRecipeUseCase } from '../../modules/recipes/application/use-cases/ArchiveRecipeUseCase';
+import { LoadRecipeNutritionUseCase } from '../../modules/recipes/application/use-cases/LoadRecipeNutritionUseCase';
+import { HttpPreparedBatchGateway } from '../../modules/recipes/infrastructure/http/HttpPreparedBatchGateway';
+import { HttpServedPortionGateway } from '../../modules/recipes/infrastructure/http/HttpServedPortionGateway';
+import { HttpServedPortionConsumptionGateway } from '../../modules/recipes/infrastructure/http/HttpServedPortionConsumptionGateway';
+import { HttpPreparedFoodLeftoverGateway } from '../../modules/recipes/infrastructure/http/HttpPreparedFoodLeftoverGateway';
+import { LoadPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/LoadPreparedBatchUseCase';
+import { LoadPreparedBatchDetailsUseCase } from '../../modules/recipes/application/use-cases/LoadPreparedBatchDetailsUseCase';
+import { StartPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/StartPreparedBatchUseCase';
+import { UpdatePreparedBatchIngredientsUseCase } from '../../modules/recipes/application/use-cases/UpdatePreparedBatchIngredientsUseCase';
+import { ConfirmPreparedBatchIngredientsUseCase } from '../../modules/recipes/application/use-cases/ConfirmPreparedBatchIngredientsUseCase';
+import { FinalizePreparedBatchUseCase } from '../../modules/recipes/application/use-cases/FinalizePreparedBatchUseCase';
+import { CancelPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/CancelPreparedBatchUseCase';
+import { ServePreparedBatchPortionsUseCase } from '../../modules/recipes/application/use-cases/ServePreparedBatchPortionsUseCase';
+import { ConfirmServedPortionConsumptionUseCase } from '../../modules/recipes/application/use-cases/ConfirmServedPortionConsumptionUseCase';
+import {
+  CreatePreparedFoodLeftoverUseCase,
+  GetPreparedFoodLeftoverUseCase,
+  ListPreparedFoodLeftoversUseCase,
+  UpdatePreparedFoodLeftoverStatusUseCase,
+} from '../../modules/recipes/application/use-cases/PreparedFoodLeftoverUseCases';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -82,6 +122,10 @@ const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
 const mealGateway = new HttpMealGateway(apiClient);
 const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(apiClient);
 const recipeGateway = new HttpRecipeGateway(apiClient);
+const preparedBatchGateway = new HttpPreparedBatchGateway(apiClient);
+const servedPortionGateway = new HttpServedPortionGateway(apiClient);
+const servedPortionConsumptionGateway = new HttpServedPortionConsumptionGateway(apiClient);
+const preparedFoodLeftoverGateway = new HttpPreparedFoodLeftoverGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -91,6 +135,10 @@ export const adultProfileDraftStorage =
   new LocalStorageAdultProfileDraftStorage();
 const householdInvitationLinkGateway =
   new LocalStorageHouseholdInvitationLinkGateway();
+const inventoryGateway = new HttpInventoryGateway(apiClient);
+const inventorySyncGateway = new HttpInventorySyncGateway(apiClient);
+const inventoryLocalRepository = new DexieInventoryLocalRepository();
+const connectivityGateway = new BrowserConnectivityGateway();
 
 export const syncCurrentUserUseCase = new SyncCurrentUserUseCase(
   currentUserGateway,
@@ -132,6 +180,21 @@ export const createRecipeUseCase = new CreateRecipeUseCase(recipeGateway);
 export const updateRecipeUseCase = new UpdateRecipeUseCase(recipeGateway);
 export const loadRecipeUseCase = new LoadRecipeUseCase(recipeGateway);
 export const listRecipesUseCase = new ListRecipesUseCase(recipeGateway);
+export const archiveRecipeUseCase = new ArchiveRecipeUseCase(recipeGateway);
+export const loadRecipeNutritionUseCase = new LoadRecipeNutritionUseCase(recipeGateway);
+export const loadPreparedBatchUseCase = new LoadPreparedBatchUseCase(preparedBatchGateway);
+export const loadPreparedBatchDetailsUseCase = new LoadPreparedBatchDetailsUseCase(preparedBatchGateway);
+export const startPreparedBatchUseCase = new StartPreparedBatchUseCase(preparedBatchGateway);
+export const updatePreparedBatchIngredientsUseCase = new UpdatePreparedBatchIngredientsUseCase(preparedBatchGateway);
+export const confirmPreparedBatchIngredientsUseCase = new ConfirmPreparedBatchIngredientsUseCase(preparedBatchGateway);
+export const finalizePreparedBatchUseCase = new FinalizePreparedBatchUseCase(preparedBatchGateway);
+export const cancelPreparedBatchUseCase = new CancelPreparedBatchUseCase(preparedBatchGateway);
+export const servePreparedBatchPortionsUseCase = new ServePreparedBatchPortionsUseCase(servedPortionGateway);
+export const confirmServedPortionConsumptionUseCase = new ConfirmServedPortionConsumptionUseCase(servedPortionConsumptionGateway);
+export const createPreparedFoodLeftoverUseCase = new CreatePreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
+export const listPreparedFoodLeftoversUseCase = new ListPreparedFoodLeftoversUseCase(preparedFoodLeftoverGateway);
+export const getPreparedFoodLeftoverUseCase = new GetPreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
+export const updatePreparedFoodLeftoverStatusUseCase = new UpdatePreparedFoodLeftoverStatusUseCase(preparedFoodLeftoverGateway);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =
@@ -144,6 +207,41 @@ export const getHouseholdInvitationTokenUseCase =
   new GetHouseholdInvitationTokenUseCase(householdInvitationLinkGateway);
 export const rememberHouseholdInvitationTokenUseCase =
   new RememberHouseholdInvitationTokenUseCase(householdInvitationLinkGateway);
+export const loadInventoryUseCase = new LoadInventoryUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const getInventoryItemUseCase = new GetInventoryItemUseCase(inventoryGateway);
+export const createManualInventoryItemUseCase = new CreateManualInventoryItemUseCase(
+  inventoryGateway,
+  connectivityGateway,
+);
+export const adjustInventoryItemUseCase = new AdjustInventoryItemUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const consumeInventoryItemUseCase = new ConsumeInventoryItemUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const wasteInventoryItemUseCase = new WasteInventoryItemUseCase(inventoryGateway);
+export const updateInventoryItemUseCase = new UpdateInventoryItemUseCase(inventoryGateway);
+export const archiveInventoryItemUseCase = new ArchiveInventoryItemUseCase(inventoryGateway);
+export const listInventoryMovementsUseCase = new ListInventoryMovementsUseCase(inventoryGateway);
+export const listPendingInventoryOperationsUseCase = new ListPendingInventoryOperationsUseCase(inventoryLocalRepository);
+export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
+  inventorySyncGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+  getInventoryDeviceId(),
+);
+export const getInventorySyncStatusUseCase = new GetInventorySyncStatusUseCase(
+  inventoryLocalRepository,
+  connectivityGateway,
+);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );

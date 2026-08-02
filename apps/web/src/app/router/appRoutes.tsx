@@ -26,6 +26,19 @@ import { EditMealPage } from '../../modules/meals/presentation/pages/EditMealPag
 import { DuplicateMealPage } from '../../modules/meals/presentation/pages/DuplicateMealPage';
 import { RecipeListPage } from '../../modules/recipes/presentation/pages/RecipeListPage';
 import { RecipeDetailPage } from '../../modules/recipes/presentation/pages/RecipeDetailPage';
+import { RecipeFormPage } from '../../modules/recipes/presentation/pages/RecipeFormPage';
+import { StartPreparedBatchPage } from '../../modules/recipes/presentation/pages/StartPreparedBatchPage';
+import { FinalizePreparedBatchPage } from '../../modules/recipes/presentation/pages/FinalizePreparedBatchPage';
+import { PreparedBatchDetailPage } from '../../modules/recipes/presentation/pages/PreparedBatchDetailPage';
+import { ServePreparedBatchPortionsPage } from '../../modules/recipes/presentation/pages/ServePreparedBatchPortionsPage';
+import { ConfirmServedPortionConsumptionPage } from '../../modules/recipes/presentation/pages/ConfirmServedPortionConsumptionPage';
+import { CreatePreparedFoodLeftoverPage } from '../../modules/recipes/presentation/pages/CreatePreparedFoodLeftoverPage';
+import { PreparedFoodLeftoversPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoversPage';
+import { PreparedFoodLeftoverDetailPage } from '../../modules/recipes/presentation/pages/PreparedFoodLeftoverDetailPage';
+import { InventoryListPage } from '../../modules/inventory/presentation/pages/InventoryListPage';
+import { InventoryDetailPage } from '../../modules/inventory/presentation/pages/InventoryDetailPage';
+import { InventoryCreatePage } from '../../modules/inventory/presentation/pages/InventoryCreatePage';
+import { InventoryAdjustPage } from '../../modules/inventory/presentation/pages/InventoryAdjustPage';
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 
 export const appRoutes: RouteObject[] = [
@@ -76,7 +89,21 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/comidas/:mealId', element: <MealDetailPage /> },
           { path: '/app/resumen/:date', element: <DailyNutritionSummaryPage /> },
           { path: '/app/recetas', element: <RecipeListPage /> },
+          { path: '/app/recetas/nueva', element: <RecipeFormPage /> },
+          { path: '/app/recetas/:recipeId/editar', element: <RecipeFormPage /> },
           { path: '/app/recetas/:recipeId', element: <RecipeDetailPage /> },
+          { path: '/app/preparaciones/nueva', element: <StartPreparedBatchPage /> },
+          { path: '/app/preparaciones/:batchId/finalizar', element: <FinalizePreparedBatchPage /> },
+          { path: '/app/preparaciones/:batchId/servir', element: <ServePreparedBatchPortionsPage /> },
+          { path: '/app/preparaciones/:batchId', element: <PreparedBatchDetailPage /> },
+          { path: '/app/porciones/:portionId/confirmar', element: <ConfirmServedPortionConsumptionPage /> },
+          { path: '/app/preparaciones/:batchId/sobrante', element: <CreatePreparedFoodLeftoverPage /> },
+          { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
+          { path: '/app/sobrantes/:leftoverId', element: <PreparedFoodLeftoverDetailPage /> },
+          { path: '/app/inventario', element: <InventoryListPage /> },
+          { path: '/app/inventario/nuevo', element: <InventoryCreatePage /> },
+          { path: '/app/inventario/:inventoryItemId/ajustar', element: <InventoryAdjustPage /> },
+          { path: '/app/inventario/:inventoryItemId', element: <InventoryDetailPage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

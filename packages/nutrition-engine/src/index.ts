@@ -40,12 +40,14 @@ export function roundNutritionSummary(
   decimals = 1,
 ): NutritionSummary {
   const factor = 10 ** decimals;
-  return Object.fromEntries(
-    Object.entries(summary).map(([key, value]) => [
-      key,
-      Math.round(value * factor) / factor,
-    ]),
-  ) as NutritionSummary;
+  return {
+    calories: Math.round(summary.calories * factor) / factor,
+    proteinGrams: Math.round(summary.proteinGrams * factor) / factor,
+    carbohydrateGrams:
+      Math.round(summary.carbohydrateGrams * factor) / factor,
+    fatGrams: Math.round(summary.fatGrams * factor) / factor,
+    fiberGrams: Math.round(summary.fiberGrams * factor) / factor,
+  };
 }
 
 function getReferenceMultiplier(item: PreviewFoodItem): number {

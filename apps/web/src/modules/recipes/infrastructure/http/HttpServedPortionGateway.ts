@@ -1,0 +1,5 @@
+import { normalizeApiError, type ApiClient } from '@nutrihogar/api-client';
+import type { ServePortionsInput, ServePortionsResult, ServedPortionGateway } from '../../application/ports/ServedPortionGateway';
+type Result = { data?: unknown; error?: unknown; response?: Response };
+interface Client { POST(path: string, options: { params: { path: { batchId: string } }; body: unknown }): Promise<Result>; }
+export class HttpServedPortionGateway implements ServedPortionGateway { constructor(private readonly apiClient: ApiClient) {} async serve(batchId: string, input: ServePortionsInput): Promise<ServePortionsResult> { try { const result = await (this.apiClient as unknown as Client).POST(`/api/prepared-batches/${batchId}/served-portions`, { params: { path: { batchId } }, body: { portions: input.portions, servedAt: input.servedAt?.toISOString() } }); if (result.error !== undefined) throw normalizeApiError(result.error, result.response); return result.data as ServePortionsResult; } catch (error) { throw normalizeApiError(error); } } }

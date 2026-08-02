@@ -14,7 +14,15 @@ export class HttpHealthGateway implements HealthGateway {
 
   async check(): Promise<HealthStatus> {
     try {
-      const result = await this.apiClient.GET('/api/health');
+      const result = await (
+        this.apiClient as unknown as {
+          GET(path: string): Promise<{
+            data?: HealthStatus;
+            error?: unknown;
+            response?: Response;
+          }>;
+        }
+      ).GET('/api/health');
 
       if (result.error !== undefined) {
         throw normalizeApiError(result.error, result.response);

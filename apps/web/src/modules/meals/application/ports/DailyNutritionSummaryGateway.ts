@@ -6,6 +6,11 @@ export interface DailyNutritionMeal {
   id: string;
   consumedAt: string;
   mealType: string;
+  source?: string;
+  preparation?: {
+    preparedBatchId: string | null;
+    recipeName: string | null;
+  } | null;
   totals: NutritionSummary;
 }
 
