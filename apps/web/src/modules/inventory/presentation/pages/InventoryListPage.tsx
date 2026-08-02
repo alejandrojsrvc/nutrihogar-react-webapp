@@ -6,7 +6,7 @@ import { EmptyState } from '../../../../shared/presentation/components/EmptyStat
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { InventoryItem, InventoryItemType, InventoryItemStatus } from '../../domain/Inventory';
-import { useInventory, useInventorySyncStatus, useSynchronizeInventory } from '../hooks/useInventory';
+import { useDiscardInventoryOperation, useInventory, useInventoryConflicts, useInventorySyncStatus, useSynchronizeInventory } from '../hooks/useInventory';
 
 type SpecialFilter = 'ALL' | 'BELOW_MINIMUM' | 'DEPLETED' | 'EXPIRING';
 
@@ -25,6 +25,8 @@ export function InventoryListPage() {
   const inventory = useInventory(households.activeHousehold?.id, filters);
   const syncStatus = useInventorySyncStatus(households.activeHousehold?.id);
   const synchronize = useSynchronizeInventory(households.activeHousehold?.id);
+  const conflicts = useInventoryConflicts(households.activeHousehold?.id);
+  const discardConflict = useDiscardInventoryOperation(households.activeHousehold?.id);
   const visibleItems = useMemo(() => filterSnapshot(inventory.data?.items ?? [], search, itemType, specialFilter), [inventory.data?.items, itemType, search, specialFilter]);
 
   if (households.isPending) return <p className="page-section" role="status">Cargando hogar...</p>;
@@ -34,7 +36,8 @@ export function InventoryListPage() {
     <section className="page-section inventory-page" aria-labelledby="inventory-title">
       <BackButton fallback="/app" />
       <PageHeader action={<Link className="button button--primary" to="/app/inventario/nuevo">Agregar existencia</Link>} eyebrow={households.activeHousehold.name} title="Inventario del hogar" titleId="inventory-title" description="Consulta lo que tienes disponible y mantenlo actualizado." />
-      <SyncStatus isOnline={syncStatus.data?.isOnline ?? true} pendingCount={syncStatus.data?.pendingCount ?? 0} isSyncing={synchronize.isPending} onSynchronize={() => synchronize.mutate()} />
+      <SyncStatus conflictsCount={syncStatus.data?.conflictsCount ?? 0} isOnline={syncStatus.data?.isOnline ?? true} lastSyncAt={syncStatus.data?.lastSyncAt ?? null} pendingCount={syncStatus.data?.pendingCount ?? 0} isSyncing={synchronize.isPending} onSynchronize={() => synchronize.mutate()} />
+      {conflicts.data?.length ? <section className="inventory-conflicts" aria-labelledby="inventory-conflicts-title"><h2 id="inventory-conflicts-title">Revisa operaciones con conflicto</h2><ul>{conflicts.data.map((operation) => <li key={operation.operationId}><span>Operación pendiente sobre {operation.inventoryItemId}{operation.lastError ? `: ${operation.lastError}` : ''}</span><button className="button button--text" disabled={discardConflict.isPending} onClick={() => discardConflict.mutate(operation.operationId)} type="button">Descartar</button></li>)}</ul></section> : null}
       <div className="inventory-filters">
         <div className="form-field"><label htmlFor="inventory-search">Buscar existencia</label><input id="inventory-search" onChange={(event) => setSearch(event.target.value)} placeholder="Ej. arroz o freezer" type="search" value={search} /></div>
         <div className="form-field"><label htmlFor="inventory-type">Tipo</label><select id="inventory-type" onChange={(event) => setItemType(event.target.value as InventoryItemType | '')} value={itemType}><option value="">Todos</option><option value="FOOD">Alimentos</option><option value="PREPARED_FOOD">Preparaciones</option><option value="CUSTOM">Personalizados</option></select></div>
@@ -54,8 +57,8 @@ function InventoryCard({ item }: { item: InventoryItem }) {
   return <article className="inventory-card"><div><p className="eyebrow">{itemTypeLabel(item.itemType)}</p><h2>{item.name}</h2><p className="inventory-card__quantity"><strong>{formatQuantity(item.currentQuantity, item.unit)}</strong>{item.minimumQuantity != null ? ` · mínimo ${formatQuantity(item.minimumQuantity, item.unit)}` : ''}</p><p>{item.location ?? 'Ubicación no indicada'}{item.expiresAt ? ` · vence ${formatDate(item.expiresAt)}` : ''}</p><div className="inventory-card__statuses">{depleted ? <span className="status-badge">Agotado</span> : null}{belowMinimum && !depleted ? <span className="status-badge">Bajo mínimo</span> : null}{item.itemType === 'PREPARED_FOOD' ? <span className="status-badge">Preparado</span> : null}</div></div><div className="inventory-card__actions"><Link className="button button--secondary" to={`/app/inventario/${item.id}`}>Ver detalle</Link><Link className="button button--secondary" to={`/app/inventario/${item.id}/ajustar`}>Ajustar</Link></div></article>;
 }
 
-function SyncStatus({ isOnline, pendingCount, isSyncing, onSynchronize }: { isOnline: boolean; pendingCount: number; isSyncing: boolean; onSynchronize: () => void }) {
-  return <div className="inventory-sync" role="status"><span>{isOnline ? 'Conectado' : 'Sin conexión'}{pendingCount > 0 ? ` · ${pendingCount} operación${pendingCount === 1 ? '' : 'es'} pendiente${pendingCount === 1 ? '' : 's'}` : ''}</span>{pendingCount > 0 && isOnline ? <button className="button button--tertiary" disabled={isSyncing} onClick={onSynchronize} type="button">{isSyncing ? 'Sincronizando...' : 'Sincronizar'}</button> : null}</div>;
+function SyncStatus({ conflictsCount, isOnline, lastSyncAt, pendingCount, isSyncing, onSynchronize }: { conflictsCount: number; isOnline: boolean; lastSyncAt: string | null; pendingCount: number; isSyncing: boolean; onSynchronize: () => void }) {
+  return <div className="inventory-sync" role="status"><span>{isOnline ? 'Conectado' : 'Sin conexión'}{pendingCount > 0 ? ` · ${pendingCount} operación${pendingCount === 1 ? '' : 'es'} pendiente${pendingCount === 1 ? '' : 's'}` : ''}{conflictsCount > 0 ? ` · ${conflictsCount} conflicto${conflictsCount === 1 ? '' : 's'}` : ''}{lastSyncAt ? ` · Última sincronización: ${formatDateTime(lastSyncAt)}` : ''}</span>{pendingCount > 0 && isOnline ? <button className="button button--tertiary" disabled={isSyncing} onClick={onSynchronize} type="button">{isSyncing ? 'Sincronizando...' : 'Sincronizar'}</button> : null}</div>;
 }
 
 function filterSnapshot<T extends { name: string; itemType: InventoryItemType; status: InventoryItemStatus; currentQuantity: number; minimumQuantity: number | null; expiresAt: string | null }>(items: T[], search: string, itemType: InventoryItemType | '', specialFilter: SpecialFilter) {
@@ -75,3 +78,4 @@ function itemTypeLabel(type: InventoryItemType) { return type === 'PREPARED_FOOD
 function formatQuantity(quantity: number, unit: string) { return `${quantity} ${unit === 'GRAM' ? 'g' : unit === 'MILLILITER' ? 'ml' : 'un.'}`; }
 function formatDate(value: string) { return new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date(value)); }
 function inThirtyDays() { return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); }
+function formatDateTime(value: string) { return new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)); }

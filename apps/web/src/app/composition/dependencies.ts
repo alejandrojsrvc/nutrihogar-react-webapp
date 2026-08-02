@@ -64,10 +64,14 @@ import {
   ArchiveInventoryItemUseCase,
   ListInventoryMovementsUseCase,
   ListPendingInventoryOperationsUseCase,
+  ListInventoryConflictOperationsUseCase,
+  DiscardInventoryOperationUseCase,
   LoadInventoryUseCase,
   SynchronizeInventoryUseCase,
   UpdateInventoryItemUseCase,
+  ConsumePreparedFoodUseCase,
   WasteInventoryItemUseCase,
+  ExpireInventoryItemUseCase,
 } from '../../modules/inventory/application/use-cases/InventoryUseCases';
 import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
@@ -81,6 +85,7 @@ import { HttpPreparedBatchGateway } from '../../modules/recipes/infrastructure/h
 import { HttpServedPortionGateway } from '../../modules/recipes/infrastructure/http/HttpServedPortionGateway';
 import { HttpServedPortionConsumptionGateway } from '../../modules/recipes/infrastructure/http/HttpServedPortionConsumptionGateway';
 import { HttpPreparedFoodLeftoverGateway } from '../../modules/recipes/infrastructure/http/HttpPreparedFoodLeftoverGateway';
+import { HttpPreparedBatchInventoryGateway } from '../../modules/recipes/infrastructure/http/HttpPreparedBatchInventoryGateway';
 import { LoadPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/LoadPreparedBatchUseCase';
 import { LoadPreparedBatchDetailsUseCase } from '../../modules/recipes/application/use-cases/LoadPreparedBatchDetailsUseCase';
 import { StartPreparedBatchUseCase } from '../../modules/recipes/application/use-cases/StartPreparedBatchUseCase';
@@ -95,7 +100,9 @@ import {
   GetPreparedFoodLeftoverUseCase,
   ListPreparedFoodLeftoversUseCase,
   UpdatePreparedFoodLeftoverStatusUseCase,
+  AddPreparedFoodLeftoverToInventoryUseCase,
 } from '../../modules/recipes/application/use-cases/PreparedFoodLeftoverUseCases';
+import { ConfirmPreparedBatchInventoryUseCase, LoadPreparedBatchInventoryPreviewUseCase } from '../../modules/recipes/application/use-cases/PreparedBatchInventoryUseCases';
 import { HttpPurchaseGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseGateway';
 import { HttpShoppingListGateway } from '../../modules/shopping-list/infrastructure/http/HttpShoppingListGateway';
 import {
@@ -145,6 +152,7 @@ const preparedBatchGateway = new HttpPreparedBatchGateway(apiClient);
 const servedPortionGateway = new HttpServedPortionGateway(apiClient);
 const servedPortionConsumptionGateway = new HttpServedPortionConsumptionGateway(apiClient);
 const preparedFoodLeftoverGateway = new HttpPreparedFoodLeftoverGateway(apiClient);
+const preparedBatchInventoryGateway = new HttpPreparedBatchInventoryGateway(apiClient);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
@@ -216,6 +224,9 @@ export const createPreparedFoodLeftoverUseCase = new CreatePreparedFoodLeftoverU
 export const listPreparedFoodLeftoversUseCase = new ListPreparedFoodLeftoversUseCase(preparedFoodLeftoverGateway);
 export const getPreparedFoodLeftoverUseCase = new GetPreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
 export const updatePreparedFoodLeftoverStatusUseCase = new UpdatePreparedFoodLeftoverStatusUseCase(preparedFoodLeftoverGateway);
+export const addPreparedFoodLeftoverToInventoryUseCase = new AddPreparedFoodLeftoverToInventoryUseCase(preparedFoodLeftoverGateway);
+export const loadPreparedBatchInventoryPreviewUseCase = new LoadPreparedBatchInventoryPreviewUseCase(preparedBatchInventoryGateway);
+export const confirmPreparedBatchInventoryUseCase = new ConfirmPreparedBatchInventoryUseCase(preparedBatchInventoryGateway);
 export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
 export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
 export const listHouseholdInvitationsUseCase =
@@ -248,11 +259,23 @@ export const consumeInventoryItemUseCase = new ConsumeInventoryItemUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
-export const wasteInventoryItemUseCase = new WasteInventoryItemUseCase(inventoryGateway);
+export const wasteInventoryItemUseCase = new WasteInventoryItemUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
+export const expireInventoryItemUseCase = new ExpireInventoryItemUseCase(
+  inventoryGateway,
+  inventoryLocalRepository,
+  connectivityGateway,
+);
 export const updateInventoryItemUseCase = new UpdateInventoryItemUseCase(inventoryGateway);
+export const consumePreparedFoodUseCase = new ConsumePreparedFoodUseCase(inventoryGateway);
 export const archiveInventoryItemUseCase = new ArchiveInventoryItemUseCase(inventoryGateway);
 export const listInventoryMovementsUseCase = new ListInventoryMovementsUseCase(inventoryGateway);
 export const listPendingInventoryOperationsUseCase = new ListPendingInventoryOperationsUseCase(inventoryLocalRepository);
+export const listInventoryConflictOperationsUseCase = new ListInventoryConflictOperationsUseCase(inventoryLocalRepository);
+export const discardInventoryOperationUseCase = new DiscardInventoryOperationUseCase(inventoryLocalRepository);
 export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
   inventorySyncGateway,
   inventoryLocalRepository,

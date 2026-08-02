@@ -35,3 +35,11 @@ export class UpdatePreparedFoodLeftoverStatusUseCase {
     return this.gateway.updateStatus(leftoverId, status);
   }
 }
+
+export class AddPreparedFoodLeftoverToInventoryUseCase {
+  constructor(private readonly gateway: PreparedFoodLeftoverGateway) {}
+
+  execute(leftoverId: string) {
+    return this.gateway.addToInventory(leftoverId);
+  }
+}

@@ -1,4 +1,5 @@
 import type { PreparedFoodLeftover } from '../../domain/PreparedBatch';
+import type { InventoryItem } from '../../../inventory/domain/Inventory';
 
 export type PreparedFoodLeftoverStatus = 'CONSUMED' | 'DISCARDED' | 'EXPIRED';
 
@@ -16,6 +17,7 @@ export interface PreparedFoodLeftoverGateway {
   ): Promise<PreparedFoodLeftover>;
   list(householdId: string): Promise<PreparedFoodLeftover[]>;
   getById(leftoverId: string): Promise<PreparedFoodLeftover>;
+  addToInventory(leftoverId: string): Promise<InventoryItem>;
   updateStatus(
     leftoverId: string,
     status: PreparedFoodLeftoverStatus,

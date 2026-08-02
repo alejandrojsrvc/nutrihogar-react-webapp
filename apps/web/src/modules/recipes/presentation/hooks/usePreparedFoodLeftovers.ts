@@ -5,6 +5,7 @@ import {
   getPreparedFoodLeftoverUseCase,
   listPreparedFoodLeftoversUseCase,
   updatePreparedFoodLeftoverStatusUseCase,
+  addPreparedFoodLeftoverToInventoryUseCase,
 } from '../../../../app/composition/dependencies';
 import type {
   CreatePreparedFoodLeftoverInput,
@@ -55,6 +56,18 @@ export function useUpdatePreparedFoodLeftoverStatus() {
     onSuccess: (leftover) => {
       queryClient.setQueryData(preparedFoodLeftoverQueryKeys.detail(leftover.id), leftover);
       void queryClient.invalidateQueries({ queryKey: preparedFoodLeftoverQueryKeys.all });
+    },
+  });
+}
+
+export function useAddPreparedFoodLeftoverToInventory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (leftoverId: string) => addPreparedFoodLeftoverToInventoryUseCase.execute(leftoverId),
+    onSuccess: (_, leftoverId) => {
+      void queryClient.invalidateQueries({ queryKey: preparedFoodLeftoverQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ['inventory'] });
+      void queryClient.invalidateQueries({ queryKey: preparedFoodLeftoverQueryKeys.detail(leftoverId) });
     },
   });
 }
