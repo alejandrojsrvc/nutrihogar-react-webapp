@@ -1,15 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { z } from 'zod';
 import { plannedMealFormSchema, type PlannedMealFormValues } from '@nutrihogar/schemas';
 import type { PlannedMeal, WeeklyPlan } from '../../domain/MealPlanning';
 import { weekDates } from '../../domain/week';
 import { RecipePicker } from './RecipePicker';
 
 const labels = { BREAKFAST: 'Desayuno', LUNCH: 'Comida', DINNER: 'Cena', SNACK: 'Colación' };
+type PlannedMealFormInput = z.input<typeof plannedMealFormSchema>;
 export function PlannedMealForm({ plan, meal, householdId, initialDate, initialType, saving, error, onSubmit, onCancel }: { plan: WeeklyPlan; meal?: PlannedMeal; householdId: string; initialDate: string; initialType: PlannedMealFormValues['type']; saving: boolean; error?: string; onSubmit: (value: PlannedMealFormValues) => void; onCancel: () => void }) {
   const dates = weekDates(plan.weekStart);
-  const form = useForm<PlannedMealFormValues>({ resolver: zodResolver(plannedMealFormSchema), defaultValues: { date: meal?.date ?? initialDate, type: meal?.type === 'EXTRA' ? 'SNACK' : meal?.type ?? initialType, source: meal?.source === 'UNPLANNED' || meal?.source === 'EMPTY' ? 'FREE_MEAL' : meal?.source ?? 'RECIPE', recipeId: meal?.recipeId ?? undefined, previousMealId: meal?.previousMealId ?? undefined, nameSnapshot: meal?.name ?? '', notes: meal?.notes ?? '', position: meal?.position ?? Math.max(-1, ...plan.meals.filter((item) => item.date === initialDate && item.type === initialType).map((item) => item.position)) + 1 } });
+  const form = useForm<PlannedMealFormInput, unknown, PlannedMealFormValues>({ resolver: zodResolver(plannedMealFormSchema), defaultValues: { date: meal?.date ?? initialDate, type: meal?.type === 'EXTRA' ? 'SNACK' : meal?.type ?? initialType, source: meal?.source === 'UNPLANNED' || meal?.source === 'EMPTY' ? 'FREE_MEAL' : meal?.source ?? 'RECIPE', recipeId: meal?.recipeId ?? undefined, previousMealId: meal?.previousMealId ?? undefined, nameSnapshot: meal?.name ?? '', notes: meal?.notes ?? '', position: meal?.position ?? Math.max(-1, ...plan.meals.filter((item) => item.date === initialDate && item.type === initialType).map((item) => item.position)) + 1 } });
   const source = useWatch({ control: form.control, name: 'source' });
   const recipeId = useWatch({ control: form.control, name: 'recipeId' });
   useEffect(() => { if (source !== 'RECIPE') form.setValue('recipeId', undefined); if (source !== 'PREVIOUS_MEAL') form.setValue('previousMealId', undefined); if (source === 'RECIPE' || source === 'PREVIOUS_MEAL') form.setValue('nameSnapshot', ''); }, [source, form]);

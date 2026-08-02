@@ -8,7 +8,8 @@ type Client = { GET(path: string, options: { params: { path: Record<string, stri
 export class HttpMealPlanningGateway implements MealPlanningGateway {
   constructor(private readonly apiClient: ApiClient) {}
   async list(householdId: string, criteria: MealPlanListCriteria) {
-    const result = await this.request(() => (this.apiClient as unknown as Client).GET(`/api/households/${householdId}/weekly-plans`, { params: { path: { householdId }, query: criteria } }));
+    const query: Record<string, unknown> = { limit: criteria.limit, page: criteria.page };
+    const result = await this.request(() => (this.apiClient as unknown as Client).GET(`/api/households/${householdId}/weekly-plans`, { params: { path: { householdId }, query } }));
     const data = result as components['schemas']['WeeklyPlanListResponseDto'];
     return { items: Array.isArray(data.items) ? data.items.map(toWeeklyPlan) : [], page: Number(data.page ?? criteria.page), limit: Number(data.limit ?? criteria.limit), total: Number(data.total ?? 0) };
   }

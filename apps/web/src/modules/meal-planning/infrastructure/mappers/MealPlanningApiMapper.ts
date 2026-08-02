@@ -3,7 +3,7 @@ import type { PlannedMeal, WeeklyPlan } from '../../domain/MealPlanning';
 import type { PlannedMealInput } from '../../application/ports/MealPlanningGateway';
 
 export function toPlannedMeal(value: unknown): PlannedMeal {
-  const item = value as components['schemas']['PlannedMealResponseDto'];
+  const item = value as components['schemas']['PlannedMealResponseDto'] & { previousMealId?: string | null };
   return { id: item.id, date: item.date, type: item.type, source: item.source, recipeId: item.recipeId ?? null, name: item.nameSnapshot ?? null, notes: item.notes ?? null, status: item.status, participants: Array.isArray(item.participants) ? item.participants.map((participant) => ({ adultProfileId: participant.adultProfileId, id: participant.id })) : [], position: Number(item.position ?? 0), previousMealId: item.previousMealId ?? null };
 }
 
