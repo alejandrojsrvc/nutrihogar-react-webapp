@@ -86,3 +86,9 @@ export const plannedMealFormSchema = z.object({
   if (['FREE_MEAL', 'RESTAURANT', 'DELIVERY'].includes(value.source) && !value.nameSnapshot?.trim()) context.addIssue({ code: z.ZodIssueCode.custom, path: ['nameSnapshot'], message: 'Escribe una descripción.' });
 });
 export type PlannedMealFormValues = z.infer<typeof plannedMealFormSchema>;
+
+export const participantQuantitySchema = z.object({
+  quantity: z.coerce.number().positive('La cantidad debe ser mayor que cero.'),
+  unit: z.string().trim().min(1, 'Escribe una unidad.'),
+});
+export type ParticipantQuantityValues = z.infer<typeof participantQuantitySchema>;

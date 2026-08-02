@@ -48,6 +48,12 @@ import { ShoppingListPage } from '../../modules/shopping-list/presentation/pages
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 import { WeeklyPlanPage } from '../../modules/meal-planning/presentation/pages/WeeklyPlanPage';
 import { PlannedMealFormPage } from '../../modules/meal-planning/presentation/pages/PlannedMealFormPage';
+import { PlannedMealParticipantsPage } from '../../modules/meal-planning/presentation/pages/PlannedMealParticipantsPage';
+import { PlannedMealQuantitiesPage } from '../../modules/meal-planning/presentation/pages/PlannedMealQuantitiesPage';
+import { WeeklyRequirementsPage } from '../../modules/meal-planning/presentation/pages/WeeklyRequirementsPage';
+import { InventoryComparisonPage } from '../../modules/meal-planning/presentation/pages/InventoryComparisonPage';
+import { PlannedMealPreparationPage } from '../../modules/meal-planning/presentation/pages/PlannedMealPreparationPage';
+import { WeeklyAdherencePage } from '../../modules/meal-planning/presentation/pages/WeeklyAdherencePage';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -122,6 +128,12 @@ export const appRoutes: RouteObject[] = [
           { path: '/app/plan-semanal', element: <WeeklyPlanPage /> },
           { path: '/app/plan-semanal/:weeklyPlanId/comidas/nueva', element: <PlannedMealFormPage /> },
           { path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/editar', element: <PlannedMealFormPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/participantes', element: <PlannedMealParticipantsPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/cantidades', element: <PlannedMealQuantitiesPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/preparar', element: <PlannedMealPreparationPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/requerimientos', element: <WeeklyRequirementsPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/comparacion-inventario', element: <InventoryComparisonPage /> },
+          { path: '/app/plan-semanal/:weeklyPlanId/adherencia', element: <WeeklyAdherencePage /> },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,

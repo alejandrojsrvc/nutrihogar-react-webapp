@@ -10,6 +10,8 @@ import { useDailyNutritionSummary } from '../../../meals/presentation/hooks/useM
 import { useInventoryDashboard, useInventorySyncStatus } from '../../../inventory/presentation/hooks/useInventory';
 import { usePreparedFoodLeftovers } from '../../../recipes/presentation/hooks/usePreparedFoodLeftovers';
 import { useShoppingList } from '../../../shopping-list/presentation/hooks/useShoppingList';
+import { useWeeklyPlanForWeek } from '../../../meal-planning/presentation/hooks/useMealPlanning';
+import { canonicalWeekStart, todayInTimezone } from '../../../meal-planning/domain/week';
 
 const mealTypes = [
   ['BREAKFAST', 'Desayuno'],
@@ -26,12 +28,13 @@ export function HomePage() {
   const [selectedProfileId, setSelectedProfileId] = useState('');
   const activeProfiles = profilesQuery.profiles.filter((profile) => profile.isActive !== false);
   const profileId = selectedProfileId || activeProfiles[0]?.id || '';
-  const date = today();
+  const date = todayInTimezone(activeHousehold?.timezone ?? 'UTC');
   const summaryQuery = useDailyNutritionSummary(profileId, date);
   const inventoryDashboard = useInventoryDashboard(activeHousehold?.id);
   const leftoversQuery = usePreparedFoodLeftovers(activeHousehold?.id);
   const shoppingListQuery = useShoppingList(activeHousehold?.id);
   const inventorySyncQuery = useInventorySyncStatus(activeHousehold?.id);
+  const todayPlan = useWeeklyPlanForWeek(activeHousehold?.id, canonicalWeekStart(date));
 
   if (householdsPending) return <section className="page-section" aria-labelledby="home-loading-title"><p className="eyebrow">Inicio</p><h1 id="home-loading-title">Cargando tu espacio familiar</h1><p className="lead" role="status">Consultando tus hogares...</p></section>;
   if (householdsError) return <section className="page-section" aria-labelledby="home-error-title"><p className="eyebrow">Inicio</p><h1 id="home-error-title">No pudimos cargar tu hogar</h1><p className="lead" role="alert">No se pudo conectar con la API de NutriHogar.</p></section>;
@@ -42,7 +45,8 @@ export function HomePage() {
     <section className="page-section home-page" aria-labelledby="home-title">
       <PageHeader action={<Link className="button button--primary home-page__primary-action" to={profileId ? `/app/comidas/nueva?profileId=${profileId}&date=${date}` : '/app/perfil/editar'}>{profileId ? 'Registrar comida' : 'Configurar perfil'}</Link>} eyebrow="Inicio" title="Tu hogar empieza aqui" titleId="home-title" />
       {isSuccessNavigation(location.state) ? <p className="profile-success" role="status">{location.state.mealSaved ? 'Comida registrada correctamente.' : 'Perfil guardado correctamente.'}</p> : null}
-      <div className="household-summary"><p className="household-summary__label">Hogar activo</p><h2>{activeHousehold.name}</h2><p>{activeHousehold.currency} · {activeHousehold.timezone}</p></div>
+       <div className="household-summary"><p className="household-summary__label">Hogar activo</p><h2>{activeHousehold.name}</h2><p>{activeHousehold.currency} · {activeHousehold.timezone}</p></div>
+       <HomePlannedMeals date={date} plan={todayPlan} />
       {activeProfiles.length > 1 ? <div className="form-field home-page__profile-selector"><label htmlFor="home-profile">Consultar para</label><select id="home-profile" onChange={(event) => setSelectedProfileId(event.target.value)} value={profileId}>{activeProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select></div> : null}
       <HomeInventoryPulse dashboard={inventoryDashboard} leftovers={leftoversQuery.data ?? []} leftoversError={leftoversQuery.isError} leftoversPending={leftoversQuery.isPending} pendingShoppingItems={(shoppingListQuery.data?.items ?? []).filter((item) => !item.purchased).length} shoppingListError={shoppingListQuery.isError} shoppingListPending={shoppingListQuery.isPending} sync={inventorySyncQuery.data} />
       {profileId ? <>
@@ -74,6 +78,14 @@ function HomeSummary({ summary, date }: { summary: NonNullable<ReturnType<typeof
 function priority(item: { status: string; currentQuantity: number; minimumQuantity: number | null; expiresAt: string | null }) { return item.status === 'DEPLETED' || item.currentQuantity <= 0 ? 0 : item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity ? 1 : item.expiresAt ? new Date(item.expiresAt).getTime() : 2; }
 function mealTypeLabel(value: string) { return mealTypes.find(([type]) => type === value)?.[1] ?? value; }
 function formatTime(value: string) { return new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit' }).format(new Date(value)); }
-function today() { return new Date().toISOString().slice(0, 10); }
 function isSuccessNavigation(state: unknown): state is { mealSaved?: boolean; profileSaved?: boolean } { return typeof state === 'object' && state !== null && ('mealSaved' in state || 'profileSaved' in state); }
 function isExpiring(value: string | null) { return value != null && value <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); }
+
+function HomePlannedMeals({ date, plan }: { date: string; plan: ReturnType<typeof useWeeklyPlanForWeek> }) {
+  if (plan.isPending) return <p role="status">Cargando comidas planificadas...</p>;
+  if (plan.isError) return <p role="alert">No se pudieron cargar las comidas planificadas.</p>;
+  const meals = (plan.data?.meals ?? []).filter((meal) => meal.date === date).sort((a, b) => a.position - b.position);
+  return <section className="home-page__planned-meals" aria-labelledby="home-planned-meals-title"><div className="section-heading"><div><p className="eyebrow">Hoy</p><h2 id="home-planned-meals-title">Comidas planificadas</h2></div><Link to={`/app/plan-semanal?semana=${plan.data?.weekStart ?? canonicalWeekStart(date)}`}>Ver plan semanal</Link></div>{meals.length ? <ul>{meals.map((meal) => <li key={meal.id}><span><strong>{mealTypeLabel(meal.type)}</strong><small>{meal.name ?? sourceLabel(meal.source)} · {meal.position + 1}° en el orden</small></span><span>{meal.status === 'CONSUMED' ? 'Consumida' : meal.status === 'PREPARED' ? 'Preparada' : meal.status === 'SERVED' ? 'Servida' : meal.status === 'CANCELLED' ? 'Cancelada' : 'Planificada'}</span>{meal.mealId ? <Link to={`/app/comidas/${meal.mealId}`}>Ver consumo</Link> : meal.source === 'RECIPE' ? <Link to={`/app/plan-semanal/${plan.data?.id}/comidas/${meal.id}/preparar`}>Preparar</Link> : null}</li>)}</ul> : <p>No hay comidas planificadas para hoy.</p>}</section>;
+}
+
+function sourceLabel(source: string) { return ({ DELIVERY: 'Delivery', EMPTY: 'Sin asignar', FREE_MEAL: 'Comida libre', PREVIOUS_MEAL: 'Comida anterior', RECIPE: 'Receta', RESTAURANT: 'Restaurante', UNPLANNED: 'No planificada' } as Record<string, string>)[source] ?? source; }

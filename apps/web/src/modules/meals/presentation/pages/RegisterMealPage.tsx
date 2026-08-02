@@ -7,6 +7,7 @@ import { useHouseholds } from '../../../households/presentation/hooks/useHouseho
 import type { MealDraftItem } from '../../application/ports/MealGateway';
 import { useRegisterMeal } from '../hooks/useMeals';
 import { MealForm } from '../components/MealForm';
+import { useLinkConsumption } from '../../../meal-planning/presentation/hooks/useMealPlanning';
 
 const mealTypes = ['BREAKFAST', 'LUNCH', 'SNACK', 'DINNER', 'EXTRA'] as const;
 
@@ -16,6 +17,7 @@ export function RegisterMealPage() {
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const registerMeal = useRegisterMeal();
+  const linkConsumption = useLinkConsumption();
   const params = new URLSearchParams(location.search);
   const activeProfiles = profiles.profiles.filter((profile) => profile.isActive !== false);
   const mealType = mealTypes.includes(params.get('mealType') as typeof mealTypes[number]) ? params.get('mealType') as MealFormValues['mealType'] : 'LUNCH';
@@ -37,12 +39,12 @@ export function RegisterMealPage() {
       mealType: values.mealType,
       notes: values.notes,
       profileId: values.profileId,
-    }, { onSuccess: () => navigate(`/app/resumen/${values.consumedAt.toISOString().slice(0, 10)}`, { state: { mealSaved: true } }) });
+    }, { onSuccess: (meal) => { const plannedMealId = params.get('plannedMealId'); if (plannedMealId) linkConsumption.mutate({ consumedMealId: meal.id, plannedMealId }, { onSuccess: () => navigate(`/app/resumen/${values.consumedAt.toISOString().slice(0, 10)}`, { state: { mealSaved: true } }) }); else navigate(`/app/resumen/${values.consumedAt.toISOString().slice(0, 10)}`, { state: { mealSaved: true } }); } });
   }
 
   if (profiles.isPending) return <p className="page-section" role="status">Cargando integrantes...</p>;
   if (!households.activeHousehold) return <p className="page-section" role="alert">Selecciona un hogar antes de registrar una comida.</p>;
   if (profiles.isError) return <p className="page-section" role="alert">No se pudieron cargar los integrantes.</p>;
 
-  return <section className="page-section meal-page" aria-labelledby="register-meal-title"><BackButton fallback="/app" /><PageHeader eyebrow="Registro de comida" title="Registra lo que comiste" titleId="register-meal-title" /><MealForm initialValues={initialValues} isSubmitting={registerMeal.isPending} onSubmit={submit} profiles={activeProfiles} submitLabel="Registrar comida" errorMessage={registerMeal.isError ? 'No se pudo registrar la comida. Inténtalo nuevamente.' : undefined} /></section>;
+  return <section className="page-section meal-page" aria-labelledby="register-meal-title"><BackButton fallback="/app" /><PageHeader eyebrow="Registro de comida" title="Registra lo que comiste" titleId="register-meal-title" />{params.get('plannedMealId') ? <p className="supporting-text">Al registrar, esta comida se vinculará al plan semanal.</p> : null}<MealForm initialValues={initialValues} isSubmitting={registerMeal.isPending || linkConsumption.isPending} onSubmit={submit} profiles={activeProfiles} submitLabel="Registrar comida" errorMessage={registerMeal.isError || linkConsumption.isError ? 'No se pudo registrar o vincular la comida. Inténtalo nuevamente.' : undefined} /></section>;
 }

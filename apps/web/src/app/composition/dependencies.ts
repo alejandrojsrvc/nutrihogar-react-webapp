@@ -107,7 +107,7 @@ import { ConfirmPreparedBatchInventoryUseCase, LoadPreparedBatchInventoryPreview
 import { HttpPurchaseGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseGateway';
 import { HttpShoppingListGateway } from '../../modules/shopping-list/infrastructure/http/HttpShoppingListGateway';
 import { HttpMealPlanningGateway } from '../../modules/meal-planning/infrastructure/http/HttpMealPlanningGateway';
-import { ListWeeklyPlansUseCase, LoadWeeklyPlanUseCase, CreateWeeklyPlanUseCase, AddPlannedMealUseCase, UpdatePlannedMealUseCase } from '../../modules/meal-planning/application/use-cases/MealPlanningUseCases';
+import { ListWeeklyPlansUseCase, LoadWeeklyPlanUseCase, CreateWeeklyPlanUseCase, AddPlannedMealUseCase, UpdatePlannedMealUseCase, AssignParticipantUseCase, DeleteParticipantUseCase, ProposeQuantitiesUseCase, ListQuantitiesUseCase, AcceptQuantitySuggestionsUseCase, UpdateParticipantUseCase, GetRequirementsUseCase, CompareInventoryUseCase, AddMissingShoppingItemsUseCase, GetAdherenceUseCase, GetPreparationUseCase, PreparePlannedMealUseCase, LinkConsumptionUseCase } from '../../modules/meal-planning/application/use-cases/MealPlanningUseCases';
 import {
   CancelPurchaseUseCase,
   ConfirmPurchaseUseCase,
@@ -309,6 +309,19 @@ export const loadWeeklyPlanUseCase = new LoadWeeklyPlanUseCase(mealPlanningGatew
 export const createWeeklyPlanUseCase = new CreateWeeklyPlanUseCase(mealPlanningGateway);
 export const addPlannedMealUseCase = new AddPlannedMealUseCase(mealPlanningGateway);
 export const updatePlannedMealUseCase = new UpdatePlannedMealUseCase(mealPlanningGateway);
+export const assignParticipantUseCase = new AssignParticipantUseCase(mealPlanningGateway);
+export const deleteParticipantUseCase = new DeleteParticipantUseCase(mealPlanningGateway);
+export const proposeQuantitiesUseCase = new ProposeQuantitiesUseCase(mealPlanningGateway);
+export const listQuantitiesUseCase = new ListQuantitiesUseCase(mealPlanningGateway);
+export const acceptQuantitySuggestionsUseCase = new AcceptQuantitySuggestionsUseCase(mealPlanningGateway);
+export const updateParticipantUseCase = new UpdateParticipantUseCase(mealPlanningGateway);
+export const getRequirementsUseCase = new GetRequirementsUseCase(mealPlanningGateway);
+export const compareInventoryUseCase = new CompareInventoryUseCase(mealPlanningGateway);
+export const addMissingShoppingItemsUseCase = new AddMissingShoppingItemsUseCase(mealPlanningGateway);
+export const getAdherenceUseCase = new GetAdherenceUseCase(mealPlanningGateway);
+export const getPreparationUseCase = new GetPreparationUseCase(mealPlanningGateway);
+export const preparePlannedMealUseCase = new PreparePlannedMealUseCase(mealPlanningGateway);
+export const linkConsumptionUseCase = new LinkConsumptionUseCase(mealPlanningGateway);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );
