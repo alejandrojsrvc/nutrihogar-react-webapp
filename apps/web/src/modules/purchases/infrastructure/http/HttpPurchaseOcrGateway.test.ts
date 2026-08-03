@@ -4,7 +4,7 @@ import { HttpPurchaseOcrGateway } from './HttpPurchaseOcrGateway';
 
 describe('HttpPurchaseOcrGateway', () => {
   it('uploads the receipt as multipart without setting Content-Type', async () => {
-    const fetchAuthenticated = vi.fn(async () =>
+    const fetchAuthenticated = vi.fn<typeof globalThis.fetch>(async () =>
       new Response(JSON.stringify({ id: 'purchase-1' }), { status: 201 }),
     );
     const gateway = new HttpPurchaseOcrGateway(
