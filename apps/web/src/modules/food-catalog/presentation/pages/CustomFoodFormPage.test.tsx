@@ -2,7 +2,10 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
+import {
+  createTestAuthGateway,
+  renderRoute,
+} from '../../../../test/renderRoute';
 
 const category = {
   code: 'MEAT',
@@ -66,14 +69,17 @@ describe('CustomFoodFormPage', () => {
     mockFormRequests((request) => {
       if (request.method === 'POST') {
         createdRequest = request;
-        return jsonResponse({
-          ...foodDetail,
-          id: 'food-custom-1',
-          name: 'Pan casero',
-          foodType: 'CUSTOM',
-          householdId: 'household-1',
-          isGlobal: false,
-        }, 201);
+        return jsonResponse(
+          {
+            ...foodDetail,
+            id: 'food-custom-1',
+            name: 'Pan casero',
+            foodType: 'CUSTOM',
+            householdId: 'household-1',
+            isGlobal: false,
+          },
+          201,
+        );
       }
 
       return jsonResponse({});
@@ -82,7 +88,10 @@ describe('CustomFoodFormPage', () => {
     renderForm();
 
     await user.type(await screen.findByLabelText(/Nombre/), 'Pan casero');
-    await user.selectOptions(screen.getByLabelText(/Categoria/), 'category-meat');
+    await user.selectOptions(
+      screen.getByLabelText(/Categoria/),
+      'category-meat',
+    );
     await user.clear(screen.getByLabelText('Energia cantidad'));
     await user.type(screen.getByLabelText('Energia cantidad'), '-1');
     await user.click(screen.getByRole('button', { name: 'Crear alimento' }));
@@ -121,7 +130,9 @@ describe('CustomFoodFormPage', () => {
       screen.getByLabelText('Micronutriente opcional'),
       'nutrient-fiber',
     );
-    await user.click(screen.getByRole('button', { name: 'Agregar micronutriente' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar micronutriente' }),
+    );
     expect(screen.getByLabelText('Fibra cantidad')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Agregar porcion' }));

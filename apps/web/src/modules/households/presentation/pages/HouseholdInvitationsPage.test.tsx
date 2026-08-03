@@ -2,7 +2,10 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
+import {
+  createTestAuthGateway,
+  renderRoute,
+} from '../../../../test/renderRoute';
 
 function householdResponse(): Response {
   return new Response(
@@ -88,7 +91,9 @@ describe('HouseholdInvitationsPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    await user.click(await screen.findByRole('button', { name: 'Invitar a alguien' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Invitar a alguien' }),
+    );
     await user.type(
       await screen.findByLabelText('Correo electronico'),
       'adult@example.com',
@@ -106,7 +111,9 @@ describe('HouseholdInvitationsPage', () => {
       await screen.findByRole('button', { name: 'Recuperar enlace' }),
     );
     expect(
-      await screen.findAllByLabelText('Enlace de invitacion para adult@example.com'),
+      await screen.findAllByLabelText(
+        'Enlace de invitacion para adult@example.com',
+      ),
     ).toHaveLength(2);
     expect(await createRequest?.json()).toEqual({
       email: 'adult@example.com',
@@ -143,7 +150,9 @@ describe('HouseholdInvitationsPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    await user.click(await screen.findByRole('button', { name: 'Invitar a alguien' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Invitar a alguien' }),
+    );
     await user.type(
       await screen.findByLabelText('Correo electronico'),
       'adult@example.com',

@@ -23,7 +23,9 @@ export function toMealDetails(value: unknown): MealDetails {
     ...toRegisteredMeal(source),
     adultProfileId: toNullableString(source.adultProfileId),
     householdId: toNullableString(source.householdId),
-    items: Array.isArray(source.items) ? source.items.map(toMealItemSnapshot) : [],
+    items: Array.isArray(source.items)
+      ? source.items.map(toMealItemSnapshot)
+      : [],
     notes: source.notes == null ? null : String(source.notes),
     preparation: toPreparationReference(source),
     source: String(source.source ?? 'MANUAL'),
@@ -31,15 +33,27 @@ export function toMealDetails(value: unknown): MealDetails {
   };
 }
 
-function toPreparationReference(source: Record<string, unknown>): MealPreparationReference | null {
-  if (!isPreparedMealSource(toNullableString(source.source) ?? undefined) && source.sourceReference == null && source.preparation == null) return null;
+function toPreparationReference(
+  source: Record<string, unknown>,
+): MealPreparationReference | null {
+  if (
+    !isPreparedMealSource(toNullableString(source.source) ?? undefined) &&
+    source.sourceReference == null &&
+    source.preparation == null
+  )
+    return null;
   const reference = asRecord(source.sourceReference ?? source.preparation);
-  if (Object.keys(reference).length === 0 && source.source === 'MANUAL') return null;
+  if (Object.keys(reference).length === 0 && source.source === 'MANUAL')
+    return null;
   return {
     consumedWeight: numberOrNull(reference.consumedWeight),
     portionId: toNullableString(reference.portionId),
-    preparedBatchId: toNullableString(reference.preparedBatchId ?? reference.batchId),
-    recipeName: toNullableString(reference.recipeName ?? reference.recipeNameSnapshot),
+    preparedBatchId: toNullableString(
+      reference.preparedBatchId ?? reference.batchId,
+    ),
+    recipeName: toNullableString(
+      reference.recipeName ?? reference.recipeNameSnapshot,
+    ),
     servedWeight: numberOrNull(reference.servedWeight),
   };
 }
@@ -79,11 +93,21 @@ function toNutrientSnapshot(value: unknown): MealNutrientSnapshot {
 }
 
 export function toNutrientTotals(value: unknown): Record<string, number> {
-  if (Array.isArray(value)) return nutrientSnapshotsToTotals(value.map(toNutrientSnapshot));
+  if (Array.isArray(value))
+    return nutrientSnapshotsToTotals(value.map(toNutrientSnapshot));
   const source = asRecord(value);
   return {
-    calories: numberFrom(source, ['calories', 'dailyCalories', 'ENERGY_KCAL', 'CALORIES']),
-    carbohydrateGrams: numberFrom(source, ['carbohydrateGrams', 'CARBOHYDRATE', 'CARBS']),
+    calories: numberFrom(source, [
+      'calories',
+      'dailyCalories',
+      'ENERGY_KCAL',
+      'CALORIES',
+    ]),
+    carbohydrateGrams: numberFrom(source, [
+      'carbohydrateGrams',
+      'CARBOHYDRATE',
+      'CARBS',
+    ]),
     fatGrams: numberFrom(source, ['fatGrams', 'FAT']),
     fiberGrams: numberFrom(source, ['fiberGrams', 'FIBER']),
     proteinGrams: numberFrom(source, ['proteinGrams', 'PROTEIN']),
@@ -91,7 +115,11 @@ export function toNutrientTotals(value: unknown): Record<string, number> {
 }
 
 function nutrientSnapshotsToTotals(nutrients: MealNutrientSnapshot[]) {
-  return toNutrientTotals(Object.fromEntries(nutrients.map((nutrient) => [nutrient.code, nutrient.amount])));
+  return toNutrientTotals(
+    Object.fromEntries(
+      nutrients.map((nutrient) => [nutrient.code, nutrient.amount]),
+    ),
+  );
 }
 
 function numberFrom(source: Record<string, unknown>, keys: string[]) {
@@ -104,9 +132,15 @@ function toNullableString(value: unknown): string | null {
 }
 
 function numberOrNull(value: unknown): number | null {
-  return typeof value === 'number' ? value : value == null ? null : Number(value);
+  return typeof value === 'number'
+    ? value
+    : value == null
+      ? null
+      : Number(value);
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' ? value as Record<string, unknown> : {};
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : {};
 }

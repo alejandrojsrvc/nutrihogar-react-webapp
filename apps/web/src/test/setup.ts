@@ -20,10 +20,10 @@ beforeEach(() => {
           ]
         : url.includes('/adult-profiles')
           ? []
-        : {
-            status: 'ok',
-            timestamp: '2026-07-29T17:00:00.000Z',
-          };
+          : {
+              status: 'ok',
+              timestamp: '2026-07-29T17:00:00.000Z',
+            };
 
       return new Response(JSON.stringify(body), {
         headers: { 'Content-Type': 'application/json' },

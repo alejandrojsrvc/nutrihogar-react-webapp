@@ -1,3 +1,25 @@
-import type { PreparedBatch, PreparedBatchDetails } from '../../domain/PreparedBatch';
-export interface PreparedBatchIngredientInput { id?: string; foodId: string; quantity: number; unit: string; servingId?: string | null; position: number; notes?: string | null; }
-export interface PreparedBatchGateway { startFromRecipe(recipeId: string, preparedAt: Date): Promise<PreparedBatch>; getById(batchId: string): Promise<PreparedBatch>; getDetails(batchId: string): Promise<PreparedBatchDetails>; updateIngredients(batchId: string, ingredients: PreparedBatchIngredientInput[]): Promise<PreparedBatch>; confirmIngredients(batchId: string): Promise<PreparedBatch>; finalize(batchId: string, finalCookedWeight: number): Promise<PreparedBatch>; cancel(batchId: string): Promise<void>; }
+import type {
+  PreparedBatch,
+  PreparedBatchDetails,
+} from '../../domain/PreparedBatch';
+export interface PreparedBatchIngredientInput {
+  id?: string;
+  foodId: string;
+  quantity: number;
+  unit: string;
+  servingId?: string | null;
+  position: number;
+  notes?: string | null;
+}
+export interface PreparedBatchGateway {
+  startFromRecipe(recipeId: string, preparedAt: Date): Promise<PreparedBatch>;
+  getById(batchId: string): Promise<PreparedBatch>;
+  getDetails(batchId: string): Promise<PreparedBatchDetails>;
+  updateIngredients(
+    batchId: string,
+    ingredients: PreparedBatchIngredientInput[],
+  ): Promise<PreparedBatch>;
+  confirmIngredients(batchId: string): Promise<PreparedBatch>;
+  finalize(batchId: string, finalCookedWeight: number): Promise<PreparedBatch>;
+  cancel(batchId: string): Promise<void>;
+}

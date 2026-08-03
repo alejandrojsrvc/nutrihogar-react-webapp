@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { calculateNutritionPreview, roundNutritionSummary } from '@nutrihogar/nutrition-engine';
+import {
+  calculateNutritionPreview,
+  roundNutritionSummary,
+} from '@nutrihogar/nutrition-engine';
 
 describe('calculateNutritionPreview', () => {
   it('scales nutrients by grams and treats missing nutrients as zero', () => {

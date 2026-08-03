@@ -27,8 +27,7 @@ function createSession(): Session {
 
 function createSupabaseClient() {
   let authStateListener:
-    | ((event: AuthChangeEvent, session: Session | null) => void)
-    | undefined;
+    ((event: AuthChangeEvent, session: Session | null) => void) | undefined;
   const signInWithPassword = vi.fn(async () => ({ error: null }));
   const signUp = vi.fn(async () => ({
     data: { session: null, user: null },

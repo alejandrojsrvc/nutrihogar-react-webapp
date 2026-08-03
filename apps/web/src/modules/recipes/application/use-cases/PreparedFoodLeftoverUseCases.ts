@@ -41,7 +41,8 @@ export class AddPreparedFoodLeftoverToInventoryUseCase {
   constructor(private readonly gateway: PreparedFoodLeftoverGateway) {}
 
   execute(leftoverId: string, input: AddPreparedFoodLeftoverToInventoryInput) {
-    if (input.quantity <= 0) throw new Error('La cantidad debe ser mayor que cero.');
+    if (input.quantity <= 0)
+      throw new Error('La cantidad debe ser mayor que cero.');
     return this.gateway.addToInventory(leftoverId, input);
   }
 }

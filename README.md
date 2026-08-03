@@ -39,12 +39,12 @@ cp apps/web/.env.example apps/web/.env.local
 
 Variables disponibles:
 
-| Variable       | Descripcion                                                                     |
-| -------------- | ------------------------------------------------------------------------------- |
-| `VITE_API_URL` | Origen de la API para el cliente web. El prefijo `/api` forma parte de las rutas OpenAPI. |
-| `VITE_SUPABASE_URL` | URL publica del proyecto Supabase usado por Auth.                         |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Clave publishable publica de Supabase; nunca usar `service_role` en el navegador. |
-| `OPENAPI_URL`  | URL del documento JSON usado por `npm run api:generate`.                        |
+| Variable                        | Descripcion                                                                               |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| `VITE_API_URL`                  | Origen de la API para el cliente web. El prefijo `/api` forma parte de las rutas OpenAPI. |
+| `VITE_SUPABASE_URL`             | URL publica del proyecto Supabase usado por Auth.                                         |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Clave publishable publica de Supabase; nunca usar `service_role` en el navegador.         |
+| `OPENAPI_URL`                   | URL del documento JSON usado por `npm run api:generate`.                                  |
 
 En Supabase Auth debe habilitarse Email Auth. Si las confirmaciones de correo están activas, añade la URL de la aplicación más `/onboarding` a las Redirect URLs (por ejemplo, `http://localhost:5173/onboarding`).
 

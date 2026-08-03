@@ -7,6 +7,7 @@ import type {
   SearchPreparationState,
 } from '../../application/ports/FoodCatalogGateway';
 import { useFoodCategories, useFoodSearch } from '../hooks/useFoodCatalog';
+import '../food-catalog.css';
 import {
   formatAmount,
   formatReference,
@@ -60,7 +61,10 @@ export function FoodCatalogPage() {
   }
 
   return (
-    <section className="page-section food-catalog-page" aria-labelledby="food-catalog-title">
+    <section
+      className="page-section food-catalog-page"
+      aria-labelledby="food-catalog-title"
+    >
       <PageHeader
         eyebrow="Catalogo de alimentos"
         title="Encuentra un alimento"

@@ -16,7 +16,10 @@ describe('ConfirmServedPortionConsumptionUseCase', () => {
     };
 
     await expect(
-      new ConfirmServedPortionConsumptionUseCase(gateway).execute('portion-1', input),
+      new ConfirmServedPortionConsumptionUseCase(gateway).execute(
+        'portion-1',
+        input,
+      ),
     ).resolves.toEqual({ consumedWeight: 180 });
     expect(gateway.confirm).toHaveBeenCalledWith('portion-1', input);
   });

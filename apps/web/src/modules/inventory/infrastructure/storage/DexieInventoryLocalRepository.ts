@@ -48,21 +48,32 @@ class InventoryDatabase extends Dexie {
       operations: 'operationId, householdId',
       snapshots: 'householdId',
     });
-    this.version(2).stores({
-      inventorySnapshots: 'householdId',
-      pendingInventoryOperations: 'operationId, householdId, syncStatus',
-      inventorySyncResults: '++id, householdId, operationId, status',
-      metadata: '++id, [householdId+key], householdId',
-      operations: 'operationId, householdId',
-      snapshots: 'householdId',
-    }).upgrade(async (transaction) => {
-      const oldSnapshots = await transaction.table('snapshots').toArray() as SnapshotRow[];
-      const oldOperations = await transaction.table('operations').toArray() as Array<OperationRow & { householdId: string }>;
-      if (oldSnapshots.length) await transaction.table('inventorySnapshots').bulkPut(oldSnapshots);
-      if (oldOperations.length) {
-        await transaction.table('pendingInventoryOperations').bulkPut(oldOperations.map((operation) => normalizeOperation(operation)));
-      }
-    });
+    this.version(2)
+      .stores({
+        inventorySnapshots: 'householdId',
+        pendingInventoryOperations: 'operationId, householdId, syncStatus',
+        inventorySyncResults: '++id, householdId, operationId, status',
+        metadata: '++id, [householdId+key], householdId',
+        operations: 'operationId, householdId',
+        snapshots: 'householdId',
+      })
+      .upgrade(async (transaction) => {
+        const oldSnapshots = (await transaction
+          .table('snapshots')
+          .toArray()) as SnapshotRow[];
+        const oldOperations = (await transaction
+          .table('operations')
+          .toArray()) as Array<OperationRow & { householdId: string }>;
+        if (oldSnapshots.length)
+          await transaction.table('inventorySnapshots').bulkPut(oldSnapshots);
+        if (oldOperations.length) {
+          await transaction
+            .table('pendingInventoryOperations')
+            .bulkPut(
+              oldOperations.map((operation) => normalizeOperation(operation)),
+            );
+        }
+      });
   }
 }
 
@@ -70,83 +81,192 @@ const database = new InventoryDatabase();
 
 export class DexieInventoryLocalRepository implements InventoryLocalRepository {
   getSnapshot(householdId: string) {
-    return database.inventorySnapshots.get(householdId).then((row) => row?.items ?? null);
+    return database.inventorySnapshots
+      .get(householdId)
+      .then((row) => row?.items ?? null);
   }
 
   async getSnapshotForItem(inventoryItemId: string) {
     const rows = await database.inventorySnapshots.toArray();
-    return rows.flatMap((row) => row.items).find((item) => item.id === inventoryItemId) ?? null;
+    return (
+      rows
+        .flatMap((row) => row.items)
+        .find((item) => item.id === inventoryItemId) ?? null
+    );
   }
 
   async saveSnapshot(householdId: string, items: InventoryItem[]) {
-    await database.inventorySnapshots.put({ householdId, items, updatedAt: new Date().toISOString() });
-  }
-
-  async saveOperation(householdId: string, operation: PendingInventoryOperation) {
-    await database.pendingInventoryOperations.put(normalizeOperation({ ...operation, householdId }));
-  }
-
-  async saveOperationAndSnapshot(householdId: string, operation: PendingInventoryOperation, items: InventoryItem[]) {
-    await database.transaction('rw', database.pendingInventoryOperations, database.inventorySnapshots, async () => {
-      await database.pendingInventoryOperations.put(normalizeOperation({ ...operation, householdId }));
-      await database.inventorySnapshots.put({ householdId, items, updatedAt: new Date().toISOString() });
+    await database.inventorySnapshots.put({
+      householdId,
+      items,
+      updatedAt: new Date().toISOString(),
     });
+  }
+
+  async saveOperation(
+    householdId: string,
+    operation: PendingInventoryOperation,
+  ) {
+    await database.pendingInventoryOperations.put(
+      normalizeOperation({ ...operation, householdId }),
+    );
+  }
+
+  async saveOperationAndSnapshot(
+    householdId: string,
+    operation: PendingInventoryOperation,
+    items: InventoryItem[],
+  ) {
+    await database.transaction(
+      'rw',
+      database.pendingInventoryOperations,
+      database.inventorySnapshots,
+      async () => {
+        await database.pendingInventoryOperations.put(
+          normalizeOperation({ ...operation, householdId }),
+        );
+        await database.inventorySnapshots.put({
+          householdId,
+          items,
+          updatedAt: new Date().toISOString(),
+        });
+      },
+    );
   }
 
   async listPendingOperations(householdId: string) {
-    const operations = await database.pendingInventoryOperations.where('householdId').equals(householdId).toArray();
-    return operations.filter((operation) => !operation.discarded && (operation.syncStatus === 'PENDING' || operation.syncStatus === 'FAILED'));
+    const operations = await database.pendingInventoryOperations
+      .where('householdId')
+      .equals(householdId)
+      .toArray();
+    return operations.filter(
+      (operation) =>
+        !operation.discarded &&
+        (operation.syncStatus === 'PENDING' ||
+          operation.syncStatus === 'FAILED'),
+    );
   }
 
   async markOperationsSynchronized(operationIds: string[]) {
-    await database.transaction('rw', database.pendingInventoryOperations, async () => {
-      for (const operationId of operationIds) {
-        const operation = await database.pendingInventoryOperations.get(operationId);
-        if (operation) await database.pendingInventoryOperations.put({ ...operation, syncStatus: 'APPLIED', lastError: null });
-      }
-    });
+    await database.transaction(
+      'rw',
+      database.pendingInventoryOperations,
+      async () => {
+        for (const operationId of operationIds) {
+          const operation =
+            await database.pendingInventoryOperations.get(operationId);
+          if (operation)
+            await database.pendingInventoryOperations.put({
+              ...operation,
+              syncStatus: 'APPLIED',
+              lastError: null,
+            });
+        }
+      },
+    );
   }
 
   async saveOperationSnapshots(snapshotsById: Record<string, InventoryItem>) {
     for (const [operationId, snapshot] of Object.entries(snapshotsById)) {
-      const operation = await database.pendingInventoryOperations.get(operationId);
-      if (operation) await database.pendingInventoryOperations.put({ ...operation, snapshot });
+      const operation =
+        await database.pendingInventoryOperations.get(operationId);
+      if (operation)
+        await database.pendingInventoryOperations.put({
+          ...operation,
+          snapshot,
+        });
     }
   }
 
   async markOperationsSyncing(operationIds: string[]) {
     for (const operationId of operationIds) {
-      const operation = await database.pendingInventoryOperations.get(operationId);
-      if (operation) await database.pendingInventoryOperations.put({ ...operation, syncStatus: 'SYNCING' });
+      const operation =
+        await database.pendingInventoryOperations.get(operationId);
+      if (operation)
+        await database.pendingInventoryOperations.put({
+          ...operation,
+          syncStatus: 'SYNCING',
+        });
     }
   }
 
   async recoverSyncingOperations(householdId: string) {
-    const operations = await database.pendingInventoryOperations.where('householdId').equals(householdId).toArray();
-    await database.transaction('rw', database.pendingInventoryOperations, async () => {
-      for (const operation of operations) {
-        if (operation.syncStatus === 'SYNCING') await database.pendingInventoryOperations.put({ ...operation, syncStatus: 'PENDING', lastError: 'Sincronización interrumpida; se reintentará.' });
-      }
-    });
+    const operations = await database.pendingInventoryOperations
+      .where('householdId')
+      .equals(householdId)
+      .toArray();
+    await database.transaction(
+      'rw',
+      database.pendingInventoryOperations,
+      async () => {
+        for (const operation of operations) {
+          if (operation.syncStatus === 'SYNCING')
+            await database.pendingInventoryOperations.put({
+              ...operation,
+              syncStatus: 'PENDING',
+              lastError: 'Sincronización interrumpida; se reintentará.',
+            });
+        }
+      },
+    );
   }
 
-  async markOperationsConflicted(operationIds: string[], detailsById: Record<string, { reason: string | null; conflictCode: string | null; retryable: boolean; resultingVersion: number | null; snapshot?: InventoryItem | null }>) {
+  async markOperationsConflicted(
+    operationIds: string[],
+    detailsById: Record<
+      string,
+      {
+        reason: string | null;
+        conflictCode: string | null;
+        retryable: boolean;
+        resultingVersion: number | null;
+        snapshot?: InventoryItem | null;
+      }
+    >,
+  ) {
     for (const operationId of operationIds) {
-      const operation = await database.pendingInventoryOperations.get(operationId);
+      const operation =
+        await database.pendingInventoryOperations.get(operationId);
       const details = detailsById[operationId];
-      if (operation) await database.pendingInventoryOperations.put({ ...operation, conflictCode: details?.conflictCode ?? null, lastError: details?.reason ?? 'Conflicto de sincronización', resultingVersion: details?.resultingVersion ?? null, retryable: details?.retryable ?? false, snapshot: details?.snapshot ?? null, syncStatus: 'CONFLICT' });
+      if (operation)
+        await database.pendingInventoryOperations.put({
+          ...operation,
+          conflictCode: details?.conflictCode ?? null,
+          lastError: details?.reason ?? 'Conflicto de sincronización',
+          resultingVersion: details?.resultingVersion ?? null,
+          retryable: details?.retryable ?? false,
+          snapshot: details?.snapshot ?? null,
+          syncStatus: 'CONFLICT',
+        });
     }
   }
 
   async retryOperation(operationId: string, baseVersion: number) {
-    const operation = await database.pendingInventoryOperations.get(operationId);
-    if (operation) await database.pendingInventoryOperations.put({ ...operation, baseVersion, conflictCode: null, discarded: false, lastError: null, retryable: false, syncStatus: 'PENDING' });
+    const operation =
+      await database.pendingInventoryOperations.get(operationId);
+    if (operation)
+      await database.pendingInventoryOperations.put({
+        ...operation,
+        baseVersion,
+        conflictCode: null,
+        discarded: false,
+        lastError: null,
+        retryable: false,
+        syncStatus: 'PENDING',
+      });
   }
 
   async markOperationsFailed(operationIds: string[], error: string) {
     for (const operationId of operationIds) {
-      const operation = await database.pendingInventoryOperations.get(operationId);
-      if (operation) await database.pendingInventoryOperations.put({ ...operation, retryCount: operation.retryCount + 1, syncStatus: 'FAILED', lastError: error });
+      const operation =
+        await database.pendingInventoryOperations.get(operationId);
+      if (operation)
+        await database.pendingInventoryOperations.put({
+          ...operation,
+          retryCount: operation.retryCount + 1,
+          syncStatus: 'FAILED',
+          lastError: error,
+        });
     }
   }
 
@@ -154,27 +274,51 @@ export class DexieInventoryLocalRepository implements InventoryLocalRepository {
     await database.inventorySyncResults.bulkAdd(results);
     for (const result of results) {
       const current = await this.getLastSyncAt(result.householdId);
-      if (!current || result.createdAt > current) await database.metadata.put({ householdId: result.householdId, key: 'lastSyncAt', value: result.createdAt });
+      if (!current || result.createdAt > current)
+        await database.metadata.put({
+          householdId: result.householdId,
+          key: 'lastSyncAt',
+          value: result.createdAt,
+        });
     }
   }
 
   async listConflictOperations(householdId: string) {
-    const operations = await database.pendingInventoryOperations.where('householdId').equals(householdId).toArray();
-    return operations.filter((operation) => operation.syncStatus === 'CONFLICT');
+    const operations = await database.pendingInventoryOperations
+      .where('householdId')
+      .equals(householdId)
+      .toArray();
+    return operations.filter(
+      (operation) => operation.syncStatus === 'CONFLICT',
+    );
   }
 
   async discardOperation(operationId: string) {
-    const operation = await database.pendingInventoryOperations.get(operationId);
-    if (operation) await database.pendingInventoryOperations.put({ ...operation, discarded: true, syncStatus: 'FAILED', lastError: 'Operación descartada por la persona usuaria' });
+    const operation =
+      await database.pendingInventoryOperations.get(operationId);
+    if (operation)
+      await database.pendingInventoryOperations.put({
+        ...operation,
+        discarded: true,
+        syncStatus: 'FAILED',
+        lastError: 'Operación descartada por la persona usuaria',
+      });
   }
 
   async getLastSyncAt(householdId: string) {
-    const rows = await database.metadata.where({ householdId, key: 'lastSyncAt' }).toArray();
-    return rows.reduce<string | null>((latest, row) => !latest || row.value > latest ? row.value : latest, null);
+    const rows = await database.metadata
+      .where({ householdId, key: 'lastSyncAt' })
+      .toArray();
+    return rows.reduce<string | null>(
+      (latest, row) => (!latest || row.value > latest ? row.value : latest),
+      null,
+    );
   }
 }
 
-function normalizeOperation(operation: Partial<OperationRow> & { householdId: string }): OperationRow {
+function normalizeOperation(
+  operation: Partial<OperationRow> & { householdId: string },
+): OperationRow {
   return {
     allowLastWriteWins: operation.allowLastWriteWins ?? false,
     baseVersion: operation.baseVersion ?? 0,

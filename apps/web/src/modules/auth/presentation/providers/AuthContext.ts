@@ -10,10 +10,7 @@ import type {
 import type { CurrentUser } from '../../application/ports/CurrentUserGateway';
 import type { SyncCurrentUserUseCase } from '../../application/use-cases/SyncCurrentUserUseCase';
 
-export type AuthStatus =
-  | 'loading'
-  | 'authenticated'
-  | 'unauthenticated';
+export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
 export interface AuthContextValue {
   currentUser: CurrentUser | null;

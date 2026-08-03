@@ -1,7 +1,4 @@
-import type {
-  MeasurementUnit,
-  NutritionSummary,
-} from '@nutrihogar/domain';
+import type { MeasurementUnit, NutritionSummary } from '@nutrihogar/domain';
 
 export interface PreviewFoodItem {
   quantity: number;
@@ -15,24 +12,21 @@ export interface PreviewFoodItem {
 export function calculateNutritionPreview(
   items: PreviewFoodItem[],
 ): NutritionSummary {
-  return items.reduce<NutritionSummary>(
-    (total, item) => {
-      const multiplier = getReferenceMultiplier(item);
+  return items.reduce<NutritionSummary>((total, item) => {
+    const multiplier = getReferenceMultiplier(item);
 
-      return {
-        calories: total.calories + (item.nutrition.calories ?? 0) * multiplier,
-        proteinGrams:
-          total.proteinGrams + (item.nutrition.proteinGrams ?? 0) * multiplier,
-        carbohydrateGrams:
-          total.carbohydrateGrams +
-          (item.nutrition.carbohydrateGrams ?? 0) * multiplier,
-        fatGrams: total.fatGrams + (item.nutrition.fatGrams ?? 0) * multiplier,
-        fiberGrams:
-          total.fiberGrams + (item.nutrition.fiberGrams ?? 0) * multiplier,
-      };
-    },
-    emptyNutritionSummary(),
-  );
+    return {
+      calories: total.calories + (item.nutrition.calories ?? 0) * multiplier,
+      proteinGrams:
+        total.proteinGrams + (item.nutrition.proteinGrams ?? 0) * multiplier,
+      carbohydrateGrams:
+        total.carbohydrateGrams +
+        (item.nutrition.carbohydrateGrams ?? 0) * multiplier,
+      fatGrams: total.fatGrams + (item.nutrition.fatGrams ?? 0) * multiplier,
+      fiberGrams:
+        total.fiberGrams + (item.nutrition.fiberGrams ?? 0) * multiplier,
+    };
+  }, emptyNutritionSummary());
 }
 
 export function roundNutritionSummary(
@@ -43,8 +37,7 @@ export function roundNutritionSummary(
   return {
     calories: Math.round(summary.calories * factor) / factor,
     proteinGrams: Math.round(summary.proteinGrams * factor) / factor,
-    carbohydrateGrams:
-      Math.round(summary.carbohydrateGrams * factor) / factor,
+    carbohydrateGrams: Math.round(summary.carbohydrateGrams * factor) / factor,
     fatGrams: Math.round(summary.fatGrams * factor) / factor,
     fiberGrams: Math.round(summary.fiberGrams * factor) / factor,
   };

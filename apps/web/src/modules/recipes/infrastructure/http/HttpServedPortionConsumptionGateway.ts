@@ -15,9 +15,7 @@ interface Client {
   ): Promise<Result>;
 }
 
-export class HttpServedPortionConsumptionGateway
-  implements ServedPortionConsumptionGateway
-{
+export class HttpServedPortionConsumptionGateway implements ServedPortionConsumptionGateway {
   constructor(private readonly apiClient: ApiClient) {}
 
   async confirm(
@@ -49,7 +47,9 @@ export class HttpServedPortionConsumptionGateway
   }
 }
 
-function mapConfirmedConsumption(value: unknown): ConfirmedServedPortionConsumption {
+function mapConfirmedConsumption(
+  value: unknown,
+): ConfirmedServedPortionConsumption {
   const source = record(value);
   return {
     adultProfileId: String(source.adultProfileId ?? ''),
@@ -57,16 +57,22 @@ function mapConfirmedConsumption(value: unknown): ConfirmedServedPortionConsumpt
     mealId: nullableString(source.mealId),
     nutrients: numbers(source.nutrients),
     portionId: String(source.portionId ?? ''),
-    remainderDisposition: source.remainderDisposition == null
-      ? null
-      : String(source.remainderDisposition) as ConfirmedServedPortionConsumption['remainderDisposition'],
-    remainderWeight: source.remainderWeight == null ? null : Number(source.remainderWeight),
+    remainderDisposition:
+      source.remainderDisposition == null
+        ? null
+        : (String(
+            source.remainderDisposition,
+          ) as ConfirmedServedPortionConsumption['remainderDisposition']),
+    remainderWeight:
+      source.remainderWeight == null ? null : Number(source.remainderWeight),
     servedWeight: Number(source.servedWeight ?? 0),
   };
 }
 
 function record(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' ? value as Record<string, unknown> : {};
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : {};
 }
 
 function numbers(value: unknown): Record<string, number> {

@@ -1,7 +1,4 @@
-export function getAuthRedirectPath(
-  state: unknown,
-  fallback = '/app',
-): string {
+export function getAuthRedirectPath(state: unknown, fallback = '/app'): string {
   if (
     typeof state === 'object' &&
     state !== null &&

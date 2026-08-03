@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'danger' | 'text';
 
 export function Button({
   children,

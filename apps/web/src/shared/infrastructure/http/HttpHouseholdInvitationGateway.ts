@@ -10,9 +10,7 @@ import type {
   HouseholdInvitationGateway,
 } from '../../../modules/households/application/ports/HouseholdInvitationGateway';
 
-export class HttpHouseholdInvitationGateway
-  implements HouseholdInvitationGateway
-{
+export class HttpHouseholdInvitationGateway implements HouseholdInvitationGateway {
   constructor(private readonly apiClient: ApiClient) {}
 
   async list(householdId: string): Promise<HouseholdInvitation[]> {

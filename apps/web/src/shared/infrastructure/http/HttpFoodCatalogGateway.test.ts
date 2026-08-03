@@ -223,9 +223,15 @@ describe('HttpFoodCatalogGateway', () => {
         nutrients: [{ amount: 170, nutrientDefinitionId: 'nutrient-energy' }],
       }),
     ).resolves.toMatchObject({ id: 'food-chicken-cooked' });
-    await expect(gateway.deleteCustomFood('food-chicken-cooked')).resolves.toBeUndefined();
+    await expect(
+      gateway.deleteCustomFood('food-chicken-cooked'),
+    ).resolves.toBeUndefined();
 
-    expect(requests.map((request) => `${request.method} ${new URL(request.url).pathname}`)).toEqual([
+    expect(
+      requests.map(
+        (request) => `${request.method} ${new URL(request.url).pathname}`,
+      ),
+    ).toEqual([
       'GET /api/nutrients',
       'POST /api/households/household-1/foods',
       'PATCH /api/foods/food-chicken-cooked',

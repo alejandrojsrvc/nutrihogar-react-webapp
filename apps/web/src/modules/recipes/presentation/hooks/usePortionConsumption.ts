@@ -5,7 +5,12 @@ import type { ConfirmServedPortionConsumptionInput } from '../../application/por
 
 export function useConfirmServedPortionConsumption() {
   return useMutation({
-    mutationFn: ({ portionId, input }: { portionId: string; input: ConfirmServedPortionConsumptionInput }) =>
-      confirmServedPortionConsumptionUseCase.execute(portionId, input),
+    mutationFn: ({
+      portionId,
+      input,
+    }: {
+      portionId: string;
+      input: ConfirmServedPortionConsumptionInput;
+    }) => confirmServedPortionConsumptionUseCase.execute(portionId, input),
   });
 }

@@ -1,5 +1,8 @@
 import type { PurchaseInput } from '../../../purchases/application/ports/PurchaseGateway';
-import type { ShoppingListGateway, ShoppingListItemInput } from '../ports/ShoppingListGateway';
+import type {
+  ShoppingListGateway,
+  ShoppingListItemInput,
+} from '../ports/ShoppingListGateway';
 
 export class LoadShoppingListUseCase {
   constructor(private readonly gateway: ShoppingListGateway) {}
@@ -13,7 +16,8 @@ export class AddShoppingListItemUseCase {
   constructor(private readonly gateway: ShoppingListGateway) {}
 
   execute(householdId: string, input: ShoppingListItemInput) {
-    if (input.quantity <= 0) throw new Error('La cantidad debe ser mayor que cero.');
+    if (input.quantity <= 0)
+      throw new Error('La cantidad debe ser mayor que cero.');
     return this.gateway.add(householdId, input);
   }
 }
@@ -53,8 +57,12 @@ export class GenerateShoppingListUseCase {
 export class ConvertShoppingListToPurchaseUseCase {
   constructor(private readonly gateway: ShoppingListGateway) {}
 
-  execute(householdId: string, input: PurchaseInput & { itemIds: string[]; idempotencyKey?: string }) {
-    if (input.itemIds.length === 0) throw new Error('Selecciona al menos un elemento.');
+  execute(
+    householdId: string,
+    input: PurchaseInput & { itemIds: string[]; idempotencyKey?: string },
+  ) {
+    if (input.itemIds.length === 0)
+      throw new Error('Selecciona al menos un elemento.');
     return this.gateway.convertToPurchase(householdId, input);
   }
 }

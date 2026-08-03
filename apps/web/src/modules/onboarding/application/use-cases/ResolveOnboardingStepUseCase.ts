@@ -1,8 +1,5 @@
 export type OnboardingStep =
-  | 'create-household'
-  | 'select-household'
-  | 'complete-profile'
-  | 'ready';
+  'create-household' | 'select-household' | 'complete-profile' | 'ready';
 
 export interface ResolveOnboardingStepInput {
   hasActiveHousehold: boolean;

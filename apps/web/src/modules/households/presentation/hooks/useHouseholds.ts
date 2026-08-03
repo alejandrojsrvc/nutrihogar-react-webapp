@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 
 import {
@@ -44,8 +40,10 @@ export function useHouseholds() {
     onSuccess: (createdHousehold) => {
       selectActiveHouseholdUseCase.execute(createdHousehold);
       setActiveHouseholdId(createdHousehold.id);
-      queryClient.setQueryData<Household[]>(householdQueryKeys.all, (current) =>
-        current ? [...current, createdHousehold] : [createdHousehold],
+      queryClient.setQueryData<Household[]>(
+        householdQueryKeys.all,
+        (current) =>
+          current ? [...current, createdHousehold] : [createdHousehold],
       );
     },
   });

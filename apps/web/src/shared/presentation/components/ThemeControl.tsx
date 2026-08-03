@@ -12,7 +12,9 @@ export function ThemeControl() {
       <select
         aria-label="Tema de la aplicación"
         value={preference}
-        onChange={(event) => setPreference(event.target.value as typeof preference)}
+        onChange={(event) =>
+          setPreference(event.target.value as typeof preference)
+        }
       >
         <option value="system">Sistema</option>
         <option value="light">Claro</option>

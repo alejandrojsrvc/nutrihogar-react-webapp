@@ -1,4 +1,5 @@
-export type ShoppingListSource = 'MANUAL' | 'BELOW_MINIMUM' | 'DEPLETED' | 'MEAL_PLAN';
+export type ShoppingListSource =
+  'MANUAL' | 'BELOW_MINIMUM' | 'DEPLETED' | 'MEAL_PLAN';
 
 export interface ShoppingListItem {
   id: string;
