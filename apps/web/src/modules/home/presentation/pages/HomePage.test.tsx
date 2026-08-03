@@ -82,7 +82,9 @@ describe('HomePage', () => {
     expect(
       screen.getByRole('heading', { name: 'Hogar Sojo' }),
     ).toBeInTheDocument();
-    expect(await screen.findByText('Alejandro')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Alejandro' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Integrantes')).toBeInTheDocument();
     expect(
       screen
