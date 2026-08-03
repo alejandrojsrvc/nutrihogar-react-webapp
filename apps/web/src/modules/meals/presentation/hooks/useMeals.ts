@@ -7,23 +7,34 @@ import {
   cancelMealUseCase,
   duplicateMealUseCase,
 } from '../../../../app/composition/dependencies';
-import type { DuplicateMealInput, RegisterMealInput, UpdateMealInput } from '../../application/ports/MealGateway';
+import type {
+  DuplicateMealInput,
+  RegisterMealInput,
+  UpdateMealInput,
+} from '../../application/ports/MealGateway';
 import { mealQueryKeys } from './mealQueryKeys';
-
 
 export function useRegisterMeal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: RegisterMealInput) => registerMealUseCase.execute(input),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: mealQueryKeys.all }),
+    mutationFn: (input: RegisterMealInput) =>
+      registerMealUseCase.execute(input),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: mealQueryKeys.all }),
   });
 }
 
-export function useDailyNutritionSummary(profileId: string | undefined, date: string) {
+export function useDailyNutritionSummary(
+  profileId: string | undefined,
+  date: string,
+) {
   return useQuery({
     enabled: Boolean(profileId && date),
-    queryKey: profileId ? mealQueryKeys.dailySummary(profileId, date) : mealQueryKeys.all,
-    queryFn: () => getDailyNutritionSummaryUseCase.execute(profileId as string, date),
+    queryKey: profileId
+      ? mealQueryKeys.dailySummary(profileId, date)
+      : mealQueryKeys.all,
+    queryFn: () =>
+      getDailyNutritionSummaryUseCase.execute(profileId as string, date),
     retry: false,
   });
 }
@@ -31,7 +42,13 @@ export function useDailyNutritionSummary(profileId: string | undefined, date: st
 export function useUpdateMeal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ mealId, input }: { mealId: string; input: UpdateMealInput }) => updateMealUseCase.execute(mealId, input),
+    mutationFn: ({
+      mealId,
+      input,
+    }: {
+      mealId: string;
+      input: UpdateMealInput;
+    }) => updateMealUseCase.execute(mealId, input),
     onSuccess: (meal) => {
       queryClient.setQueryData(mealQueryKeys.detail(meal.id), meal);
       void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
@@ -44,7 +61,9 @@ export function useCancelMeal() {
   return useMutation({
     mutationFn: (mealId: string) => cancelMealUseCase.execute(mealId),
     onSuccess: (_, mealId) => {
-      void queryClient.invalidateQueries({ queryKey: mealQueryKeys.detail(mealId) });
+      void queryClient.invalidateQueries({
+        queryKey: mealQueryKeys.detail(mealId),
+      });
       void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });
     },
   });
@@ -53,7 +72,13 @@ export function useCancelMeal() {
 export function useDuplicateMeal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ mealId, input }: { mealId: string; input: DuplicateMealInput }) => duplicateMealUseCase.execute(mealId, input),
+    mutationFn: ({
+      mealId,
+      input,
+    }: {
+      mealId: string;
+      input: DuplicateMealInput;
+    }) => duplicateMealUseCase.execute(mealId, input),
     onSuccess: (meal) => {
       queryClient.setQueryData(mealQueryKeys.detail(meal.id), meal);
       void queryClient.invalidateQueries({ queryKey: mealQueryKeys.all });

@@ -1,9 +1,6 @@
 export type HouseholdInvitationRole = 'ADMIN' | 'MEMBER';
 export type HouseholdInvitationStatus =
-  | 'PENDING'
-  | 'ACCEPTED'
-  | 'EXPIRED'
-  | 'CANCELLED';
+  'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED';
 
 export interface HouseholdInvitation {
   id: string;

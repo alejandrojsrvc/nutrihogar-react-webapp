@@ -18,7 +18,6 @@ export function createTestAuthGateway(
     loginWithEmail: async () => undefined,
     registerWithEmail: async () => ({ requiresEmailConfirmation: false }),
     logout: async () => undefined,
-    onAuthStateChange: () => () => undefined,
   };
 }
 
@@ -45,10 +44,7 @@ export function renderRoute(
   const router = createMemoryRouter(appRoutes, { initialEntries: [path] });
 
   return render(
-    <AppProviders
-      authGateway={authGateway}
-      syncCurrentUser={syncCurrentUser}
-    >
+    <AppProviders authGateway={authGateway} syncCurrentUser={syncCurrentUser}>
       <RouterProvider router={router} />
     </AppProviders>,
   );

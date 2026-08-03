@@ -1,5 +1,7 @@
-export type PreparedBatchInventoryAvailability = 'AVAILABLE' | 'PARTIAL' | 'UNAVAILABLE';
-export type PreparedBatchInventoryStatus = PreparedBatchInventoryAvailability | 'IGNORED' | 'CONFIRMED';
+export type PreparedBatchInventoryAvailability =
+  'AVAILABLE' | 'PARTIAL' | 'UNAVAILABLE';
+export type PreparedBatchInventoryStatus =
+  PreparedBatchInventoryAvailability | 'IGNORED' | 'CONFIRMED';
 
 export interface InventoryConsumptionOption {
   inventoryItemId: string;

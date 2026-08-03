@@ -46,8 +46,13 @@ export function useCreateCustomFood() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ householdId, input }: { householdId: string; input: CustomFoodInput }) =>
-      createCustomFoodUseCase.execute(householdId, input),
+    mutationFn: ({
+      householdId,
+      input,
+    }: {
+      householdId: string;
+      input: CustomFoodInput;
+    }) => createCustomFoodUseCase.execute(householdId, input),
     onSuccess: (food) => {
       queryClient.setQueryData(foodCatalogQueryKeys.detail(food.id), food);
       return queryClient.invalidateQueries({
@@ -61,8 +66,13 @@ export function useUpdateCustomFood() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ foodId, input }: { foodId: string; input: UpdateCustomFoodInput }) =>
-      updateCustomFoodUseCase.execute(foodId, input),
+    mutationFn: ({
+      foodId,
+      input,
+    }: {
+      foodId: string;
+      input: UpdateCustomFoodInput;
+    }) => updateCustomFoodUseCase.execute(foodId, input),
     onSuccess: (food) => {
       queryClient.setQueryData(foodCatalogQueryKeys.detail(food.id), food);
       return queryClient.invalidateQueries({
@@ -78,7 +88,9 @@ export function useDeleteCustomFood() {
   return useMutation({
     mutationFn: (foodId: string) => deleteCustomFoodUseCase.execute(foodId),
     onSuccess: (_, foodId) => {
-      queryClient.removeQueries({ queryKey: foodCatalogQueryKeys.detail(foodId) });
+      queryClient.removeQueries({
+        queryKey: foodCatalogQueryKeys.detail(foodId),
+      });
       return queryClient.invalidateQueries({
         queryKey: foodCatalogQueryKeys.all,
       });

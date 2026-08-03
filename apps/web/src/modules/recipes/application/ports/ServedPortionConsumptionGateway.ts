@@ -1,8 +1,5 @@
 export type RemainderDisposition =
-  | 'SAVED'
-  | 'DISCARDED'
-  | 'SHARED'
-  | 'CONSUMED_LATER';
+  'SAVED' | 'DISCARDED' | 'SHARED' | 'CONSUMED_LATER';
 
 export interface ConfirmServedPortionConsumptionInput {
   remainderWeight?: number;

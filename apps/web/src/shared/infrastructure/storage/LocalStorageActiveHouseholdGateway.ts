@@ -2,9 +2,7 @@ import type { ActiveHouseholdGateway } from '../../../modules/households/applica
 
 const ACTIVE_HOUSEHOLD_KEY = 'nutrihogar.active-household-id';
 
-export class LocalStorageActiveHouseholdGateway
-  implements ActiveHouseholdGateway
-{
+export class LocalStorageActiveHouseholdGateway implements ActiveHouseholdGateway {
   get(): string | null {
     try {
       return globalThis.localStorage?.getItem(ACTIVE_HOUSEHOLD_KEY) ?? null;

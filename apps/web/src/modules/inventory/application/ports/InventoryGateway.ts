@@ -46,15 +46,39 @@ export interface ConsumePreparedFoodInput {
 }
 
 export interface InventoryGateway {
-  list(householdId: string, filters?: InventoryFilters): Promise<InventoryListResult>;
+  list(
+    householdId: string,
+    filters?: InventoryFilters,
+  ): Promise<InventoryListResult>;
   getById(inventoryItemId: string): Promise<InventoryItem>;
-  create(householdId: string, input: CreateManualInventoryItemInput): Promise<InventoryItem>;
-  adjust(inventoryItemId: string, input: AdjustInventoryItemInput): Promise<InventoryItem>;
-  consume(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
-  waste(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
-  expire(inventoryItemId: string, input: ConsumeInventoryItemInput): Promise<InventoryItem>;
-  consumePrepared(inventoryItemId: string, input: ConsumePreparedFoodInput): Promise<RegisteredMeal>;
-  update(inventoryItemId: string, input: UpdateInventoryItemInput): Promise<InventoryItem>;
+  create(
+    householdId: string,
+    input: CreateManualInventoryItemInput,
+  ): Promise<InventoryItem>;
+  adjust(
+    inventoryItemId: string,
+    input: AdjustInventoryItemInput,
+  ): Promise<InventoryItem>;
+  consume(
+    inventoryItemId: string,
+    input: ConsumeInventoryItemInput,
+  ): Promise<InventoryItem>;
+  waste(
+    inventoryItemId: string,
+    input: ConsumeInventoryItemInput,
+  ): Promise<InventoryItem>;
+  expire(
+    inventoryItemId: string,
+    input: ConsumeInventoryItemInput,
+  ): Promise<InventoryItem>;
+  consumePrepared(
+    inventoryItemId: string,
+    input: ConsumePreparedFoodInput,
+  ): Promise<RegisteredMeal>;
+  update(
+    inventoryItemId: string,
+    input: UpdateInventoryItemInput,
+  ): Promise<InventoryItem>;
   archive(inventoryItemId: string): Promise<void>;
   listMovements(inventoryItemId: string): Promise<InventoryMovement[]>;
 }

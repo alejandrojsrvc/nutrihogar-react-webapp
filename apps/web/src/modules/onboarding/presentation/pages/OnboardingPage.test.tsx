@@ -2,7 +2,10 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
+import {
+  createTestAuthGateway,
+  renderRoute,
+} from '../../../../test/renderRoute';
 
 describe('OnboardingPage', () => {
   it('creates a household and continues with the adult profile', async () => {
@@ -84,10 +87,7 @@ describe('OnboardingPage', () => {
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
 
-      if (
-        request.url.endsWith('/api/households') &&
-        request.method === 'GET'
-      ) {
+      if (request.url.endsWith('/api/households') && request.method === 'GET') {
         return new Response(JSON.stringify([]), {
           headers: { 'Content-Type': 'application/json' },
           status: 200,

@@ -9,6 +9,9 @@ export class GetDailyNutritionSummaryUseCase {
   ) {}
 
   execute(profileId: string, date: string): Promise<DailyNutritionSummary> {
-    return this.dailyNutritionSummaryGateway.getByProfileAndDate(profileId, date);
+    return this.dailyNutritionSummaryGateway.getByProfileAndDate(
+      profileId,
+      date,
+    );
   }
 }

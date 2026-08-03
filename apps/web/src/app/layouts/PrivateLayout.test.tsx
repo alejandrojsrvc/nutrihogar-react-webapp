@@ -16,39 +16,75 @@ describe('PrivateLayout', () => {
   it('renders the private application layout', async () => {
     renderPrivateLayout();
 
-    expect(await screen.findByText('Area familiar')).toBeInTheDocument();
+    const sidebar = await screen.findByRole('complementary', {
+      name: 'Navegación principal',
+    });
     expect(
-      screen.getByRole('navigation', { name: 'Navegacion principal' }),
-    ).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: 'Inicio' }).some((link) => link.getAttribute('href') === '/app')).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Registrar comida' }).some((link) => link.getAttribute('href') === '/app/comidas/nueva')).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Perfil' }).some((link) => link.getAttribute('href') === '/app/perfil')).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Inventario' }).some((link) => link.getAttribute('href') === '/app/inventario')).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Lista de compras' }).some((link) => link.getAttribute('href') === '/app/lista-de-compras')).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Historial de compras' }).some((link) => link.getAttribute('href') === '/app/compras')).toBe(true);
+      within(sidebar).getByRole('link', { name: 'Hoy' }),
+    ).toHaveAttribute('href', '/app');
+    expect(
+      within(sidebar).getByRole('link', { name: 'Planificar' }),
+    ).toHaveAttribute('href', '/app/plan-semanal');
+    expect(
+      within(sidebar).getByRole('link', { name: 'Hogar' }),
+    ).toHaveAttribute('href', '/app/inventario');
+    expect(
+      within(sidebar).getByRole('link', { name: 'Progreso' }),
+    ).toHaveAttribute('href', '/app/resumen');
   });
 
-  it('exposes the complete navigation in the mobile drawer', async () => {
+  it('opens the small profile menu instead of a second module navigation', async () => {
     const user = userEvent.setup();
     renderPrivateLayout();
 
-    await user.click(screen.getByRole('button', { name: 'Abrir menú de navegación' }));
+    await user.click(screen.getAllByText('Mi perfil')[0]);
 
-    const drawer = screen.getByRole('navigation', { name: 'Menú de navegación' });
-    expect(within(drawer).getByRole('link', { name: 'Inventario' })).toHaveAttribute('href', '/app/inventario');
-    expect(within(drawer).getByRole('link', { name: 'Sobrantes' })).toHaveAttribute('href', '/app/sobrantes');
-    expect(within(drawer).getByRole('link', { name: 'Invitaciones' })).toHaveAttribute('href', '/app/invitaciones');
-
-    await user.click(within(drawer).getByRole('link', { name: 'Inventario' }));
-    expect(screen.queryByRole('navigation', { name: 'Menú de navegación' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Configuración del hogar' }),
+    ).toHaveAttribute('href', '/app/familia');
+    expect(
+      screen.getByRole('link', { name: 'Preferencias personales' }),
+    ).toHaveAttribute('href', '/app/perfil');
+    expect(
+      screen.getByRole('button', { name: /Notificaciones/ }),
+    ).toBeDisabled();
   });
 
-  it('uses the shopping list as the third mobile action', () => {
+  it('exposes the four primary destinations on mobile', () => {
     renderPrivateLayout();
 
-    const bottomBar = screen.getByRole('navigation', { name: 'Acciones principales' });
-    expect(within(bottomBar).getByRole('link', { name: 'Plan' })).toHaveAttribute('href', '/app/plan-semanal');
-    expect(within(bottomBar).queryByRole('link', { name: 'Perfil' })).not.toBeInTheDocument();
+    const bottomBar = screen.getByRole('navigation', {
+      name: 'Secciones principales',
+    });
+    expect(
+      within(bottomBar).getByRole('link', { name: 'Hoy' }),
+    ).toHaveAttribute('href', '/app');
+    expect(
+      within(bottomBar).getByRole('link', { name: 'Planificar' }),
+    ).toHaveAttribute('href', '/app/plan-semanal');
+    expect(
+      within(bottomBar).getByRole('link', { name: 'Hogar' }),
+    ).toHaveAttribute('href', '/app/inventario');
+    expect(
+      within(bottomBar).getByRole('link', { name: 'Progreso' }),
+    ).toHaveAttribute('href', '/app/resumen');
+  });
+
+  it('shows connectivity changes briefly without a persistent layout strip', async () => {
+    renderPrivateLayout();
+
+    window.dispatchEvent(new Event('offline'));
+    expect(
+      await screen.findByText(
+        'Sin conexión. Los cambios compatibles quedarán pendientes.',
+      ),
+    ).toBeInTheDocument();
+
+    window.dispatchEvent(new Event('online'));
+    expect(
+      await screen.findByText('Conexión restablecida.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Conectado')).not.toBeInTheDocument();
   });
 
   it('logs out and returns to the public login page', async () => {
@@ -59,7 +95,7 @@ describe('PrivateLayout', () => {
     );
 
     await user.click(
-      await screen.findByRole('button', { name: 'Cerrar sesion' }),
+      await screen.findByRole('button', { name: 'Cerrar sesión' }),
     );
 
     expect(
@@ -80,7 +116,6 @@ describe('PrivateLayout', () => {
       getSession: () => new Promise(() => undefined),
       loginWithEmail: async () => undefined,
       logout: async () => undefined,
-      onAuthStateChange: () => () => undefined,
       registerWithEmail: async () => ({
         requiresEmailConfirmation: false,
       }),
@@ -107,7 +142,10 @@ function renderPrivateLayout() {
 
   return render(
     <AppProviders
-      authGateway={createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' })}
+      authGateway={createTestAuthGateway({
+        accessToken: 'test-token',
+        userId: 'user-1',
+      })}
       syncCurrentUser={createTestSyncCurrentUserUseCase()}
     >
       <RouterProvider router={router} />

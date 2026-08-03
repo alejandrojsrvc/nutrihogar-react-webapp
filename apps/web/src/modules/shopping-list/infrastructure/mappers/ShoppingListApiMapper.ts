@@ -1,4 +1,8 @@
-import type { ShoppingListItem, ShoppingListResult, ShoppingListSource } from '../../domain/ShoppingList';
+import type {
+  ShoppingListItem,
+  ShoppingListResult,
+  ShoppingListSource,
+} from '../../domain/ShoppingList';
 
 export function toShoppingList(value: unknown): ShoppingListResult {
   const source = record(value);
@@ -23,7 +27,9 @@ export function toShoppingListItem(value: unknown): ShoppingListItem {
 }
 
 function record(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' ? value as Record<string, unknown> : {};
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : {};
 }
 
 function arrayValue(value: unknown) {
@@ -39,5 +45,9 @@ function nullableString(value: unknown) {
 }
 
 function sourceValue(value: unknown): ShoppingListSource {
-  return value === 'BELOW_MINIMUM' || value === 'DEPLETED' || value === 'MEAL_PLAN' ? value : 'MANUAL';
+  return value === 'BELOW_MINIMUM' ||
+    value === 'DEPLETED' ||
+    value === 'MEAL_PLAN'
+    ? value
+    : 'MANUAL';
 }

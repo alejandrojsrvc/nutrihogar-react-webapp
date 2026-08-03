@@ -13,9 +13,7 @@ const RESTRICTION_TYPES: DietaryRestrictionType[] = [
   'PREFERENCE',
 ];
 
-export class LocalStorageAdultProfileDraftStorage
-  implements AdultProfileDraftStorage
-{
+export class LocalStorageAdultProfileDraftStorage implements AdultProfileDraftStorage {
   clear(key: string): void {
     try {
       globalThis.localStorage?.removeItem(toStorageKey(key));
@@ -65,7 +63,9 @@ function normalizeStep(value: unknown): number {
     : 1;
 }
 
-function normalizeValues(value: Record<string, unknown>): AdultProfileDraftValues {
+function normalizeValues(
+  value: Record<string, unknown>,
+): AdultProfileDraftValues {
   return {
     activityLevel: readString(value.activityLevel),
     birthDate: readString(value.birthDate),

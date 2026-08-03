@@ -1,15 +1,8 @@
 import {
-  Apple,
-  ClipboardList,
   CalendarDays,
   House,
   Package,
-  ReceiptText,
-  ShoppingBasket,
-  Soup,
-  UtensilsCrossed,
-  UserRound,
-  UsersRound,
+  ChartNoAxesCombined,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -26,36 +19,82 @@ export interface NavigationGroup {
   items: NavigationItem[];
 }
 
-export const mainNavigation: NavigationGroup[] = [
+export type AppSection = 'hoy' | 'planificar' | 'hogar' | 'progreso';
+
+export const primaryNavigation: NavigationItem[] = [
   {
-    label: 'Tu día',
-    items: [
-      { end: true, icon: <House size={18} aria-hidden="true" />, label: 'Inicio', to: '/app' },
-      { icon: <CalendarDays size={18} aria-hidden="true" />, label: 'Plan semanal', to: '/app/plan-semanal' },
-      { icon: <UtensilsCrossed size={18} aria-hidden="true" />, label: 'Registrar comida', primary: true, to: '/app/comidas/nueva' },
-    ],
+    end: true,
+    icon: <House size={19} aria-hidden="true" />,
+    label: 'Hoy',
+    to: '/app',
   },
   {
-    label: 'Cocina',
-    items: [
-      { icon: <Apple size={18} aria-hidden="true" />, label: 'Alimentos', to: '/app/alimentos' },
-      { icon: <Soup size={18} aria-hidden="true" />, label: 'Recetas', to: '/app/recetas' },
-      { icon: <Package size={18} aria-hidden="true" />, label: 'Inventario', to: '/app/inventario' },
-      { icon: <ClipboardList size={18} aria-hidden="true" />, label: 'Sobrantes', to: '/app/sobrantes' },
-    ],
+    icon: <CalendarDays size={19} aria-hidden="true" />,
+    label: 'Planificar',
+    to: '/app/plan-semanal',
   },
   {
-    label: 'Compras',
-    items: [
-      { icon: <ShoppingBasket size={18} aria-hidden="true" />, label: 'Lista de compras', to: '/app/lista-de-compras' },
-      { icon: <ReceiptText size={18} aria-hidden="true" />, label: 'Historial de compras', to: '/app/compras' },
-    ],
-  },
-  {
+    icon: <Package size={19} aria-hidden="true" />,
     label: 'Hogar',
-    items: [
-      { icon: <UserRound size={18} aria-hidden="true" />, label: 'Perfil', to: '/app/perfil' },
-      { icon: <UsersRound size={18} aria-hidden="true" />, label: 'Invitaciones', to: '/app/invitaciones' },
-    ],
+    to: '/app/inventario',
+  },
+  {
+    icon: <ChartNoAxesCombined size={19} aria-hidden="true" />,
+    label: 'Progreso',
+    to: '/app/resumen',
   },
 ];
+
+export const secondaryNavigation = {
+  planificar: [
+    { label: 'Semana', to: '/app/plan-semanal', end: true },
+    { label: 'Recetas', to: '/app/recetas' },
+    { label: 'Compras', to: '/app/lista-de-compras' },
+  ],
+  hogar: [
+    { label: 'Inventario', to: '/app/inventario' },
+    { label: 'Familia', to: '/app/familia' },
+  ],
+} as const;
+
+export function getAppSection(pathname: string): AppSection {
+  if (
+    pathname.startsWith('/app/plan-semanal') ||
+    pathname.startsWith('/app/recetas') ||
+    pathname.startsWith('/app/preparaciones') ||
+    pathname.startsWith('/app/lista-de-compras') ||
+    pathname.startsWith('/app/compras')
+  )
+    return 'planificar';
+  if (
+    pathname.startsWith('/app/inventario') ||
+    pathname.startsWith('/app/perfil') ||
+    pathname.startsWith('/app/perfiles') ||
+    pathname.startsWith('/app/familia') ||
+    pathname.startsWith('/app/invitaciones')
+  )
+    return 'hogar';
+  if (
+    pathname.startsWith('/app/resumen') ||
+    pathname.startsWith('/app/progreso')
+  )
+    return 'progreso';
+  return 'hoy';
+}
+
+export function secondaryNavigationForPath(pathname: string) {
+  const section = getAppSection(pathname);
+  return section === 'planificar'
+    ? secondaryNavigation.planificar
+    : section === 'hogar'
+      ? secondaryNavigation.hogar
+      : null;
+}
+
+export function isPrimaryNavigationActive(to: string, pathname: string) {
+  if (to === '/app') return pathname === '/app';
+  if (to === '/app/plan-semanal') return getAppSection(pathname) === 'planificar';
+  if (to === '/app/inventario') return getAppSection(pathname) === 'hogar';
+  if (to === '/app/resumen') return getAppSection(pathname) === 'progreso';
+  return false;
+}

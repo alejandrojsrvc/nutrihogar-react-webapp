@@ -96,11 +96,12 @@ describe('HttpHouseholdGateway', () => {
   });
 
   it('normalizes an unavailable households response', async () => {
-    const fetchImplementation: typeof globalThis.fetch = vi.fn(async () =>
-      new Response(JSON.stringify({ message: 'Unavailable' }), {
-        headers: { 'Content-Type': 'application/json' },
-        status: 503,
-      }),
+    const fetchImplementation: typeof globalThis.fetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ message: 'Unavailable' }), {
+          headers: { 'Content-Type': 'application/json' },
+          status: 503,
+        }),
     );
     const apiClient = createApiClient({
       baseUrl: 'http://localhost:3000',

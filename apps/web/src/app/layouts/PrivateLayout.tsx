@@ -1,22 +1,56 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
-import { useState } from 'react';
-import { CalendarDays, House, UtensilsCrossed } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { useAuth } from '../../modules/auth/presentation/providers/useAuth';
+import { useAdultProfiles } from '../../modules/households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../modules/households/presentation/hooks/useHouseholds';
-import { useInventorySyncStatus } from '../../modules/inventory/presentation/hooks/useInventory';
-import { MobileDrawer } from '../../shared/presentation/components/MobileDrawer';
 import { Sidebar } from '../../shared/presentation/components/Sidebar';
+import { SectionNavigation } from '../../shared/presentation/components/SectionNavigation';
 import { Topbar } from '../../shared/presentation/components/Topbar';
+import {
+  isPrimaryNavigationActive,
+  primaryNavigation,
+  secondaryNavigationForPath,
+} from '../../shared/presentation/navigation/mainNavigation';
 
 export function PrivateLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { error, isSigningOut, logout } = useAuth();
   const { activeHousehold } = useHouseholds();
-  const syncStatus = useInventorySyncStatus(activeHousehold?.id);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const kitchenMode = /^\/app\/(preparaciones|porciones)/.test(location.pathname);
+  const profiles = useAdultProfiles(activeHousehold?.id);
+  const kitchenMode = /^\/app\/(preparaciones|porciones)/.test(
+    location.pathname,
+  );
+  const profileName =
+    profiles.profiles.find((profile) => profile.isActive !== false)?.name ??
+    'Mi perfil';
+  const [connectionMessage, setConnectionMessage] = useState<string | null>(
+    null,
+  );
+  const secondaryItems = secondaryNavigationForPath(location.pathname);
+
+  useEffect(() => {
+    let timeout: number | undefined;
+    const showConnectionMessage = (isOnline: boolean) => {
+      setConnectionMessage(
+        isOnline
+          ? 'Conexión restablecida.'
+          : 'Sin conexión. Los cambios compatibles quedarán pendientes.',
+      );
+      if (timeout) window.clearTimeout(timeout);
+      timeout = window.setTimeout(() => setConnectionMessage(null), 4500);
+    };
+    const handleOnline = () => showConnectionMessage(true);
+    const handleOffline = () => showConnectionMessage(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      if (timeout) window.clearTimeout(timeout);
+    };
+  }, []);
 
   async function handleLogout() {
     if (await logout()) {
@@ -25,31 +59,59 @@ export function PrivateLayout() {
   }
 
   return (
-    <div className={`private-layout${kitchenMode ? ' private-layout--kitchen' : ''}`}>
-      <Topbar isMenuOpen={isMenuOpen} kitchenMode={kitchenMode} onMenuOpen={() => setIsMenuOpen(true)} />
-      {syncStatus.data ? <p className="private-layout__sync" role="status">{syncStatus.data.isOnline ? 'Conectado' : 'Sin conexión'}{syncStatus.data.pendingCount > 0 ? ` · ${syncStatus.data.pendingCount} pendiente${syncStatus.data.pendingCount === 1 ? '' : 's'}` : ''}{syncStatus.data.conflictsCount > 0 ? ` · ${syncStatus.data.conflictsCount} conflicto${syncStatus.data.conflictsCount === 1 ? '' : 's'}` : ''}</p> : null}
+    <div
+      className={`private-layout${kitchenMode ? ' private-layout--kitchen' : ''}`}
+    >
+      <Topbar
+        householdName={activeHousehold?.name ?? 'Mi hogar'}
+        isSigningOut={isSigningOut}
+        kitchenMode={kitchenMode}
+        onLogout={() => void handleLogout()}
+        profileName={profileName}
+      />
+      {connectionMessage ? (
+        <p className="connection-feedback" role="status" aria-live="polite">
+          {connectionMessage}
+        </p>
+      ) : null}
       {error ? (
         <p className="auth-error auth-error--layout" role="alert">
           {error.message}
         </p>
       ) : null}
       <div className="app-shell">
-        <Sidebar isSigningOut={isSigningOut} onLogout={() => void handleLogout()} />
+        <Sidebar />
         <main className="private-layout__content">
+          {secondaryItems ? (
+            <SectionNavigation
+              ariaLabel="Secciones de la aplicación"
+              items={secondaryItems}
+            />
+          ) : null}
           <Outlet />
         </main>
       </div>
-      <nav className="mobile-bottom-bar" aria-label="Acciones principales">
-        <NavLink end to="/app"><House size={18} aria-hidden="true" /><span>Inicio</span></NavLink>
-        <NavLink className="mobile-bottom-bar__primary" to="/app/comidas/nueva"><UtensilsCrossed size={18} aria-hidden="true" /><span>Registrar</span></NavLink>
-        <NavLink to="/app/plan-semanal"><CalendarDays size={18} aria-hidden="true" /><span>Plan</span></NavLink>
+      <nav className="mobile-bottom-bar" aria-label="Secciones principales">
+        {primaryNavigation.map((item) => (
+          <NavLink
+            aria-current={
+              isPrimaryNavigationActive(item.to, location.pathname)
+                ? 'page'
+                : undefined
+            }
+            className={
+              isPrimaryNavigationActive(item.to, location.pathname)
+                ? 'mobile-bottom-bar__link is-active'
+                : 'mobile-bottom-bar__link'
+            }
+            key={item.to}
+            to={item.to}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
       </nav>
-      <MobileDrawer
-        isOpen={isMenuOpen}
-        isSigningOut={isSigningOut}
-        onClose={() => setIsMenuOpen(false)}
-        onLogout={() => void handleLogout()}
-      />
     </div>
   );
 }

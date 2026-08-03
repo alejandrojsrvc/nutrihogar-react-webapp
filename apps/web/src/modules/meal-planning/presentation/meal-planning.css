@@ -1,0 +1,264 @@
+.meal-planning__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.meal-planning__navigation strong {
+  text-align: center;
+  text-transform: capitalize;
+}
+.meal-planning__calendar {
+  display: grid;
+  gap: var(--space-4);
+}
+.meal-planning__calendar--desktop,
+.meal-planning__mobile-day-navigation {
+  display: none;
+}
+.meal-planning__day,
+.meal-planning__extras {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.meal-planning__day > h2 {
+  margin-bottom: 0;
+  text-transform: capitalize;
+}
+.meal-planning__day > span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.meal-planning__slot {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+.meal-planning__slot h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+.meal-planning__empty {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.meal-planning__card {
+  display: grid;
+  gap: 0.2rem;
+  padding: var(--space-3);
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-canvas);
+  border-radius: var(--radius-sm);
+}
+.meal-planning__card span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.meal-planning__card a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+.meal-planning__quick-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.meal-planning__quick-actions button {
+  border: 0;
+  padding: 0;
+  color: var(--color-text-secondary);
+  background: transparent;
+  font-size: var(--font-size-sm);
+}
+.meal-planning__add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+.meal-planning__extras {
+  margin-top: var(--space-4);
+}
+.meal-planning__extras .meal-planning__card {
+  margin-top: var(--space-3);
+}
+.meal-planning__announcement {
+  color: var(--color-text-secondary);
+}
+.meal-planning__plan-links,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block: var(--space-4);
+}
+.meal-planning__plan-links a,
+.meal-planning-detail > a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+.participant-selection {
+  display: grid;
+  gap: var(--space-3);
+  margin-block: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.participant-selection__option {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: 2.75rem;
+}
+.quantity-list,
+.requirements-group,
+.comparison-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-5);
+}
+.quantity-row,
+.requirements-group,
+.comparison-list li {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.quantity-row__suggestion,
+.comparison-list li span {
+  color: var(--color-text-secondary);
+}
+.quantity-row__fields {
+  display: grid;
+  gap: var(--space-3);
+}
+.requirements-group ul,
+.comparison-list {
+  padding: 0;
+  list-style: none;
+}
+.requirements-group li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.comparison-list li {
+  display: grid;
+  gap: var(--space-3);
+}
+.comparison-list dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+}
+.comparison-list dl div {
+  padding: var(--space-2);
+  background: var(--color-surface-muted);
+}
+.comparison-list dt {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+.comparison-list dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+.coverage-summary {
+  margin-block: var(--space-5);
+  font-size: var(--font-size-lg);
+}
+.coverage-summary strong {
+  margin-right: var(--space-2);
+  font-size: var(--font-size-2xl);
+}
+.notice {
+  padding: var(--space-3);
+  border-left: 3px solid var(--color-warning);
+  background: var(--color-surface-muted);
+}
+.comparison-selection {
+  display: grid;
+  gap: var(--space-3);
+  margin-block: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.comparison-selection label {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: 2.75rem;
+}
+.adherence-counts {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+.meal-planning-form {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 38rem;
+}
+.meal-planning__recipe-results {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.meal-planning__recipe-results button {
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  text-align: left;
+}
+.meal-planning__recipe-results button.is-selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+@media (min-width: 64rem) {
+  .meal-planning__calendar--mobile {
+    display: none;
+  }
+  .meal-planning__calendar--desktop {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(9rem, 1fr));
+    align-items: start;
+    overflow-x: auto;
+  }
+  .meal-planning__day {
+    min-width: 9rem;
+  }
+  .quantity-row__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 63.99rem) {
+  .meal-planning__mobile-day-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .meal-planning__mobile-day-navigation strong {
+    text-align: center;
+    text-transform: capitalize;
+  }
+}

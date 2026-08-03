@@ -1,20 +1,13 @@
 export type FoodType = 'GENERIC' | 'COMMERCIAL' | 'CUSTOM' | 'PREPARED';
 export type PreparationState =
-  | 'RAW'
-  | 'COOKED'
-  | 'READY_TO_EAT'
-  | 'NOT_APPLICABLE';
+  'RAW' | 'COOKED' | 'READY_TO_EAT' | 'NOT_APPLICABLE';
 export type SearchPreparationState = Exclude<
   PreparationState,
   'NOT_APPLICABLE'
 >;
 export type ReferenceUnit = 'GRAM' | 'MILLILITER' | 'UNIT';
 export type ConfidenceLevel =
-  | 'VERIFIED'
-  | 'HIGH'
-  | 'MEDIUM'
-  | 'LOW'
-  | 'USER_PROVIDED';
+  'VERIFIED' | 'HIGH' | 'MEDIUM' | 'LOW' | 'USER_PROVIDED';
 
 export interface FoodCategory {
   id: string;

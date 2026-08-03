@@ -14,7 +14,9 @@ export function EmptyState({
       <div className="empty-state-card__mark" aria-hidden="true" />
       <h2 id="empty-state-title">{title}</h2>
       <p>{description}</p>
-      {children ? <div className="empty-state-card__action">{children}</div> : null}
+      {children ? (
+        <div className="empty-state-card__action">{children}</div>
+      ) : null}
     </section>
   );
 }

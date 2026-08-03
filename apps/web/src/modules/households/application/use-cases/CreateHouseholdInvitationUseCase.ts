@@ -5,9 +5,7 @@ import type {
 } from '../ports/HouseholdInvitationGateway';
 
 export class CreateHouseholdInvitationUseCase {
-  constructor(
-    private readonly invitationGateway: HouseholdInvitationGateway,
-  ) {}
+  constructor(private readonly invitationGateway: HouseholdInvitationGateway) {}
 
   execute(
     householdId: string,

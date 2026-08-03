@@ -8,17 +8,21 @@ describe('MealApiMapper', () => {
       consumedAt: '2026-07-31T12:00:00.000Z',
       householdId: 'household-1',
       id: 'meal-1',
-      items: [{
-        baseQuantity: 100,
-        baseUnit: 'GRAM',
-        foodId: 'food-1',
-        id: 'item-1',
-        measurementMethod: 'WEIGHED',
-        nameSnapshot: 'Arroz',
-        nutrients: [{ amount: 130, code: 'ENERGY_KCAL', name: 'Energía', unit: 'kcal' }],
-        quantity: 100,
-        unit: 'GRAM',
-      }],
+      items: [
+        {
+          baseQuantity: 100,
+          baseUnit: 'GRAM',
+          foodId: 'food-1',
+          id: 'item-1',
+          measurementMethod: 'WEIGHED',
+          nameSnapshot: 'Arroz',
+          nutrients: [
+            { amount: 130, code: 'ENERGY_KCAL', name: 'Energía', unit: 'kcal' },
+          ],
+          quantity: 100,
+          unit: 'GRAM',
+        },
+      ],
       mealType: 'LUNCH',
       source: 'MANUAL',
       status: 'CONFIRMED',
@@ -51,6 +55,8 @@ describe('MealApiMapper', () => {
       recipeName: 'Arroz familiar',
       servedWeight: 220,
     });
-    expect(toMealDetails({ id: 'meal-3', source: 'MANUAL' }).preparation).toBeNull();
+    expect(
+      toMealDetails({ id: 'meal-3', source: 'MANUAL' }).preparation,
+    ).toBeNull();
   });
 });

@@ -28,6 +28,7 @@ import type { AdultProfileDraftValues } from '../../application/ports/AdultProfi
 import { useAuth } from '../../../auth/presentation/providers/useAuth';
 import { useAdultProfiles } from '../hooks/useAdultProfiles';
 import { useHouseholds } from '../hooks/useHouseholds';
+import '../households.css';
 import {
   adultProfileFormSchema,
   getTodayDateInputValue,
@@ -60,10 +61,7 @@ export function AdultProfilePage() {
   );
   const draftKey =
     currentUser && households.activeHousehold
-      ? getAdultProfileDraftKey(
-          currentUser.id,
-          households.activeHousehold.id,
-        )
+      ? getAdultProfileDraftKey(currentUser.id, households.activeHousehold.id)
       : null;
   const [currentStep, setCurrentStep] = useState(1);
   const [restoredDraftKey, setRestoredDraftKey] = useState<string | null>(null);
@@ -126,11 +124,7 @@ export function AdultProfilePage() {
   ]);
 
   useEffect(() => {
-    if (
-      !draftKey ||
-      currentProfile ||
-      restoredDraftKey !== draftKey
-    ) {
+    if (!draftKey || currentProfile || restoredDraftKey !== draftKey) {
       return;
     }
 
@@ -138,13 +132,7 @@ export function AdultProfilePage() {
       currentStep,
       values: toAdultProfileDraftValues(watchedValues),
     });
-  }, [
-    currentProfile,
-    currentStep,
-    draftKey,
-    restoredDraftKey,
-    watchedValues,
-  ]);
+  }, [currentProfile, currentStep, draftKey, restoredDraftKey, watchedValues]);
 
   if (households.isPending) {
     return <ProfileStatus message="Cargando tu hogar..." />;
@@ -191,7 +179,9 @@ export function AdultProfilePage() {
   }
 
   if (profiles.isError) {
-    return <ProfileStatus message="No se pudieron cargar los perfiles." isError />;
+    return (
+      <ProfileStatus message="No se pudieron cargar los perfiles." isError />
+    );
   }
 
   const isEditing = Boolean(currentProfile);
@@ -223,7 +213,9 @@ export function AdultProfilePage() {
     }
   };
 
-  const onInvalid: SubmitErrorHandler<AdultProfileFormValues> = (formErrors) => {
+  const onInvalid: SubmitErrorHandler<AdultProfileFormValues> = (
+    formErrors,
+  ) => {
     setCurrentStep(getFirstErrorStep(formErrors));
   };
 
@@ -586,9 +578,7 @@ function ProfileStepIndicator({ currentStep }: { currentStep: number }) {
   );
 }
 
-function getDefaultFormValues(
-  profile?: AdultProfile,
-): AdultProfileFormValues {
+function getDefaultFormValues(profile?: AdultProfile): AdultProfileFormValues {
   return {
     activityLevel: profile?.activityLevel ?? ('' as never),
     birthDate: profile?.birthDate ?? '',
@@ -602,8 +592,7 @@ function getDefaultFormValues(
       })) ?? [],
     hasKitchenScale: profile?.hasKitchenScale ?? false,
     heightCm: profile ? String(profile.heightCm) : '',
-    weightKg:
-      profile?.weightKg == null ? '' : String(profile.weightKg),
+    weightKg: profile?.weightKg == null ? '' : String(profile.weightKg),
     name: profile?.name ?? '',
     primaryGoal: profile?.primaryGoal ?? ('' as never),
   };
@@ -634,9 +623,7 @@ function toAdultProfileDraftValues(
   };
 }
 
-function toAdultProfileInput(
-  values: AdultProfileFormValues,
-): {
+function toAdultProfileInput(values: AdultProfileFormValues): {
   activityLevel: ActivityLevel;
   birthDate: string;
   biologicalSex: BiologicalSex;
@@ -665,7 +652,9 @@ function toAdultProfileInput(
   };
 }
 
-function getFirstErrorStep(errors: FieldErrors<AdultProfileFormValues>): number {
+function getFirstErrorStep(
+  errors: FieldErrors<AdultProfileFormValues>,
+): number {
   if (errors.name || errors.birthDate) return 1;
   if (errors.biologicalSex || errors.heightCm || errors.weightKg) return 2;
   if (errors.activityLevel || errors.primaryGoal) return 3;
@@ -694,11 +683,7 @@ function getNestedErrors(
   return Array.isArray(nested) ? nested : [];
 }
 
-function getNestedFieldError(
-  errors: unknown[],
-  index: number,
-  field: string,
-) {
+function getNestedFieldError(errors: unknown[], index: number, field: string) {
   const error = errors[index];
 
   if (typeof error !== 'object' || error === null) {

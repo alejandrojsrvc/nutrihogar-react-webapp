@@ -34,8 +34,19 @@ export interface Recipe {
 export interface RecipeNutrition {
   recipeId: string;
   servings: number;
-  ingredients: Array<{ ingredientId: string; foodId: string; baseQuantity: number; baseUnit: string; nutrients: Record<string, number> }>;
+  ingredients: Array<{
+    ingredientId: string;
+    foodId: string;
+    baseQuantity: number;
+    baseUnit: string;
+    nutrients: Record<string, number>;
+  }>;
   totalNutrients: Record<string, number>;
   perServingNutrients: Record<string, number>;
-  warnings: Array<{ ingredientId: string; foodId: string; code: string; message: string }>;
+  warnings: Array<{
+    ingredientId: string;
+    foodId: string;
+    code: string;
+    message: string;
+  }>;
 }

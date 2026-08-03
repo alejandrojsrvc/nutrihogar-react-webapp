@@ -1,4 +1,8 @@
-import type { PurchaseGateway, PurchaseInput, PurchaseFilters } from '../ports/PurchaseGateway';
+import type {
+  PurchaseGateway,
+  PurchaseInput,
+  PurchaseFilters,
+} from '../ports/PurchaseGateway';
 
 export class ListPurchasesUseCase {
   constructor(private readonly gateway: PurchaseGateway) {}
@@ -20,7 +24,8 @@ export class CreatePurchaseUseCase {
   constructor(private readonly gateway: PurchaseGateway) {}
 
   execute(householdId: string, input: PurchaseInput) {
-    if (input.items.length === 0) throw new Error('Agrega al menos un producto a la compra.');
+    if (input.items.length === 0)
+      throw new Error('Agrega al menos un producto a la compra.');
     return this.gateway.create(householdId, input);
   }
 }

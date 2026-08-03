@@ -36,6 +36,9 @@ describe('nutrition goal use cases', () => {
         values,
       ),
     ).resolves.toBe(goal);
-    expect(gateway.confirmSuggestion).toHaveBeenCalledWith('suggestion-id', values);
+    expect(gateway.confirmSuggestion).toHaveBeenCalledWith(
+      'suggestion-id',
+      values,
+    );
   });
 });

@@ -7,11 +7,7 @@ import {
   useState,
   type ReactElement,
 } from 'react';
-import {
-  useFieldArray,
-  useForm,
-  type SubmitHandler,
-} from 'react-hook-form';
+import { useFieldArray, useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import type {
@@ -27,14 +23,13 @@ import {
   useFoodNutrients,
   useUpdateCustomFood,
 } from '../hooks/useFoodCatalog';
+import '../food-catalog.css';
 import {
   customFoodFormSchema,
   getDefaultCustomFoodFormValues,
   type CustomFoodFormValues,
 } from '../schemas/customFoodSchemas';
-import {
-  preparationStateLabels,
-} from '../utils/foodLabels';
+import { preparationStateLabels } from '../utils/foodLabels';
 
 const confidenceOptions = [
   ['USER_PROVIDED', 'Proporcionada por mi'],
@@ -88,17 +83,22 @@ export function CustomFoodFormPage() {
   const mutationError = createFood.error ?? updateFood.error;
   const isEditable = Boolean(
     currentFood &&
-      currentFood.foodType === 'CUSTOM' &&
-      !currentFood.isGlobal &&
-      currentFood.householdId === activeHousehold?.id,
+    currentFood.foodType === 'CUSTOM' &&
+    !currentFood.isGlobal &&
+    currentFood.householdId === activeHousehold?.id,
   );
-  const nutrientDefinitions = useMemo(() => nutrients.data ?? [], [nutrients.data]);
+  const nutrientDefinitions = useMemo(
+    () => nutrients.data ?? [],
+    [nutrients.data],
+  );
   const nutrientDefinitionById = useMemo(
-    () => new Map(nutrientDefinitions.map((nutrient) => [nutrient.id, nutrient])),
+    () =>
+      new Map(nutrientDefinitions.map((nutrient) => [nutrient.id, nutrient])),
     [nutrientDefinitions],
   );
   const activeNutrientIds = useMemo(
-    () => new Set(nutrientFields.fields.map((field) => field.nutrientDefinitionId)),
+    () =>
+      new Set(nutrientFields.fields.map((field) => field.nutrientDefinitionId)),
     [nutrientFields.fields],
   );
   const optionalNutrients = nutrientDefinitions.filter(
@@ -135,7 +135,11 @@ export function CustomFoodFormPage() {
       <CustomFoodStatus
         isError
         message="Primero configura o selecciona un hogar para registrar un alimento."
-        action={<Link className="button button--secondary" to="/app">Ir a mis hogares</Link>}
+        action={
+          <Link className="button button--secondary" to="/app">
+            Ir a mis hogares
+          </Link>
+        }
       />
     );
   }
@@ -210,17 +214,25 @@ export function CustomFoodFormPage() {
   };
 
   return (
-    <section className="page-section food-form-page" aria-labelledby="custom-food-title">
+    <section
+      className="page-section food-form-page"
+      aria-labelledby="custom-food-title"
+    >
       <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
       <p className="eyebrow">Alimentos del hogar</p>
       <h1 id="custom-food-title">
         {isEditing ? 'Edita tu alimento' : 'Registra un alimento'}
       </h1>
       <p className="lead">
-        Guarda los valores del envase o de tu receta para encontrarlos junto al catalogo.
+        Guarda los valores del envase o de tu receta para encontrarlos junto al
+        catalogo.
       </p>
 
-      <form className="custom-food-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        className="custom-food-form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         <fieldset className="food-form-section">
           <legend>Datos generales</legend>
           <div className="food-form-grid">
@@ -228,9 +240,17 @@ export function CustomFoodFormPage() {
               <input id="custom-food-name" {...register('name')} type="text" />
             </FormField>
             <FormField error={errors.brand?.message} label="Marca">
-              <input id="custom-food-brand" {...register('brand')} type="text" />
+              <input
+                id="custom-food-brand"
+                {...register('brand')}
+                type="text"
+              />
             </FormField>
-            <FormField error={errors.categoryId?.message} label="Categoria" required>
+            <FormField
+              error={errors.categoryId?.message}
+              label="Categoria"
+              required
+            >
               <select id="custom-food-category" {...register('categoryId')}>
                 <option value="">Selecciona una categoria</option>
                 {categories.data?.map((category) => (
@@ -245,12 +265,17 @@ export function CustomFoodFormPage() {
               label="Estado de preparacion"
               required
             >
-              <select id="custom-food-preparation" {...register('preparationState')}>
-                {Object.entries(preparationStateLabels).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+              <select
+                id="custom-food-preparation"
+                {...register('preparationState')}
+              >
+                {Object.entries(preparationStateLabels).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ),
+                )}
               </select>
             </FormField>
             <FormField
@@ -267,8 +292,15 @@ export function CustomFoodFormPage() {
                 type="number"
               />
             </FormField>
-            <FormField error={errors.referenceUnit?.message} label="Unidad de referencia" required>
-              <select id="custom-food-reference-unit" {...register('referenceUnit')}>
+            <FormField
+              error={errors.referenceUnit?.message}
+              label="Unidad de referencia"
+              required
+            >
+              <select
+                id="custom-food-reference-unit"
+                {...register('referenceUnit')}
+              >
                 {referenceUnitOptions.map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
@@ -289,7 +321,10 @@ export function CustomFoodFormPage() {
               label="Nivel de confianza"
               required
             >
-              <select id="custom-food-confidence" {...register('confidenceLevel')}>
+              <select
+                id="custom-food-confidence"
+                {...register('confidenceLevel')}
+              >
                 {confidenceOptions.map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
@@ -303,12 +338,14 @@ export function CustomFoodFormPage() {
         <fieldset className="food-form-section">
           <legend>Nutrientes por referencia</legend>
           <p className="food-form-help">
-            Los valores deben ser mayores o iguales que cero. Los cuatro nutrientes
-            principales son obligatorios.
+            Los valores deben ser mayores o iguales que cero. Los cuatro
+            nutrientes principales son obligatorios.
           </p>
           <div className="custom-food-nutrient-list">
             {nutrientFields.fields.map((field, index) => {
-              const definition = nutrientDefinitionById.get(field.nutrientDefinitionId);
+              const definition = nutrientDefinitionById.get(
+                field.nutrientDefinitionId,
+              );
               if (!definition) {
                 return null;
               }
@@ -328,7 +365,9 @@ export function CustomFoodFormPage() {
                       {definition.name} cantidad
                     </label>
                     <input
-                      aria-invalid={errors.nutrients?.[index]?.amount ? 'true' : 'false'}
+                      aria-invalid={
+                        errors.nutrients?.[index]?.amount ? 'true' : 'false'
+                      }
                       id={`custom-food-nutrient-${index}`}
                       inputMode="decimal"
                       min="0"
@@ -363,7 +402,9 @@ export function CustomFoodFormPage() {
           {optionalNutrients.length > 0 ? (
             <div className="food-form-add-row">
               <div className="form-field">
-                <label htmlFor="custom-food-add-nutrient">Micronutriente opcional</label>
+                <label htmlFor="custom-food-add-nutrient">
+                  Micronutriente opcional
+                </label>
                 <select
                   id="custom-food-add-nutrient"
                   onChange={(event) => setNutrientToAdd(event.target.value)}
@@ -392,7 +433,8 @@ export function CustomFoodFormPage() {
         <fieldset className="food-form-section">
           <legend>Porciones</legend>
           <p className="food-form-help">
-            Agrega equivalencias utiles para seleccionar este alimento mas adelante.
+            Agrega equivalencias utiles para seleccionar este alimento mas
+            adelante.
           </p>
           <div className="custom-food-serving-list">
             {servingFields.fields.map((field, index) => (
@@ -492,7 +534,11 @@ export function CustomFoodFormPage() {
           <Link className="button button--secondary" to="/app/alimentos">
             Cancelar
           </Link>
-          <button className="button button--primary" disabled={isSaving} type="submit">
+          <button
+            className="button button--primary"
+            disabled={isSaving}
+            type="submit"
+          >
             {isSaving
               ? isEditing
                 ? 'Guardando cambios...'
@@ -635,7 +681,10 @@ function CustomFoodStatus({
   message: string;
 }) {
   return (
-    <section className="page-section" aria-labelledby="custom-food-status-title">
+    <section
+      className="page-section"
+      aria-labelledby="custom-food-status-title"
+    >
       <p className="eyebrow">Alimentos del hogar</p>
       <h1 id="custom-food-status-title">Alimento personalizado</h1>
       <p className="lead" role={isError ? 'alert' : 'status'}>

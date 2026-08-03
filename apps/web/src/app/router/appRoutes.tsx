@@ -14,6 +14,7 @@ import { AcceptHouseholdInvitationPage } from '../../modules/households/presenta
 import { AdultProfilePage } from '../../modules/households/presentation/pages/AdultProfilePage';
 import { AdultProfileOverviewPage } from '../../modules/households/presentation/pages/AdultProfileOverviewPage';
 import { HouseholdInvitationsPage } from '../../modules/households/presentation/pages/HouseholdInvitationsPage';
+import { FamilyPage } from '../../modules/households/presentation/pages/FamilyPage';
 import { FoodCatalogPage } from '../../modules/food-catalog/presentation/pages/FoodCatalogPage';
 import { FoodDetailPage } from '../../modules/food-catalog/presentation/pages/FoodDetailPage';
 import { CustomFoodFormPage } from '../../modules/food-catalog/presentation/pages/CustomFoodFormPage';
@@ -48,6 +49,12 @@ import { ShoppingListPage } from '../../modules/shopping-list/presentation/pages
 import { NotFoundPage } from '../../shared/presentation/pages/NotFoundPage';
 import { WeeklyPlanPage } from '../../modules/meal-planning/presentation/pages/WeeklyPlanPage';
 import { PlannedMealFormPage } from '../../modules/meal-planning/presentation/pages/PlannedMealFormPage';
+import { PlannedMealParticipantsPage } from '../../modules/meal-planning/presentation/pages/PlannedMealParticipantsPage';
+import { PlannedMealQuantitiesPage } from '../../modules/meal-planning/presentation/pages/PlannedMealQuantitiesPage';
+import { WeeklyRequirementsPage } from '../../modules/meal-planning/presentation/pages/WeeklyRequirementsPage';
+import { InventoryComparisonPage } from '../../modules/meal-planning/presentation/pages/InventoryComparisonPage';
+import { PlannedMealPreparationPage } from '../../modules/meal-planning/presentation/pages/PlannedMealPreparationPage';
+import { WeeklyAdherencePage } from '../../modules/meal-planning/presentation/pages/WeeklyAdherencePage';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -78,6 +85,11 @@ export const appRoutes: RouteObject[] = [
         children: [
           { path: '/onboarding', element: <OnboardingPage /> },
           { path: '/app/perfil', element: <AdultProfileOverviewPage /> },
+          { path: '/app/familia', element: <FamilyPage /> },
+          {
+            path: '/app/perfiles/:profileId',
+            element: <AdultProfileOverviewPage />,
+          },
           { path: '/app/perfil/editar', element: <AdultProfilePage /> },
           {
             path: '/app/alimentos',
@@ -89,45 +101,133 @@ export const appRoutes: RouteObject[] = [
             element: <CustomFoodFormPage />,
           },
           { path: '/app/alimentos/:foodId', element: <FoodDetailPage /> },
-          { path: '/app/perfiles/:profileId/meta', element: <NutritionGoalPage /> },
-          { path: '/app/perfiles/:profileId/meta/propuesta', element: <NutritionGoalProposalPage /> },
+          {
+            path: '/app/perfiles/:profileId/meta',
+            element: <NutritionGoalPage />,
+          },
+          {
+            path: '/app/perfiles/:profileId/meta/propuesta',
+            element: <NutritionGoalProposalPage />,
+          },
           { path: '/app/comidas/nueva', element: <RegisterMealPage /> },
           { path: '/app/comidas/:mealId/editar', element: <EditMealPage /> },
-          { path: '/app/comidas/:mealId/repetir', element: <DuplicateMealPage /> },
+          {
+            path: '/app/comidas/:mealId/repetir',
+            element: <DuplicateMealPage />,
+          },
           { path: '/app/comidas/:mealId', element: <MealDetailPage /> },
-          { path: '/app/resumen/:date', element: <DailyNutritionSummaryPage /> },
+          {
+            path: '/app/resumen',
+            element: (
+              <Navigate
+                replace
+                to={`/app/resumen/${new Date().toISOString().slice(0, 10)}`}
+              />
+            ),
+          },
+          {
+            path: '/app/resumen/:date',
+            element: <DailyNutritionSummaryPage />,
+          },
           { path: '/app/recetas', element: <RecipeListPage /> },
           { path: '/app/recetas/nueva', element: <RecipeFormPage /> },
-          { path: '/app/recetas/:recipeId/editar', element: <RecipeFormPage /> },
+          {
+            path: '/app/recetas/:recipeId/editar',
+            element: <RecipeFormPage />,
+          },
           { path: '/app/recetas/:recipeId', element: <RecipeDetailPage /> },
-          { path: '/app/preparaciones/nueva', element: <StartPreparedBatchPage /> },
-          { path: '/app/preparaciones/:batchId/finalizar', element: <FinalizePreparedBatchPage /> },
-          { path: '/app/preparaciones/:batchId/servir', element: <ServePreparedBatchPortionsPage /> },
-          { path: '/app/preparaciones/:batchId', element: <PreparedBatchDetailPage /> },
-          { path: '/app/porciones/:portionId/confirmar', element: <ConfirmServedPortionConsumptionPage /> },
-          { path: '/app/preparaciones/:batchId/sobrante', element: <CreatePreparedFoodLeftoverPage /> },
-          { path: '/app/preparaciones/:batchId/inventario', element: <PreparedBatchInventoryPage /> },
+          {
+            path: '/app/preparaciones/nueva',
+            element: <StartPreparedBatchPage />,
+          },
+          {
+            path: '/app/preparaciones/:batchId/finalizar',
+            element: <FinalizePreparedBatchPage />,
+          },
+          {
+            path: '/app/preparaciones/:batchId/servir',
+            element: <ServePreparedBatchPortionsPage />,
+          },
+          {
+            path: '/app/preparaciones/:batchId',
+            element: <PreparedBatchDetailPage />,
+          },
+          {
+            path: '/app/porciones/:portionId/confirmar',
+            element: <ConfirmServedPortionConsumptionPage />,
+          },
+          {
+            path: '/app/preparaciones/:batchId/sobrante',
+            element: <CreatePreparedFoodLeftoverPage />,
+          },
+          {
+            path: '/app/preparaciones/:batchId/inventario',
+            element: <PreparedBatchInventoryPage />,
+          },
           { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
-          { path: '/app/sobrantes/:leftoverId', element: <PreparedFoodLeftoverDetailPage /> },
+          {
+            path: '/app/sobrantes/:leftoverId',
+            element: <PreparedFoodLeftoverDetailPage />,
+          },
           { path: '/app/inventario', element: <InventoryListPage /> },
           { path: '/app/inventario/nuevo', element: <InventoryCreatePage /> },
-          { path: '/app/inventario/:inventoryItemId/ajustar', element: <InventoryAdjustPage /> },
-          { path: '/app/inventario/:inventoryItemId/consumir-preparado', element: <ConsumePreparedFoodPage /> },
-          { path: '/app/inventario/:inventoryItemId', element: <InventoryDetailPage /> },
+          {
+            path: '/app/inventario/:inventoryItemId/ajustar',
+            element: <InventoryAdjustPage />,
+          },
+          {
+            path: '/app/inventario/:inventoryItemId/consumir-preparado',
+            element: <ConsumePreparedFoodPage />,
+          },
+          {
+            path: '/app/inventario/:inventoryItemId',
+            element: <InventoryDetailPage />,
+          },
           { path: '/app/compras', element: <PurchaseListPage /> },
           { path: '/app/compras/nueva', element: <PurchaseFormPage /> },
-          { path: '/app/compras/:purchaseId/editar', element: <PurchaseFormPage /> },
+          {
+            path: '/app/compras/:purchaseId/editar',
+            element: <PurchaseFormPage />,
+          },
           { path: '/app/compras/:purchaseId', element: <PurchaseDetailPage /> },
           { path: '/app/lista-de-compras', element: <ShoppingListPage /> },
           { path: '/app/plan-semanal', element: <WeeklyPlanPage /> },
-          { path: '/app/plan-semanal/:weeklyPlanId/comidas/nueva', element: <PlannedMealFormPage /> },
-          { path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/editar', element: <PlannedMealFormPage /> },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/comidas/nueva',
+            element: <PlannedMealFormPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/editar',
+            element: <PlannedMealFormPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/participantes',
+            element: <PlannedMealParticipantsPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/cantidades',
+            element: <PlannedMealQuantitiesPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/preparar',
+            element: <PlannedMealPreparationPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/requerimientos',
+            element: <WeeklyRequirementsPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/comparacion-inventario',
+            element: <InventoryComparisonPage />,
+          },
+          {
+            path: '/app/plan-semanal/:weeklyPlanId/adherencia',
+            element: <WeeklyAdherencePage />,
+          },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {
             element: <RequireCompletedOnboarding />,
-            children: [
-              { path: '/app', element: <HomePage /> },
-            ],
+            children: [{ path: '/app', element: <HomePage /> }],
           },
           {
             path: '/invitaciones/:token',

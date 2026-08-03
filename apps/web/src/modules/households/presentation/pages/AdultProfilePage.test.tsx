@@ -2,7 +2,10 @@ import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
+import {
+  createTestAuthGateway,
+  renderRoute,
+} from '../../../../test/renderRoute';
 
 const profile = {
   activityLevel: 'MODERATE',
@@ -35,18 +38,35 @@ describe('AdultProfilePage', () => {
   it('shows profile data before exposing the edit form', async () => {
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
-      if (request.url.endsWith('/api/households')) return jsonResponse([{ currency: 'ARS', id: 'household-1', name: 'Hogar Sojo', timezone: 'America/Argentina/Buenos_Aires' }]);
-      if (request.url.includes('/adult-profiles')) return jsonResponse([profile]);
+      if (request.url.endsWith('/api/households'))
+        return jsonResponse([
+          {
+            currency: 'ARS',
+            id: 'household-1',
+            name: 'Hogar Sojo',
+            timezone: 'America/Argentina/Buenos_Aires',
+          },
+        ]);
+      if (request.url.includes('/adult-profiles'))
+        return jsonResponse([profile]);
       return jsonResponse({ status: 'ok' });
     });
 
-    renderRoute('/app/perfil', createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }));
+    renderRoute(
+      '/app/perfil',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
 
-    expect(await screen.findByRole('heading', { name: 'Tu perfil' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Tu perfil' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Peso actual')).toBeInTheDocument();
     expect(screen.getByText('79 kg')).toBeInTheDocument();
     expect(screen.queryByLabelText('Nombre')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Editar perfil' })).toHaveAttribute('href', '/app/perfil/editar');
+    expect(screen.getByRole('link', { name: 'Editar perfil' })).toHaveAttribute(
+      'href',
+      '/app/perfil/editar',
+    );
   });
 
   it('creates a profile with dietary restrictions and redirects home', async () => {
@@ -103,7 +123,9 @@ describe('AdultProfilePage', () => {
       'FAT_LOSS',
     );
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    await user.click(screen.getByRole('button', { name: 'Agregar restriccion' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar restriccion' }),
+    );
     await user.type(screen.getByLabelText('Nombre'), 'Mani');
     await user.type(screen.getByLabelText('Severidad (opcional)'), 'Alta');
     await user.type(
@@ -115,7 +137,7 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar perfil' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
     ).toBeInTheDocument();
     expect(
       screen.getByText('Perfil guardado correctamente.'),
@@ -164,10 +186,7 @@ describe('AdultProfilePage', () => {
     );
 
     await user.type(await screen.findByLabelText('Nombre'), 'Alejandro');
-    await user.type(
-      screen.getByLabelText('Fecha de nacimiento'),
-      '1990-05-20',
-    );
+    await user.type(screen.getByLabelText('Fecha de nacimiento'), '1990-05-20');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
 
     expect(await screen.findByText(/Paso 2 de 5/)).toBeInTheDocument();
@@ -200,7 +219,9 @@ describe('AdultProfilePage', () => {
     expect(
       await screen.findByText('La altura debe ser un numero mayor que cero.'),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText('Nivel de actividad')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Nivel de actividad'),
+    ).not.toBeInTheDocument();
   });
 
   it('loads and updates the existing profile', async () => {
@@ -237,11 +258,13 @@ describe('AdultProfilePage', () => {
       '/app/perfil/editar',
       createTestAuthGateway({
         accessToken: 'test-token',
-        userId: 'supabase-user-1',
+        userId: 'api-user-1',
       }),
     );
 
-    expect(await screen.findByRole('heading', { name: 'Edita tu perfil' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Edita tu perfil' }),
+    ).toBeInTheDocument();
     expect(await screen.findByDisplayValue('Alejandro')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.clear(screen.getByLabelText('Altura en centimetros'));
@@ -254,13 +277,11 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar cambios' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
     ).toBeInTheDocument();
     expect(updateRequest?.method).toBe('PATCH');
     await expect(updateRequest?.json()).resolves.toMatchObject({
-      dietaryRestrictions: [
-        expect.objectContaining({ name: 'Nuez' }),
-      ],
+      dietaryRestrictions: [expect.objectContaining({ name: 'Nuez' })],
       heightCm: 180,
     });
   });
@@ -268,10 +289,7 @@ describe('AdultProfilePage', () => {
 
 async function fillBasicInformation(user: ReturnType<typeof userEvent.setup>) {
   await user.type(await screen.findByLabelText('Nombre'), 'Alejandro');
-  await user.type(
-    screen.getByLabelText('Fecha de nacimiento'),
-    '1990-05-20',
-  );
+  await user.type(screen.getByLabelText('Fecha de nacimiento'), '1990-05-20');
 }
 
 function getTomorrowDateInputValue(): string {

@@ -1,15 +1,8 @@
 export type BiologicalSex = 'MALE' | 'FEMALE';
 export type ActivityLevel =
-  | 'SEDENTARY'
-  | 'LIGHT'
-  | 'MODERATE'
-  | 'HIGH'
-  | 'VERY_HIGH';
+  'SEDENTARY' | 'LIGHT' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
 export type PrimaryGoal = 'FAT_LOSS' | 'MAINTENANCE' | 'MUSCLE_GAIN';
-export type DietaryRestrictionType =
-  | 'ALLERGY'
-  | 'INTOLERANCE'
-  | 'PREFERENCE';
+export type DietaryRestrictionType = 'ALLERGY' | 'INTOLERANCE' | 'PREFERENCE';
 
 export interface DietaryRestriction {
   id: string;

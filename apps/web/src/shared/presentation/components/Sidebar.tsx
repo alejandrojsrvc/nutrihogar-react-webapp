@@ -1,48 +1,36 @@
-import { LogOut } from 'lucide-react';
-import { NavLink } from 'react-router';
-import type { ReactNode } from 'react';
-import { Button } from './Button';
-import { ThemeControl } from './ThemeControl';
-import { mainNavigation } from '../navigation/mainNavigation';
+import { Link, NavLink, useLocation } from 'react-router';
 
-function NavigationLink({
-  children,
-  icon,
-  to,
-  end,
-  primary,
-}: {
-  children: string;
-  icon: ReactNode;
-  to: string;
-  end?: boolean;
-  primary?: boolean;
-}) {
-  return (
-    <NavLink className={`sidebar__link${primary ? ' sidebar__link--primary' : ''}`} end={end} to={to}>
-      {icon}<span>{children}</span>
-    </NavLink>
-  );
-}
+import {
+  isPrimaryNavigationActive,
+  primaryNavigation,
+} from '../navigation/mainNavigation';
 
-export function Sidebar({
-  isSigningOut,
-  onLogout,
-}: {
-  isSigningOut: boolean;
-  onLogout: () => void;
-}) {
+export function Sidebar() {
+  const { pathname } = useLocation();
+
   return (
-    <nav className="sidebar" aria-label="Navegacion principal">
-      {mainNavigation.map((group) => <div className="sidebar__section" key={group.label}>
-        <p className="sidebar__label">{group.label}</p>
-        {group.items.map((item) => <NavigationLink end={item.end} icon={item.icon} key={item.to} primary={item.primary} to={item.to}>{item.label}</NavigationLink>)}
-      </div>)}
-      <ThemeControl />
-      <Button className="sidebar__logout" disabled={isSigningOut} onClick={onLogout} type="button" variant="tertiary">
-        <LogOut size={17} aria-hidden="true" />
-        {isSigningOut ? 'Cerrando...' : 'Cerrar sesion'}
-      </Button>
-    </nav>
+    <aside className="sidebar" aria-label="Navegación principal">
+      <Link className="sidebar__brand" to="/app">
+        <span className="brand-mark" aria-hidden="true">
+          N
+        </span>
+        <span>NutriHogar</span>
+      </Link>
+      <nav aria-label="Destinos principales" className="sidebar__destinations">
+        {primaryNavigation.map((item) => (
+          <NavLink
+            aria-current={
+              isPrimaryNavigationActive(item.to, pathname) ? 'page' : undefined
+            }
+            className="sidebar__link"
+            key={item.to}
+            to={item.to}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
   );
 }

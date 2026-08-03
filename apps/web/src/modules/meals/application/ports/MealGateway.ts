@@ -65,7 +65,10 @@ export interface RegisterMealInput extends Omit<MealFormValues, 'items'> {
   }>;
 }
 
-export type UpdateMealInput = Omit<RegisterMealInput, 'householdId' | 'profileId'>;
+export type UpdateMealInput = Omit<
+  RegisterMealInput,
+  'householdId' | 'profileId'
+>;
 
 export interface DuplicateMealInput {
   adultProfileId: string;

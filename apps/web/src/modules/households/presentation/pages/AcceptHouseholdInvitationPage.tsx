@@ -4,12 +4,8 @@ import { useAcceptHouseholdInvitation } from '../hooks/useHouseholdInvitations';
 
 export function AcceptHouseholdInvitationPage() {
   const { token } = useParams<{ token: string }>();
-  const {
-    acceptInvitation,
-    acceptedInvitation,
-    error,
-    isAccepting,
-  } = useAcceptHouseholdInvitation();
+  const { acceptInvitation, acceptedInvitation, error, isAccepting } =
+    useAcceptHouseholdInvitation();
 
   async function handleAccept() {
     if (!token) {
@@ -29,12 +25,15 @@ export function AcceptHouseholdInvitationPage() {
 
   if (acceptedInvitation) {
     return (
-      <section className="page-section" aria-labelledby="invitation-accepted-title">
+      <section
+        className="page-section"
+        aria-labelledby="invitation-accepted-title"
+      >
         <p className="eyebrow">Invitacion aceptada</p>
         <h1 id="invitation-accepted-title">Ya eres parte de este hogar</h1>
         <p className="lead">
-          La invitacion se acepto correctamente. Ahora puedes entrar al
-          espacio familiar.
+          La invitacion se acepto correctamente. Ahora puedes entrar al espacio
+          familiar.
         </p>
         <Link className="button button--primary" to="/onboarding">
           Continuar configuracion

@@ -14,14 +14,22 @@ import type {
 type ApiResult<T> = { data?: T; error?: unknown; response?: Response };
 
 interface NutritionGoalApiClient {
-  POST(path: string, options: { params: { path: Record<string, string> }; body?: unknown }): Promise<ApiResult<unknown>>;
-  GET(path: string, options: { params: { path: Record<string, string> } }): Promise<ApiResult<unknown>>;
+  POST(
+    path: string,
+    options: { params: { path: Record<string, string> }; body?: unknown },
+  ): Promise<ApiResult<unknown>>;
+  GET(
+    path: string,
+    options: { params: { path: Record<string, string> } },
+  ): Promise<ApiResult<unknown>>;
 }
 
 export class HttpNutritionGoalGateway implements NutritionGoalGateway {
   constructor(private readonly apiClient: ApiClient) {}
 
-  async generateSuggestion(profileId: string): Promise<NutritionGoalSuggestion> {
+  async generateSuggestion(
+    profileId: string,
+  ): Promise<NutritionGoalSuggestion> {
     try {
       const result = await this.client().POST(
         `/api/adult-profiles/${profileId}/nutrition-goal-suggestions`,
@@ -74,7 +82,10 @@ export class HttpNutritionGoalGateway implements NutritionGoalGateway {
       throw normalizeApiError(result.error, result.response);
     }
     if (!result.data) {
-      throw new ApiClientError('unknown', `La API no devolvio datos al ${action}.`);
+      throw new ApiClientError(
+        'unknown',
+        `La API no devolvio datos al ${action}.`,
+      );
     }
     return result.data;
   }

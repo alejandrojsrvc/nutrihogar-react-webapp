@@ -10,7 +10,10 @@ export function Surface({
   tone?: 'default' | 'muted' | 'accent' | 'dark';
 }) {
   return (
-    <section className={`surface surface--${tone} ${className}`.trim()} {...props}>
+    <section
+      className={`surface surface--${tone} ${className}`.trim()}
+      {...props}
+    >
       {children}
     </section>
   );

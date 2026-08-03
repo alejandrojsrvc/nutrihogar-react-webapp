@@ -15,7 +15,6 @@ import type {
 import { householdQueryKeys } from './useHouseholds';
 import { householdInvitationQueryKeys } from './householdInvitationQueryKeys';
 
-
 export function useHouseholdInvitations(householdId: string | undefined) {
   const queryClient = useQueryClient();
   const query = useQuery({
@@ -47,9 +46,7 @@ export function useHouseholdInvitations(householdId: string | undefined) {
   });
   const invitations = useMemo(
     () =>
-      (query.data ?? []).map((invitation) =>
-        withRememberedToken(invitation),
-      ),
+      (query.data ?? []).map((invitation) => withRememberedToken(invitation)),
     [query.data],
   );
   const createdInvitation = createMutation.data

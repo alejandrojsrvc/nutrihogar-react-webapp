@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 
 export function PageHeader({
-  eyebrow,
   title,
   titleId,
   description,
@@ -16,7 +15,6 @@ export function PageHeader({
   return (
     <header className="page-header">
       <div>
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h1 id={titleId}>{title}</h1>
         {description ? <p className="lead">{description}</p> : null}
       </div>

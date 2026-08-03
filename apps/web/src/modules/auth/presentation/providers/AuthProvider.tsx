@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type PropsWithChildren,
-} from 'react';
+import { useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 
 import type {
   AuthSession,
@@ -40,20 +35,6 @@ export function AuthProvider({
 
   useEffect(() => {
     let isMounted = true;
-    const unsubscribe = authGateway.onAuthStateChange((nextSession) => {
-      if (!isMounted) {
-        return;
-      }
-
-      setError(null);
-      if (!nextSession) {
-        setCurrentUser(null);
-        setIsCurrentUserLoading(false);
-      }
-      setSession(nextSession);
-      setStatus(nextSession ? 'authenticated' : 'unauthenticated');
-    });
-
     void authGateway
       .getSession()
       .then((currentSession) => {
@@ -102,7 +83,6 @@ export function AuthProvider({
 
     return () => {
       isMounted = false;
-      unsubscribe();
     };
   }, [authGateway, syncCurrentUserUseCase]);
 
