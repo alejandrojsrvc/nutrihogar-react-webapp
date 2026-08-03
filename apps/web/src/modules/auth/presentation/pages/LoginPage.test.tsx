@@ -28,7 +28,6 @@ describe('LoginPage', () => {
       getSession: async () => session,
       loginWithEmail,
       logout: async () => undefined,
-      onAuthStateChange: () => () => undefined,
       registerWithEmail: async () => ({
         requiresEmailConfirmation: false,
       }),

@@ -18,7 +18,6 @@ export function createTestAuthGateway(
     loginWithEmail: async () => undefined,
     registerWithEmail: async () => ({ requiresEmailConfirmation: false }),
     logout: async () => undefined,
-    onAuthStateChange: () => () => undefined,
   };
 }
 

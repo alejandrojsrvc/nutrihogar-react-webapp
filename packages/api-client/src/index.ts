@@ -8,5 +8,6 @@ export {
   type AccessTokenProvider,
   type ApiClient,
   type ApiClientOptions,
+  type UnauthorizedHandler,
 } from './client';
 export type { components, paths } from './generated/schema';

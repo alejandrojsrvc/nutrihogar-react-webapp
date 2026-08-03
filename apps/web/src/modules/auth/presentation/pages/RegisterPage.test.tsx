@@ -15,7 +15,6 @@ describe('RegisterPage', () => {
       getSession: async () => null,
       loginWithEmail: async () => undefined,
       logout: async () => undefined,
-      onAuthStateChange: () => () => undefined,
       registerWithEmail,
     };
 
@@ -84,7 +83,6 @@ describe('RegisterPage', () => {
       getSession: async () => session,
       loginWithEmail: async () => undefined,
       logout: async () => undefined,
-      onAuthStateChange: () => () => undefined,
       registerWithEmail: async () => {
         session = { accessToken: 'test-token', userId: 'user-1' };
         return { requiresEmailConfirmation: false };
