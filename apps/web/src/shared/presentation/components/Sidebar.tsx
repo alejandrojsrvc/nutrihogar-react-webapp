@@ -16,7 +16,7 @@ export function Sidebar() {
         </span>
         <span>NutriHogar</span>
       </Link>
-      <nav aria-label="Secciones principales" className="sidebar__destinations">
+      <nav aria-label="Destinos principales" className="sidebar__destinations">
         {primaryNavigation.map((item) => (
           <NavLink
             aria-current={

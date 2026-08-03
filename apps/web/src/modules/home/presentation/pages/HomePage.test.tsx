@@ -79,7 +79,9 @@ describe('HomePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Hogar Sojo')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Hogar Sojo' }),
+    ).toBeInTheDocument();
     expect(await screen.findByText('Alejandro')).toBeInTheDocument();
     expect(screen.getByText('Integrantes')).toBeInTheDocument();
     expect(
