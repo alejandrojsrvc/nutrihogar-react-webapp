@@ -83,7 +83,7 @@ describe('HomePage', () => {
       screen.getByRole('heading', { name: 'Hogar Sojo' }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole('heading', { name: 'Alejandro' }),
+      await screen.findByText('Alejandro', { selector: 'strong' }),
     ).toBeInTheDocument();
     expect(screen.getByText('Integrantes')).toBeInTheDocument();
     expect(
