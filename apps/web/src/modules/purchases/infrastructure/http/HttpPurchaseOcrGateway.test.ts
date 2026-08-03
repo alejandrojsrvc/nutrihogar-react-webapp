@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { HttpPurchaseOcrGateway, PurchaseOcrError } from './HttpPurchaseOcrGateway';
+import { HttpPurchaseOcrGateway } from './HttpPurchaseOcrGateway';
 
 describe('HttpPurchaseOcrGateway', () => {
   it('uploads the receipt as multipart without setting Content-Type', async () => {
@@ -32,6 +32,6 @@ describe('HttpPurchaseOcrGateway', () => {
         file: new File(['receipt'], 'receipt.jpg'),
         householdId: 'household-1',
       }),
-    ).rejects.toMatchObject<Partial<PurchaseOcrError>>({ status });
+    ).rejects.toMatchObject({ status });
   });
 });
