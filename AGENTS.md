@@ -2,134 +2,193 @@
 
 Instrucciones para trabajar exclusivamente en `alejandrojsrvc/nutrihogar-react-webapp`.
 
-## Producto y arquitectura
+## Producto
 
-Cliente React, TypeScript y PWA, mobile-first, calido, simple y preciso.
+NutriHogar es una PWA familiar para planificaciÃ³n nutricional, registro de comidas, recetas y preparaciones, inventario, compras, seguimiento corporal, sÃ­ntomas, reportes y recordatorios.
 
-- Organizar por features y respetar la direccion de dependencias documentada.
-- Separar presentacion, aplicacion, dominio, esquemas y acceso a API.
-- React no pertenece a dominio ni aplicacion.
-- Consumir contratos OpenAPI generados mediante adaptadores; no duplicar DTO ni editar codigo generado.
-- El backend es la fuente de verdad para autorizacion y calculos nutricionales definitivos.
-- Usar TanStack Query para estado remoto y React Hook Form con Zod para formularios.
-- Mantener estados de carga, vacio, error y exito requeridos.
-- Evitar abstracciones o componentes genericos sin reutilizacion real.
-- Mantener una accion primaria clara y no convertir la interfaz en un ERP, una app hospitalaria o un contador obsesivo.
+El frontend usa React y TypeScript. Debe sentirse cÃ¡lido, simple y preciso, sin parecer un ERP, una aplicaciÃ³n hospitalaria, una aplicaciÃ³n de fitness extremo ni un contador obsesivo de calorÃ­as.
 
-## Fuente de verdad y contexto
+## Documentos normativos
 
-1. Leer la issue completa:
+Leer Ãºnicamente lo necesario para el alcance actual, en este orden:
+
+1. La issue completa.
+2. Este `AGENTS.md`.
+3. `docs/FRONTEND_ARCHITECTURE.md` si la tarea afecta estructura, datos, estado, rutas o un mÃ³dulo desconocido.
+4. `docs/FRONTEND_BRAND_GUIDELINES.md` si afecta presentaciÃ³n visual o componentes.
+5. `docs/UX_UI_GUIDELINES.md` si afecta navegaciÃ³n, organizaciÃ³n, responsive, formularios o un flujo de usuario.
+6. El sprint o `../PDR.md` solo para aclarar reglas de producto o dependencias.
+
+En caso de conflicto: la issue manda en alcance; el PDR y el sprint mandan en reglas del producto; arquitectura manda en dependencias; UX/UI manda en interacciÃ³n; marca manda en apariencia; este archivo manda en proceso y comandos.
+
+## Fuente de verdad de la tarea
+
+Leer la issue completa:
 
 ```bash
 gh issue view <numero> --repo alejandrojsrvc/nutrihogar-react-webapp
 ```
 
-La salida ya presenta el cuerpo Markdown de la issue. No convertirla a JSON ni guardarla en un archivo temporal.
+La salida ya presenta el cuerpo Markdown. No convertirla a JSON ni guardarla en un archivo temporal.
 
-2. Inspeccionar feature, rutas, componentes y pruebas directamente relacionados.
-3. Leer `doc/arquitecture.md` solo para decisiones arquitectonicas o modulos desconocidos.
-4. Leer `doc/FRONTEND_BRAND_GUIDELINES.md` cuando exista trabajo visual.
-5. Consultar el sprint o `../PDR.md` solo para aclarar dependencias o producto.
+DespuÃ©s:
 
-La issue define objetivo, alcance, criterios, pruebas y exclusiones. No ampliar el alcance.
+1. Inspeccionar feature, rutas, componentes y pruebas directamente relacionados.
+2. Identificar criterios de aceptaciÃ³n, exclusiones y dependencias explÃ­citas.
+3. No ampliar el alcance ni implementar issues futuras silenciosamente.
+4. Si falta una dependencia, informarla en vez de inventar una implementaciÃ³n.
 
-## Busqueda de codigo
+## Arquitectura obligatoria
 
-- Buscar siempre en el repositorio local mediante Glob y Grep.
-- No usar `gh api search/code` para explorar codigo.
-- GitHub se usa para leer issues y gestionar PRs, no para buscar implementaciones.
-- Realizar como maximo dos busquedas dirigidas antes de leer los archivos relacionados.
-- No consultar `git log`, `git show`, `git blame` ni commits anteriores salvo que la issue describa una regresion, cite un commit o requiera contexto historico.
-- Si una capacidad no existe localmente, informar la dependencia en lugar de seguir buscando remotamente.
+- Organizar por features y respetar la direcciÃ³n de dependencias documentada.
+- Separar presentaciÃ³n, aplicaciÃ³n, dominio, esquemas y acceso a API.
+- React pertenece solamente a presentaciÃ³n e integraciÃ³n de UI; no a dominio ni aplicaciÃ³n.
+- Consumir contratos OpenAPI generados mediante adaptadores; no duplicar DTO ni editar cÃ³digo generado.
+- No llamar el cliente OpenAPI desde pÃ¡ginas, componentes ni casos de uso.
+- El backend es la fuente de verdad para autorizaciÃ³n, saldos, inventario y cÃ¡lculos nutricionales definitivos.
+- Usar TanStack Query para estado remoto y React Hook Form con Zod para formularios.
+- Mantener el estado local en el nivel mÃ¡s cercano que lo necesite.
+- Evitar abstracciones, variantes o componentes genÃ©ricos sin reutilizaciÃ³n real.
+- Mantener cambios offline como operaciones explÃ­citas y sincronizables; no simular confirmaciÃ³n del servidor.
 
-## Flujo rapido
+## Reglas obligatorias de interfaz
 
-### Inicio
+Cuando una issue afecte interfaz:
+
+- Aplicar `docs/FRONTEND_BRAND_GUIDELINES.md` y `docs/UX_UI_GUIDELINES.md`.
+- DiseÃ±ar desde 360â€“390 px y definir adaptaciÃ³n para 768 px y 1440 px desde el cÃ³digo.
+- Priorizar la tarea del usuario, no la cantidad de mÃ³dulos ni mÃ©tricas disponibles.
+- Mantener una sola acciÃ³n primaria evidente por pantalla o secciÃ³n.
+- Reutilizar tokens y componentes antes de crear estilos locales.
+- No convertir cada secciÃ³n, fila o campo en una tarjeta.
+- No introducir hexadecimales arbitrarios, sombras fuertes, gradientes decorativos o iconos innecesarios.
+- Mantener controles tÃ¡ctiles de al menos 44 Ã— 44 px.
+- No depender solo del color para comunicar estado, nutriente o prioridad.
+- Usar lenguaje familiar, directo, no mÃ©dico y no culpabilizante.
+- Considerar carga, vacÃ­o, error, Ã©xito, deshabilitado, offline, sincronizaciÃ³n pendiente y permisos cuando correspondan.
+- No afirmar que la interfaz fue inspeccionada visualmente si no ocurriÃ³.
+
+## Seguridad de ejecuciÃ³n
+
+El agente no debe:
+
+- Abrir, controlar ni automatizar navegadores.
+- Iniciar `dev`, `preview`, servidores locales, puertos o procesos persistentes.
+- Ejecutar tests frontend o build localmente.
+- Ejecutar Docker o Docker Compose.
+- Generar cÃ³digo que necesite iniciar el backend.
+- Desplegar ni operar servicios compartidos.
+- Ejecutar comandos fuera de los expresamente autorizados en este archivo.
+
+Para cambios visuales, revisar responsive, jerarquÃ­a, estados y accesibilidad desde el cÃ³digo; escribir las pruebas necesarias sin ejecutarlas; incluir pasos manuales concretos en el PR; y marcar la inspecciÃ³n visual como pendiente.
+
+## BÃºsqueda de cÃ³digo
+
+- Buscar en el repositorio local con `rg` y `rg --files`, o herramientas equivalentes.
+- Realizar como mÃ¡ximo dos bÃºsquedas dirigidas antes de leer los archivos relacionados.
+- No usar `gh api search/code` para explorar implementaciones.
+- GitHub se usa para issues y PRs, no para buscar cÃ³digo local.
+- No consultar `git log`, `git show`, `git blame` ni commits anteriores salvo regresiÃ³n explÃ­cita o referencia histÃ³rica necesaria.
+- Si una capacidad no existe localmente, detener la bÃºsqueda y declarar la dependencia.
+
+## Inicio de trabajo
+
+Ejecutar una sola vez:
 
 ```bash
 git status --short
 git branch --show-current
 ```
 
-Preservar cambios ajenos. Si entran en conflicto directo, detenerse y consultar.
+Preservar cambios ajenos. Si entran en conflicto directo con el alcance, detenerse y consultar.
 
-Con un arbol compatible:
+Con un Ã¡rbol compatible:
 
 ```bash
 git fetch origin main
 git switch -c <tipo>/<issue-o-rango>-<slug> origin/main
 ```
 
-Usar `feat`, `fix` o `chore`, en minusculas, ASCII y con guiones.
+Usar `feat`, `fix` o `chore`; minÃºsculas, ASCII y guiones.
 
-### Implementacion
+## ImplementaciÃ³n
 
-- Presentar un plan de hasta cinco puntos y no pedir aprobacion si la issue es clara.
-- Hacer el cambio minimo correcto.
-- Crear o actualizar tests Vitest que verifiquen comportamiento observable, criterios de aceptacion, validaciones, estados y accesibilidad.
-- Cubrir el camino correcto y errores relevantes; evitar tests triviales, snapshots sin valor, mocks excesivos o assertions que siempre pasan.
-- No eliminar, omitir ni debilitar pruebas existentes para conseguir un resultado verde.
-- Preservar valores de formularios y cubrir accesibilidad y responsive cuando aplique.
-- Actualizar `.env.example` y README solo si cambia configuracion.
-- No implementar dependencias o issues futuras de forma silenciosa.
+- Presentar un plan de hasta cinco puntos y no pedir aprobaciÃ³n si la issue es clara.
+- Hacer el cambio mÃ­nimo correcto y completo.
+- Preservar contratos y comportamiento ajenos al pedido.
+- Antes de crear un componente, hook, esquema o adaptador, buscar uno equivalente.
+- No extraer una abstracciÃ³n por anticipaciÃ³n; hacerlo por reutilizaciÃ³n real o consistencia necesaria.
+- Preservar valores de formularios frente a errores de validaciÃ³n, red u offline.
+- No ocultar funcionalidad esencial segÃºn el breakpoint.
+- Actualizar `.env.example` y README solo cuando cambie configuraciÃ³n o uso pÃºblico.
 
-## Comandos
+## Pruebas
 
-Permitidos para validar:
+- Crear o actualizar Ãºnicamente pruebas necesarias para el comportamiento modificado.
+- Elegir el nivel mÃ­nimo adecuado: dominio, aplicaciÃ³n, infraestructura, componente o flujo.
+- Probar resultados observables, criterios de aceptaciÃ³n, validaciones, accesibilidad y estados relevantes.
+- No probar detalles internos ni duplicar un comportamiento entre capas sin un resultado distinto.
+- No eliminar, omitir ni debilitar pruebas para obtener verde.
+- Evitar snapshots sin valor, mocks excesivos y assertions triviales.
+- Reservar `renderRoute` para routing, autenticaciÃ³n o providers reales.
+- Tras un render asÃ­ncrono, usar `findBy*` o `waitFor`; no `getBy*` como espera.
+- Dominio y utilidades: pruebas unitarias puras.
+- Casos de uso y hooks: Ã©xito, error y transiciones relevantes.
+- Componentes: comportamiento visible, teclado y nombres accesibles.
+- Formularios: validaciÃ³n, envÃ­o, error, doble envÃ­o y cambios pendientes.
+- Flujos: navegaciÃ³n y estados exigidos por la issue.
+- Escribir las pruebas, pero no ejecutar Vitest ni build localmente.
+
+## ValidaciÃ³n autorizada
+
+El Ãºnico comando local autorizado para validar es:
 
 ```bash
 npm run lint
 ```
 
-Reglas:
+Ejecutarlo una sola vez al terminar todo el pedido. Si se necesita otro script, no ejecutarlo: verificar `package.json` y declararlo pendiente. GitHub Actions ejecuta lint, Vitest y build en el PR.
 
-- Ejecutar solamente lint local una vez, al terminar todo el pedido.
-- Escribir los tests requeridos, pero no ejecutar tests frontend localmente.
-- No ejecutar build localmente.
-- GitHub Actions ejecuta lint, la suite Vitest completa y build en el PR.
-- Si se necesita otro script, verificar primero `package.json`; no inventarlo.
-- La instalacion de paquetes esta permitida solo si la issue la necesita.
-
-Prohibido ejecutar:
-
-- Build, `dev`, `preview` o procesos persistentes.
-- Tests frontend locales; su ejecucion corresponde a GitHub Actions.
-- Docker o Docker Compose.
-- Generacion que necesite iniciar el backend.
-- Despliegues u operaciones contra servicios compartidos.
-- Comandos Git destructivos, force push, amend no solicitado o merge.
-
-## Varias issues en un pedido
+## Varias issues
 
 - Una rama y un PR para todo el pedido.
 - Rama: `<tipo>/<primera>-<ultima>-<slug>`.
-- Un solo commit convencional para todo el pedido.
-- Una sola validacion al terminar todas las implementaciones.
-- Un `Closes #<numero>` por cada issue completamente resuelta en el PR.
+- Un solo commit convencional.
+- Una sola validaciÃ³n local al finalizar todas las implementaciones.
+- Un `Closes #<numero>` por cada issue completamente resuelta.
 
 ## Commit y PR
 
-Al terminar, revisar el diff una sola vez para confirmar que solo contiene archivos del pedido. Preparar esos archivos, crear un unico commit convencional, hacer un solo push y abrir un solo PR.
+Al terminar:
 
-No repetir `git status`, no consultar `git log` ni ejecutar revisiones redundantes salvo que exista un problema real de Git.
+1. Revisar el diff una sola vez para confirmar que contiene Ãºnicamente archivos del pedido.
+2. Preparar esos archivos.
+3. Crear un Ãºnico commit convencional.
+4. Hacer un solo push.
+5. Abrir un Ãºnico PR contra `main`.
 
-El PR contra `main` debe incluir resumen por issue, decisiones relevantes, resultado de lint local, tests y build marcados como pendientes en GitHub, pasos manuales en movil y escritorio, riesgos y todos los `Closes #N` aplicables.
+No repetir `git status`, consultar historial ni ejecutar revisiones redundantes sin un problema concreto. No usar comandos destructivos, force push, amend no solicitado o merge.
 
-Despues de abrirlo, devolver la URL y detenerse. No esperar GitHub Actions, hacer merge ni cerrar issues manualmente.
+El PR debe incluir:
 
-## Pruebas
+- Resumen por issue.
+- Decisiones relevantes.
+- Resultado del Ãºnico lint local.
+- Tests y build pendientes en GitHub Actions.
+- Pasos manuales en 390 px, 768 px y 1440 px cuando haya UI.
+- Estados y escenarios que deben revisarse manualmente.
+- Riesgos o limitaciones.
+- Todos los `Closes #N` aplicables.
 
-- Crear o actualizar unicamente las pruebas necesarias para el comportamiento modificado y los criterios de aceptacion.
-- Elegir el nivel minimo adecuado: dominio, aplicacion, infraestructura, componente o flujo.
-- No duplicar el mismo comportamiento entre capas salvo que cada prueba compruebe un resultado diferente.
-- Reservar `renderRoute` para comportamientos que dependan realmente de routing, autenticacion o providers.
-- Despues de un render asincrono, usar `findBy*` o `waitFor`; no usar `getBy*` como mecanismo de espera.
-- Probar resultados observables, accesibilidad, validaciones y estados relevantes; no detalles internos.
-- El agente debe escribir las pruebas necesarias, pero no ejecutar Vitest ni build localmente.
-- La verificacion completa de lint, tests y build corresponde a GitHub Actions.
-- Dominio y utilidades: unitarias puras.
-- Casos de uso y hooks: exito, error y transiciones relevantes.
-- Componentes: comportamiento observable y accesibilidad.
-- Formularios: validacion, envio, errores y cambios pendientes.
-- Flujos: navegacion y estados exigidos por la issue.
-- Probar resultados visibles para el usuario, no detalles internos de implementacion.
+DespuÃ©s de abrirlo, devolver la URL y detenerse. No esperar GitHub Actions, hacer merge ni cerrar issues manualmente.
+
+## DefiniciÃ³n de terminado
+
+Una tarea estÃ¡ lista cuando:
+
+- Cumple cada criterio de aceptaciÃ³n dentro del alcance.
+- Respeta arquitectura, marca y UX/UI aplicables.
+- Contiene las pruebas necesarias, aunque su ejecuciÃ³n quede para CI.
+- `npm run lint` se ejecutÃ³ una sola vez y su resultado se informÃ³.
+- El diff no contiene cambios ajenos.
+- El PR declara con honestidad quÃ© se verificÃ³ y quÃ© quedÃ³ pendiente.

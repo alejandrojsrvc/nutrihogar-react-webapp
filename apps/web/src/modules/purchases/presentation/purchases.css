@@ -1,0 +1,272 @@
+.purchase-filters,
+.purchase-form-grid,
+.shopping-list-add-form {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-6);
+}
+.shopping-list-modal {
+  position: fixed;
+  z-index: 35;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgb(31 41 36 / 0.35);
+}
+.shopping-list-modal__content {
+  width: min(100%, 32rem);
+  max-height: min(42rem, calc(100vh - 2rem));
+  overflow-y: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md);
+}
+.shopping-list-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+.purchase-list,
+.purchase-form,
+.shopping-list-items {
+  display: grid;
+  gap: var(--space-4);
+}
+.purchase-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+.purchase-card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+.purchase-card h2,
+.purchase-detail-section h2,
+.shopping-conversion h2 {
+  margin: 0;
+}
+.purchase-card strong {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.purchase-detail-actions,
+.purchase-form-actions,
+.shopping-list-actions,
+.shopping-conversion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block: var(--space-5);
+}
+.purchase-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-block: var(--space-6);
+  padding-block: var(--space-4);
+  border-block: 1px solid var(--color-border);
+}
+.purchase-detail-meta dt {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.purchase-detail-meta dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+.purchase-detail-section {
+  margin-block: var(--space-8);
+}
+.purchase-item-list,
+.purchase-form-items {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+.purchase-item-list li,
+.purchase-form-items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.purchase-item-list li > div,
+.purchase-form-items li > div {
+  display: grid;
+  gap: var(--space-1);
+}
+.purchase-item-list span,
+.purchase-form-items span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.purchase-form {
+  max-width: 48rem;
+}
+.purchase-form fieldset {
+  display: grid;
+  gap: var(--space-4);
+  padding: 0;
+  border: 0;
+}
+.purchase-form legend {
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+.shopping-list-add-form {
+  align-items: end;
+}
+.shopping-list-items {
+  padding: 0;
+  list-style: none;
+}
+.shopping-list-items li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+.shopping-list-items li.is-purchased {
+  opacity: 0.7;
+}
+.shopping-list-item__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.shopping-list-item__heading > div {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-1);
+}
+.shopping-list-item__heading strong {
+  overflow-wrap: anywhere;
+}
+.shopping-list-item__meta {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.shopping-list-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+.shopping-list-item-more {
+  position: relative;
+}
+.shopping-list-item-more summary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-weight: var(--font-weight-semibold);
+  list-style: none;
+}
+.shopping-list-item-more summary::-webkit-details-marker {
+  display: none;
+}
+.shopping-list-item-more summary:hover,
+.shopping-list-item-more[open] summary {
+  background: var(--color-surface-muted);
+}
+.shopping-list-item-more > div {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  display: grid;
+  min-width: 8rem;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md);
+}
+.shopping-list-item-more .button {
+  width: 100%;
+  justify-content: flex-start;
+  padding-inline: var(--space-2);
+}
+.button--danger-text {
+  color: var(--color-danger);
+}
+.shopping-list-edit-form {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-5);
+}
+.shopping-list-item-summary {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.shopping-conversion {
+  position: fixed;
+  z-index: 35;
+  top: 50%;
+  left: 50%;
+  width: min(calc(100% - 2rem), 42rem);
+  max-height: calc(100vh - 2rem);
+  margin: 0;
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-subtle);
+  box-shadow:
+    0 0 0 100vmax rgb(31 41 36 / 0.35),
+    var(--shadow-md);
+}
+.purchase-confirmation {
+  margin-block: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-warning-soft);
+}
+
+@media (min-width: 64rem) {
+  .purchase-filters {
+    grid-template-columns: 2fr 1fr;
+  }
+  .purchase-form-grid,
+  .shopping-list-add-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .shopping-list-add-form > button {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 30rem) {
+  .shopping-list-items li {
+    grid-template-columns: 1fr;
+  }
+  .shopping-list-item-actions {
+    justify-content: space-between;
+  }
+}

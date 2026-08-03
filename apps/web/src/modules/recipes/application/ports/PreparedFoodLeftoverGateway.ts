@@ -23,7 +23,10 @@ export interface PreparedFoodLeftoverGateway {
   ): Promise<PreparedFoodLeftover>;
   list(householdId: string): Promise<PreparedFoodLeftover[]>;
   getById(leftoverId: string): Promise<PreparedFoodLeftover>;
-  addToInventory(leftoverId: string, input: AddPreparedFoodLeftoverToInventoryInput): Promise<InventoryItem>;
+  addToInventory(
+    leftoverId: string,
+    input: AddPreparedFoodLeftoverToInventoryInput,
+  ): Promise<InventoryItem>;
   updateStatus(
     leftoverId: string,
     status: PreparedFoodLeftoverStatus,

@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-const positiveNumber = (message: string) => z.string().trim().min(1, message).refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, { message });
+const positiveNumber = (message: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, message)
+    .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
+      message,
+    });
 
 export const purchaseSchema = z.object({
   currency: z.string().trim().min(1, 'Indica la moneda.'),

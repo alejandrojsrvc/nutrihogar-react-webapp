@@ -3,9 +3,7 @@ import type { HouseholdInvitationLinkGateway } from '../../../modules/households
 const HOUSEHOLD_INVITATION_TOKENS_KEY =
   'nutrihogar.household-invitation-tokens';
 
-export class LocalStorageHouseholdInvitationLinkGateway
-  implements HouseholdInvitationLinkGateway
-{
+export class LocalStorageHouseholdInvitationLinkGateway implements HouseholdInvitationLinkGateway {
   getToken(invitationId: string): string | null {
     const tokens = this.readTokens();
     return tokens[invitationId] ?? null;

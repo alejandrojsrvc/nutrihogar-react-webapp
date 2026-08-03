@@ -1,14 +1,123 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { cancelPreparedBatchUseCase, confirmPreparedBatchIngredientsUseCase, finalizePreparedBatchUseCase, loadPreparedBatchDetailsUseCase, loadPreparedBatchUseCase, servePreparedBatchPortionsUseCase, startPreparedBatchUseCase, updatePreparedBatchIngredientsUseCase } from '../../../../app/composition/dependencies';
+import {
+  cancelPreparedBatchUseCase,
+  confirmPreparedBatchIngredientsUseCase,
+  finalizePreparedBatchUseCase,
+  loadPreparedBatchDetailsUseCase,
+  loadPreparedBatchUseCase,
+  servePreparedBatchPortionsUseCase,
+  startPreparedBatchUseCase,
+  updatePreparedBatchIngredientsUseCase,
+} from '../../../../app/composition/dependencies';
 import type { PreparedBatchIngredientInput } from '../../application/ports/PreparedBatchGateway';
 import type { ServePortionsInput } from '../../application/ports/ServedPortionGateway';
 
-export const preparedBatchQueryKeys = { all: ['prepared-batches'] as const, detail: (id: string) => [...preparedBatchQueryKeys.all, 'detail', id] as const, operationalDetails: (id: string) => [...preparedBatchQueryKeys.all, 'operational-detail', id] as const };
-export function usePreparedBatch(id: string | undefined) { return useQuery({ enabled: Boolean(id), queryKey: id ? preparedBatchQueryKeys.detail(id) : preparedBatchQueryKeys.all, queryFn: () => loadPreparedBatchUseCase.execute(id as string), retry: false }); }
-export function usePreparedBatchDetails(id: string | undefined) { return useQuery({ enabled: Boolean(id), queryKey: id ? preparedBatchQueryKeys.operationalDetails(id) : preparedBatchQueryKeys.all, queryFn: () => loadPreparedBatchDetailsUseCase.execute(id as string), retry: false }); }
-export function useStartPreparedBatch() { const client = useQueryClient(); return useMutation({ mutationFn: ({ recipeId, preparedAt }: { recipeId: string; preparedAt: Date }) => startPreparedBatchUseCase.execute(recipeId, preparedAt), onSuccess: (batch) => client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch) }); }
-export function useUpdatePreparedBatchIngredients() { const client = useQueryClient(); return useMutation({ mutationFn: ({ batchId, ingredients }: { batchId: string; ingredients: PreparedBatchIngredientInput[] }) => updatePreparedBatchIngredientsUseCase.execute(batchId, ingredients), onSuccess: (batch) => client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch) }); }
-export function useConfirmPreparedBatchIngredients() { const client = useQueryClient(); return useMutation({ mutationFn: (batchId: string) => confirmPreparedBatchIngredientsUseCase.execute(batchId), onSuccess: (batch) => client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch) }); }
-export function useFinalizePreparedBatch() { const client = useQueryClient(); return useMutation({ mutationFn: ({ batchId, weight }: { batchId: string; weight: number }) => finalizePreparedBatchUseCase.execute(batchId, weight), onSuccess: (batch) => { client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch); void client.invalidateQueries({ queryKey: preparedBatchQueryKeys.operationalDetails(batch.id) }); } }); }
-export function useCancelPreparedBatch() { const client = useQueryClient(); return useMutation({ mutationFn: (batchId: string) => cancelPreparedBatchUseCase.execute(batchId), onSuccess: (_, batchId) => { void client.invalidateQueries({ queryKey: preparedBatchQueryKeys.detail(batchId) }); void client.invalidateQueries({ queryKey: preparedBatchQueryKeys.operationalDetails(batchId) }); } }); }
-export function useServePreparedBatchPortions() { const client = useQueryClient(); return useMutation({ mutationFn: ({ batchId, input }: { batchId: string; input: ServePortionsInput }) => servePreparedBatchPortionsUseCase.execute(batchId, input), onSuccess: (_, variables) => { void client.invalidateQueries({ queryKey: preparedBatchQueryKeys.operationalDetails(variables.batchId) }); } }); }
+export const preparedBatchQueryKeys = {
+  all: ['prepared-batches'] as const,
+  detail: (id: string) =>
+    [...preparedBatchQueryKeys.all, 'detail', id] as const,
+  operationalDetails: (id: string) =>
+    [...preparedBatchQueryKeys.all, 'operational-detail', id] as const,
+};
+export function usePreparedBatch(id: string | undefined) {
+  return useQuery({
+    enabled: Boolean(id),
+    queryKey: id
+      ? preparedBatchQueryKeys.detail(id)
+      : preparedBatchQueryKeys.all,
+    queryFn: () => loadPreparedBatchUseCase.execute(id as string),
+    retry: false,
+  });
+}
+export function usePreparedBatchDetails(id: string | undefined) {
+  return useQuery({
+    enabled: Boolean(id),
+    queryKey: id
+      ? preparedBatchQueryKeys.operationalDetails(id)
+      : preparedBatchQueryKeys.all,
+    queryFn: () => loadPreparedBatchDetailsUseCase.execute(id as string),
+    retry: false,
+  });
+}
+export function useStartPreparedBatch() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      recipeId,
+      preparedAt,
+    }: {
+      recipeId: string;
+      preparedAt: Date;
+    }) => startPreparedBatchUseCase.execute(recipeId, preparedAt),
+    onSuccess: (batch) =>
+      client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch),
+  });
+}
+export function useUpdatePreparedBatchIngredients() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      batchId,
+      ingredients,
+    }: {
+      batchId: string;
+      ingredients: PreparedBatchIngredientInput[];
+    }) => updatePreparedBatchIngredientsUseCase.execute(batchId, ingredients),
+    onSuccess: (batch) =>
+      client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch),
+  });
+}
+export function useConfirmPreparedBatchIngredients() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (batchId: string) =>
+      confirmPreparedBatchIngredientsUseCase.execute(batchId),
+    onSuccess: (batch) =>
+      client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch),
+  });
+}
+export function useFinalizePreparedBatch() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ batchId, weight }: { batchId: string; weight: number }) =>
+      finalizePreparedBatchUseCase.execute(batchId, weight),
+    onSuccess: (batch) => {
+      client.setQueryData(preparedBatchQueryKeys.detail(batch.id), batch);
+      void client.invalidateQueries({
+        queryKey: preparedBatchQueryKeys.operationalDetails(batch.id),
+      });
+    },
+  });
+}
+export function useCancelPreparedBatch() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (batchId: string) =>
+      cancelPreparedBatchUseCase.execute(batchId),
+    onSuccess: (_, batchId) => {
+      void client.invalidateQueries({
+        queryKey: preparedBatchQueryKeys.detail(batchId),
+      });
+      void client.invalidateQueries({
+        queryKey: preparedBatchQueryKeys.operationalDetails(batchId),
+      });
+    },
+  });
+}
+export function useServePreparedBatchPortions() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      batchId,
+      input,
+    }: {
+      batchId: string;
+      input: ServePortionsInput;
+    }) => servePreparedBatchPortionsUseCase.execute(batchId, input),
+    onSuccess: (_, variables) => {
+      void client.invalidateQueries({
+        queryKey: preparedBatchQueryKeys.operationalDetails(variables.batchId),
+      });
+    },
+  });
+}

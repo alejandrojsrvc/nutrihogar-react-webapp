@@ -1,7 +1,4 @@
-import {
-  createApiClient,
-  type ApiClient,
-} from '@nutrihogar/api-client';
+import { createApiClient, type ApiClient } from '@nutrihogar/api-client';
 
 import { createSupabaseAuthSessionGateway } from '../../shared/infrastructure/auth/SupabaseAuthSessionGateway';
 import { UnavailableAuthSessionGateway } from '../../shared/infrastructure/auth/UnavailableAuthSessionGateway';
@@ -103,11 +100,33 @@ import {
   UpdatePreparedFoodLeftoverStatusUseCase,
   AddPreparedFoodLeftoverToInventoryUseCase,
 } from '../../modules/recipes/application/use-cases/PreparedFoodLeftoverUseCases';
-import { ConfirmPreparedBatchInventoryUseCase, LoadPreparedBatchInventoryPreviewUseCase } from '../../modules/recipes/application/use-cases/PreparedBatchInventoryUseCases';
+import {
+  ConfirmPreparedBatchInventoryUseCase,
+  LoadPreparedBatchInventoryPreviewUseCase,
+} from '../../modules/recipes/application/use-cases/PreparedBatchInventoryUseCases';
 import { HttpPurchaseGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseGateway';
 import { HttpShoppingListGateway } from '../../modules/shopping-list/infrastructure/http/HttpShoppingListGateway';
 import { HttpMealPlanningGateway } from '../../modules/meal-planning/infrastructure/http/HttpMealPlanningGateway';
-import { ListWeeklyPlansUseCase, LoadWeeklyPlanUseCase, CreateWeeklyPlanUseCase, AddPlannedMealUseCase, UpdatePlannedMealUseCase, AssignParticipantUseCase, DeleteParticipantUseCase, ProposeQuantitiesUseCase, ListQuantitiesUseCase, AcceptQuantitySuggestionsUseCase, UpdateParticipantUseCase, GetRequirementsUseCase, CompareInventoryUseCase, AddMissingShoppingItemsUseCase, GetAdherenceUseCase, GetPreparationUseCase, PreparePlannedMealUseCase, LinkConsumptionUseCase } from '../../modules/meal-planning/application/use-cases/MealPlanningUseCases';
+import {
+  ListWeeklyPlansUseCase,
+  LoadWeeklyPlanUseCase,
+  CreateWeeklyPlanUseCase,
+  AddPlannedMealUseCase,
+  UpdatePlannedMealUseCase,
+  AssignParticipantUseCase,
+  DeleteParticipantUseCase,
+  ProposeQuantitiesUseCase,
+  ListQuantitiesUseCase,
+  AcceptQuantitySuggestionsUseCase,
+  UpdateParticipantUseCase,
+  GetRequirementsUseCase,
+  CompareInventoryUseCase,
+  AddMissingShoppingItemsUseCase,
+  GetAdherenceUseCase,
+  GetPreparationUseCase,
+  PreparePlannedMealUseCase,
+  LinkConsumptionUseCase,
+} from '../../modules/meal-planning/application/use-cases/MealPlanningUseCases';
 import {
   CancelPurchaseUseCase,
   ConfirmPurchaseUseCase,
@@ -149,17 +168,27 @@ const healthGateway = new HttpHealthGateway(apiClient);
 const foodCatalogGateway = new HttpFoodCatalogGateway(apiClient);
 const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
 const mealGateway = new HttpMealGateway(apiClient);
-const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(apiClient);
+const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(
+  apiClient,
+);
 const recipeGateway = new HttpRecipeGateway(apiClient);
 const preparedBatchGateway = new HttpPreparedBatchGateway(apiClient);
 const servedPortionGateway = new HttpServedPortionGateway(apiClient);
-const servedPortionConsumptionGateway = new HttpServedPortionConsumptionGateway(apiClient);
-const preparedFoodLeftoverGateway = new HttpPreparedFoodLeftoverGateway(apiClient);
-const preparedBatchInventoryGateway = new HttpPreparedBatchInventoryGateway(apiClient);
+const servedPortionConsumptionGateway = new HttpServedPortionConsumptionGateway(
+  apiClient,
+);
+const preparedFoodLeftoverGateway = new HttpPreparedFoodLeftoverGateway(
+  apiClient,
+);
+const preparedBatchInventoryGateway = new HttpPreparedBatchInventoryGateway(
+  apiClient,
+);
 const currentUserGateway = new HttpCurrentUserGateway(apiClient);
 const adultProfileGateway = new HttpAdultProfileGateway(apiClient);
 const householdGateway = new HttpHouseholdGateway(apiClient);
-const householdInvitationGateway = new HttpHouseholdInvitationGateway(apiClient);
+const householdInvitationGateway = new HttpHouseholdInvitationGateway(
+  apiClient,
+);
 const activeHouseholdGateway = new LocalStorageActiveHouseholdGateway();
 export const adultProfileDraftStorage =
   new LocalStorageAdultProfileDraftStorage();
@@ -178,7 +207,9 @@ export const syncCurrentUserUseCase = new SyncCurrentUserUseCase(
 );
 export const checkHealthUseCase = new CheckHealthUseCase(healthGateway);
 export const searchFoodsUseCase = new SearchFoodsUseCase(foodCatalogGateway);
-export const getFoodDetailUseCase = new GetFoodDetailUseCase(foodCatalogGateway);
+export const getFoodDetailUseCase = new GetFoodDetailUseCase(
+  foodCatalogGateway,
+);
 export const listFoodCategoriesUseCase = new ListFoodCategoriesUseCase(
   foodCatalogGateway,
 );
@@ -198,41 +229,65 @@ export const generateNutritionGoalSuggestionUseCase =
   new GenerateNutritionGoalSuggestionUseCase(nutritionGoalGateway);
 export const confirmNutritionGoalSuggestionUseCase =
   new ConfirmNutritionGoalSuggestionUseCase(nutritionGoalGateway);
-export const getCurrentNutritionGoalUseCase = new GetCurrentNutritionGoalUseCase(
-  nutritionGoalGateway,
-);
+export const getCurrentNutritionGoalUseCase =
+  new GetCurrentNutritionGoalUseCase(nutritionGoalGateway);
 export const registerMealUseCase = new RegisterMealUseCase(mealGateway);
 export const getMealDetailsUseCase = new GetMealDetailsUseCase(mealGateway);
 export const updateMealUseCase = new UpdateMealUseCase(mealGateway);
 export const cancelMealUseCase = new CancelMealUseCase(mealGateway);
 export const duplicateMealUseCase = new DuplicateMealUseCase(mealGateway);
-export const getDailyNutritionSummaryUseCase = new GetDailyNutritionSummaryUseCase(
-  dailyNutritionSummaryGateway,
-);
+export const getDailyNutritionSummaryUseCase =
+  new GetDailyNutritionSummaryUseCase(dailyNutritionSummaryGateway);
 export const createRecipeUseCase = new CreateRecipeUseCase(recipeGateway);
 export const updateRecipeUseCase = new UpdateRecipeUseCase(recipeGateway);
 export const loadRecipeUseCase = new LoadRecipeUseCase(recipeGateway);
 export const listRecipesUseCase = new ListRecipesUseCase(recipeGateway);
 export const archiveRecipeUseCase = new ArchiveRecipeUseCase(recipeGateway);
-export const loadRecipeNutritionUseCase = new LoadRecipeNutritionUseCase(recipeGateway);
-export const loadPreparedBatchUseCase = new LoadPreparedBatchUseCase(preparedBatchGateway);
-export const loadPreparedBatchDetailsUseCase = new LoadPreparedBatchDetailsUseCase(preparedBatchGateway);
-export const startPreparedBatchUseCase = new StartPreparedBatchUseCase(preparedBatchGateway);
-export const updatePreparedBatchIngredientsUseCase = new UpdatePreparedBatchIngredientsUseCase(preparedBatchGateway);
-export const confirmPreparedBatchIngredientsUseCase = new ConfirmPreparedBatchIngredientsUseCase(preparedBatchGateway);
-export const finalizePreparedBatchUseCase = new FinalizePreparedBatchUseCase(preparedBatchGateway);
-export const cancelPreparedBatchUseCase = new CancelPreparedBatchUseCase(preparedBatchGateway);
-export const servePreparedBatchPortionsUseCase = new ServePreparedBatchPortionsUseCase(servedPortionGateway);
-export const confirmServedPortionConsumptionUseCase = new ConfirmServedPortionConsumptionUseCase(servedPortionConsumptionGateway);
-export const createPreparedFoodLeftoverUseCase = new CreatePreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
-export const listPreparedFoodLeftoversUseCase = new ListPreparedFoodLeftoversUseCase(preparedFoodLeftoverGateway);
-export const getPreparedFoodLeftoverUseCase = new GetPreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
-export const updatePreparedFoodLeftoverStatusUseCase = new UpdatePreparedFoodLeftoverStatusUseCase(preparedFoodLeftoverGateway);
-export const addPreparedFoodLeftoverToInventoryUseCase = new AddPreparedFoodLeftoverToInventoryUseCase(preparedFoodLeftoverGateway);
-export const loadPreparedBatchInventoryPreviewUseCase = new LoadPreparedBatchInventoryPreviewUseCase(preparedBatchInventoryGateway);
-export const confirmPreparedBatchInventoryUseCase = new ConfirmPreparedBatchInventoryUseCase(preparedBatchInventoryGateway);
-export const listHouseholdsUseCase = new ListHouseholdsUseCase(householdGateway);
-export const createHouseholdUseCase = new CreateHouseholdUseCase(householdGateway);
+export const loadRecipeNutritionUseCase = new LoadRecipeNutritionUseCase(
+  recipeGateway,
+);
+export const loadPreparedBatchUseCase = new LoadPreparedBatchUseCase(
+  preparedBatchGateway,
+);
+export const loadPreparedBatchDetailsUseCase =
+  new LoadPreparedBatchDetailsUseCase(preparedBatchGateway);
+export const startPreparedBatchUseCase = new StartPreparedBatchUseCase(
+  preparedBatchGateway,
+);
+export const updatePreparedBatchIngredientsUseCase =
+  new UpdatePreparedBatchIngredientsUseCase(preparedBatchGateway);
+export const confirmPreparedBatchIngredientsUseCase =
+  new ConfirmPreparedBatchIngredientsUseCase(preparedBatchGateway);
+export const finalizePreparedBatchUseCase = new FinalizePreparedBatchUseCase(
+  preparedBatchGateway,
+);
+export const cancelPreparedBatchUseCase = new CancelPreparedBatchUseCase(
+  preparedBatchGateway,
+);
+export const servePreparedBatchPortionsUseCase =
+  new ServePreparedBatchPortionsUseCase(servedPortionGateway);
+export const confirmServedPortionConsumptionUseCase =
+  new ConfirmServedPortionConsumptionUseCase(servedPortionConsumptionGateway);
+export const createPreparedFoodLeftoverUseCase =
+  new CreatePreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
+export const listPreparedFoodLeftoversUseCase =
+  new ListPreparedFoodLeftoversUseCase(preparedFoodLeftoverGateway);
+export const getPreparedFoodLeftoverUseCase =
+  new GetPreparedFoodLeftoverUseCase(preparedFoodLeftoverGateway);
+export const updatePreparedFoodLeftoverStatusUseCase =
+  new UpdatePreparedFoodLeftoverStatusUseCase(preparedFoodLeftoverGateway);
+export const addPreparedFoodLeftoverToInventoryUseCase =
+  new AddPreparedFoodLeftoverToInventoryUseCase(preparedFoodLeftoverGateway);
+export const loadPreparedBatchInventoryPreviewUseCase =
+  new LoadPreparedBatchInventoryPreviewUseCase(preparedBatchInventoryGateway);
+export const confirmPreparedBatchInventoryUseCase =
+  new ConfirmPreparedBatchInventoryUseCase(preparedBatchInventoryGateway);
+export const listHouseholdsUseCase = new ListHouseholdsUseCase(
+  householdGateway,
+);
+export const createHouseholdUseCase = new CreateHouseholdUseCase(
+  householdGateway,
+);
 export const listHouseholdInvitationsUseCase =
   new ListHouseholdInvitationsUseCase(householdInvitationGateway);
 export const createHouseholdInvitationUseCase =
@@ -248,11 +303,13 @@ export const loadInventoryUseCase = new LoadInventoryUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
-export const getInventoryItemUseCase = new GetInventoryItemUseCase(inventoryGateway, inventoryLocalRepository, connectivityGateway);
-export const createManualInventoryItemUseCase = new CreateManualInventoryItemUseCase(
+export const getInventoryItemUseCase = new GetInventoryItemUseCase(
   inventoryGateway,
+  inventoryLocalRepository,
   connectivityGateway,
 );
+export const createManualInventoryItemUseCase =
+  new CreateManualInventoryItemUseCase(inventoryGateway, connectivityGateway);
 export const adjustInventoryItemUseCase = new AdjustInventoryItemUseCase(
   inventoryGateway,
   inventoryLocalRepository,
@@ -273,14 +330,26 @@ export const expireInventoryItemUseCase = new ExpireInventoryItemUseCase(
   inventoryLocalRepository,
   connectivityGateway,
 );
-export const updateInventoryItemUseCase = new UpdateInventoryItemUseCase(inventoryGateway);
-export const consumePreparedFoodUseCase = new ConsumePreparedFoodUseCase(inventoryGateway);
-export const archiveInventoryItemUseCase = new ArchiveInventoryItemUseCase(inventoryGateway);
-export const listInventoryMovementsUseCase = new ListInventoryMovementsUseCase(inventoryGateway);
-export const listPendingInventoryOperationsUseCase = new ListPendingInventoryOperationsUseCase(inventoryLocalRepository);
-export const listInventoryConflictOperationsUseCase = new ListInventoryConflictOperationsUseCase(inventoryLocalRepository);
-export const discardInventoryOperationUseCase = new DiscardInventoryOperationUseCase(inventoryLocalRepository);
-export const retryInventoryOperationUseCase = new RetryInventoryOperationUseCase(inventoryLocalRepository);
+export const updateInventoryItemUseCase = new UpdateInventoryItemUseCase(
+  inventoryGateway,
+);
+export const consumePreparedFoodUseCase = new ConsumePreparedFoodUseCase(
+  inventoryGateway,
+);
+export const archiveInventoryItemUseCase = new ArchiveInventoryItemUseCase(
+  inventoryGateway,
+);
+export const listInventoryMovementsUseCase = new ListInventoryMovementsUseCase(
+  inventoryGateway,
+);
+export const listPendingInventoryOperationsUseCase =
+  new ListPendingInventoryOperationsUseCase(inventoryLocalRepository);
+export const listInventoryConflictOperationsUseCase =
+  new ListInventoryConflictOperationsUseCase(inventoryLocalRepository);
+export const discardInventoryOperationUseCase =
+  new DiscardInventoryOperationUseCase(inventoryLocalRepository);
+export const retryInventoryOperationUseCase =
+  new RetryInventoryOperationUseCase(inventoryLocalRepository);
 export const synchronizeInventoryUseCase = new SynchronizeInventoryUseCase(
   inventorySyncGateway,
   inventoryLocalRepository,
@@ -295,33 +364,79 @@ export const listPurchasesUseCase = new ListPurchasesUseCase(purchaseGateway);
 export const loadPurchaseUseCase = new LoadPurchaseUseCase(purchaseGateway);
 export const createPurchaseUseCase = new CreatePurchaseUseCase(purchaseGateway);
 export const updatePurchaseUseCase = new UpdatePurchaseUseCase(purchaseGateway);
-export const confirmPurchaseUseCase = new ConfirmPurchaseUseCase(purchaseGateway);
+export const confirmPurchaseUseCase = new ConfirmPurchaseUseCase(
+  purchaseGateway,
+);
 export const cancelPurchaseUseCase = new CancelPurchaseUseCase(purchaseGateway);
-export const loadShoppingListUseCase = new LoadShoppingListUseCase(shoppingListGateway);
-export const addShoppingListItemUseCase = new AddShoppingListItemUseCase(shoppingListGateway);
-export const updateShoppingListItemUseCase = new UpdateShoppingListItemUseCase(shoppingListGateway);
-export const removeShoppingListItemUseCase = new RemoveShoppingListItemUseCase(shoppingListGateway);
-export const markShoppingListItemPurchasedUseCase = new MarkShoppingListItemPurchasedUseCase(shoppingListGateway);
-export const generateShoppingListUseCase = new GenerateShoppingListUseCase(shoppingListGateway);
-export const convertShoppingListToPurchaseUseCase = new ConvertShoppingListToPurchaseUseCase(shoppingListGateway);
-export const listWeeklyPlansUseCase = new ListWeeklyPlansUseCase(mealPlanningGateway);
-export const loadWeeklyPlanUseCase = new LoadWeeklyPlanUseCase(mealPlanningGateway);
-export const createWeeklyPlanUseCase = new CreateWeeklyPlanUseCase(mealPlanningGateway);
-export const addPlannedMealUseCase = new AddPlannedMealUseCase(mealPlanningGateway);
-export const updatePlannedMealUseCase = new UpdatePlannedMealUseCase(mealPlanningGateway);
-export const assignParticipantUseCase = new AssignParticipantUseCase(mealPlanningGateway);
-export const deleteParticipantUseCase = new DeleteParticipantUseCase(mealPlanningGateway);
-export const proposeQuantitiesUseCase = new ProposeQuantitiesUseCase(mealPlanningGateway);
-export const listQuantitiesUseCase = new ListQuantitiesUseCase(mealPlanningGateway);
-export const acceptQuantitySuggestionsUseCase = new AcceptQuantitySuggestionsUseCase(mealPlanningGateway);
-export const updateParticipantUseCase = new UpdateParticipantUseCase(mealPlanningGateway);
-export const getRequirementsUseCase = new GetRequirementsUseCase(mealPlanningGateway);
-export const compareInventoryUseCase = new CompareInventoryUseCase(mealPlanningGateway);
-export const addMissingShoppingItemsUseCase = new AddMissingShoppingItemsUseCase(mealPlanningGateway);
+export const loadShoppingListUseCase = new LoadShoppingListUseCase(
+  shoppingListGateway,
+);
+export const addShoppingListItemUseCase = new AddShoppingListItemUseCase(
+  shoppingListGateway,
+);
+export const updateShoppingListItemUseCase = new UpdateShoppingListItemUseCase(
+  shoppingListGateway,
+);
+export const removeShoppingListItemUseCase = new RemoveShoppingListItemUseCase(
+  shoppingListGateway,
+);
+export const markShoppingListItemPurchasedUseCase =
+  new MarkShoppingListItemPurchasedUseCase(shoppingListGateway);
+export const generateShoppingListUseCase = new GenerateShoppingListUseCase(
+  shoppingListGateway,
+);
+export const convertShoppingListToPurchaseUseCase =
+  new ConvertShoppingListToPurchaseUseCase(shoppingListGateway);
+export const listWeeklyPlansUseCase = new ListWeeklyPlansUseCase(
+  mealPlanningGateway,
+);
+export const loadWeeklyPlanUseCase = new LoadWeeklyPlanUseCase(
+  mealPlanningGateway,
+);
+export const createWeeklyPlanUseCase = new CreateWeeklyPlanUseCase(
+  mealPlanningGateway,
+);
+export const addPlannedMealUseCase = new AddPlannedMealUseCase(
+  mealPlanningGateway,
+);
+export const updatePlannedMealUseCase = new UpdatePlannedMealUseCase(
+  mealPlanningGateway,
+);
+export const assignParticipantUseCase = new AssignParticipantUseCase(
+  mealPlanningGateway,
+);
+export const deleteParticipantUseCase = new DeleteParticipantUseCase(
+  mealPlanningGateway,
+);
+export const proposeQuantitiesUseCase = new ProposeQuantitiesUseCase(
+  mealPlanningGateway,
+);
+export const listQuantitiesUseCase = new ListQuantitiesUseCase(
+  mealPlanningGateway,
+);
+export const acceptQuantitySuggestionsUseCase =
+  new AcceptQuantitySuggestionsUseCase(mealPlanningGateway);
+export const updateParticipantUseCase = new UpdateParticipantUseCase(
+  mealPlanningGateway,
+);
+export const getRequirementsUseCase = new GetRequirementsUseCase(
+  mealPlanningGateway,
+);
+export const compareInventoryUseCase = new CompareInventoryUseCase(
+  mealPlanningGateway,
+);
+export const addMissingShoppingItemsUseCase =
+  new AddMissingShoppingItemsUseCase(mealPlanningGateway);
 export const getAdherenceUseCase = new GetAdherenceUseCase(mealPlanningGateway);
-export const getPreparationUseCase = new GetPreparationUseCase(mealPlanningGateway);
-export const preparePlannedMealUseCase = new PreparePlannedMealUseCase(mealPlanningGateway);
-export const linkConsumptionUseCase = new LinkConsumptionUseCase(mealPlanningGateway);
+export const getPreparationUseCase = new GetPreparationUseCase(
+  mealPlanningGateway,
+);
+export const preparePlannedMealUseCase = new PreparePlannedMealUseCase(
+  mealPlanningGateway,
+);
+export const linkConsumptionUseCase = new LinkConsumptionUseCase(
+  mealPlanningGateway,
+);
 export const listAdultProfilesUseCase = new ListAdultProfilesUseCase(
   adultProfileGateway,
 );
@@ -331,8 +446,7 @@ export const createAdultProfileUseCase = new CreateAdultProfileUseCase(
 export const updateAdultProfileUseCase = new UpdateAdultProfileUseCase(
   adultProfileGateway,
 );
-export const resolveOnboardingStepUseCase =
-  new ResolveOnboardingStepUseCase();
+export const resolveOnboardingStepUseCase = new ResolveOnboardingStepUseCase();
 export const resolveActiveHouseholdUseCase = new ResolveActiveHouseholdUseCase(
   activeHouseholdGateway,
 );

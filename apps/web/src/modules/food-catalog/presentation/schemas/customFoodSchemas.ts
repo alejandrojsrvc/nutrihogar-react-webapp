@@ -54,13 +54,18 @@ export const customFoodFormSchema = z.object({
     .trim()
     .min(1, 'Ingresa el nombre del alimento.')
     .max(150, 'El nombre no puede superar 150 caracteres.'),
-  nutrients: z.array(nutrientFormSchema).min(1, 'Agrega los nutrientes requeridos.'),
+  nutrients: z
+    .array(nutrientFormSchema)
+    .min(1, 'Agrega los nutrientes requeridos.'),
   preparationState: z.enum(
     ['RAW', 'COOKED', 'READY_TO_EAT', 'NOT_APPLICABLE'],
     'Selecciona un estado de preparacion.',
   ),
   referenceQuantity: positiveNumber('Indica la cantidad de referencia.'),
-  referenceUnit: z.enum(['GRAM', 'MILLILITER', 'UNIT'], 'Selecciona una unidad.'),
+  referenceUnit: z.enum(
+    ['GRAM', 'MILLILITER', 'UNIT'],
+    'Selecciona una unidad.',
+  ),
   servings: z.array(servingFormSchema),
   source: z
     .string()

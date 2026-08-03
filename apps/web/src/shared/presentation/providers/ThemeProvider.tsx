@@ -21,20 +21,22 @@ function prefersDarkTheme() {
 
 function resolveTheme(preference: ThemePreference) {
   return preference === 'system'
-    ? prefersDarkTheme() ? 'dark' : 'light'
+    ? prefersDarkTheme()
+      ? 'dark'
+      : 'light'
     : preference;
 }
 
 function applyTheme(theme: 'light' | 'dark') {
   document.documentElement.dataset.theme = theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute(
-    'content',
-    theme === 'dark' ? '#000000' : '#2f7d5a',
-  );
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', theme === 'dark' ? '#000000' : '#2f7d5a');
 }
 
 export function ThemeProvider({ children }: PropsWithChildren) {
-  const [preference, setPreference] = useState<ThemePreference>(getStoredPreference);
+  const [preference, setPreference] =
+    useState<ThemePreference>(getStoredPreference);
   const theme = resolveTheme(preference);
 
   useEffect(() => {
@@ -61,7 +63,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   }
 
   return (
-    <ThemeContext value={{ preference, theme, setPreference: updatePreference }}>
+    <ThemeContext
+      value={{ preference, theme, setPreference: updatePreference }}
+    >
       {children}
     </ThemeContext>
   );

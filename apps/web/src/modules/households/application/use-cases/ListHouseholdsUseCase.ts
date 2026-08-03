@@ -1,7 +1,4 @@
-import type {
-  Household,
-  HouseholdGateway,
-} from '../ports/HouseholdGateway';
+import type { Household, HouseholdGateway } from '../ports/HouseholdGateway';
 
 export class ListHouseholdsUseCase {
   constructor(private readonly householdGateway: HouseholdGateway) {}

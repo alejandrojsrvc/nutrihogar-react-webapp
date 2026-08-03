@@ -5,5 +5,8 @@ import type {
 
 export interface PreparedBatchInventoryGateway {
   preview(batchId: string): Promise<PreparedBatchInventoryPreview>;
-  confirm(batchId: string, decisions: PreparedBatchInventoryDecision[]): Promise<void>;
+  confirm(
+    batchId: string,
+    decisions: PreparedBatchInventoryDecision[],
+  ): Promise<void>;
 }

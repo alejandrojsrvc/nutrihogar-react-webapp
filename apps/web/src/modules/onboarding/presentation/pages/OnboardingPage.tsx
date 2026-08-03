@@ -4,6 +4,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
 import { useOnboardingStatus } from '../hooks/useOnboardingStatus';
+import '../../../households/presentation/households.css';
 import {
   createHouseholdFormSchema,
   getDefaultTimezone,
@@ -61,7 +62,10 @@ export function OnboardingPage() {
 
   if (onboarding.isLoading) {
     return (
-      <section className="page-section" aria-labelledby="onboarding-loading-title">
+      <section
+        className="page-section"
+        aria-labelledby="onboarding-loading-title"
+      >
         <p className="eyebrow">Primeros pasos</p>
         <h1 id="onboarding-loading-title">Estamos preparando tu hogar</h1>
         <p className="lead" role="status">
@@ -73,7 +77,10 @@ export function OnboardingPage() {
 
   if (onboarding.isError) {
     return (
-      <section className="page-section" aria-labelledby="onboarding-error-title">
+      <section
+        className="page-section"
+        aria-labelledby="onboarding-error-title"
+      >
         <p className="eyebrow">Primeros pasos</p>
         <h1 id="onboarding-error-title">No pudimos cargar tus hogares</h1>
         <p className="lead" role="alert">
@@ -88,7 +95,10 @@ export function OnboardingPage() {
 
   if (onboarding.step === 'select-household') {
     return (
-      <section className="page-section" aria-labelledby="household-select-title">
+      <section
+        className="page-section"
+        aria-labelledby="household-select-title"
+      >
         <p className="eyebrow">Primeros pasos</p>
         <h1 id="household-select-title">Elige un hogar para continuar</h1>
         <p className="lead">
@@ -113,7 +123,10 @@ export function OnboardingPage() {
 
   if (onboarding.step !== 'create-household') {
     return (
-      <section className="page-section" aria-labelledby="onboarding-continue-title">
+      <section
+        className="page-section"
+        aria-labelledby="onboarding-continue-title"
+      >
         <p className="eyebrow">Primeros pasos</p>
         <h1 id="onboarding-continue-title">Estamos preparando tu espacio</h1>
         <p className="lead" role="status">

@@ -21,32 +21,57 @@ export function NutritionGoalPage() {
   const generate = useGenerateNutritionGoalSuggestion();
 
   if (!profileId || profiles.isPending || currentGoal.isPending) {
-    return <p className="page-section" role="status">Cargando tu meta nutricional...</p>;
+    return (
+      <p className="page-section" role="status">
+        Cargando tu meta nutricional...
+      </p>
+    );
   }
 
   if (!profile) {
     return (
       <section className="page-section" aria-labelledby="goal-profile-error">
         <h1 id="goal-profile-error">No encontramos este perfil</h1>
-        <Link className="button button--secondary" to="/app">Volver al inicio</Link>
+        <Link className="button button--secondary" to="/app">
+          Volver al inicio
+        </Link>
       </section>
     );
   }
 
   if (currentGoal.isError) {
-    return <p className="page-section" role="alert">No se pudo cargar la meta nutricional.</p>;
+    return (
+      <p className="page-section" role="alert">
+        No se pudo cargar la meta nutricional.
+      </p>
+    );
   }
 
   if (currentGoal.data) {
     return (
       <section className="page-section" aria-labelledby="current-goal-title">
         <BackButton fallback="/app" />
-        <PageHeader eyebrow="Meta nutricional" title={`Meta activa de ${profile.name}`} titleId="current-goal-title" />
+        <PageHeader
+          eyebrow="Meta nutricional"
+          title={`Meta activa de ${profile.name}`}
+          titleId="current-goal-title"
+        />
         <NutritionGoalValuesForm values={currentGoal.data} readOnly />
-        <button className="button button--primary" onClick={() => generate.mutate(profileId, { onSuccess: () => navigate(`/app/perfiles/${profileId}/meta/propuesta`) })} type="button">
+        <button
+          className="button button--primary"
+          onClick={() =>
+            generate.mutate(profileId, {
+              onSuccess: () =>
+                navigate(`/app/perfiles/${profileId}/meta/propuesta`),
+            })
+          }
+          type="button"
+        >
           Generar una nueva propuesta
         </button>
-        {generate.isError ? <p role="alert">No se pudo generar una nueva propuesta.</p> : null}
+        {generate.isError ? (
+          <p role="alert">No se pudo generar una nueva propuesta.</p>
+        ) : null}
       </section>
     );
   }
@@ -54,7 +79,13 @@ export function NutritionGoalPage() {
   return <GenerateGoal profileId={profileId} profileName={profile.name} />;
 }
 
-function GenerateGoal({ profileId, profileName }: { profileId: string; profileName: string }) {
+function GenerateGoal({
+  profileId,
+  profileName,
+}: {
+  profileId: string;
+  profileName: string;
+}) {
   const navigate = useNavigate();
   const generate = useGenerateNutritionGoalSuggestion();
   const [hasRequested, setHasRequested] = useState(false);
@@ -62,19 +93,31 @@ function GenerateGoal({ profileId, profileName }: { profileId: string; profileNa
   return (
     <section className="page-section" aria-labelledby="goal-start-title">
       <BackButton fallback="/app" />
-      <PageHeader eyebrow="Meta nutricional" title={`Configura la meta de ${profileName}`} titleId="goal-start-title" description="Usaremos los datos de tu perfil para preparar una estimación que podrás revisar antes de confirmarla." />
+      <PageHeader
+        eyebrow="Meta nutricional"
+        title={`Configura la meta de ${profileName}`}
+        titleId="goal-start-title"
+        description="Usaremos los datos de tu perfil para preparar una estimación que podrás revisar antes de confirmarla."
+      />
       <button
         className="button button--primary"
         disabled={generate.isPending}
         onClick={() => {
           setHasRequested(true);
-          generate.mutate(profileId, { onSuccess: () => navigate(`/app/perfiles/${profileId}/meta/propuesta`) });
+          generate.mutate(profileId, {
+            onSuccess: () =>
+              navigate(`/app/perfiles/${profileId}/meta/propuesta`),
+          });
         }}
         type="button"
       >
         {generate.isPending ? 'Calculando...' : 'Generar propuesta'}
       </button>
-      {hasRequested && generate.isError ? <p role="alert">El perfil está incompleto o no pudimos generar la propuesta.</p> : null}
+      {hasRequested && generate.isError ? (
+        <p role="alert">
+          El perfil está incompleto o no pudimos generar la propuesta.
+        </p>
+      ) : null}
     </section>
   );
 }

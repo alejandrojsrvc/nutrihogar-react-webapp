@@ -2,7 +2,10 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
+import {
+  createTestAuthGateway,
+  renderRoute,
+} from '../../../../test/renderRoute';
 
 const category = {
   code: 'MEAT',
@@ -68,7 +71,10 @@ describe('FoodDetailPage', () => {
         return jsonResponse([category]);
       }
 
-      return jsonResponse({ items: [], pagination: { limit: 12, page: 1, total: 0 } });
+      return jsonResponse({
+        items: [],
+        pagination: { limit: 12, page: 1, total: 0 },
+      });
     });
 
     renderRoute(
@@ -76,22 +82,29 @@ describe('FoodDetailPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    expect(await screen.findByRole('heading', { name: 'Pan casero' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Editar alimento' })).toHaveAttribute(
-      'href',
-      '/app/alimentos/food-custom-1/editar',
-    );
+    expect(
+      await screen.findByRole('heading', { name: 'Pan casero' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Editar alimento' }),
+    ).toHaveAttribute('href', '/app/alimentos/food-custom-1/editar');
 
     await user.click(screen.getByRole('button', { name: 'Eliminar alimento' }));
-    expect(confirmSpy).toHaveBeenCalledWith('¿Eliminar Pan casero de tu catalogo?');
+    expect(confirmSpy).toHaveBeenCalledWith(
+      '¿Eliminar Pan casero de tu catalogo?',
+    );
     expect(requests.some((request) => request.method === 'DELETE')).toBe(false);
 
     confirmSpy.mockReturnValue(true);
     await user.click(screen.getByRole('button', { name: 'Eliminar alimento' }));
     await waitFor(() => {
-      expect(requests.some((request) => request.method === 'DELETE')).toBe(true);
+      expect(requests.some((request) => request.method === 'DELETE')).toBe(
+        true,
+      );
     });
-    expect(await screen.findByRole('heading', { name: 'No encontramos alimentos' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'No encontramos alimentos' }),
+    ).toBeInTheDocument();
   });
 });
 

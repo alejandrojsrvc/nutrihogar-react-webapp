@@ -12,7 +12,9 @@ const output = resolve(
 await mkdir(dirname(output), { recursive: true });
 
 const command =
-  process.platform === 'win32' ? 'openapi-typescript.cmd' : 'openapi-typescript';
+  process.platform === 'win32'
+    ? 'openapi-typescript.cmd'
+    : 'openapi-typescript';
 const child = spawn(command, [input, '-o', output], {
   cwd: process.cwd(),
   stdio: 'inherit',

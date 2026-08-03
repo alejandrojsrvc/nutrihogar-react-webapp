@@ -120,11 +120,7 @@ export function RegisterPage() {
       ) : null}
       <p className="supporting-text">
         ¿Ya tienes una cuenta?{' '}
-        <Link
-          className="auth-link"
-          state={{ from: redirectPath }}
-          to="/login"
-        >
+        <Link className="auth-link" state={{ from: redirectPath }} to="/login">
           Inicia sesion
         </Link>
       </p>

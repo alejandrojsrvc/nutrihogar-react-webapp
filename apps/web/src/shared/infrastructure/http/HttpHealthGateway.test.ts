@@ -48,11 +48,11 @@ describe('HttpHealthGateway', () => {
       fetch: fetchImplementation,
     });
 
-    await expect(new HttpHealthGateway(apiClient).check()).rejects.toMatchObject(
-      {
-        kind: 'network',
-      },
-    );
+    await expect(
+      new HttpHealthGateway(apiClient).check(),
+    ).rejects.toMatchObject({
+      kind: 'network',
+    });
   });
 
   it('normalizes an HTTP failure with its status', async () => {
@@ -68,11 +68,11 @@ describe('HttpHealthGateway', () => {
       fetch: fetchImplementation,
     });
 
-    await expect(new HttpHealthGateway(apiClient).check()).rejects.toMatchObject(
-      {
-        kind: 'http',
-        status: 503,
-      },
-    );
+    await expect(
+      new HttpHealthGateway(apiClient).check(),
+    ).rejects.toMatchObject({
+      kind: 'http',
+      status: 503,
+    });
   });
 });

@@ -1,4 +1,8 @@
-import type { DuplicateMealInput, MealDetails, MealGateway } from '../ports/MealGateway';
+import type {
+  DuplicateMealInput,
+  MealDetails,
+  MealGateway,
+} from '../ports/MealGateway';
 
 export class DuplicateMealUseCase {
   constructor(private readonly gateway: MealGateway) {}

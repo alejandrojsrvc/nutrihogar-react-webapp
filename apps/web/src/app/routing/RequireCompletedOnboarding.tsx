@@ -12,7 +12,10 @@ export function RequireCompletedOnboarding() {
 
   if (isError) {
     return (
-      <section className="page-section" aria-labelledby="onboarding-gate-error-title">
+      <section
+        className="page-section"
+        aria-labelledby="onboarding-gate-error-title"
+      >
         <p className="eyebrow">Area familiar</p>
         <h1 id="onboarding-gate-error-title">No pudimos preparar tu espacio</h1>
         <p className="lead" role="alert">

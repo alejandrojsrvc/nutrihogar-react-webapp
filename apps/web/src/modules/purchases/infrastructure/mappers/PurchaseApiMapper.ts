@@ -30,7 +30,9 @@ export function toPurchaseItem(value: unknown): PurchaseItem {
 }
 
 function record(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' ? value as Record<string, unknown> : {};
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : {};
 }
 
 function arrayValue(value: unknown) {

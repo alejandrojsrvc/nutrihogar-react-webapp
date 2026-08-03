@@ -7,6 +7,7 @@ import { BackButton } from '../../../../shared/presentation/components/BackButto
 import type { HouseholdInvitation } from '../../application/ports/HouseholdInvitationGateway';
 import { useHouseholdInvitations } from '../hooks/useHouseholdInvitations';
 import { useHouseholds } from '../hooks/useHouseholds';
+import '../households.css';
 import {
   createHouseholdInvitationFormSchema,
   type CreateHouseholdInvitationFormValues,
@@ -18,9 +19,7 @@ export function HouseholdInvitationsPage() {
   >(null);
   const [formOpen, setFormOpen] = useState(false);
   const households = useHouseholds();
-  const invitations = useHouseholdInvitations(
-    households.activeHousehold?.id,
-  );
+  const invitations = useHouseholdInvitations(households.activeHousehold?.id);
   const {
     formState: { errors },
     handleSubmit,
@@ -67,7 +66,10 @@ export function HouseholdInvitationsPage() {
 
   if (!households.activeHousehold) {
     return (
-      <section className="page-section" aria-labelledby="invitation-select-title">
+      <section
+        className="page-section"
+        aria-labelledby="invitation-select-title"
+      >
         <p className="eyebrow">Invitaciones</p>
         <h1 id="invitation-select-title">Selecciona un hogar</h1>
         <p className="lead">
@@ -86,7 +88,10 @@ export function HouseholdInvitationsPage() {
 
   if (invitations.isError) {
     return (
-      <section className="page-section" aria-labelledby="invitation-error-title">
+      <section
+        className="page-section"
+        aria-labelledby="invitation-error-title"
+      >
         <p className="eyebrow">Invitaciones</p>
         <h1 id="invitation-error-title">No puedes gestionar invitaciones</h1>
         <p className="lead" role="alert">
@@ -109,69 +114,89 @@ export function HouseholdInvitationsPage() {
   return (
     <section className="page-section" aria-labelledby="invitations-title">
       <BackButton fallback="/app" />
-      <div className="page-heading"><div><p className="eyebrow">{households.activeHousehold.name}</p><h1 id="invitations-title">Invita a tu familia</h1></div><button className="button button--primary" onClick={() => setFormOpen(true)} type="button">Invitar a alguien</button></div>
+      <div className="page-heading">
+        <div>
+          <p className="eyebrow">{households.activeHousehold.name}</p>
+          <h1 id="invitations-title">Invita a tu familia</h1>
+        </div>
+        <button
+          className="button button--primary"
+          onClick={() => setFormOpen(true)}
+          type="button"
+        >
+          Invitar a alguien
+        </button>
+      </div>
       <p className="lead">
         Comparte el hogar con otro adulto para que pueda participar en su
         organizacion.
       </p>
 
-      {formOpen ? <div className="invitation-section">
-        <h2>Enviar invitacion</h2>
-        <form
-          className="auth-form invitation-form"
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-        >
-          <div className="form-field">
-            <label htmlFor="invitation-email">Correo electronico</label>
-            <input
-              autoComplete="email"
-              id="invitation-email"
-              type="email"
-              {...register('email')}
-              aria-invalid={errors.email ? 'true' : 'false'}
-            />
-            {errors.email ? (
-              <p className="form-field__error">{errors.email.message}</p>
-            ) : null}
-          </div>
-          <div className="form-field">
-            <label htmlFor="invitation-role">Rol en el hogar</label>
-            <select
-              id="invitation-role"
-              {...register('role')}
-              aria-invalid={errors.role ? 'true' : 'false'}
-            >
-              <option value="MEMBER">Integrante</option>
-              <option value="ADMIN">Administrador</option>
-            </select>
-            {errors.role ? (
-              <p className="form-field__error">{errors.role.message}</p>
-            ) : null}
-          </div>
-          <button
-            className="button button--primary auth-form__submit"
-            disabled={invitations.isCreatingInvitation}
-            type="submit"
+      {formOpen ? (
+        <div className="invitation-section">
+          <h2>Enviar invitacion</h2>
+          <form
+            className="auth-form invitation-form"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
           >
-            {invitations.isCreatingInvitation
-              ? 'Creando invitacion...'
-              : 'Crear invitacion'}
-          </button>
-          <button className="button button--secondary" onClick={() => setFormOpen(false)} type="button">Cancelar</button>
-        </form>
-        {invitations.createInvitationError ? (
-          <p className="auth-error" role="alert">
-            {getInvitationErrorMessage(
-              invitations.createInvitationError,
-              'No se pudo crear la invitacion. Intentalo nuevamente.',
-            )}
-          </p>
-        ) : null}
-        {invitations.createdInvitation ? (
-          <CreatedInvitation invitation={invitations.createdInvitation} />
-        ) : null}
-      </div> : null}
+            <div className="form-field">
+              <label htmlFor="invitation-email">Correo electronico</label>
+              <input
+                autoComplete="email"
+                id="invitation-email"
+                type="email"
+                {...register('email')}
+                aria-invalid={errors.email ? 'true' : 'false'}
+              />
+              {errors.email ? (
+                <p className="form-field__error">{errors.email.message}</p>
+              ) : null}
+            </div>
+            <div className="form-field">
+              <label htmlFor="invitation-role">Rol en el hogar</label>
+              <select
+                id="invitation-role"
+                {...register('role')}
+                aria-invalid={errors.role ? 'true' : 'false'}
+              >
+                <option value="MEMBER">Integrante</option>
+                <option value="ADMIN">Administrador</option>
+              </select>
+              {errors.role ? (
+                <p className="form-field__error">{errors.role.message}</p>
+              ) : null}
+            </div>
+            <button
+              className="button button--primary auth-form__submit"
+              disabled={invitations.isCreatingInvitation}
+              type="submit"
+            >
+              {invitations.isCreatingInvitation
+                ? 'Creando invitacion...'
+                : 'Crear invitacion'}
+            </button>
+            <button
+              className="button button--secondary"
+              onClick={() => setFormOpen(false)}
+              type="button"
+            >
+              Cancelar
+            </button>
+          </form>
+          {invitations.createInvitationError ? (
+            <p className="auth-error" role="alert">
+              {getInvitationErrorMessage(
+                invitations.createInvitationError,
+                'No se pudo crear la invitacion. Intentalo nuevamente.',
+              )}
+            </p>
+          ) : null}
+          {invitations.createdInvitation ? (
+            <CreatedInvitation invitation={invitations.createdInvitation} />
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="invitation-section" aria-labelledby="pending-title">
         <h2 id="pending-title">Invitaciones pendientes</h2>
@@ -216,7 +241,9 @@ export function HouseholdInvitationsPage() {
         )}
       </div>
 
-      <Link className="button button--secondary" to="/app">Volver al inicio</Link>
+      <Link className="button button--secondary" to="/app">
+        Volver al inicio
+      </Link>
     </section>
   );
 }

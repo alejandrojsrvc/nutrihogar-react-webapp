@@ -1,11 +1,26 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AcceptQuantitySuggestionsUseCase, AssignParticipantUseCase, CompareInventoryUseCase, CreateWeeklyPlanUseCase, DeleteParticipantUseCase, GetRequirementsUseCase, ListQuantitiesUseCase, ProposeQuantitiesUseCase, UpdateParticipantUseCase } from './MealPlanningUseCases';
+import {
+  AcceptQuantitySuggestionsUseCase,
+  AssignParticipantUseCase,
+  CompareInventoryUseCase,
+  CreateWeeklyPlanUseCase,
+  DeleteParticipantUseCase,
+  GetRequirementsUseCase,
+  ListQuantitiesUseCase,
+  ProposeQuantitiesUseCase,
+  UpdateParticipantUseCase,
+} from './MealPlanningUseCases';
 import type { MealPlanningGateway } from '../ports/MealPlanningGateway';
 
 describe('CreateWeeklyPlanUseCase', () => {
   it('normalizes the requested date before delegating creation', async () => {
-    const gateway = { create: vi.fn().mockResolvedValue({ id: 'plan' }) } as unknown as MealPlanningGateway;
-    await new CreateWeeklyPlanUseCase(gateway).execute('household', '2026-08-06');
+    const gateway = {
+      create: vi.fn().mockResolvedValue({ id: 'plan' }),
+    } as unknown as MealPlanningGateway;
+    await new CreateWeeklyPlanUseCase(gateway).execute(
+      'household',
+      '2026-08-06',
+    );
     expect(gateway.create).toHaveBeenCalledWith('household', '2026-08-03');
   });
 });
@@ -27,11 +42,17 @@ describe('Meal planning participant and nutrition use cases', () => {
     await new ProposeQuantitiesUseCase(gateway).execute('meal');
     await new ListQuantitiesUseCase(gateway).execute('meal');
     await new AcceptQuantitySuggestionsUseCase(gateway).execute('meal');
-    await new UpdateParticipantUseCase(gateway).execute('participant', { confirmedQuantity: 1.5, confirmedUnit: 'SERVING' });
+    await new UpdateParticipantUseCase(gateway).execute('participant', {
+      confirmedQuantity: 1.5,
+      confirmedUnit: 'SERVING',
+    });
     await new GetRequirementsUseCase(gateway).execute('plan');
     await new CompareInventoryUseCase(gateway).execute('plan');
     expect(gateway.assignParticipant).toHaveBeenCalledWith('meal', 'adult');
-    expect(gateway.updateParticipant).toHaveBeenCalledWith('participant', { confirmedQuantity: 1.5, confirmedUnit: 'SERVING' });
+    expect(gateway.updateParticipant).toHaveBeenCalledWith('participant', {
+      confirmedQuantity: 1.5,
+      confirmedUnit: 'SERVING',
+    });
     expect(gateway.compareInventory).toHaveBeenCalledWith('plan');
   });
 });

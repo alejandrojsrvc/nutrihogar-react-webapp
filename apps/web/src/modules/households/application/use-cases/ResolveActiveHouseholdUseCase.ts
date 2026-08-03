@@ -2,7 +2,9 @@ import type { ActiveHouseholdGateway } from '../ports/ActiveHouseholdGateway';
 import type { Household } from '../ports/HouseholdGateway';
 
 export class ResolveActiveHouseholdUseCase {
-  constructor(private readonly activeHouseholdGateway: ActiveHouseholdGateway) {}
+  constructor(
+    private readonly activeHouseholdGateway: ActiveHouseholdGateway,
+  ) {}
 
   execute(households: Household[]): Household | null {
     const storedHouseholdId = this.activeHouseholdGateway.get();

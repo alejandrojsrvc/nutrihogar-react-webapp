@@ -9,7 +9,7 @@ import '@nutrihogar/design-tokens/tokens.css';
 
 import { AppProviders } from './app/providers/AppProviders';
 import { appRouter } from './app/router/appRouter';
-import './styles/global.css';
+import './styles/globals.css';
 
 const rootElement = document.getElementById('root');
 

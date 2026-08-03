@@ -2,6 +2,133 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
-import { usePreparedBatch, useConfirmPreparedBatchIngredients, useFinalizePreparedBatch } from '../hooks/usePreparedBatches';
-export function FinalizePreparedBatchPage() { const { batchId } = useParams(); const navigate = useNavigate(); const batch = usePreparedBatch(batchId); const confirm = useConfirmPreparedBatchIngredients(); const finalize = useFinalizePreparedBatch(); const [weight, setWeight] = useState(''); if (batch.isPending) return <p className="page-section" role="status">Cargando preparación...</p>; if (batch.isError || !batch.data) return <p className="page-section" role="alert">No se pudo cargar la preparación.</p>; const value = batch.data; if (value.status === 'DRAFT') return <section className="page-section"><BackButton fallback={`/app/preparaciones/${value.id}`} /><PageHeader eyebrow="Preparación" title="Confirma los ingredientes" /><p>Los nutrientes se calcularán cuando confirmes las cantidades.</p><button className="button button--primary" disabled={confirm.isPending} onClick={() => confirm.mutate(value.id, { onSuccess: () => void batch.refetch() })} type="button">Confirmar ingredientes</button></section>; if (value.status === 'CANCELLED') return <p className="page-section" role="alert">Esta preparación fue cancelada.</p>; if (value.status === 'FINALIZED') return <PreparedResult batch={value} />; return <section className="page-section" aria-labelledby="finalize-title"><BackButton fallback={`/app/preparaciones/${value.id}`} /><PageHeader eyebrow="Preparación confirmada" title="Registrar peso cocido" titleId="finalize-title" description="El peso cocido permite calcular la densidad nutricional real de esta preparación." /><div className="form-field"><label htmlFor="cooked-weight">Peso final cocido (g)</label><input id="cooked-weight" inputMode="decimal" min="0.000001" onChange={(event) => setWeight(event.target.value)} type="number" value={weight} /></div>{finalize.isError ? <p role="alert">No se pudo finalizar. El peso debe ser mayor que cero.</p> : null}<button className="button button--primary" disabled={finalize.isPending || !Number(weight)} onClick={() => { if (window.confirm('¿Finalizar esta preparación? Después no podrás editar sus ingredientes.')) finalize.mutate({ batchId: value.id, weight: Number(weight) }, { onSuccess: () => navigate(`/app/preparaciones/${value.id}`) }); }} type="button">{finalize.isPending ? 'Finalizando...' : 'Finalizar preparación'}</button></section>; }
-function PreparedResult({ batch }: { batch: NonNullable<ReturnType<typeof usePreparedBatch>['data']> }) { return <section className="page-section"><PageHeader eyebrow="Preparación finalizada" title={batch.recipeNameSnapshot} /><dl className="recipe-detail-meta"><div><dt>Peso cocido</dt><dd>{batch.finalCookedWeight} g</dd></div><div><dt>Calorías por 100 g</dt><dd>{batch.nutrientsPer100Grams.ENERGY_KCAL ?? 'Sin dato'}</dd></div><div><dt>Proteína por 100 g</dt><dd>{batch.nutrientsPer100Grams.PROTEIN ?? 'Sin dato'} g</dd></div></dl><Link className="button button--primary" to={`/app/preparaciones/${batch.id}/servir`}>Servir porciones</Link></section>; }
+import {
+  usePreparedBatch,
+  useConfirmPreparedBatchIngredients,
+  useFinalizePreparedBatch,
+} from '../hooks/usePreparedBatches';
+export function FinalizePreparedBatchPage() {
+  const { batchId } = useParams();
+  const navigate = useNavigate();
+  const batch = usePreparedBatch(batchId);
+  const confirm = useConfirmPreparedBatchIngredients();
+  const finalize = useFinalizePreparedBatch();
+  const [weight, setWeight] = useState('');
+  if (batch.isPending)
+    return (
+      <p className="page-section" role="status">
+        Cargando preparación...
+      </p>
+    );
+  if (batch.isError || !batch.data)
+    return (
+      <p className="page-section" role="alert">
+        No se pudo cargar la preparación.
+      </p>
+    );
+  const value = batch.data;
+  if (value.status === 'DRAFT')
+    return (
+      <section className="page-section">
+        <BackButton fallback={`/app/preparaciones/${value.id}`} />
+        <PageHeader eyebrow="Preparación" title="Confirma los ingredientes" />
+        <p>Los nutrientes se calcularán cuando confirmes las cantidades.</p>
+        <button
+          className="button button--primary"
+          disabled={confirm.isPending}
+          onClick={() =>
+            confirm.mutate(value.id, { onSuccess: () => void batch.refetch() })
+          }
+          type="button"
+        >
+          Confirmar ingredientes
+        </button>
+      </section>
+    );
+  if (value.status === 'CANCELLED')
+    return (
+      <p className="page-section" role="alert">
+        Esta preparación fue cancelada.
+      </p>
+    );
+  if (value.status === 'FINALIZED') return <PreparedResult batch={value} />;
+  return (
+    <section className="page-section" aria-labelledby="finalize-title">
+      <BackButton fallback={`/app/preparaciones/${value.id}`} />
+      <PageHeader
+        eyebrow="Preparación confirmada"
+        title="Registrar peso cocido"
+        titleId="finalize-title"
+        description="El peso cocido permite calcular la densidad nutricional real de esta preparación."
+      />
+      <div className="form-field">
+        <label htmlFor="cooked-weight">Peso final cocido (g)</label>
+        <input
+          id="cooked-weight"
+          inputMode="decimal"
+          min="0.000001"
+          onChange={(event) => setWeight(event.target.value)}
+          type="number"
+          value={weight}
+        />
+      </div>
+      {finalize.isError ? (
+        <p role="alert">
+          No se pudo finalizar. El peso debe ser mayor que cero.
+        </p>
+      ) : null}
+      <button
+        className="button button--primary"
+        disabled={finalize.isPending || !Number(weight)}
+        onClick={() => {
+          if (
+            window.confirm(
+              '¿Finalizar esta preparación? Después no podrás editar sus ingredientes.',
+            )
+          )
+            finalize.mutate(
+              { batchId: value.id, weight: Number(weight) },
+              { onSuccess: () => navigate(`/app/preparaciones/${value.id}`) },
+            );
+        }}
+        type="button"
+      >
+        {finalize.isPending ? 'Finalizando...' : 'Finalizar preparación'}
+      </button>
+    </section>
+  );
+}
+function PreparedResult({
+  batch,
+}: {
+  batch: NonNullable<ReturnType<typeof usePreparedBatch>['data']>;
+}) {
+  return (
+    <section className="page-section">
+      <PageHeader
+        eyebrow="Preparación finalizada"
+        title={batch.recipeNameSnapshot}
+      />
+      <dl className="recipe-detail-meta">
+        <div>
+          <dt>Peso cocido</dt>
+          <dd>{batch.finalCookedWeight} g</dd>
+        </div>
+        <div>
+          <dt>Calorías por 100 g</dt>
+          <dd>{batch.nutrientsPer100Grams.ENERGY_KCAL ?? 'Sin dato'}</dd>
+        </div>
+        <div>
+          <dt>Proteína por 100 g</dt>
+          <dd>{batch.nutrientsPer100Grams.PROTEIN ?? 'Sin dato'} g</dd>
+        </div>
+      </dl>
+      <Link
+        className="button button--primary"
+        to={`/app/preparaciones/${batch.id}/servir`}
+      >
+        Servir porciones
+      </Link>
+    </section>
+  );
+}

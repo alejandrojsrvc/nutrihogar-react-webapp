@@ -2,7 +2,10 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestAuthGateway, renderRoute } from '../../../../test/renderRoute';
+import {
+  createTestAuthGateway,
+  renderRoute,
+} from '../../../../test/renderRoute';
 
 const category = {
   code: 'MEAT',
@@ -48,12 +51,17 @@ describe('FoodCatalogPage', () => {
     renderFoodCatalog();
 
     await user.type(await screen.findByLabelText('Buscar alimentos'), 'pollo');
-    expect(await screen.findByRole('link', { name: /Pollo cocido/ })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('link', { name: /Pollo cocido/ }),
+    ).toBeInTheDocument();
     expect(
       requests.some((url) => url.searchParams.get('query') === 'pollo'),
     ).toBe(true);
 
-    await user.selectOptions(screen.getByLabelText('Categoria'), 'category-meat');
+    await user.selectOptions(
+      screen.getByLabelText('Categoria'),
+      'category-meat',
+    );
     await user.selectOptions(screen.getByLabelText('Preparacion'), 'COOKED');
 
     await waitFor(() => {
@@ -85,12 +93,14 @@ describe('FoodCatalogPage', () => {
 
     renderFoodCatalog();
 
-    expect(await screen.findByRole('link', { name: /Pollo cocido/ })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('link', { name: /Pollo cocido/ }),
+    ).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Siguiente' }));
     await waitFor(() => {
-      expect(
-        requests.some((url) => url.searchParams.get('page') === '2'),
-      ).toBe(true);
+      expect(requests.some((url) => url.searchParams.get('page') === '2')).toBe(
+        true,
+      );
     });
 
     await user.clear(screen.getByLabelText('Buscar alimentos'));

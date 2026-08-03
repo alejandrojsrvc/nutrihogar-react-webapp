@@ -21,7 +21,15 @@ export interface CreateRecipeInput {
   defaultServings: number;
   estimatedPreparationMinutes?: number | null;
   tags?: string[];
-  ingredients: Array<{ id?: string; foodId: string; quantity: number; unit: string; servingId?: string | null; position: number; notes?: string | null }>;
+  ingredients: Array<{
+    id?: string;
+    foodId: string;
+    quantity: number;
+    unit: string;
+    servingId?: string | null;
+    position: number;
+    notes?: string | null;
+  }>;
   instructions?: Array<{ id?: string; position: number; description: string }>;
 }
 
@@ -33,5 +41,8 @@ export interface RecipeGateway {
   getById(recipeId: string): Promise<Recipe>;
   getNutrition(recipeId: string): Promise<RecipeNutrition>;
   archive(recipeId: string): Promise<void>;
-  list(householdId: string, criteria: RecipeListCriteria): Promise<RecipeListResult>;
+  list(
+    householdId: string,
+    criteria: RecipeListCriteria,
+  ): Promise<RecipeListResult>;
 }

@@ -1,22 +1,53 @@
-import { Menu } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
-import { IconButton } from './IconButton';
+import { ProfileMenu } from './ProfileMenu';
+import { getAppSection } from '../navigation/mainNavigation';
 
-export function Topbar({ isMenuOpen, kitchenMode = false, onMenuOpen }: { isMenuOpen?: boolean; kitchenMode?: boolean; onMenuOpen: () => void }) {
+export function Topbar({
+  householdName,
+  isSigningOut,
+  kitchenMode = false,
+  onLogout,
+  profileName,
+}: {
+  householdName: string;
+  isSigningOut: boolean;
+  kitchenMode?: boolean;
+  onLogout: () => void;
+  profileName: string;
+}) {
+  const { pathname } = useLocation();
+  const context = kitchenMode ? 'Preparación' : sectionLabels[getAppSection(pathname)];
+
   return (
     <header className="app-topbar">
-      <Link className="app-topbar__brand" to="/app" aria-label="Inicio de NutriHogar">
-        <span className="brand-mark" aria-hidden="true">N</span>
+      <Link
+        className="app-topbar__brand"
+        to="/app"
+        aria-label="Inicio de NutriHogar"
+      >
+        <span className="brand-mark" aria-hidden="true">
+          N
+        </span>
         <span>NutriHogar</span>
       </Link>
       <div className="app-topbar__context">
-        <span className="app-topbar__context-label">{kitchenMode ? 'Modo cocina' : 'Area familiar'}</span>
-        <strong>{kitchenMode ? 'Preparación en curso' : 'Mi hogar'}</strong>
+        <span className="app-topbar__context-label">Sección actual</span>
+        <strong>{context}</strong>
       </div>
-      <IconButton aria-controls="mobile-navigation-drawer" aria-expanded={isMenuOpen} aria-label="Abrir menú de navegación" className="app-topbar__menu" onClick={onMenuOpen} type="button">
-        <Menu size={20} aria-hidden="true" />
-      </IconButton>
+      <ProfileMenu
+        householdName={householdName}
+        isSigningOut={isSigningOut}
+        onLogout={onLogout}
+        profileName={profileName}
+      />
     </header>
   );
 }
+
+const sectionLabels = {
+  hoy: 'Hoy',
+  planificar: 'Planificar',
+  hogar: 'Hogar',
+  progreso: 'Progreso',
+} as const;

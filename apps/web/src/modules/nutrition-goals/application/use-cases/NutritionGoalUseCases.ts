@@ -1,6 +1,4 @@
-import type {
-  NutritionGoalGateway,
-} from '../ports/NutritionGoalGateway';
+import type { NutritionGoalGateway } from '../ports/NutritionGoalGateway';
 import type { NutritionGoalValues } from '@nutrihogar/schemas';
 
 export class GenerateNutritionGoalSuggestionUseCase {

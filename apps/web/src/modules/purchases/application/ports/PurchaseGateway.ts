@@ -1,4 +1,8 @@
-import type { Purchase, PurchaseListResult, PurchaseStatus } from '../../domain/Purchase';
+import type {
+  Purchase,
+  PurchaseListResult,
+  PurchaseStatus,
+} from '../../domain/Purchase';
 
 export interface PurchaseInput {
   storeName: string;
@@ -25,7 +29,10 @@ export interface PurchaseFilters {
 }
 
 export interface PurchaseGateway {
-  list(householdId: string, filters?: PurchaseFilters): Promise<PurchaseListResult>;
+  list(
+    householdId: string,
+    filters?: PurchaseFilters,
+  ): Promise<PurchaseListResult>;
   getById(purchaseId: string): Promise<Purchase>;
   create(householdId: string, input: PurchaseInput): Promise<Purchase>;
   update(purchaseId: string, input: Partial<PurchaseInput>): Promise<Purchase>;

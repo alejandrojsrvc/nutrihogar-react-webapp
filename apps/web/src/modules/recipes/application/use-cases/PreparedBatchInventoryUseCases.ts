@@ -13,7 +13,8 @@ export class ConfirmPreparedBatchInventoryUseCase {
   constructor(private readonly gateway: PreparedBatchInventoryGateway) {}
 
   execute(batchId: string, decisions: PreparedBatchInventoryDecision[]) {
-    if (decisions.length === 0) throw new Error('Selecciona qué ingredientes consumir o ignorar.');
+    if (decisions.length === 0)
+      throw new Error('Selecciona qué ingredientes consumir o ignorar.');
     return this.gateway.confirm(batchId, decisions);
   }
 }

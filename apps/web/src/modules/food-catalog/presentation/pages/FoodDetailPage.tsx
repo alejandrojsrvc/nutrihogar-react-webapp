@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useDeleteCustomFood, useFoodDetail } from '../hooks/useFoodCatalog';
+import '../food-catalog.css';
 import {
   formatAmount,
   formatReference,
@@ -56,11 +57,16 @@ export function FoodDetailPage() {
   }
 
   return (
-    <section className="page-section food-detail-page" aria-labelledby="food-detail-title">
+    <section
+      className="page-section food-detail-page"
+      aria-labelledby="food-detail-title"
+    >
       <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
       <p className="eyebrow">Detalle del alimento</p>
       <h1 id="food-detail-title">{food.name}</h1>
-      {food.brand ? <p className="lead food-detail-brand">{food.brand}</p> : null}
+      {food.brand ? (
+        <p className="lead food-detail-brand">{food.brand}</p>
+      ) : null}
       {savedFeedback ? (
         <p className="food-feedback" role="status">
           {savedFeedback}
@@ -68,7 +74,10 @@ export function FoodDetailPage() {
       ) : null}
       {canManage ? (
         <div className="food-detail-actions">
-          <Link className="button button--secondary" to={`/app/alimentos/${food.id}/editar`}>
+          <Link
+            className="button button--secondary"
+            to={`/app/alimentos/${food.id}/editar`}
+          >
             Editar alimento
           </Link>
           <button
@@ -93,11 +102,22 @@ export function FoodDetailPage() {
         <span>Valores por {formatReference(food)}</span>
       </div>
 
-      <section className="food-detail-section" aria-labelledby="food-main-nutrients-title">
+      <section
+        className="food-detail-section"
+        aria-labelledby="food-main-nutrients-title"
+      >
         <h2 id="food-main-nutrients-title">Nutrientes principales</h2>
         <dl className="food-detail-highlights">
-          <FoodNutrientHighlight label="Energia" unit="kcal" value={food.energyKcal} />
-          <FoodNutrientHighlight label="Proteina" unit="g" value={food.proteinGrams} />
+          <FoodNutrientHighlight
+            label="Energia"
+            unit="kcal"
+            value={food.energyKcal}
+          />
+          <FoodNutrientHighlight
+            label="Proteina"
+            unit="g"
+            value={food.proteinGrams}
+          />
           <FoodNutrientHighlight
             label="Carbohidratos"
             unit="g"
@@ -107,14 +127,21 @@ export function FoodDetailPage() {
         </dl>
       </section>
 
-      <section className="food-detail-section" aria-labelledby="food-nutrients-title">
+      <section
+        className="food-detail-section"
+        aria-labelledby="food-nutrients-title"
+      >
         <h2 id="food-nutrients-title">Nutrientes completos</h2>
         {food.nutrients.length === 0 ? (
-          <p className="empty-copy">Este alimento no tiene nutrientes adicionales.</p>
+          <p className="empty-copy">
+            Este alimento no tiene nutrientes adicionales.
+          </p>
         ) : (
           <div className="food-table-wrapper">
             <table className="food-nutrients-table">
-              <caption className="visually-hidden">Nutrientes completos del alimento</caption>
+              <caption className="visually-hidden">
+                Nutrientes completos del alimento
+              </caption>
               <thead>
                 <tr>
                   <th scope="col">Nutriente</th>
@@ -126,7 +153,8 @@ export function FoodDetailPage() {
                   <tr key={nutrient.id}>
                     <th scope="row">{nutrient.nutrientDefinition.name}</th>
                     <td>
-                      {formatAmount(nutrient.amount)} {nutrient.nutrientDefinition.unit}
+                      {formatAmount(nutrient.amount)}{' '}
+                      {nutrient.nutrientDefinition.unit}
                     </td>
                   </tr>
                 ))}
@@ -136,24 +164,33 @@ export function FoodDetailPage() {
         )}
       </section>
 
-      <section className="food-detail-section" aria-labelledby="food-servings-title">
+      <section
+        className="food-detail-section"
+        aria-labelledby="food-servings-title"
+      >
         <h2 id="food-servings-title">Porciones</h2>
         {food.servings.length === 0 ? (
-          <p className="empty-copy">Este alimento no tiene porciones registradas.</p>
+          <p className="empty-copy">
+            Este alimento no tiene porciones registradas.
+          </p>
         ) : (
           <ul className="food-serving-list">
             {food.servings.map((serving) => (
               <li key={serving.id}>
                 <strong>{serving.name}</strong>
                 <span>
-                  {formatAmount(serving.quantity)} {formatServingUnit(serving.unit)}
+                  {formatAmount(serving.quantity)}{' '}
+                  {formatServingUnit(serving.unit)}
                 </span>
                 {serving.equivalentGrams !== null ? (
-                  <small>{formatAmount(serving.equivalentGrams)} g equivalentes</small>
+                  <small>
+                    {formatAmount(serving.equivalentGrams)} g equivalentes
+                  </small>
                 ) : null}
                 {serving.equivalentMilliliters !== null ? (
                   <small>
-                    {formatAmount(serving.equivalentMilliliters)} ml equivalentes
+                    {formatAmount(serving.equivalentMilliliters)} ml
+                    equivalentes
                   </small>
                 ) : null}
               </li>
@@ -162,7 +199,10 @@ export function FoodDetailPage() {
         )}
       </section>
 
-      <section className="food-detail-section" aria-labelledby="food-source-title">
+      <section
+        className="food-detail-section"
+        aria-labelledby="food-source-title"
+      >
         <h2 id="food-source-title">Fuente y confianza</h2>
         <dl className="food-source-list">
           <div>
@@ -183,14 +223,20 @@ export function FoodDetailPage() {
       </section>
 
       {food.description ? (
-        <section className="food-detail-section" aria-labelledby="food-description-title">
+        <section
+          className="food-detail-section"
+          aria-labelledby="food-description-title"
+        >
           <h2 id="food-description-title">Descripcion</h2>
           <p>{food.description}</p>
         </section>
       ) : null}
 
       {food.aliases.length > 0 ? (
-        <section className="food-detail-section" aria-labelledby="food-aliases-title">
+        <section
+          className="food-detail-section"
+          aria-labelledby="food-aliases-title"
+        >
           <h2 id="food-aliases-title">Tambien conocido como</h2>
           <p>{food.aliases.join(', ')}</p>
         </section>
@@ -236,7 +282,10 @@ function FoodDetailStatus({
   message: string;
 }) {
   return (
-    <section className="page-section" aria-labelledby="food-detail-status-title">
+    <section
+      className="page-section"
+      aria-labelledby="food-detail-status-title"
+    >
       <p className="eyebrow">Detalle del alimento</p>
       <h1 id="food-detail-status-title">Alimento</h1>
       <p className="lead" role={isError ? 'alert' : 'status'}>

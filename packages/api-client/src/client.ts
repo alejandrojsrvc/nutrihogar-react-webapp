@@ -3,10 +3,7 @@ import createClient, { type Client } from 'openapi-fetch';
 import type { paths } from './generated/schema';
 
 export type AccessTokenProvider = () =>
-  | string
-  | null
-  | undefined
-  | Promise<string | null | undefined>;
+  string | null | undefined | Promise<string | null | undefined>;
 
 export interface ApiClientOptions {
   baseUrl: string;
