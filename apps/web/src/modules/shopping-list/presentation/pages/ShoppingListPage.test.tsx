@@ -59,9 +59,9 @@ describe('ShoppingListPage', () => {
     );
 
     expect(await screen.findByText('Leche')).toBeInTheDocument();
-    expect(screen.getByText('Manual')).toBeInTheDocument();
+    expect(screen.getByText(/2 L · Manual/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Marcar comprado' }));
-    expect(screen.getByText('Manual')).toBeInTheDocument();
+    expect(screen.getByText(/2 L · Manual/)).toBeInTheDocument();
   });
 });
 

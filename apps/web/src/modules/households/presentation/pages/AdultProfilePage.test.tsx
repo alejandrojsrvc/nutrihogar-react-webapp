@@ -137,7 +137,7 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar perfil' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
     ).toBeInTheDocument();
     expect(
       screen.getByText('Perfil guardado correctamente.'),
@@ -277,7 +277,7 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar cambios' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Tu hogar empieza aqui' }),
+      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
     ).toBeInTheDocument();
     expect(updateRequest?.method).toBe('PATCH');
     await expect(updateRequest?.json()).resolves.toMatchObject({

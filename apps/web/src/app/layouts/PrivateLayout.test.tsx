@@ -16,30 +16,21 @@ describe('PrivateLayout', () => {
   it('renders the private application layout', async () => {
     renderPrivateLayout();
 
-    expect(await screen.findByText('Hoy')).toBeInTheDocument();
+    const sidebar = await screen.findByRole('complementary', {
+      name: 'Navegación principal',
+    });
     expect(
-      screen.getByRole('complementary', { name: 'Navegación principal' }),
-    ).toBeInTheDocument();
+      within(sidebar).getByRole('link', { name: 'Hoy' }),
+    ).toHaveAttribute('href', '/app');
     expect(
-      screen
-        .getAllByRole('link', { name: 'Hoy' })
-        .some((link) => link.getAttribute('href') === '/app'),
-    ).toBe(true);
+      within(sidebar).getByRole('link', { name: 'Planificar' }),
+    ).toHaveAttribute('href', '/app/plan-semanal');
     expect(
-      screen
-        .getAllByRole('link', { name: 'Planificar' })
-        .some((link) => link.getAttribute('href') === '/app/plan-semanal'),
-    ).toBe(true);
+      within(sidebar).getByRole('link', { name: 'Hogar' }),
+    ).toHaveAttribute('href', '/app/inventario');
     expect(
-      screen
-        .getAllByRole('link', { name: 'Inventario' })
-        .some((link) => link.getAttribute('href') === '/app/inventario'),
-    ).toBe(true);
-    expect(
-      screen
-        .getAllByRole('link', { name: 'Progreso' })
-        .some((link) => link.getAttribute('href') === '/app/resumen'),
-    ).toBe(true);
+      within(sidebar).getByRole('link', { name: 'Progreso' }),
+    ).toHaveAttribute('href', '/app/resumen');
   });
 
   it('opens the small profile menu instead of a second module navigation', async () => {

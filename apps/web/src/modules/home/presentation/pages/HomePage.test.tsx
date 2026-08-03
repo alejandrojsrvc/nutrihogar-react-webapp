@@ -76,7 +76,9 @@ describe('HomePage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    expect(await screen.findByText('API disponible.')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Hogar Sojo')).toBeInTheDocument();
     expect(await screen.findByText('Alejandro')).toBeInTheDocument();
     expect(screen.getByText('Integrantes')).toBeInTheDocument();
