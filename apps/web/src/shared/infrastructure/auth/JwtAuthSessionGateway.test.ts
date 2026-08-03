@@ -20,7 +20,7 @@ describe('JwtAuthSessionGateway', () => {
 
   it('registers, sends the API payload and stores the refresh token', async () => {
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) =>
-      response(tokens, 201),
+      (void _input, void _init, response(tokens, 201)),
     );
     const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
 
@@ -41,6 +41,7 @@ describe('JwtAuthSessionGateway', () => {
   it('refreshes concurrent unauthorized requests only once and retries with Bearer', async () => {
     let refreshCalls = 0;
     const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      void _init;
       const url = String(input);
       if (url.endsWith('/auth/login')) return response(tokens);
       if (url.endsWith('/auth/refresh')) {
@@ -72,7 +73,7 @@ describe('JwtAuthSessionGateway', () => {
   it('restores a session from the refresh token', async () => {
     sessionStorage.setItem('nutrihogar.refresh-token', 'refresh-1');
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) =>
-      response({ ...tokens, accessToken: 'access-restored' }),
+      (void _input, void _init, response({ ...tokens, accessToken: 'access-restored' })),
     );
     const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
 
@@ -96,7 +97,7 @@ describe('JwtAuthSessionGateway', () => {
 
   it('clears the session after logout', async () => {
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) =>
-      response(undefined, 204),
+      (void _input, void _init, response(undefined, 204)),
     );
     const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
     sessionStorage.setItem('nutrihogar.refresh-token', 'refresh-1');
