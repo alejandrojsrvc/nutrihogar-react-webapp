@@ -258,7 +258,7 @@ describe('AdultProfilePage', () => {
       '/app/perfil/editar',
       createTestAuthGateway({
         accessToken: 'test-token',
-        userId: 'supabase-user-1',
+        userId: 'api-user-1',
       }),
     );
 

@@ -116,7 +116,6 @@ describe('PrivateLayout', () => {
       getSession: () => new Promise(() => undefined),
       loginWithEmail: async () => undefined,
       logout: async () => undefined,
-      onAuthStateChange: () => () => undefined,
       registerWithEmail: async () => ({
         requiresEmailConfirmation: false,
       }),

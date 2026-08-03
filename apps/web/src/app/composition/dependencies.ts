@@ -1,7 +1,6 @@
 import { createApiClient, type ApiClient } from '@nutrihogar/api-client';
 
-import { createSupabaseAuthSessionGateway } from '../../shared/infrastructure/auth/SupabaseAuthSessionGateway';
-import { UnavailableAuthSessionGateway } from '../../shared/infrastructure/auth/UnavailableAuthSessionGateway';
+import { JwtAuthSessionGateway } from '../../shared/infrastructure/auth/JwtAuthSessionGateway';
 import { SyncCurrentUserUseCase } from '../../modules/auth/application/use-cases/SyncCurrentUserUseCase';
 import { CreateAdultProfileUseCase } from '../../modules/households/application/use-cases/CreateAdultProfileUseCase';
 import { GetFoodDetailUseCase } from '../../modules/food-catalog/application/use-cases/GetFoodDetailUseCase';
@@ -71,7 +70,6 @@ import {
   WasteInventoryItemUseCase,
   ExpireInventoryItemUseCase,
 } from '../../modules/inventory/application/use-cases/InventoryUseCases';
-import type { AuthSessionGateway } from '../../modules/auth/application/ports/AuthSessionGateway';
 import { HttpRecipeGateway } from '../../modules/recipes/infrastructure/http/HttpRecipeGateway';
 import { CreateRecipeUseCase } from '../../modules/recipes/application/use-cases/CreateRecipeUseCase';
 import { UpdateRecipeUseCase } from '../../modules/recipes/application/use-cases/UpdateRecipeUseCase';
@@ -105,6 +103,7 @@ import {
   LoadPreparedBatchInventoryPreviewUseCase,
 } from '../../modules/recipes/application/use-cases/PreparedBatchInventoryUseCases';
 import { HttpPurchaseGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseGateway';
+import { HttpPurchaseOcrGateway } from '../../modules/purchases/infrastructure/http/HttpPurchaseOcrGateway';
 import { HttpShoppingListGateway } from '../../modules/shopping-list/infrastructure/http/HttpShoppingListGateway';
 import { HttpMealPlanningGateway } from '../../modules/meal-planning/infrastructure/http/HttpMealPlanningGateway';
 import {
@@ -145,23 +144,22 @@ import {
   UpdateShoppingListItemUseCase,
 } from '../../modules/shopping-list/application/use-cases/ShoppingListUseCases';
 
-const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-export const authSessionGateway: AuthSessionGateway =
-  supabaseUrl && supabasePublishableKey
-    ? createSupabaseAuthSessionGateway({
-        publishableKey: supabasePublishableKey,
-        redirectTo: new URL('/onboarding', window.location.origin).toString(),
-        url: supabaseUrl,
-      })
-    : new UnavailableAuthSessionGateway();
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const generatedApiBaseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
+export const authSessionGateway = new JwtAuthSessionGateway(
+  apiBaseUrl,
+  undefined,
+  () => {
+    if (window.location.pathname !== '/login') {
+      window.location.assign('/login');
+    }
+  },
+);
 
 export const apiClient: ApiClient = createApiClient({
-  baseUrl: apiBaseUrl,
-  getAccessToken: async () =>
-    (await authSessionGateway.getSession())?.accessToken,
+  baseUrl: generatedApiBaseUrl,
+  getAccessToken: () => authSessionGateway.getAccessToken(),
+  onUnauthorized: (request) => authSessionGateway.handleUnauthorized(request),
 });
 
 const healthGateway = new HttpHealthGateway(apiClient);
@@ -199,6 +197,10 @@ const inventorySyncGateway = new HttpInventorySyncGateway(apiClient);
 const inventoryLocalRepository = new DexieInventoryLocalRepository();
 const connectivityGateway = new BrowserConnectivityGateway();
 const purchaseGateway = new HttpPurchaseGateway(apiClient);
+export const purchaseOcrGateway = new HttpPurchaseOcrGateway(
+  apiBaseUrl,
+  (input, init) => authSessionGateway.fetchAuthenticated(input, init),
+);
 const shoppingListGateway = new HttpShoppingListGateway(apiClient);
 const mealPlanningGateway = new HttpMealPlanningGateway(apiClient);
 
