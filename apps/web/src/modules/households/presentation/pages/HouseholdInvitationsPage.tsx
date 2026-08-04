@@ -356,4 +356,3 @@ function formatInvitationDate(value: string): string {
     year: 'numeric',
   }).format(date);
 }
-

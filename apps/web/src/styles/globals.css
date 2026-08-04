@@ -538,8 +538,8 @@ a.button:active {
 .app-topbar__page-header {
   width: min(100%, var(--layout-content-max));
   margin-inline: auto;
-  padding: 0 var(--space-4) var(--space-4);
 }
+
 .app-topbar__page-header .page-header {
   margin-bottom: 0;
 }
@@ -1101,7 +1101,8 @@ a.button:active {
     padding: var(--space-3) var(--space-8);
   }
   .app-topbar__page-header {
-    padding: 0 var(--space-8) var(--space-4);
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
   }
   .app-topbar__brand {
     display: none;

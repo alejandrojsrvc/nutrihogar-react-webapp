@@ -19,9 +19,7 @@ export function NutritionGoalHeader() {
     (Boolean(households.activeHousehold) && profiles.isPending) ||
     (Boolean(households.activeHousehold) && currentGoal.isPending)
   ) {
-    return (
-      <PageHeader icon={<Target size={22} />} title="Meta nutricional" />
-    );
+    return <PageHeader icon={<Target size={22} />} title="Meta nutricional" />;
   }
 
   if (households.isError || !households.activeHousehold || profiles.isError) {

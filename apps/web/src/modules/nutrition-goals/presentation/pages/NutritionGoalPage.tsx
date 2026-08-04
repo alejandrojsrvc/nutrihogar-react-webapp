@@ -4,7 +4,6 @@ import { Sparkles } from 'lucide-react';
 
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   useCurrentNutritionGoal,
   useGenerateNutritionGoalSuggestion,
@@ -91,7 +90,6 @@ export function NutritionGoalPage() {
         className="page-section nutrition-goal-page"
         aria-labelledby="current-goal-title"
       >
-        <BackButton fallback="/app" />
         <p className="nutrition-goal-validity">
           Vigente desde {formatDate(currentGoal.data.validFrom)}
           {currentGoal.data.validUntil
@@ -142,7 +140,6 @@ function GenerateGoal({ profileId }: { profileId: string }) {
       className="page-section nutrition-goal-page"
       aria-labelledby="goal-start-title"
     >
-      <BackButton fallback="/app" />
       {hasRequested && generate.isError ? (
         <p className="nutrition-goal-error" role="alert">
           El perfil está incompleto o no pudimos generar la propuesta.

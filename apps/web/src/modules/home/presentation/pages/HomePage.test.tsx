@@ -27,6 +27,33 @@ function mockHouseholdAndHealthRequests(): void {
       );
     }
 
+    if (request.url.includes('/daily-nutrition-summary')) {
+      return new Response(
+        JSON.stringify({
+          consumed: {
+            dailyCalories: 1420,
+            proteinGrams: 102,
+            carbohydrateGrams: 120,
+            fatGrams: 42,
+          },
+          date: '2026-08-03',
+          goal: {
+            dailyCalories: 2150,
+            proteinGrams: 160,
+            carbohydrateGrams: 190,
+            fatGrams: 70,
+          },
+          meals: [],
+          profileId: 'profile-1',
+          profileName: 'Alejandro',
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          status: 200,
+        },
+      );
+    }
+
     if (request.url.includes('/adult-profiles')) {
       return new Response(
         JSON.stringify([
@@ -99,9 +126,10 @@ describe('HomePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'En casa' }),
     ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/1\.420 kcal consumidas/),
-    ).toBeInTheDocument();
+    const consumedCalories = await screen.findByText('1.420 kcal');
+    expect(consumedCalories.parentElement).toHaveTextContent(
+      '1.420 kcal consumidas',
+    );
     expect(screen.getByRole('heading', { name: 'Hoy' })).toBeInTheDocument();
   });
 
@@ -152,6 +180,16 @@ describe('HomePage', () => {
             timezone: 'UTC',
           },
         ]);
+      if (pathname.includes('/daily-nutrition-summary'))
+        return jsonResponse({
+          consumed: { calories: 0 },
+          date: '2026-08-01',
+          goal: null,
+          meals: [],
+          profileId: 'profile-1',
+          profileName: 'Alejandro',
+          remaining: null,
+        });
       if (pathname.includes('/adult-profiles'))
         return jsonResponse([
           {
@@ -206,15 +244,7 @@ describe('HomePage', () => {
             },
           ],
         });
-      return jsonResponse({
-        consumed: { calories: 0 },
-        date: '2026-08-01',
-        goal: null,
-        meals: [],
-        profileId: 'profile-1',
-        profileName: 'Alejandro',
-        remaining: null,
-      });
+      return jsonResponse({ status: 'ok' });
     });
 
     renderRoute(

@@ -17,9 +17,7 @@ export function EditMealHeader() {
     detail.isPending ||
     (Boolean(households.activeHousehold) && profiles.isPending)
   ) {
-    return (
-      <PageHeader icon={<Utensils size={22} />} title="Editar comida" />
-    );
+    return <PageHeader icon={<Utensils size={22} />} title="Editar comida" />;
   }
 
   if (

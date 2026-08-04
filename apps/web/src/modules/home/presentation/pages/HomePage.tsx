@@ -398,15 +398,10 @@ function HomeMealTimeline({
                     {plannedMeal.name ?? sourceLabel(plannedMeal.source)}
                   </span>
                 ) : (
-                  <span>Sin registrar</span>
+                  <span className="home-meal-timeline__subtext">
+                    Sin registrar
+                  </span>
                 )}
-                <small className="home-meal-timeline__subtext">
-                  {meal
-                    ? formatTime(meal.consumedAt)
-                    : plannedMeal
-                      ? 'Planificada'
-                      : 'Sin registrar'}
-                </small>
               </div>
               <span className="home-meal-timeline__calories">
                 {meal ? formatCalories(meal.totals.calories) : '—'}

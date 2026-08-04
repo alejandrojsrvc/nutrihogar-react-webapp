@@ -12,7 +12,12 @@ export function FoodDetailHeader() {
   const households = useHouseholds();
   const foodDetail = useFoodDetail(foodId);
 
-  if (!foodId || foodDetail.isError || foodDetail.isPending || !foodDetail.data) {
+  if (
+    !foodId ||
+    foodDetail.isError ||
+    foodDetail.isPending ||
+    !foodDetail.data
+  ) {
     return (
       <PageHeader
         icon={<Apple size={22} />}

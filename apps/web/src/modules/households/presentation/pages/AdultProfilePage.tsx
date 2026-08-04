@@ -14,7 +14,6 @@ import {
   type UseFormRegister,
 } from 'react-hook-form';
 import { Link, Navigate, useNavigate } from 'react-router';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   ErrorState,
   LoadingState,
@@ -229,7 +228,6 @@ export function AdultProfilePage() {
       className="page-section profile-wizard"
       aria-labelledby="profile-title"
     >
-      <BackButton fallback="/app" />
       <ProfileStepIndicator currentStep={currentStep} />
       <form
         className="auth-form profile-form"

@@ -11,9 +11,7 @@ export function InventoryDetailHeader() {
   return (
     <PageHeader
       description="Consulta el saldo disponible, sus alertas y el historial de cambios."
-      eyebrow={
-        item.data ? itemTypeLabel(item.data.itemType) : 'Inventario'
-      }
+      eyebrow={item.data ? itemTypeLabel(item.data.itemType) : 'Inventario'}
       icon={<PackageSearch size={22} />}
       title={item.data?.name ?? 'Existencia'}
       titleId="inventory-detail-title"

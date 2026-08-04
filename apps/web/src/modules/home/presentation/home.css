@@ -332,6 +332,8 @@
   margin: 0 0 var(--space-5);
   padding: 0;
   list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
 }
 .home-meal-timeline li {
   display: grid;
@@ -340,7 +342,13 @@
   min-height: 3.125rem;
   align-items: center;
   border-top: 1px solid var(--color-border);
+  padding: 5px 10px;
 }
+
+.home-meal-timeline li:first-child {
+  border-top: none;
+}
+
 .home-meal-timeline__marker {
   display: grid;
   width: 2rem;

@@ -17,9 +17,7 @@ export function DuplicateMealHeader() {
     detail.isPending ||
     (Boolean(households.activeHousehold) && profiles.isPending)
   ) {
-    return (
-      <PageHeader icon={<Repeat2 size={22} />} title="Repetir comida" />
-    );
+    return <PageHeader icon={<Repeat2 size={22} />} title="Repetir comida" />;
   }
 
   if (

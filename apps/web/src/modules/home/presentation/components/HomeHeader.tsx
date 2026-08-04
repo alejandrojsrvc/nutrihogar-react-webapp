@@ -59,7 +59,9 @@ export function HomeHeader() {
         </span>
         <div>
           <h1 id="home-title">Hoy</h1>
-          <p className="home-page__date">{formatToday(date, activeHousehold.timezone)}</p>
+          <p className="home-page__date">
+            {formatToday(date, activeHousehold.timezone)}
+          </p>
         </div>
       </div>
     </header>

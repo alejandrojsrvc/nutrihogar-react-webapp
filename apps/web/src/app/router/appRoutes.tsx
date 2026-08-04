@@ -132,15 +132,31 @@ export const appRoutes: RouteObject[] = [
       {
         element: <PrivateLayout />,
         children: [
-          { path: '/onboarding', element: <OnboardingPage />, handle: { pageHeader: OnboardingHeader } },
-          { path: '/app/perfil', element: <AdultProfileOverviewPage />, handle: { pageHeader: AdultProfileOverviewHeader } },
-          { path: '/app/familia', element: <FamilyPage />, handle: { pageHeader: FamilyHeader } },
+          {
+            path: '/onboarding',
+            element: <OnboardingPage />,
+            handle: { pageHeader: OnboardingHeader },
+          },
+          {
+            path: '/app/perfil',
+            element: <AdultProfileOverviewPage />,
+            handle: { pageHeader: AdultProfileOverviewHeader },
+          },
+          {
+            path: '/app/familia',
+            element: <FamilyPage />,
+            handle: { pageHeader: FamilyHeader },
+          },
           {
             path: '/app/perfiles/:profileId',
             element: <AdultProfileOverviewPage />,
             handle: { pageHeader: AdultProfileOverviewHeader },
           },
-          { path: '/app/perfil/editar', element: <AdultProfilePage />, handle: { pageHeader: AdultProfileHeader } },
+          {
+            path: '/app/perfil/editar',
+            element: <AdultProfilePage />,
+            handle: { pageHeader: AdultProfileHeader },
+          },
           {
             path: '/app/alimentos',
             element: <FoodCatalogPage />,
@@ -156,7 +172,11 @@ export const appRoutes: RouteObject[] = [
             element: <CustomFoodFormPage />,
             handle: { pageHeader: CustomFoodFormHeader },
           },
-          { path: '/app/alimentos/:foodId', element: <FoodDetailPage />, handle: { pageHeader: FoodDetailHeader } },
+          {
+            path: '/app/alimentos/:foodId',
+            element: <FoodDetailPage />,
+            handle: { pageHeader: FoodDetailHeader },
+          },
           {
             path: '/app/perfiles/:profileId/meta',
             element: <NutritionGoalPage />,
@@ -172,13 +192,21 @@ export const appRoutes: RouteObject[] = [
             element: <RegisterMealPage />,
             handle: { pageHeader: RegisterMealHeader },
           },
-          { path: '/app/comidas/:mealId/editar', element: <EditMealPage />, handle: { pageHeader: EditMealHeader } },
+          {
+            path: '/app/comidas/:mealId/editar',
+            element: <EditMealPage />,
+            handle: { pageHeader: EditMealHeader },
+          },
           {
             path: '/app/comidas/:mealId/repetir',
             element: <DuplicateMealPage />,
             handle: { pageHeader: DuplicateMealHeader },
           },
-          { path: '/app/comidas/:mealId', element: <MealDetailPage />, handle: { pageHeader: MealDetailHeader } },
+          {
+            path: '/app/comidas/:mealId',
+            element: <MealDetailPage />,
+            handle: { pageHeader: MealDetailHeader },
+          },
           {
             path: '/app/resumen',
             element: (
@@ -208,7 +236,11 @@ export const appRoutes: RouteObject[] = [
             element: <RecipeFormPage />,
             handle: { pageHeader: RecipeEditHeader },
           },
-          { path: '/app/recetas/:recipeId', element: <RecipeDetailPage />, handle: { pageHeader: RecipeDetailHeader } },
+          {
+            path: '/app/recetas/:recipeId',
+            element: <RecipeDetailPage />,
+            handle: { pageHeader: RecipeDetailHeader },
+          },
           {
             path: '/app/preparaciones/nueva',
             element: <StartPreparedBatchPage />,
@@ -244,7 +276,11 @@ export const appRoutes: RouteObject[] = [
             element: <PreparedBatchInventoryPage />,
             handle: { pageHeader: PreparedBatchInventoryHeader },
           },
-          { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage />, handle: { pageHeader: PreparedFoodLeftoversHeader } },
+          {
+            path: '/app/sobrantes',
+            element: <PreparedFoodLeftoversPage />,
+            handle: { pageHeader: PreparedFoodLeftoversHeader },
+          },
           {
             path: '/app/sobrantes/:leftoverId',
             element: <PreparedFoodLeftoverDetailPage />,
@@ -275,7 +311,11 @@ export const appRoutes: RouteObject[] = [
             element: <InventoryDetailPage />,
             handle: { pageHeader: InventoryDetailHeader },
           },
-          { path: '/app/compras', element: <PurchaseListPage />, handle: { pageHeader: PurchaseListHeader } },
+          {
+            path: '/app/compras',
+            element: <PurchaseListPage />,
+            handle: { pageHeader: PurchaseListHeader },
+          },
           {
             path: '/app/compras/nueva',
             element: <PurchaseFormPage />,
@@ -286,9 +326,21 @@ export const appRoutes: RouteObject[] = [
             element: <PurchaseFormPage />,
             handle: { pageHeader: PurchaseFormHeader },
           },
-          { path: '/app/compras/:purchaseId', element: <PurchaseDetailPage />, handle: { pageHeader: PurchaseDetailHeader } },
-          { path: '/app/lista-de-compras', element: <ShoppingListPage />, handle: { pageHeader: ShoppingListHeader } },
-          { path: '/app/plan-semanal', element: <WeeklyPlanPage />, handle: { pageHeader: WeeklyPlanHeader } },
+          {
+            path: '/app/compras/:purchaseId',
+            element: <PurchaseDetailPage />,
+            handle: { pageHeader: PurchaseDetailHeader },
+          },
+          {
+            path: '/app/lista-de-compras',
+            element: <ShoppingListPage />,
+            handle: { pageHeader: ShoppingListHeader },
+          },
+          {
+            path: '/app/plan-semanal',
+            element: <WeeklyPlanPage />,
+            handle: { pageHeader: WeeklyPlanHeader },
+          },
           {
             path: '/app/plan-semanal/:weeklyPlanId/comidas/nueva',
             element: <PlannedMealFormPage />,
@@ -329,7 +381,11 @@ export const appRoutes: RouteObject[] = [
             element: <WeeklyAdherencePage />,
             handle: { pageHeader: WeeklyAdherenceHeader },
           },
-          { path: '/app/invitaciones', element: <HouseholdInvitationsPage />, handle: { pageHeader: HouseholdInvitationsHeader } },
+          {
+            path: '/app/invitaciones',
+            element: <HouseholdInvitationsPage />,
+            handle: { pageHeader: HouseholdInvitationsHeader },
+          },
           {
             element: <RequireCompletedOnboarding />,
             children: [

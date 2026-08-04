@@ -41,10 +41,7 @@ function StoreProbe() {
       <button onClick={closeInvitationForm} type="button">
         Cerrar formulario
       </button>
-      <button
-        onClick={() => markInvitationAccepted(invitation)}
-        type="button"
-      >
+      <button onClick={() => markInvitationAccepted(invitation)} type="button">
         Marcar aceptada
       </button>
       <button onClick={resetInvitationAcceptance} type="button">
@@ -65,9 +62,7 @@ describe('invitationUiStores', () => {
     render(<StoreProbe />);
 
     expect(screen.getByTestId('form-open')).toHaveTextContent('false');
-    expect(screen.getByTestId('accepted-invitation')).toHaveTextContent(
-      'none',
-    );
+    expect(screen.getByTestId('accepted-invitation')).toHaveTextContent('none');
 
     await user.click(screen.getByRole('button', { name: 'Abrir formulario' }));
     expect(screen.getByTestId('form-open')).toHaveTextContent('true');
@@ -83,8 +78,6 @@ describe('invitationUiStores', () => {
     await user.click(
       screen.getByRole('button', { name: 'Restablecer aceptación' }),
     );
-    expect(screen.getByTestId('accepted-invitation')).toHaveTextContent(
-      'none',
-    );
+    expect(screen.getByTestId('accepted-invitation')).toHaveTextContent('none');
   });
 });

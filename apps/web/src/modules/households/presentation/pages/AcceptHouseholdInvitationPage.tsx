@@ -18,7 +18,6 @@ export function AcceptHouseholdInvitationPage() {
 
   useEffect(() => {
     resetInvitationAcceptance();
-    return resetInvitationAcceptance;
   }, [token]);
 
   async function handleAccept() {
@@ -89,4 +88,3 @@ function InvitationError({ message }: { message: string }) {
     </section>
   );
 }
-

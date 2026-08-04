@@ -71,7 +71,7 @@ describe('WeeklyPlanPage', () => {
     expect(
       screen.getAllByRole('link', { name: 'Agregar comida' }),
     ).not.toHaveLength(0);
-    expect(screen.getAllByText('1 participante')).not.toHaveLength(0);
+    expect(screen.getAllByText(/1 participante/)).not.toHaveLength(0);
     expect(screen.getAllByText('Planificada')).not.toHaveLength(0);
     expect(
       screen.getByRole('navigation', { name: 'Resumen del plan' }),

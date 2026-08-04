@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
 
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -40,7 +39,6 @@ export function PreparedFoodLeftoversPage() {
       className="page-section leftover-page"
       aria-labelledby="leftovers-title"
     >
-      <BackButton fallback="/app" />
       {leftovers.data?.length ? (
         <ul className="recipe-list" aria-label="Sobrantes guardados">
           {leftovers.data.map((leftover) => (

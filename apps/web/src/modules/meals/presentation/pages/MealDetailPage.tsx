@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
 import { Repeat2 } from 'lucide-react';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
 import { isPreparedMealSource } from '../../domain/MealOrigin';
@@ -79,7 +78,6 @@ export function MealDetailPage() {
       className="page-section meal-detail-page"
       aria-labelledby="meal-detail-title"
     >
-      <BackButton fallback="/app" />
       <p className="supporting-text">{formatDateTime(meal.consumedAt)}</p>
       {feedback ? (
         <p className="meal-feedback" role="status">

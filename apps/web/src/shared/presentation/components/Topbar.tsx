@@ -30,6 +30,11 @@ export function Topbar({
           <BrandLockup />
         </div>
 
+        {pageHeader ? (
+          <div className="app-topbar__page-header">
+            {createElement(pageHeader)}
+          </div>) : null}
+
         <ProfileMenu
           householdName={householdName}
           isSigningOut={isSigningOut}
@@ -37,11 +42,6 @@ export function Topbar({
           profileName={activeProfile?.name ?? 'Mi perfil'}
         />
       </div>
-      {pageHeader ? (
-        <div className="app-topbar__page-header">
-          {createElement(pageHeader)}
-        </div>
-      ) : null}
     </header>
   );
 }

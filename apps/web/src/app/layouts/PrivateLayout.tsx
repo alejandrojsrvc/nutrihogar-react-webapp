@@ -56,7 +56,6 @@ export function PrivateLayout() {
 
   return (
     <ActiveProfileProvider
-      key={activeHousehold?.id ?? 'no-household'}
       profiles={profiles.profiles}
     >
       <div className="private-layout">

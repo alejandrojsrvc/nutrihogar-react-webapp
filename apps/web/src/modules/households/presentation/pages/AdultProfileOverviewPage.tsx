@@ -76,7 +76,6 @@ export function AdultProfileOverviewPage() {
   if (!profile)
     return (
       <section className="page-section" aria-labelledby="profile-empty-title">
-        <BackButton fallback="/app" />
         <Link className="button button--primary" to="/app/perfil/editar">
           Configurar perfil
         </Link>

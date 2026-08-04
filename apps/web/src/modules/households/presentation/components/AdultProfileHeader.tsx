@@ -11,9 +11,7 @@ export function AdultProfileHeader() {
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const householdName = households.activeHousehold?.name;
   const currentProfile = currentUser
-    ? profiles.profiles.find(
-        (profile) => profile.userId === currentUser.id,
-      )
+    ? profiles.profiles.find((profile) => profile.userId === currentUser.id)
     : undefined;
 
   if (
