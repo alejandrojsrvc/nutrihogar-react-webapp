@@ -1,7 +1,5 @@
-import { CookingPot } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
@@ -77,13 +75,6 @@ export function PlannedMealPreparationPage() {
     >
       <BackButton
         fallback={`/app/plan-semanal?semana=${plan.data.weekStart}`}
-      />
-      <PageHeader
-        eyebrow="Comida planificada"
-        icon={<CookingPot size={22} />}
-        title={`Cocinar ${meal.name ?? 'receta'}`}
-        titleId="planned-preparation-title"
-        description="El backend conserva participantes, cantidades y el estado del plan."
       />
       {existing?.id ? (
         <>

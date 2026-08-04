@@ -1,7 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router';
 import type { MealFormValues } from '@nutrihogar/schemas';
-import { Utensils } from 'lucide-react';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import type { FoodSummary } from '../../../food-catalog/application/ports/FoodCatalogGateway';
 import type {
@@ -29,10 +27,6 @@ export function EditMealPage() {
   )
     return (
       <section className="page-section meal-page-state" role="status">
-        <PageHeader
-          icon={<Utensils size={25} />}
-          title="Editar comida"
-        />
         <p>Cargando comida...</p>
       </section>
     );
@@ -44,8 +38,11 @@ export function EditMealPage() {
     profiles.isError
   )
     return (
-      <section className="page-section meal-page-state" role="alert">
-        <h1>No pudimos abrir la edición</h1>
+      <section
+        className="page-section meal-page-state"
+        aria-labelledby="edit-meal-error-title"
+        role="alert"
+      >
         <p>La comida se conserva sin cambios.</p>
         <button
           className="button button--secondary"
@@ -111,12 +108,6 @@ export function EditMealPage() {
       aria-labelledby="edit-meal-title"
     >
       <BackButton fallback={`/app/comidas/${meal.id}`} />
-      <PageHeader
-        description="Ajusta los datos y revisa los alimentos antes de guardar."
-        icon={<Utensils size={25} />}
-        title="Editar comida"
-        titleId="edit-meal-title"
-      />
       <MealForm
         cancelTo={`/app/comidas/${meal.id}`}
         key={meal.id}
@@ -197,11 +188,6 @@ function MealEditUnavailable({
       aria-labelledby="meal-edit-unavailable-title"
     >
       <BackButton fallback={`/app/comidas/${mealId}`} />
-      <PageHeader
-        icon={<Utensils size={25} />}
-        title="Edición no disponible"
-        titleId="meal-edit-unavailable-title"
-      />
       <p className="meal-disabled-reason" role="status">
         {reason}
       </p>

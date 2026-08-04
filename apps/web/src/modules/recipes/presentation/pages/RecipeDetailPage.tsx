@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { ChefHat } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
 import { Dialog } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useFoodDetail } from '../../../food-catalog/presentation/hooks/useFoodCatalog';
-import { formatQuantity, humanizeEnum, statusTone } from '../recipePresentation';
+import {
+  formatQuantity,
+  humanizeEnum,
+  statusTone,
+} from '../recipePresentation';
 import {
   useArchiveRecipe,
   useRecipe,
@@ -59,15 +61,10 @@ export function RecipeDetailPage() {
       aria-labelledby="recipe-detail-title"
     >
       <BackButton fallback="/app/recetas" />
-      <PageHeader
-        eyebrow="Receta familiar"
-        title={value.name}
-        titleId="recipe-detail-title"
-        description={value.description ?? undefined}
-        icon={<ChefHat size={22} />}
-      />
       <div className="recipe-status-line">
-        <Badge tone={statusTone(value.status)}>{humanizeEnum(value.status)}</Badge>
+        <Badge tone={statusTone(value.status)}>
+          {humanizeEnum(value.status)}
+        </Badge>
         {archived ? (
           <span className="supporting-text">
             Esta receta se conserva como historial y no puede usarse para nuevas
@@ -197,9 +194,7 @@ function IngredientRow({
     <li>
       <strong>
         {food.data?.name ??
-          (food.isPending
-            ? 'Cargando alimento...'
-            : 'Alimento no disponible')}
+          (food.isPending ? 'Cargando alimento...' : 'Alimento no disponible')}
       </strong>
       <span>{formatQuantity(ingredient.quantity, ingredient.unit)}</span>
       {food.data?.preparationState ? (

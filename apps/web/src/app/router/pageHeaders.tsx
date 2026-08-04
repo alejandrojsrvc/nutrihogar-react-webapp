@@ -167,7 +167,9 @@ export function PlannedMealFormHeader() {
     <PageHeader
       eyebrow="Plan semanal"
       icon={<Utensils size={22} />}
-      title={editing ? 'Editar comida planificada' : 'Agregar comida planificada'}
+      title={
+        editing ? 'Editar comida planificada' : 'Agregar comida planificada'
+      }
       titleId="planned-meal-title"
     />
   );

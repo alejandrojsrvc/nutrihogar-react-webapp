@@ -1,20 +1,11 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
-import { Pencil, Repeat2, Utensils } from 'lucide-react';
+import { Repeat2 } from 'lucide-react';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
 import { isPreparedMealSource } from '../../domain/MealOrigin';
 import '../meals.css';
-
-const mealTypeLabels: Record<string, string> = {
-  BREAKFAST: 'Desayuno',
-  DINNER: 'Cena',
-  EXTRA: 'Extra',
-  LUNCH: 'Almuerzo',
-  SNACK: 'Merienda',
-};
 
 const statusLabels: Record<string, string> = {
   CANCELLED: 'Comida cancelada',
@@ -89,32 +80,6 @@ export function MealDetailPage() {
       aria-labelledby="meal-detail-title"
     >
       <BackButton fallback="/app" />
-      <PageHeader
-        action={
-          editDisabledReason ? (
-            <button
-              aria-describedby="meal-edit-disabled-reason"
-              className="button button--primary"
-              disabled
-              type="button"
-            >
-              <Pencil aria-hidden="true" size={18} />
-              Editar comida
-            </button>
-          ) : (
-            <Link
-              className="button button--primary"
-              to={`/app/comidas/${meal.id}/editar`}
-            >
-              <Pencil aria-hidden="true" size={18} />
-              Editar comida
-            </Link>
-          )
-        }
-        icon={<Utensils size={25} />}
-        title={mealTypeLabels[meal.mealType] ?? meal.mealType}
-        titleId="meal-detail-title"
-      />
       <p className="supporting-text">{formatDateTime(meal.consumedAt)}</p>
       {feedback ? (
         <p className="meal-feedback" role="status">

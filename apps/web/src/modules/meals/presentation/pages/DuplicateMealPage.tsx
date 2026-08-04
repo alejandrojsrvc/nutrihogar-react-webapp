@@ -2,7 +2,6 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Repeat2 } from 'lucide-react';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -38,7 +37,6 @@ export function DuplicateMealPage() {
   )
     return (
       <section className="page-section meal-page-state" role="status">
-        <PageHeader icon={<Repeat2 size={25} />} title="Repetir comida" />
         <p>Cargando comida...</p>
       </section>
     );
@@ -50,8 +48,11 @@ export function DuplicateMealPage() {
     profiles.isError
   )
     return (
-      <section className="page-section meal-page-state" role="alert">
-        <h1>No pudimos preparar la repetición</h1>
+      <section
+        className="page-section meal-page-state"
+        aria-labelledby="duplicate-meal-error-title"
+        role="alert"
+      >
         <p>La comida original se conserva sin cambios.</p>
         <button
           className="button button--secondary"
@@ -115,18 +116,10 @@ export function DuplicateMealPage() {
       aria-labelledby="duplicate-meal-title"
     >
       <BackButton fallback={`/app/comidas/${meal.id}`} />
-      <PageHeader
-        icon={<Repeat2 size={25} />}
-        title="Repetir comida"
-        titleId="duplicate-meal-title"
-        description="Revisa el destino. Los alimentos confirmados se copiarán sin modificar la comida original."
-      />
       <form className="meal-form meal-duplicate-form" onSubmit={submit}>
         <fieldset className="meal-form-section">
           <legend>Destino del registro</legend>
-          <p className="supporting-text">
-            La comida original no se modifica.
-          </p>
+          <p className="supporting-text">La comida original no se modifica.</p>
           <div className="meal-form-grid">
             <div className="form-field">
               <label htmlFor="duplicate-profile">Integrante</label>

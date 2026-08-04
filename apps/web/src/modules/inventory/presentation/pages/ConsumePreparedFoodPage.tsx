@@ -1,10 +1,8 @@
-import { Utensils } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { usePreparedFoodLeftover } from '../../../recipes/presentation/hooks/usePreparedFoodLeftovers';
 import {
@@ -119,16 +117,11 @@ export function ConsumePreparedFoodPage() {
   return (
     <section className="page-section" aria-labelledby="consume-prepared-title">
       <BackButton fallback={`/app/inventario/${value.id}`} />
-      <PageHeader
-        eyebrow="Consumo de preparado"
-        icon={<Utensils size={22} />}
-        title={value.name}
-        titleId="consume-prepared-title"
-        description="Este consumo actualizará el inventario y creará una comida con el origen de la preparación."
-      />
       {syncStatus.data?.isOnline === false ? (
         <p className="inventory-offline-note" role="status">
-          Viendo datos guardados en este dispositivo. Registrar este consumo requiere conexión porque también crea una comida; no se pondrá en cola.
+          Viendo datos guardados en este dispositivo. Registrar este consumo
+          requiere conexión porque también crea una comida; no se pondrá en
+          cola.
         </p>
       ) : null}
       <dl className="inventory-detail-meta">
