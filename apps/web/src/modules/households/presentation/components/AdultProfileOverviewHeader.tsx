@@ -1,14 +1,15 @@
 import { UserRound } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useAuth } from '../../../auth/presentation/providers/useAuth';
 import { useAdultProfiles } from '../hooks/useAdultProfiles';
 import { useHouseholds } from '../hooks/useHouseholds';
 
 export function AdultProfileOverviewHeader() {
   const { currentUser, isCurrentUserLoading } = useAuth();
-  const { profileId } = useParams();
+  const { profileId } = useRouteParams();
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const householdName = households.activeHousehold?.name;

@@ -1,13 +1,13 @@
 import { Target } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useNutritionGoalSuggestion } from '../hooks/useNutritionGoals';
 
 export function NutritionGoalProposalHeader() {
-  const { profileId } = useParams();
+  const { profileId } = useRouteParams();
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const suggestion = useNutritionGoalSuggestion(profileId);

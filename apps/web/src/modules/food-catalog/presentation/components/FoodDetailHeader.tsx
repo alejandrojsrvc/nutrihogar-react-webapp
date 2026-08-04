@@ -1,13 +1,14 @@
 import { Apple, Pencil } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useFoodDetail } from '../hooks/useFoodCatalog';
 import { formatReference } from '../utils/foodLabels';
 
 export function FoodDetailHeader() {
-  const { foodId } = useParams<{ foodId: string }>();
+  const { foodId } = useRouteParams();
   const households = useHouseholds();
   const foodDetail = useFoodDetail(foodId);
 

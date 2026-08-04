@@ -1,13 +1,13 @@
 import { Repeat2 } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useMealDetails } from '../hooks/useMeals';
 
 export function DuplicateMealHeader() {
-  const { mealId } = useParams();
+  const { mealId } = useRouteParams();
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const detail = useMealDetails(mealId);

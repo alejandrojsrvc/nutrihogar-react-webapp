@@ -1,11 +1,11 @@
 import { ReceiptText } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { usePurchase } from '../hooks/usePurchases';
 
 export function PurchaseDetailHeader() {
-  const { purchaseId } = useParams();
+  const { purchaseId } = useRouteParams();
   const purchase = usePurchase(purchaseId);
   const value = purchase.data;
 

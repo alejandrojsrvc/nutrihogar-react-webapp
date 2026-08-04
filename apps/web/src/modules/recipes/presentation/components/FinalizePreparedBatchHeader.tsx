@@ -1,11 +1,11 @@
 import { Scale } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { usePreparedBatch } from '../hooks/usePreparedBatches';
 
 export function FinalizePreparedBatchHeader() {
-  const { batchId } = useParams();
+  const { batchId } = useRouteParams();
   const batch = usePreparedBatch(batchId);
   const value = batch.data;
 

@@ -13,9 +13,10 @@ import {
   Scale,
   Utensils,
 } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { PageHeader } from '../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../shared/presentation/hooks/useRouteParams';
 
 export function RecipeListHeader() {
   return (
@@ -106,7 +107,7 @@ export function InventoryCreateHeader() {
 }
 
 export function PurchaseFormHeader() {
-  const { purchaseId } = useParams();
+  const { purchaseId } = useRouteParams();
   const isEditing = Boolean(purchaseId);
   return (
     <PageHeader
@@ -137,7 +138,7 @@ export function FoodCatalogHeader() {
 }
 
 export function CustomFoodFormHeader() {
-  const { foodId } = useParams();
+  const { foodId } = useRouteParams();
   const isEditing = Boolean(foodId);
   return (
     <PageHeader
@@ -161,7 +162,7 @@ export function RegisterMealHeader() {
 }
 
 export function PlannedMealFormHeader() {
-  const { plannedMealId } = useParams();
+  const { plannedMealId } = useRouteParams();
   const editing = Boolean(plannedMealId);
   return (
     <PageHeader
