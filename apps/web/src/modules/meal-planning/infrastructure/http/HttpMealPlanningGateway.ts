@@ -273,6 +273,8 @@ export class HttpMealPlanningGateway implements MealPlanningGateway {
       const result = await request();
       if (result.error !== undefined)
         throw normalizeApiError(result.error, result.response);
+      if (result.response && !result.response.ok)
+        throw normalizeApiError(undefined, result.response);
       if (!allowEmpty && !result.data)
         throw new ApiClientError('unknown', 'La API no devolvio datos.');
       return result.data;

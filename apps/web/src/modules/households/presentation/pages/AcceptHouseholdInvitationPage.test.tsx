@@ -65,10 +65,8 @@ describe('AcceptHouseholdInvitationPage', () => {
     );
 
     expect(
-      await screen.findByRole('heading', {
-        name: 'Ya eres parte de este hogar',
-      }),
-    ).toBeInTheDocument();
+      await screen.findByRole('link', { name: 'Continuar configuración' }),
+    ).toHaveAttribute('href', '/onboarding');
     expect(acceptedRequest?.url).toBe(
       'http://localhost:3000/api/household-invitations/raw-invitation-token/accept',
     );

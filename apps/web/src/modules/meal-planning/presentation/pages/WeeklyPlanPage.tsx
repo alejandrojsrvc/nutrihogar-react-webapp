@@ -1,8 +1,7 @@
-import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
@@ -133,24 +132,6 @@ export function WeeklyPlanPage() {
       className="page-section meal-planning"
       aria-labelledby="weekly-plan-title"
     >
-      <PageHeader
-        action={
-          value ? (
-            <Link
-              className="button button--primary"
-              to={`/app/plan-semanal/${value.id}/comidas/nueva?fecha=${weekStart}&tipo=BREAKFAST`}
-            >
-              <Plus size={18} />
-              Agregar comida
-            </Link>
-          ) : null
-        }
-        eyebrow="Organización del hogar"
-        icon={<CalendarDays size={22} />}
-        title="Plan semanal"
-        titleId="weekly-plan-title"
-        description="Una vista sencilla de lo que quieren comer esta semana."
-      />
       <div className="meal-planning__navigation">
         <button
           aria-label="Semana anterior"
@@ -237,7 +218,9 @@ export function WeeklyPlanPage() {
                 to={`?semana=${weekStart}&dia=${date}`}
               >
                 <span>{formatDate(date, timezone, { weekday: 'short' })}</span>
-                <strong>{formatDate(date, timezone, { day: 'numeric' })}</strong>
+                <strong>
+                  {formatDate(date, timezone, { day: 'numeric' })}
+                </strong>
               </Link>
             ))}
           </nav>

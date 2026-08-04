@@ -9,10 +9,14 @@ export function AvailabilitySummary({
 }) {
   if (!availability) {
     return (
-      <section className="preparation-availability" aria-labelledby="availability-title">
+      <section
+        className="preparation-availability"
+        aria-labelledby="availability-title"
+      >
         <h2 id="availability-title">Disponibilidad</h2>
         <p className="supporting-text">
-          La disponibilidad estará lista cuando la preparación tenga un peso final.
+          La disponibilidad estará lista cuando la preparación tenga un peso
+          final.
         </p>
       </section>
     );
@@ -20,7 +24,10 @@ export function AvailabilitySummary({
 
   const safePendingWeight = Math.max(0, pendingWeight);
   return (
-    <section className="preparation-availability" aria-labelledby="availability-title">
+    <section
+      className="preparation-availability"
+      aria-labelledby="availability-title"
+    >
       <h2 id="availability-title">Disponibilidad</h2>
       <dl>
         <div>
@@ -35,7 +42,8 @@ export function AvailabilitySummary({
           <dt>Guardado</dt>
           <dd>
             {formatWeight(
-              availability.storedLeftoverWeight + availability.savedRemainderWeight,
+              availability.storedLeftoverWeight +
+                availability.savedRemainderWeight,
             )}
           </dd>
         </div>

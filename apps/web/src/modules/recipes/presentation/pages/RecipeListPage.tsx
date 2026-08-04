@@ -60,7 +60,8 @@ export function RecipeListPage() {
             value={search}
           />
           <span className="supporting-text" id="recipe-search-hint">
-            <Search size={14} aria-hidden="true" /> Busca por nombre o ingrediente.
+            <Search size={14} aria-hidden="true" /> Busca por nombre o
+            ingrediente.
           </span>
         </div>
         <div className="form-field">

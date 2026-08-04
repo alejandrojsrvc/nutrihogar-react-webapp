@@ -60,7 +60,7 @@ describe('AdultProfilePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Tu perfil' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Peso actual')).toBeInTheDocument();
+    expect(await screen.findByText('Peso actual')).toBeInTheDocument();
     expect(screen.getByText('79 kg')).toBeInTheDocument();
     expect(screen.queryByLabelText('Nombre')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Editar perfil' })).toHaveAttribute(
@@ -137,7 +137,7 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar perfil' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
+      await screen.findByRole('heading', { name: 'Hoy' }),
     ).toBeInTheDocument();
     expect(
       screen.getByText('Perfil guardado correctamente.'),
@@ -277,7 +277,7 @@ describe('AdultProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar cambios' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
+      await screen.findByRole('heading', { name: 'Hoy' }),
     ).toBeInTheDocument();
     expect(updateRequest?.method).toBe('PATCH');
     await expect(updateRequest?.json()).resolves.toMatchObject({

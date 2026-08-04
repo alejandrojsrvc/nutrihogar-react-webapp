@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
 import type { MealFormValues } from '@nutrihogar/schemas';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { MealDraftItem } from '../../application/ports/MealGateway';
@@ -108,7 +107,6 @@ export function RegisterMealPage() {
       className="page-section meal-page"
       aria-labelledby="register-meal-title"
     >
-      <BackButton fallback="/app" />
       {params.get('plannedMealId') ? (
         <p className="supporting-text">
           Al registrar, esta comida se vinculará al plan semanal.

@@ -8,7 +8,7 @@ describe('NotFoundPage', () => {
     renderRoute('/esta-ruta-no-existe');
 
     expect(
-      screen.getByRole('heading', { name: 'Esta pagina no esta en la mesa' }),
+      screen.getByRole('heading', { name: 'Esta página no está en la mesa' }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Volver al inicio' }),

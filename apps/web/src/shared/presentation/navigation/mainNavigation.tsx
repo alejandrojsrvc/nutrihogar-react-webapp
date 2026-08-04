@@ -22,11 +22,7 @@ export interface NavigationGroup {
 }
 
 export type AppSection =
-  | 'hoy'
-  | 'planificar'
-  | 'registrar'
-  | 'hogar'
-  | 'progreso';
+  'hoy' | 'planificar' | 'registrar' | 'hogar' | 'progreso';
 
 export const primaryNavigation: NavigationItem[] = [
   {
@@ -81,7 +77,11 @@ export function getAppSection(pathname: string): AppSection {
     pathname.startsWith('/app/sobrantes')
   )
     return 'planificar';
-  if (pathname.startsWith('/app/comidas') || pathname.startsWith('/app/alimentos')) return 'registrar';
+  if (
+    pathname.startsWith('/app/comidas') ||
+    pathname.startsWith('/app/alimentos')
+  )
+    return 'registrar';
   if (
     pathname.startsWith('/app/inventario') ||
     pathname.startsWith('/app/perfil') ||
@@ -113,8 +113,10 @@ export function secondaryNavigationForPath(pathname: string) {
 
 export function isPrimaryNavigationActive(to: string, pathname: string) {
   if (to === '/app') return pathname === '/app' || pathname === '/app/';
-  if (to === '/app/plan-semanal') return getAppSection(pathname) === 'planificar';
-  if (to === '/app/comidas/nueva') return getAppSection(pathname) === 'registrar';
+  if (to === '/app/plan-semanal')
+    return getAppSection(pathname) === 'planificar';
+  if (to === '/app/comidas/nueva')
+    return getAppSection(pathname) === 'registrar';
   if (to === '/app/inventario') return getAppSection(pathname) === 'hogar';
   if (to === '/app/resumen') return getAppSection(pathname) === 'progreso';
   return false;

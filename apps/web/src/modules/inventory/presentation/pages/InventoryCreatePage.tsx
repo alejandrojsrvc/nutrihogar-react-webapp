@@ -53,7 +53,11 @@ export function InventoryCreatePage() {
     return (
       <section className="page-section" role="alert">
         <p>No se pudo cargar el hogar activo.</p>
-        <button className="button button--secondary" onClick={() => void households.refetch()} type="button">
+        <button
+          className="button button--secondary"
+          onClick={() => void households.refetch()}
+          type="button"
+        >
           Reintentar
         </button>
       </section>
@@ -104,7 +108,8 @@ export function InventoryCreatePage() {
       <BackButton fallback="/app/inventario" />
       {syncStatus.data?.isOnline === false ? (
         <p className="inventory-offline-note" role="status">
-          Sin conexión. Crear una existencia requiere conexión y no se pondrá en cola; tus valores permanecerán en el formulario.
+          Sin conexión. Crear una existencia requiere conexión y no se pondrá en
+          cola; tus valores permanecerán en el formulario.
         </p>
       ) : null}
       <form
@@ -113,7 +118,9 @@ export function InventoryCreatePage() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset>
-          <legend><span>1</span> Alimento</legend>
+          <legend>
+            <span>1</span> Alimento
+          </legend>
           <input type="hidden" {...register('foodId')} />
           <div className="form-field">
             <span className="form-field__label">Alimento *</span>
@@ -147,7 +154,9 @@ export function InventoryCreatePage() {
           </div>
         </fieldset>
         <fieldset>
-          <legend><span>2</span> Cantidad y ubicación</legend>
+          <legend>
+            <span>2</span> Cantidad y ubicación
+          </legend>
           <div className="inventory-form-grid">
             <Field
               error={errors.quantity?.message}
@@ -214,7 +223,9 @@ export function InventoryCreatePage() {
           </div>
         </fieldset>
         <fieldset>
-          <legend><span>3</span> Nota opcional</legend>
+          <legend>
+            <span>3</span> Nota opcional
+          </legend>
           <Field
             error={errors.reason?.message}
             id="inventory-create-reason"
@@ -272,7 +283,11 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-field__error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -27,6 +27,33 @@ function mockHouseholdAndHealthRequests(): void {
       );
     }
 
+    if (request.url.includes('/daily-nutrition-summary')) {
+      return new Response(
+        JSON.stringify({
+          consumed: {
+            dailyCalories: 1420,
+            proteinGrams: 102,
+            carbohydrateGrams: 120,
+            fatGrams: 42,
+          },
+          date: '2026-08-03',
+          goal: {
+            dailyCalories: 2150,
+            proteinGrams: 160,
+            carbohydrateGrams: 190,
+            fatGrams: 70,
+          },
+          meals: [],
+          profileId: 'profile-1',
+          profileName: 'Alejandro',
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          status: 200,
+        },
+      );
+    }
+
     if (request.url.includes('/adult-profiles')) {
       return new Response(
         JSON.stringify([
@@ -93,9 +120,16 @@ describe('HomePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Hoy' }),
     ).toBeInTheDocument();
-    expect(await screen.findByLabelText('Menú de Alejandro')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'En casa' })).toBeInTheDocument();
-    expect(screen.getByText(/1\.420 kcal consumidas/)).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText('Menú de Alejandro'),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'En casa' }),
+    ).toBeInTheDocument();
+    const consumedCalories = await screen.findByText('1.420 kcal');
+    expect(consumedCalories.parentElement).toHaveTextContent(
+      '1.420 kcal consumidas',
+    );
     expect(screen.getByRole('heading', { name: 'Hoy' })).toBeInTheDocument();
   });
 
@@ -146,6 +180,16 @@ describe('HomePage', () => {
             timezone: 'UTC',
           },
         ]);
+      if (pathname.includes('/daily-nutrition-summary'))
+        return jsonResponse({
+          consumed: { calories: 0 },
+          date: '2026-08-01',
+          goal: null,
+          meals: [],
+          profileId: 'profile-1',
+          profileName: 'Alejandro',
+          remaining: null,
+        });
       if (pathname.includes('/adult-profiles'))
         return jsonResponse([
           {
@@ -200,13 +244,7 @@ describe('HomePage', () => {
             },
           ],
         });
-      return jsonResponse({
-        consumed: { calories: 0 },
-        meals: [],
-        profile: { name: 'Alejandro' },
-        status: 'ok',
-        timestamp: '2026-08-01T12:00:00.000Z',
-      });
+      return jsonResponse({ status: 'ok' });
     });
 
     renderRoute(
@@ -217,10 +255,15 @@ describe('HomePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Comidas de hoy' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'En casa' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'En casa' }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /Registrar comida/ }),
-    ).toHaveAttribute('href', expect.stringContaining('/app/comidas/nueva?profileId=profile-1'));
+    ).toHaveAttribute(
+      'href',
+      expect.stringContaining('/app/comidas/nueva?profileId=profile-1'),
+    );
     expect(await screen.findByText('Arroz')).toBeInTheDocument();
   });
 });

@@ -68,28 +68,31 @@ export function HomePage() {
   if (householdsPending) {
     return (
       <section className="page-section" aria-labelledby="home-loading-title">
-        <p className="eyebrow">Inicio</p>
-        <h1 id="home-loading-title">Cargando tu espacio familiar</h1>
-        <p className="lead" role="status">Consultando tus hogares...</p>
+        <p className="lead" role="status">
+          Consultando tus hogares...
+        </p>
       </section>
     );
   }
   if (householdsError) {
     return (
       <section className="page-section" aria-labelledby="home-error-title">
-        <p className="eyebrow">Inicio</p>
-        <h1 id="home-error-title">No pudimos cargar tu hogar</h1>
-        <p className="lead" role="alert">No se pudo conectar con la API de NutriHogar.</p>
+        <p className="lead" role="alert">
+          No se pudo conectar con la API de NutriHogar.
+        </p>
       </section>
     );
   }
   if (households.length === 0) return <Navigate replace to="/onboarding" />;
   if (!activeHousehold) {
     return (
-      <section className="page-section" aria-labelledby="household-select-title">
-        <p className="eyebrow">Tus hogares</p>
-        <h1 id="household-select-title">Elige un hogar para continuar</h1>
-        <p className="lead">Selecciona el espacio familiar que quieres consultar.</p>
+      <section
+        className="page-section"
+        aria-labelledby="household-select-title"
+      >
+        <p className="lead">
+          Selecciona el espacio familiar que quieres consultar.
+        </p>
         <div className="household-list" role="list">
           {households.map((household) => (
             <button
@@ -109,32 +112,34 @@ export function HomePage() {
 
   return (
     <section className="page-section home-page" aria-labelledby="home-title">
-      <header className="home-page__intro">
-        <div className="home-page__title-wrap">
-          <span className="home-page__title-icon" aria-hidden="true">
-            <Sun size={28} strokeWidth={1.8} />
-          </span>
-          <div>
-            <h1 id="home-title">Hoy</h1>
-            <p className="home-page__date">{formatToday(date, activeHousehold.timezone)}</p>
-          </div>
-        </div>
-      </header>
       {isSuccessNavigation(location.state) ? (
         <p className="profile-success" role="status">
-          {location.state.mealSaved ? 'Comida registrada correctamente.' : 'Perfil guardado correctamente.'}
+          {location.state.mealSaved
+            ? 'Comida registrada correctamente.'
+            : 'Perfil guardado correctamente.'}
         </p>
       ) : null}
       <div className="home-page__layout">
         {summaryQuery.data ? (
           <>
-          <div className="home-page__main-column">
-            <HomeNutritionSummary summary={summaryQuery.data} />
-            <HomeMealTimeline date={date} plan={todayPlan} summary={summaryQuery.data} />
-          </div>
-          <aside className="home-page__side-column" aria-label="Resumen del hogar">
-            <HomeNextMeal date={date} plan={todayPlan} summary={summaryQuery.data} />
-          </aside>
+            <div className="home-page__main-column">
+              <HomeNutritionSummary summary={summaryQuery.data} />
+              <HomeMealTimeline
+                date={date}
+                plan={todayPlan}
+                summary={summaryQuery.data}
+              />
+            </div>
+            <aside
+              className="home-page__side-column"
+              aria-label="Resumen del hogar"
+            >
+              <HomeNextMeal
+                date={date}
+                plan={todayPlan}
+                summary={summaryQuery.data}
+              />
+            </aside>
           </>
         ) : (
           <section className="home-page__nutrition" aria-live="polite">
@@ -148,7 +153,10 @@ export function HomePage() {
             </p>
           </section>
         )}
-        <HomeInventoryPulse dashboard={inventoryDashboard} sync={inventorySyncQuery.data} />
+        <HomeInventoryPulse
+          dashboard={inventoryDashboard}
+          sync={inventorySyncQuery.data}
+        />
       </div>
     </section>
   );
@@ -167,8 +175,13 @@ function HomeNutritionSummary({
   const hasGoal = calorieGoal > 0;
 
   return (
-    <section className="home-page__nutrition" aria-labelledby="home-nutrition-title">
-      <h2 id="home-nutrition-title" className="visually-hidden">Resumen nutricional de hoy</h2>
+    <section
+      className="home-page__nutrition"
+      aria-labelledby="home-nutrition-title"
+    >
+      <h2 id="home-nutrition-title" className="visually-hidden">
+        Resumen nutricional de hoy
+      </h2>
       <div className="home-nutrition__overview">
         <div
           className="home-calorie-ring"
@@ -177,7 +190,9 @@ function HomeNutritionSummary({
           aria-valuemax={Math.max(calorieGoal, consumedCalories, 1)}
           aria-valuemin={0}
           aria-valuenow={consumedCalories}
-          style={{ '--calorie-progress': `${calorieProgress}%` } as CSSProperties}
+          style={
+            { '--calorie-progress': `${calorieProgress}%` } as CSSProperties
+          }
         >
           <div>
             <Flame size={15} aria-hidden="true" />
@@ -186,22 +201,56 @@ function HomeNutritionSummary({
           </div>
         </div>
         <div className="home-nutrition__copy">
-          <p><strong>{formatCalories(consumedCalories)}</strong> consumidas</p>
-          <p className="home-nutrition__remaining">{formatCalories(remainingCalories)} restantes</p>
-          <p className="home-nutrition__goal">Objetivo diario: {formatCalories(calorieGoal)}</p>
+          <p>
+            <strong>{formatCalories(consumedCalories)}</strong> consumidas
+          </p>
+          <p className="home-nutrition__remaining">
+            {formatCalories(remainingCalories)} restantes
+          </p>
+          <p className="home-nutrition__goal">
+            Objetivo diario: {formatCalories(calorieGoal)}
+          </p>
           <div className="home-page__calorie-track" aria-hidden="true">
             <span style={{ width: `${calorieProgress}%` }} />
           </div>
         </div>
         <div className="home-nutrition__encouragement">
           {hasGoal ? <CircleCheck size={31} aria-hidden="true" /> : null}
-          <p>{hasGoal ? <><strong>¡Vas genial!</strong><br />Sigue con tu objetivo diario.</> : 'Configura tu objetivo diario para ver tu progreso.'}</p>
+          <p>
+            {hasGoal ? (
+              <>
+                <strong>¡Vas genial!</strong>
+                <br />
+                Sigue con tu objetivo diario.
+              </>
+            ) : (
+              'Configura tu objetivo diario para ver tu progreso.'
+            )}
+          </p>
         </div>
       </div>
       <div className="home-page__macros">
-        <NutritionMetric icon={<Beef size={18} />} label="Proteína" value={summary.consumed.proteinGrams} goal={goal?.proteinGrams} tone="protein" />
-        <NutritionMetric icon={<Wheat size={18} />} label="Carbohidratos" value={summary.consumed.carbohydrateGrams} goal={goal?.carbohydrateGrams} tone="carbohydrates" />
-        <NutritionMetric icon={<CircleDot size={18} />} label="Grasas" value={summary.consumed.fatGrams} goal={goal?.fatGrams} tone="fat" />
+        <NutritionMetric
+          icon={<Beef size={18} />}
+          label="Proteína"
+          value={summary.consumed.proteinGrams}
+          goal={goal?.proteinGrams}
+          tone="protein"
+        />
+        <NutritionMetric
+          icon={<Wheat size={18} />}
+          label="Carbohidratos"
+          value={summary.consumed.carbohydrateGrams}
+          goal={goal?.carbohydrateGrams}
+          tone="carbohydrates"
+        />
+        <NutritionMetric
+          icon={<CircleDot size={18} />}
+          label="Grasas"
+          value={summary.consumed.fatGrams}
+          goal={goal?.fatGrams}
+          tone="fat"
+        />
       </div>
     </section>
   );
@@ -224,13 +273,19 @@ function NutritionMetric({
   return (
     <div className={`home-macro home-macro--${tone}`}>
       <div className="home-macro__content">
-        <span className="home-macro__icon" aria-hidden="true">{icon}</span>
+        <span className="home-macro__icon" aria-hidden="true">
+          {icon}
+        </span>
         <div className="home-macro__copy">
           <strong>{label}</strong>
-          <span>{Math.round(value)} / {goal == null ? '—' : `${Math.round(goal)} g`}</span>
+          <span>
+            {Math.round(value)} / {goal == null ? '—' : `${Math.round(goal)} g`}
+          </span>
         </div>
       </div>
-      <div className="home-macro__track" aria-hidden="true"><span style={{ width: `${percentage}%` }} /></div>
+      <div className="home-macro__track" aria-hidden="true">
+        <span style={{ width: `${percentage}%` }} />
+      </div>
       <small>{goal == null ? 'Sin objetivo' : `${percentage}%`}</small>
     </div>
   );
@@ -255,9 +310,20 @@ function HomeNextMeal({
 
   return (
     <section className="home-next-meal" aria-labelledby="home-next-meal-title">
-      <div className="home-card__heading"><Clock3 size={19} aria-hidden="true" /><h2 id="home-next-meal-title">Próximo</h2></div>
-      {plan.isPending ? <p className="home-card__muted" role="status">Cargando tu próxima comida...</p> : null}
-      {plan.isError ? <p className="home-card__muted" role="alert">No se pudo cargar el plan de hoy.</p> : null}
+      <div className="home-card__heading">
+        <Clock3 size={19} aria-hidden="true" />
+        <h2 id="home-next-meal-title">Próximo</h2>
+      </div>
+      {plan.isPending ? (
+        <p className="home-card__muted" role="status">
+          Cargando tu próxima comida...
+        </p>
+      ) : null}
+      {plan.isError ? (
+        <p className="home-card__muted" role="alert">
+          No se pudo cargar el plan de hoy.
+        </p>
+      ) : null}
       {!plan.isPending && !plan.isError && nextMeal ? (
         <>
           <div className="home-next-meal__body">
@@ -265,10 +331,16 @@ function HomeNextMeal({
             <strong>{nextMeal.name ?? sourceLabel(nextMeal.source)}</strong>
             <span>Comida planificada</span>
           </div>
-          <Link className="home-card__link" to="/app/plan-semanal">Ver detalles <ChevronRight size={17} aria-hidden="true" /></Link>
+          <Link className="home-card__link" to="/app/plan-semanal">
+            Ver detalles <ChevronRight size={17} aria-hidden="true" />
+          </Link>
         </>
       ) : null}
-      {!plan.isPending && !plan.isError && !nextMeal ? <p className="home-card__muted">No hay una próxima comida planificada.</p> : null}
+      {!plan.isPending && !plan.isError && !nextMeal ? (
+        <p className="home-card__muted">
+          No hay una próxima comida planificada.
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -282,14 +354,23 @@ function HomeMealTimeline({
   plan: ReturnType<typeof useWeeklyPlanForWeek>;
   summary: NonNullable<ReturnType<typeof useDailyNutritionSummary>['data']>;
 }) {
-  const registered = new Map(summary.meals.map((meal) => [meal.mealType, meal]));
+  const registered = new Map(
+    summary.meals.map((meal) => [meal.mealType, meal]),
+  );
   const planned = new Map(
-    (plan.data?.meals ?? []).filter((meal) => meal.date === date).map((meal) => [meal.type, meal]),
+    (plan.data?.meals ?? [])
+      .filter((meal) => meal.date === date)
+      .map((meal) => [meal.type, meal]),
   );
   return (
     <section className="home-page__meals" aria-labelledby="home-meals-title">
-      <div className="home-card__heading"><Utensils size={19} aria-hidden="true" /><h2 id="home-meals-title">Comidas de hoy</h2></div>
-      {plan.isError ? <p role="alert">No se pudieron cargar las comidas planificadas.</p> : null}
+      <div className="home-card__heading">
+        <Utensils size={19} aria-hidden="true" />
+        <h2 id="home-meals-title">Comidas de hoy</h2>
+      </div>
+      {plan.isError ? (
+        <p role="alert">No se pudieron cargar las comidas planificadas.</p>
+      ) : null}
       <div className="home-meal-timeline__head" aria-hidden="true">
         <span />
         <span>Comida</span>
@@ -303,20 +384,48 @@ function HomeMealTimeline({
           const plannedMeal = planned.get(type);
           return (
             <li className={meal ? 'is-complete' : ''} key={type}>
-              <span className="home-meal-timeline__marker" aria-hidden="true">{meal ? <Check size={17} /> : mealIcon(type)}</span>
+              <span className="home-meal-timeline__marker" aria-hidden="true">
+                {meal ? <Check size={17} /> : mealIcon(type)}
+              </span>
               <div>
                 <strong>{label}</strong>
-                {meal ? <Link to={`/app/comidas/${meal.id}`}>{meal.preparation?.recipeName ?? 'Comida registrada'}</Link> : plannedMeal ? <span>{plannedMeal.name ?? sourceLabel(plannedMeal.source)}</span> : <span>Sin registrar</span>}
-                <small className="home-meal-timeline__subtext">{meal ? formatTime(meal.consumedAt) : plannedMeal ? 'Planificada' : 'Sin registrar'}</small>
+                {meal ? (
+                  <Link to={`/app/comidas/${meal.id}`}>
+                    {meal.preparation?.recipeName ?? 'Comida registrada'}
+                  </Link>
+                ) : plannedMeal ? (
+                  <span>
+                    {plannedMeal.name ?? sourceLabel(plannedMeal.source)}
+                  </span>
+                ) : (
+                  <span className="home-meal-timeline__subtext">
+                    Sin registrar
+                  </span>
+                )}
               </div>
-              <span className="home-meal-timeline__calories">{meal ? formatCalories(meal.totals.calories) : '—'}</span>
-              <span className={`home-meal-timeline__status${meal ? ' is-complete' : plannedMeal?.status === 'CANCELLED' ? ' is-cancelled' : ''}`}>{meal ? 'Registrado' : plannedMeal?.status === 'CANCELLED' ? 'Cancelada' : plannedMeal ? 'Pendiente' : 'Sin registrar'}</span>
+              <span className="home-meal-timeline__calories">
+                {meal ? formatCalories(meal.totals.calories) : '—'}
+              </span>
+              <span
+                className={`home-meal-timeline__status${meal ? ' is-complete' : plannedMeal?.status === 'CANCELLED' ? ' is-cancelled' : ''}`}
+              >
+                {meal
+                  ? 'Registrado'
+                  : plannedMeal?.status === 'CANCELLED'
+                    ? 'Cancelada'
+                    : plannedMeal
+                      ? 'Pendiente'
+                      : 'Sin registrar'}
+              </span>
               <ChevronRight size={17} aria-hidden="true" />
             </li>
           );
         })}
       </ul>
-      <Link className="button button--primary home-page__primary-action" to={`/app/comidas/nueva?profileId=${summary.profile.id}&date=${date}`}>
+      <Link
+        className="button button--primary home-page__primary-action"
+        to={`/app/comidas/nueva?profileId=${summary.profile.id}&date=${date}`}
+      >
         <Plus size={20} aria-hidden="true" /> Registrar comida
       </Link>
     </section>
@@ -328,62 +437,131 @@ function HomeInventoryPulse({
   sync,
 }: {
   dashboard: ReturnType<typeof useInventoryDashboard>;
-  sync?: { isOnline: boolean; pendingCount: number; conflictsCount: number; lastSyncAt: string | null };
+  sync?: {
+    isOnline: boolean;
+    pendingCount: number;
+    conflictsCount: number;
+    lastSyncAt: string | null;
+  };
 }) {
   const inventory = dashboard.inventory.data?.items ?? [];
   const critical = [...inventory]
-    .filter((item) => item.status === 'DEPLETED' || item.currentQuantity <= 0 || (item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity) || isExpiring(item.expiresAt))
+    .filter(
+      (item) =>
+        item.status === 'DEPLETED' ||
+        item.currentQuantity <= 0 ||
+        (item.minimumQuantity != null &&
+          item.currentQuantity <= item.minimumQuantity) ||
+        isExpiring(item.expiresAt),
+    )
     .sort((a, b) => priority(a) - priority(b))
     .slice(0, 3);
   return (
-    <section className="home-page__inventory-pulse" aria-labelledby="home-inventory-pulse-title">
+    <section
+      className="home-page__inventory-pulse"
+      aria-labelledby="home-inventory-pulse-title"
+    >
       <div className="home-card__heading">
         <House size={19} aria-hidden="true" />
         <h2 id="home-inventory-pulse-title">En casa</h2>
-        <Link to="/app/inventario" aria-label="Ver inventario"><ChevronRight size={18} aria-hidden="true" /></Link>
+        <Link to="/app/inventario" aria-label="Ver inventario">
+          <ChevronRight size={18} aria-hidden="true" />
+        </Link>
       </div>
-      {dashboard.inventory.isError ? <p role="alert">No se pudo cargar el inventario.</p> : null}
+      {dashboard.inventory.isError ? (
+        <p role="alert">No se pudo cargar el inventario.</p>
+      ) : null}
       {critical.length ? (
         <ul className="home-pulse-list">
           {critical.map((item) => (
             <li key={item.id}>
-              <Link to={item.itemType === 'PREPARED_FOOD' ? `/app/inventario/${item.id}/consumir-preparado` : `/app/inventario/${item.id}`}>
+              <Link
+                to={
+                  item.itemType === 'PREPARED_FOOD'
+                    ? `/app/inventario/${item.id}/consumir-preparado`
+                    : `/app/inventario/${item.id}`
+                }
+              >
                 <span className="home-pulse-list__name">
-                  <span className="home-pulse-list__icon" aria-hidden="true">{item.status === 'DEPLETED' || item.currentQuantity <= 0 ? <AlertTriangle size={17} /> : <PackageCheck size={17} />}</span>
+                  <span className="home-pulse-list__icon" aria-hidden="true">
+                    {item.status === 'DEPLETED' || item.currentQuantity <= 0 ? (
+                      <AlertTriangle size={17} />
+                    ) : (
+                      <PackageCheck size={17} />
+                    )}
+                  </span>
                   <strong>{item.name}</strong>
                 </span>
-                <small>{item.status === 'DEPLETED' || item.currentQuantity <= 0 ? 'Agotado' : item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity ? 'Bajo mínimo' : 'Próximo a vencer'}</small>
+                <small>
+                  {item.status === 'DEPLETED' || item.currentQuantity <= 0
+                    ? 'Agotado'
+                    : item.minimumQuantity != null &&
+                        item.currentQuantity <= item.minimumQuantity
+                      ? 'Bajo mínimo'
+                      : 'Próximo a vencer'}
+                </small>
               </Link>
             </li>
           ))}
         </ul>
       ) : dashboard.inventory.isPending ? (
         <p role="status">Cargando alertas del inventario...</p>
-      ) : dashboard.inventory.isError ? null : <p>El inventario no tiene alertas prioritarias.</p>}
-      <p className="supporting-text">{sync?.isOnline === false ? 'Sin conexión: se muestran los datos guardados en este dispositivo.' : sync?.pendingCount ? `${sync.pendingCount} operación${sync.pendingCount === 1 ? '' : 'es'} pendiente${sync.pendingCount === 1 ? '' : 's'} de sincronizar.` : sync?.conflictsCount ? `${sync.conflictsCount} conflicto${sync.conflictsCount === 1 ? '' : 's'} requiere${sync.conflictsCount === 1 ? '' : 'n'} revisión.` : sync?.lastSyncAt ? `Última sincronización: ${formatTime(sync.lastSyncAt)}` : 'Inventario y compras al día.'}</p>
+      ) : dashboard.inventory.isError ? null : (
+        <p>El inventario no tiene alertas prioritarias.</p>
+      )}
+      <p className="supporting-text">
+        {sync?.isOnline === false
+          ? 'Sin conexión: se muestran los datos guardados en este dispositivo.'
+          : sync?.pendingCount
+            ? `${sync.pendingCount} operación${sync.pendingCount === 1 ? '' : 'es'} pendiente${sync.pendingCount === 1 ? '' : 's'} de sincronizar.`
+            : sync?.conflictsCount
+              ? `${sync.conflictsCount} conflicto${sync.conflictsCount === 1 ? '' : 's'} requiere${sync.conflictsCount === 1 ? '' : 'n'} revisión.`
+              : sync?.lastSyncAt
+                ? `Última sincronización: ${formatTime(sync.lastSyncAt)}`
+                : 'Inventario y compras al día.'}
+      </p>
     </section>
   );
 }
 
-function priority(item: { status: string; currentQuantity: number; minimumQuantity: number | null; expiresAt: string | null }) {
-  return item.status === 'DEPLETED' || item.currentQuantity <= 0 ? 0 : item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity ? 1 : item.expiresAt ? new Date(item.expiresAt).getTime() : 2;
+function priority(item: {
+  status: string;
+  currentQuantity: number;
+  minimumQuantity: number | null;
+  expiresAt: string | null;
+}) {
+  return item.status === 'DEPLETED' || item.currentQuantity <= 0
+    ? 0
+    : item.minimumQuantity != null &&
+        item.currentQuantity <= item.minimumQuantity
+      ? 1
+      : item.expiresAt
+        ? new Date(item.expiresAt).getTime()
+        : 2;
 }
 
 function formatTime(value: string) {
-  return new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+  return new Intl.DateTimeFormat('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
 }
 
-function isSuccessNavigation(state: unknown): state is { mealSaved?: boolean; profileSaved?: boolean } {
-  return typeof state === 'object' && state !== null && ('mealSaved' in state || 'profileSaved' in state);
+function isSuccessNavigation(
+  state: unknown,
+): state is { mealSaved?: boolean; profileSaved?: boolean } {
+  return (
+    typeof state === 'object' &&
+    state !== null &&
+    ('mealSaved' in state || 'profileSaved' in state)
+  );
 }
 
 function isExpiring(value: string | null) {
-  return value != null && value <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-}
-
-function formatToday(date: string, timezone: string) {
-  const formatted = new Intl.DateTimeFormat('es-ES', { timeZone: timezone, weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(`${date}T12:00:00`));
-  return formatted.replace(',', '').replace(/^./, (letter) => letter.toUpperCase());
+  return (
+    value != null &&
+    value <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+  );
 }
 
 function progress(value: number, goal: number) {
@@ -395,7 +573,19 @@ function formatCaloriesNumber(value: number) {
 }
 
 function sourceLabel(source: string) {
-  return ({ DELIVERY: 'Delivery', EMPTY: 'Sin asignar', FREE_MEAL: 'Comida libre', PREVIOUS_MEAL: 'Comida anterior', RECIPE: 'Receta', RESTAURANT: 'Restaurante', UNPLANNED: 'No planificada' } as Record<string, string>)[source] ?? source;
+  return (
+    (
+      {
+        DELIVERY: 'Delivery',
+        EMPTY: 'Sin asignar',
+        FREE_MEAL: 'Comida libre',
+        PREVIOUS_MEAL: 'Comida anterior',
+        RECIPE: 'Receta',
+        RESTAURANT: 'Restaurante',
+        UNPLANNED: 'No planificada',
+      } as Record<string, string>
+    )[source] ?? source
+  );
 }
 
 function mealLabel(type: string) {

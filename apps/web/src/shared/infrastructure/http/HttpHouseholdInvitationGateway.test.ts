@@ -129,4 +129,15 @@ describe('HttpHouseholdInvitationGateway', () => {
     );
     expect(request?.headers.get('Authorization')).toBe('Bearer test-token');
   });
+
+  it('preserves the status of an empty invitation error response', async () => {
+    const apiClient = createApiClient({
+      baseUrl: 'http://localhost:3000',
+      fetch: vi.fn(async () => new Response(null, { status: 410 })),
+    });
+
+    await expect(
+      new HttpHouseholdInvitationGateway(apiClient).accept('expired-token'),
+    ).rejects.toMatchObject({ status: 410 });
+  });
 });

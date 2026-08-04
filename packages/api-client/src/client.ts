@@ -50,8 +50,9 @@ export function createApiClient({
       }
 
       return (
-        (await onUnauthorized(retryableRequests.get(request)?.clone() ?? request.clone())) ??
-        response
+        (await onUnauthorized(
+          retryableRequests.get(request)?.clone() ?? request.clone(),
+        )) ?? response
       );
     },
   });

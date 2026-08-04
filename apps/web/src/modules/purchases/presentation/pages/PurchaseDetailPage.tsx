@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { ReceiptText } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Dialog } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
   useCancelPurchase,
@@ -68,16 +66,13 @@ export function PurchaseDetailPage() {
       aria-labelledby="purchase-detail-title"
     >
       <BackButton fallback="/app/compras" />
-      <PageHeader
-        description={`${formatDate(value.purchaseDate)} · ${formatMoney(value.total, value.currency)}`}
-        eyebrow="Compra del hogar"
-        icon={<ReceiptText size={22} />}
-        title={value.storeName}
-        titleId="purchase-detail-title"
-      />
       {!isOnline ? (
-        <p className="feature-connectivity feature-connectivity--offline" role="status">
-          Sin conexión. Puedes revisar esta compra, pero confirmarla, editarla o cancelarla requiere conexión.
+        <p
+          className="feature-connectivity feature-connectivity--offline"
+          role="status"
+        >
+          Sin conexión. Puedes revisar esta compra, pero confirmarla, editarla o
+          cancelarla requiere conexión.
         </p>
       ) : null}
       <div className="purchase-detail-actions">
@@ -147,7 +142,9 @@ export function PurchaseDetailPage() {
       <section className="purchase-detail-section">
         <div className="purchase-section-heading">
           <h2>Productos</h2>
-          <span>{value.items.length} producto{value.items.length === 1 ? '' : 's'}</span>
+          <span>
+            {value.items.length} producto{value.items.length === 1 ? '' : 's'}
+          </span>
         </div>
         {value.items.length ? (
           <ul className="purchase-item-list">
@@ -173,7 +170,8 @@ export function PurchaseDetailPage() {
       </section>
       {value.status === 'CONFIRMED' ? (
         <p className="purchase-inventory-effect" role="status">
-          Compra confirmada por el servidor. Los productos vinculados generaron movimientos y los saldos actuales se consultan en inventario.
+          Compra confirmada por el servidor. Los productos vinculados generaron
+          movimientos y los saldos actuales se consultan en inventario.
         </p>
       ) : null}
       <Dialog
@@ -183,35 +181,51 @@ export function PurchaseDetailPage() {
       >
         <div className="purchase-confirmation">
           <p>
-            Al confirmar, el servidor registrará entradas para los productos vinculados y actualizará sus saldos de inventario.
+            Al confirmar, el servidor registrará entradas para los productos
+            vinculados y actualizará sus saldos de inventario.
           </p>
           <ul>
             {value.items.map((item) => (
               <li key={item.id ?? `${item.nameSnapshot}-${item.quantity}`}>
                 <span>{item.nameSnapshot}</span>
-                <strong>{item.quantity} {unitLabel(item.unit)}</strong>
+                <strong>
+                  {item.quantity} {unitLabel(item.unit)}
+                </strong>
               </li>
             ))}
           </ul>
-          <p className="supporting-text">Esta acción no se guarda offline ni debe repetirse mientras está en curso.</p>
+          <p className="supporting-text">
+            Esta acción no se guarda offline ni debe repetirse mientras está en
+            curso.
+          </p>
           {confirm.error ? (
             <p className="form-field__error" role="alert">
-              {confirm.error instanceof Error ? confirm.error.message : 'No se pudo confirmar la compra.'}
+              {confirm.error instanceof Error
+                ? confirm.error.message
+                : 'No se pudo confirmar la compra.'}
             </p>
           ) : null}
           <div className="purchase-dialog-actions">
-            <button className="button button--secondary" onClick={() => setConfirmation(null)} type="button">
+            <button
+              className="button button--secondary"
+              onClick={() => setConfirmation(null)}
+              type="button"
+            >
               Seguir revisando
             </button>
             <button
               className="button button--primary"
               disabled={confirm.isPending}
               onClick={() =>
-                confirm.mutate(value.id, { onSuccess: () => setConfirmation(null) })
+                confirm.mutate(value.id, {
+                  onSuccess: () => setConfirmation(null),
+                })
               }
               type="button"
             >
-              {confirm.isPending ? 'Confirmando...' : 'Confirmar y actualizar inventario'}
+              {confirm.isPending
+                ? 'Confirmando...'
+                : 'Confirmar y actualizar inventario'}
             </button>
           </div>
         </div>
@@ -221,14 +235,23 @@ export function PurchaseDetailPage() {
         open={confirmation === 'cancel'}
         title="Cancelar borrador"
       >
-        <p>El borrador dejará de estar disponible para edición. El inventario no cambiará.</p>
+        <p>
+          El borrador dejará de estar disponible para edición. El inventario no
+          cambiará.
+        </p>
         {cancel.error ? (
           <p className="form-field__error" role="alert">
-            {cancel.error instanceof Error ? cancel.error.message : 'No se pudo cancelar el borrador.'}
+            {cancel.error instanceof Error
+              ? cancel.error.message
+              : 'No se pudo cancelar el borrador.'}
           </p>
         ) : null}
         <div className="purchase-dialog-actions">
-          <button className="button button--secondary" onClick={() => setConfirmation(null)} type="button">
+          <button
+            className="button button--secondary"
+            onClick={() => setConfirmation(null)}
+            type="button"
+          >
             Conservar borrador
           </button>
           <button

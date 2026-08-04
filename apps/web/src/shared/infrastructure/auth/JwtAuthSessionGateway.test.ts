@@ -19,8 +19,13 @@ describe('JwtAuthSessionGateway', () => {
   beforeEach(() => sessionStorage.clear());
 
   it('registers, sends the API payload and stores the refresh token', async () => {
-    const fetchMock = vi.fn<typeof globalThis.fetch>(async () => response(tokens, 201));
-    const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
+    const fetchMock = vi.fn<typeof globalThis.fetch>(async () =>
+      response(tokens, 201),
+    );
+    const gateway = new JwtAuthSessionGateway(
+      'http://localhost:3000/api',
+      fetchMock,
+    );
 
     await gateway.registerWithEmail({
       email: ' User@Example.com ',
@@ -33,7 +38,9 @@ describe('JwtAuthSessionGateway', () => {
       email: 'user@example.com',
       password: 'password-seguro',
     });
-    expect(sessionStorage.getItem('nutrihogar.refresh-token')).toBe('refresh-1');
+    expect(sessionStorage.getItem('nutrihogar.refresh-token')).toBe(
+      'refresh-1',
+    );
   });
 
   it('refreshes concurrent unauthorized requests only once and retries with Bearer', async () => {
@@ -43,12 +50,22 @@ describe('JwtAuthSessionGateway', () => {
       if (url.endsWith('/auth/login')) return response(tokens);
       if (url.endsWith('/auth/refresh')) {
         refreshCalls += 1;
-        return response({ ...tokens, accessToken: 'access-2', refreshToken: 'refresh-2' });
+        return response({
+          ...tokens,
+          accessToken: 'access-2',
+          refreshToken: 'refresh-2',
+        });
       }
       return response(undefined, 401);
     });
-    const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
-    await gateway.loginWithEmail({ email: 'user@example.com', password: 'password' });
+    const gateway = new JwtAuthSessionGateway(
+      'http://localhost:3000/api',
+      fetchMock,
+    );
+    await gateway.loginWithEmail({
+      email: 'user@example.com',
+      password: 'password',
+    });
 
     const request = new Request('http://localhost:3000/api/households', {
       headers: { Authorization: 'Bearer access-1' },
@@ -62,9 +79,11 @@ describe('JwtAuthSessionGateway', () => {
     expect(first?.status).toBe(401);
     expect(second?.status).toBe(401);
     expect(fetchMock.mock.calls.at(-1)?.[0]).toBeInstanceOf(Request);
-    expect((fetchMock.mock.calls.at(-1)?.[0] as Request).headers.get('Authorization')).toBe(
-      'Bearer access-2',
-    );
+    expect(
+      (fetchMock.mock.calls.at(-1)?.[0] as Request).headers.get(
+        'Authorization',
+      ),
+    ).toBe('Bearer access-2');
   });
 
   it('restores a session from the refresh token', async () => {
@@ -72,13 +91,18 @@ describe('JwtAuthSessionGateway', () => {
     const fetchMock = vi.fn<typeof globalThis.fetch>(async () =>
       response({ ...tokens, accessToken: 'access-restored' }),
     );
-    const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
+    const gateway = new JwtAuthSessionGateway(
+      'http://localhost:3000/api',
+      fetchMock,
+    );
 
     await expect(gateway.getSession()).resolves.toEqual({
       accessToken: 'access-restored',
       userId: 'user-1',
     });
-    expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:3000/api/auth/refresh');
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'http://localhost:3000/api/auth/refresh',
+    );
   });
 
   it('exposes invalid credentials as an HTTP error', async () => {
@@ -93,8 +117,13 @@ describe('JwtAuthSessionGateway', () => {
   });
 
   it('clears the session after logout', async () => {
-    const fetchMock = vi.fn<typeof globalThis.fetch>(async () => response(undefined, 204));
-    const gateway = new JwtAuthSessionGateway('http://localhost:3000/api', fetchMock);
+    const fetchMock = vi.fn<typeof globalThis.fetch>(async () =>
+      response(undefined, 204),
+    );
+    const gateway = new JwtAuthSessionGateway(
+      'http://localhost:3000/api',
+      fetchMock,
+    );
     sessionStorage.setItem('nutrihogar.refresh-token', 'refresh-1');
 
     await gateway.logout();

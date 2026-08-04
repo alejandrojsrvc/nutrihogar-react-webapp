@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { PackagePlus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { AvailabilitySummary } from '../components/AvailabilitySummary';
 import { PreparationProgress } from '../components/PreparationProgress';
 import { usePreparedBatchDetails } from '../hooks/usePreparedBatches';
@@ -44,16 +42,6 @@ export function CreatePreparedFoodLeftoverPage() {
     return (
       <section className="page-section leftover-page" role="alert">
         <BackButton fallback={`/app/preparaciones/${batchId}`} />
-        <PageHeader
-          eyebrow="Sobrante"
-          title={cancelled ? 'Preparación cancelada' : 'La preparación todavía no está lista'}
-          description={
-            cancelled
-              ? 'No se pueden guardar sobrantes de una preparación cancelada.'
-              : 'Registra el peso cocido antes de guardar un sobrante.'
-          }
-          icon={<PackagePlus size={22} />}
-        />
         {!cancelled ? (
           <PreparationProgress
             current={
@@ -104,17 +92,16 @@ export function CreatePreparedFoodLeftoverPage() {
   }
 
   return (
-    <section className="page-section leftover-page" aria-labelledby="create-leftover-title">
+    <section
+      className="page-section leftover-page"
+      aria-labelledby="create-leftover-title"
+    >
       <BackButton fallback={`/app/preparaciones/${batchId}`} />
-      <PageHeader
-        eyebrow="Preparación familiar"
-        title={`Guardar sobrante de ${details.data.batch.recipeNameSnapshot}`}
-        titleId="create-leftover-title"
-        description="Registra únicamente la cantidad que vas a guardar de esta preparación."
-        icon={<PackagePlus size={22} />}
-      />
       <PreparationProgress current="leftover" />
-      <AvailabilitySummary availability={availability} pendingWeight={invalid ? 0 : requestedWeight} />
+      <AvailabilitySummary
+        availability={availability}
+        pendingWeight={invalid ? 0 : requestedWeight}
+      />
       <form
         className="leftover-form"
         onSubmit={(event) => {
@@ -122,81 +109,82 @@ export function CreatePreparedFoodLeftoverPage() {
           submit();
         }}
       >
-      <fieldset className="preparation-fieldset">
-        <legend>Cantidad y guardado</legend>
-      <div className="form-field">
-        <label htmlFor="leftover-weight">Peso del sobrante (g)</label>
-        <input
-          id="leftover-weight"
-          min="0.1"
-          onChange={(event) => setWeight(event.target.value)}
-          step="0.1"
-          type="number"
-          value={weight}
-        />
-        {invalid && weight ? (
-          <p className="form-field__error">
-            Indica un peso mayor que cero y no mayor a la disponibilidad.
+        <fieldset className="preparation-fieldset">
+          <legend>Cantidad y guardado</legend>
+          <div className="form-field">
+            <label htmlFor="leftover-weight">Peso del sobrante (g)</label>
+            <input
+              id="leftover-weight"
+              min="0.1"
+              onChange={(event) => setWeight(event.target.value)}
+              step="0.1"
+              type="number"
+              value={weight}
+            />
+            {invalid && weight ? (
+              <p className="form-field__error">
+                Indica un peso mayor que cero y no mayor a la disponibilidad.
+              </p>
+            ) : null}
+          </div>
+          <div className="form-field">
+            <label htmlFor="leftover-stored-at">Fecha y hora</label>
+            <input
+              id="leftover-stored-at"
+              onChange={(event) => setStoredAt(event.target.value)}
+              required
+              type="datetime-local"
+              value={storedAt}
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="leftover-location">Ubicación</label>
+            <select
+              id="leftover-location"
+              onChange={(event) => setStorageLocation(event.target.value)}
+              value={storageLocation}
+            >
+              <option value="REFRIGERATOR">Refrigerador</option>
+              <option value="FREEZER">Congelador</option>
+              <option value="PANTRY">Despensa</option>
+            </select>
+          </div>
+        </fieldset>
+        <fieldset className="preparation-fieldset">
+          <legend>Nota opcional</legend>
+          <div className="form-field">
+            <label htmlFor="leftover-notes">Nota (opcional)</label>
+            <textarea
+              id="leftover-notes"
+              onChange={(event) => setNotes(event.target.value)}
+              value={notes}
+            />
+          </div>
+        </fieldset>
+        <p className="supporting-text">
+          El sobrante conserva la densidad nutricional definitiva de la
+          preparación.
+        </p>
+        {create.isError ? (
+          <p role="alert">
+            No se pudo guardar el sobrante. Inténtalo nuevamente.
           </p>
         ) : null}
-      </div>
-      <div className="form-field">
-        <label htmlFor="leftover-stored-at">Fecha y hora</label>
-        <input
-          id="leftover-stored-at"
-          onChange={(event) => setStoredAt(event.target.value)}
-          required
-          type="datetime-local"
-          value={storedAt}
-        />
-      </div>
-      <div className="form-field">
-        <label htmlFor="leftover-location">Ubicación</label>
-        <select
-          id="leftover-location"
-          onChange={(event) => setStorageLocation(event.target.value)}
-          value={storageLocation}
-        >
-          <option value="REFRIGERATOR">Refrigerador</option>
-          <option value="FREEZER">Congelador</option>
-          <option value="PANTRY">Despensa</option>
-        </select>
-      </div>
-      </fieldset>
-      <fieldset className="preparation-fieldset">
-        <legend>Nota opcional</legend>
-      <div className="form-field">
-        <label htmlFor="leftover-notes">Nota (opcional)</label>
-        <textarea
-          id="leftover-notes"
-          onChange={(event) => setNotes(event.target.value)}
-          value={notes}
-        />
-      </div>
-      </fieldset>
-      <p className="supporting-text">
-        El sobrante conserva la densidad nutricional definitiva de la preparación.
-      </p>
-      {create.isError ? (
-        <p role="alert">
-          No se pudo guardar el sobrante. Inténtalo nuevamente.
-        </p>
-      ) : null}
-      <div className="recipe-page-actions">
-        <Link
-          className="button button--secondary"
-          to={`/app/preparaciones/${batchId}`}
-        >
-          Cancelar
-        </Link>
-        <button
-          className="button button--primary"
-          disabled={invalid || create.isPending}
-          type="submit"
-        >
-          {create.isPending ? 'Guardando...' : 'Guardar sobrante'}
-        </button>
-      </div>
+        <div className="recipe-page-actions">
+          <Link
+            className="button button--secondary"
+            to={`/app/preparaciones/${batchId}`}
+          >
+            Cancelar
+          </Link>
+          <button
+            className="button button--primary"
+            disabled={invalid || create.isPending}
+            type="submit"
+          >
+            {create.isPending ? 'Guardando...' : 'Guardar sobrante'}
+          </button>
+        </div>
       </form>
     </section>
   );

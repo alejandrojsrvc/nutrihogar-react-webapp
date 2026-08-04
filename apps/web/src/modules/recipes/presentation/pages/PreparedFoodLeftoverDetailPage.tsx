@@ -72,10 +72,15 @@ export function PreparedFoodLeftoverDetailPage() {
   }
 
   return (
-    <section className="page-section leftover-page" aria-labelledby="leftover-detail-title">
+    <section
+      className="page-section leftover-page"
+      aria-labelledby="leftover-detail-title"
+    >
       <BackButton fallback="/app/sobrantes" />
       <div className="recipe-status-line">
-        <Badge tone={statusTone(value.status)}>{humanizeEnum(value.status)}</Badge>
+        <Badge tone={statusTone(value.status)}>
+          {humanizeEnum(value.status)}
+        </Badge>
       </div>
       <dl className="recipe-detail-meta">
         <div>
@@ -128,84 +133,86 @@ export function PreparedFoodLeftoverDetailPage() {
               if (!invalidQuantity) setInventoryDialogOpen(true);
             }}
           >
-          <fieldset className="preparation-fieldset">
-            <legend>Cantidad y ubicación</legend>
-          <div className="form-field">
-            <label htmlFor="leftover-quantity">Cantidad (g)</label>
-            <input
-              id="leftover-quantity"
-              inputMode="decimal"
-              max={value.availableWeight}
-              min="0.1"
-              onChange={(event) => setQuantity(event.target.value)}
-              step="0.1"
-              type="number"
-              value={quantity}
-            />
-            <p className="supporting-text">
-              Disponible: {value.availableWeight} g
-            </p>
-          </div>
-          <div className="form-field">
-            <label htmlFor="leftover-location">Ubicación</label>
-            <input
-              id="leftover-location"
-              onChange={(event) => setLocation(event.target.value)}
-              placeholder="Ej. Refrigerador"
-              type="text"
-              value={location}
-            />
-          </div>
-          </fieldset>
-          <fieldset className="preparation-fieldset">
-            <legend>Conservación</legend>
-          <div className="form-field">
-            <label htmlFor="leftover-expires-at">Vencimiento opcional</label>
-            <input
-              id="leftover-expires-at"
-              onChange={(event) => setExpiresAt(event.target.value)}
-              type="datetime-local"
-              value={expiresAt}
-            />
-          </div>
-          </fieldset>
-          <div className="recipe-page-actions">
-            <button
-              className="button button--primary"
-              disabled={addToInventory.isPending || invalidQuantity}
-              type="submit"
-            >
-              {addToInventory.isPending
-                ? 'Agregando...'
-                : 'Agregar al inventario'}
-            </button>
-            <button
-              className="button button--secondary"
-              disabled={updateStatus.isPending}
-              onClick={() =>
-                updateStatus.mutate(
-                  { leftoverId, status: 'CONSUMED' },
-                  { onSuccess: () => navigate('/app/sobrantes') },
-                )
-              }
-              type="button"
-            >
-              Consumir sobrante
-            </button>
-            <button
-              className="button button--danger"
-              disabled={updateStatus.isPending}
-              onClick={() =>
-                updateStatus.mutate(
-                  { leftoverId, status: 'DISCARDED' },
-                  { onSuccess: () => navigate('/app/sobrantes') },
-                )
-              }
-              type="button"
-            >
-              Descartar sobrante
-            </button>
-          </div>
+            <fieldset className="preparation-fieldset">
+              <legend>Cantidad y ubicación</legend>
+              <div className="form-field">
+                <label htmlFor="leftover-quantity">Cantidad (g)</label>
+                <input
+                  id="leftover-quantity"
+                  inputMode="decimal"
+                  max={value.availableWeight}
+                  min="0.1"
+                  onChange={(event) => setQuantity(event.target.value)}
+                  step="0.1"
+                  type="number"
+                  value={quantity}
+                />
+                <p className="supporting-text">
+                  Disponible: {value.availableWeight} g
+                </p>
+              </div>
+              <div className="form-field">
+                <label htmlFor="leftover-location">Ubicación</label>
+                <input
+                  id="leftover-location"
+                  onChange={(event) => setLocation(event.target.value)}
+                  placeholder="Ej. Refrigerador"
+                  type="text"
+                  value={location}
+                />
+              </div>
+            </fieldset>
+            <fieldset className="preparation-fieldset">
+              <legend>Conservación</legend>
+              <div className="form-field">
+                <label htmlFor="leftover-expires-at">
+                  Vencimiento opcional
+                </label>
+                <input
+                  id="leftover-expires-at"
+                  onChange={(event) => setExpiresAt(event.target.value)}
+                  type="datetime-local"
+                  value={expiresAt}
+                />
+              </div>
+            </fieldset>
+            <div className="recipe-page-actions">
+              <button
+                className="button button--primary"
+                disabled={addToInventory.isPending || invalidQuantity}
+                type="submit"
+              >
+                {addToInventory.isPending
+                  ? 'Agregando...'
+                  : 'Agregar al inventario'}
+              </button>
+              <button
+                className="button button--secondary"
+                disabled={updateStatus.isPending}
+                onClick={() =>
+                  updateStatus.mutate(
+                    { leftoverId, status: 'CONSUMED' },
+                    { onSuccess: () => navigate('/app/sobrantes') },
+                  )
+                }
+                type="button"
+              >
+                Consumir sobrante
+              </button>
+              <button
+                className="button button--danger"
+                disabled={updateStatus.isPending}
+                onClick={() =>
+                  updateStatus.mutate(
+                    { leftoverId, status: 'DISCARDED' },
+                    { onSuccess: () => navigate('/app/sobrantes') },
+                  )
+                }
+                type="button"
+              >
+                Descartar sobrante
+              </button>
+            </div>
           </form>
         </section>
       ) : null}
@@ -244,7 +251,9 @@ export function PreparedFoodLeftoverDetailPage() {
             onClick={addInventory}
             type="button"
           >
-            {addToInventory.isPending ? 'Agregando...' : 'Confirmar en inventario'}
+            {addToInventory.isPending
+              ? 'Agregando...'
+              : 'Confirmar en inventario'}
           </button>
         </div>
       </Dialog>

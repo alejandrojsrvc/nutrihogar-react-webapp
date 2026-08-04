@@ -51,8 +51,11 @@ function mockPreparationRequest(status: number) {
     const request = new Request(input, init);
     const pathname = new URL(request.url).pathname;
     if (pathname === '/api/households') return jsonResponse([household()]);
+    if (pathname.includes('/adult-profiles')) return jsonResponse([]);
     if (pathname === '/api/weekly-plans/plan-1')
       return jsonResponse(planResponse());
+    if (pathname === '/api/planned-meals/meal-1/preparation' && status === 404)
+      return new Response(null, { status });
     if (pathname === '/api/planned-meals/meal-1/preparation')
       return jsonResponse({ message: 'Preparation unavailable' }, status);
     return jsonResponse({ items: [], limit: 20, page: 1, total: 0 });

@@ -235,7 +235,9 @@
 .meal-planning-detail__sticky-actions {
   position: sticky;
   z-index: 5;
-  bottom: calc(var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom));
+  bottom: calc(
+    var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom)
+  );
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);

@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import { PackageSearch } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { BottomSheet, Dialog } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  BottomSheet,
+  Dialog,
+} from '../../../../shared/presentation/components/Overlay';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { PendingInventoryOperation } from '../../application/ports/InventoryLocalRepository';
 import '../inventory.css';
@@ -197,13 +198,6 @@ export function InventoryDetailPage() {
       aria-labelledby="inventory-detail-title"
     >
       <BackButton fallback="/app/inventario" />
-      <PageHeader
-        description="Consulta el saldo disponible, sus alertas y el historial de cambios."
-        eyebrow={itemTypeLabel(value.itemType)}
-        icon={<PackageSearch size={22} />}
-        title={value.name}
-        titleId="inventory-detail-title"
-      />
       <div className="inventory-detail-actions">
         <span
           className={`status-badge${isArchived ? ' status-badge--danger' : ''}`}
@@ -260,28 +254,31 @@ export function InventoryDetailPage() {
               ? 'Sincronizando cambios'
               : synchronize.isError
                 ? 'No se pudieron sincronizar los cambios'
-            : syncStatus.isError || pending.isError || conflicts.isError
-              ? 'No se pudo comprobar la sincronización'
-            : syncStatus.data?.isOnline === false
-              ? 'Viendo datos guardados en este dispositivo'
-              : syncStatus.data?.conflictsCount
-                ? 'Hay un conflicto de sincronización'
-                : itemPending.length
-                  ? 'Pendiente de sincronización'
-                  : 'Saldo confirmado por el servidor'}
+                : syncStatus.isError || pending.isError || conflicts.isError
+                  ? 'No se pudo comprobar la sincronización'
+                  : syncStatus.data?.isOnline === false
+                    ? 'Viendo datos guardados en este dispositivo'
+                    : syncStatus.data?.conflictsCount
+                      ? 'Hay un conflicto de sincronización'
+                      : itemPending.length
+                        ? 'Pendiente de sincronización'
+                        : 'Saldo confirmado por el servidor'}
         </strong>
         <span>
           {itemPending.length
             ? `${itemPending.length} cambio${itemPending.length === 1 ? '' : 's'} local${itemPending.length === 1 ? '' : 'es'} todavía sin confirmar.`
             : syncStatus.isError || pending.isError || conflicts.isError
               ? 'Reintenta para verificar si existen cambios locales pendientes.'
-            : syncStatus.data?.isOnline === false
-              ? 'El saldo puede no incluir cambios realizados desde otros dispositivos.'
-              : itemConflicts.length
-                ? 'Revisa el conflicto de esta existencia antes de continuar.'
-                : 'No hay cambios locales pendientes para esta existencia.'}
+              : syncStatus.data?.isOnline === false
+                ? 'El saldo puede no incluir cambios realizados desde otros dispositivos.'
+                : itemConflicts.length
+                  ? 'Revisa el conflicto de esta existencia antes de continuar.'
+                  : 'No hay cambios locales pendientes para esta existencia.'}
         </span>
-        {syncStatus.isError || pending.isError || conflicts.isError || synchronize.isError ? (
+        {syncStatus.isError ||
+        pending.isError ||
+        conflicts.isError ||
+        synchronize.isError ? (
           <button
             className="button button--secondary"
             onClick={() => {
@@ -298,10 +295,16 @@ export function InventoryDetailPage() {
           </button>
         ) : null}
       </div>
-      {feedback ? <p className="inventory-feedback" role="status">{feedback}</p> : null}
+      {feedback ? (
+        <p className="inventory-feedback" role="status">
+          {feedback}
+        </p>
+      ) : null}
       <dl className="inventory-detail-meta">
         <div>
-          <dt>{itemPending.length ? 'Cantidad mostrada' : 'Cantidad actual'}</dt>
+          <dt>
+            {itemPending.length ? 'Cantidad mostrada' : 'Cantidad actual'}
+          </dt>
           <dd>{formatQuantity(value.currentQuantity, value.unit)}</dd>
         </div>
         <div>
@@ -366,82 +369,86 @@ export function InventoryDetailPage() {
           }
         >
           <div className="inventory-action-form">
-          {action === 'EXPIRATION' ? (
-            <p role="note">
-              Al confirmar, esta cantidad se retirará por vencimiento y no
-              generará una comida.
-            </p>
-          ) : null}
-          <div className="inventory-inline-form">
-            <label htmlFor="inventory-exit-quantity">
-              Cantidad disponible:{' '}
-              {formatQuantity(value.currentQuantity, value.unit)}
-            </label>
-            <input
-              aria-describedby="inventory-exit-help"
-              id="inventory-exit-quantity"
-              inputMode="decimal"
-              max={value.currentQuantity}
-              min="0.1"
-              onChange={(event) => setQuantity(event.target.value)}
-              step="any"
-              type="number"
-              value={quantity}
-            />
-            <p className="supporting-text" id="inventory-exit-help">
-              Saldo resultante:{' '}
-              {formatQuantity(
-                Math.max(value.currentQuantity - (Number(quantity) || 0), 0),
-                value.unit,
-              )}
-            </p>
-            <label htmlFor="inventory-exit-reason">Razón opcional</label>
-            <input
-              id="inventory-exit-reason"
-              onChange={(event) => setReason(event.target.value)}
-              type="text"
-              value={reason}
-            />
-            <label htmlFor="inventory-exit-date">Fecha y hora</label>
-            <input
-              id="inventory-exit-date"
-              onChange={(event) => setOccurredAt(event.target.value)}
-              type="datetime-local"
-              value={occurredAt}
-            />
-            <button
-              className="button button--primary"
-              disabled={
-                consume.isPending ||
-                waste.isPending ||
-                expiration.isPending
-              }
-              onClick={() => void submitExit(action)}
-              type="button"
-            >
-              {consume.isPending || waste.isPending || expiration.isPending
-                ? syncStatus.data?.isOnline === false
-                  ? 'Guardando en dispositivo...'
-                  : 'Guardando...'
-                : syncStatus.data?.isOnline === false
-                  ? action === 'CONSUME'
-                    ? 'Guardar consumo pendiente'
-                    : action === 'WASTE'
-                      ? 'Guardar desperdicio pendiente'
-                      : 'Guardar vencimiento pendiente'
-                  : action === 'CONSUME'
-                    ? 'Registrar consumo'
-                    : action === 'WASTE'
-                      ? 'Registrar desperdicio'
-                      : 'Registrar vencimiento'}
-            </button>
-          </div>
-          {actionError ? <p className="form-field__error" role="alert">{actionError}</p> : null}
-          {exitError ? (
-            <p className="form-field__error" role="alert">
-              {exitError instanceof Error ? exitError.message : 'No se pudo completar la acción.'}
-            </p>
-          ) : null}
+            {action === 'EXPIRATION' ? (
+              <p role="note">
+                Al confirmar, esta cantidad se retirará por vencimiento y no
+                generará una comida.
+              </p>
+            ) : null}
+            <div className="inventory-inline-form">
+              <label htmlFor="inventory-exit-quantity">
+                Cantidad disponible:{' '}
+                {formatQuantity(value.currentQuantity, value.unit)}
+              </label>
+              <input
+                aria-describedby="inventory-exit-help"
+                id="inventory-exit-quantity"
+                inputMode="decimal"
+                max={value.currentQuantity}
+                min="0.1"
+                onChange={(event) => setQuantity(event.target.value)}
+                step="any"
+                type="number"
+                value={quantity}
+              />
+              <p className="supporting-text" id="inventory-exit-help">
+                Saldo resultante:{' '}
+                {formatQuantity(
+                  Math.max(value.currentQuantity - (Number(quantity) || 0), 0),
+                  value.unit,
+                )}
+              </p>
+              <label htmlFor="inventory-exit-reason">Razón opcional</label>
+              <input
+                id="inventory-exit-reason"
+                onChange={(event) => setReason(event.target.value)}
+                type="text"
+                value={reason}
+              />
+              <label htmlFor="inventory-exit-date">Fecha y hora</label>
+              <input
+                id="inventory-exit-date"
+                onChange={(event) => setOccurredAt(event.target.value)}
+                type="datetime-local"
+                value={occurredAt}
+              />
+              <button
+                className="button button--primary"
+                disabled={
+                  consume.isPending || waste.isPending || expiration.isPending
+                }
+                onClick={() => void submitExit(action)}
+                type="button"
+              >
+                {consume.isPending || waste.isPending || expiration.isPending
+                  ? syncStatus.data?.isOnline === false
+                    ? 'Guardando en dispositivo...'
+                    : 'Guardando...'
+                  : syncStatus.data?.isOnline === false
+                    ? action === 'CONSUME'
+                      ? 'Guardar consumo pendiente'
+                      : action === 'WASTE'
+                        ? 'Guardar desperdicio pendiente'
+                        : 'Guardar vencimiento pendiente'
+                    : action === 'CONSUME'
+                      ? 'Registrar consumo'
+                      : action === 'WASTE'
+                        ? 'Registrar desperdicio'
+                        : 'Registrar vencimiento'}
+              </button>
+            </div>
+            {actionError ? (
+              <p className="form-field__error" role="alert">
+                {actionError}
+              </p>
+            ) : null}
+            {exitError ? (
+              <p className="form-field__error" role="alert">
+                {exitError instanceof Error
+                  ? exitError.message
+                  : 'No se pudo completar la acción.'}
+              </p>
+            ) : null}
           </div>
         </BottomSheet>
       ) : null}
@@ -460,7 +467,13 @@ export function InventoryDetailPage() {
         {movements.isError ? (
           <div role="alert">
             <p>No se pudo cargar el historial.</p>
-            <button className="button button--secondary" onClick={() => void movements.refetch()} type="button">Reintentar historial</button>
+            <button
+              className="button button--secondary"
+              onClick={() => void movements.refetch()}
+              type="button"
+            >
+              Reintentar historial
+            </button>
           </div>
         ) : null}
         {!movements.isPending &&
@@ -507,23 +520,37 @@ export function InventoryDetailPage() {
         </section>
       ) : null}
       {itemConflicts.length ? (
-        <section className="inventory-detail-section" aria-labelledby="inventory-conflicts-title">
+        <section
+          className="inventory-detail-section"
+          aria-labelledby="inventory-conflicts-title"
+        >
           <h2 id="inventory-conflicts-title">Conflictos por revisar</h2>
           <p className="supporting-text">
-            El saldo del servidor cambió antes de aplicar estos cambios locales. Reintentar los vuelve a poner en cola; no los confirma de inmediato.
+            El saldo del servidor cambió antes de aplicar estos cambios locales.
+            Reintentar los vuelve a poner en cola; no los confirma de inmediato.
           </p>
           <ul className="inventory-conflict-list">
             {itemConflicts.map((operation) => (
               <li key={operation.operationId}>
                 <div>
-                  <strong>{operation.movementType ? movementLabel(operation.movementType) : 'Ajuste de cantidad'}</strong>
-                  <span>{operation.lastError ?? 'El servidor rechazó la versión usada por este cambio.'}</span>
+                  <strong>
+                    {operation.movementType
+                      ? movementLabel(operation.movementType)
+                      : 'Ajuste de cantidad'}
+                  </strong>
+                  <span>
+                    {operation.lastError ??
+                      'El servidor rechazó la versión usada por este cambio.'}
+                  </span>
                 </div>
                 <div className="inventory-conflict-actions">
                   {operation.retryable !== false ? (
                     <button
                       className="button button--secondary"
-                      disabled={retryOperation.isPending || syncStatus.data?.isOnline === false}
+                      disabled={
+                        retryOperation.isPending ||
+                        syncStatus.data?.isOnline === false
+                      }
                       onClick={() => {
                         void retryOperation
                           .mutateAsync({
@@ -545,7 +572,9 @@ export function InventoryDetailPage() {
                   <button
                     className="button button--text inventory-danger-text"
                     disabled={discardOperation.isPending}
-                    onClick={() => discardOperation.mutate(operation.operationId)}
+                    onClick={() =>
+                      discardOperation.mutate(operation.operationId)
+                    }
                     type="button"
                   >
                     Descartar cambio local
@@ -554,7 +583,9 @@ export function InventoryDetailPage() {
               </li>
             ))}
           </ul>
-          {retryOperation.error || discardOperation.error || synchronize.error ? (
+          {retryOperation.error ||
+          discardOperation.error ||
+          synchronize.error ? (
             <p className="form-field__error" role="alert">
               No se pudo actualizar el cambio pendiente. Inténtalo nuevamente.
             </p>
@@ -584,7 +615,9 @@ export function InventoryDetailPage() {
         title="Cambiar mínimo"
       >
         <div className="inventory-inline-form">
-          <label htmlFor="inventory-minimum">Nuevo mínimo ({unitLabel(value.unit)})</label>
+          <label htmlFor="inventory-minimum">
+            Nuevo mínimo ({unitLabel(value.unit)})
+          </label>
           <input
             id="inventory-minimum"
             inputMode="decimal"
@@ -594,10 +627,16 @@ export function InventoryDetailPage() {
             type="number"
             value={minimum}
           />
-          {actionError ? <p className="form-field__error" role="alert">{actionError}</p> : null}
+          {actionError ? (
+            <p className="form-field__error" role="alert">
+              {actionError}
+            </p>
+          ) : null}
           {update.error ? (
             <p className="form-field__error" role="alert">
-              {update.error instanceof Error ? update.error.message : 'No se pudo cambiar el mínimo.'}
+              {update.error instanceof Error
+                ? update.error.message
+                : 'No se pudo cambiar el mínimo.'}
             </p>
           ) : null}
           <button
@@ -608,15 +647,42 @@ export function InventoryDetailPage() {
           >
             {update.isPending ? 'Guardando...' : 'Guardar mínimo'}
           </button>
-          {syncStatus.data?.isOnline === false ? <p className="supporting-text">Cambiar el mínimo requiere conexión y no se guarda como operación pendiente.</p> : null}
+          {syncStatus.data?.isOnline === false ? (
+            <p className="supporting-text">
+              Cambiar el mínimo requiere conexión y no se guarda como operación
+              pendiente.
+            </p>
+          ) : null}
         </div>
       </BottomSheet>
-      <Dialog onClose={closeArchive} open={archiveOpen} title="Archivar existencia">
-        <p>La existencia se retirará del inventario activo, pero su historial se conservará. Esta acción requiere confirmación del servidor.</p>
-        {archive.error ? <p className="form-field__error" role="alert">No se pudo archivar la existencia.</p> : null}
+      <Dialog
+        onClose={closeArchive}
+        open={archiveOpen}
+        title="Archivar existencia"
+      >
+        <p>
+          La existencia se retirará del inventario activo, pero su historial se
+          conservará. Esta acción requiere confirmación del servidor.
+        </p>
+        {archive.error ? (
+          <p className="form-field__error" role="alert">
+            No se pudo archivar la existencia.
+          </p>
+        ) : null}
         <div className="inventory-dialog-actions">
-          <button className="button button--secondary" onClick={closeArchive} type="button">Conservar existencia</button>
-          <button className="button button--danger" disabled={archive.isPending} onClick={archiveItem} type="button">
+          <button
+            className="button button--secondary"
+            onClick={closeArchive}
+            type="button"
+          >
+            Conservar existencia
+          </button>
+          <button
+            className="button button--danger"
+            disabled={archive.isPending}
+            onClick={archiveItem}
+            type="button"
+          >
             {archive.isPending ? 'Archivando...' : 'Archivar existencia'}
           </button>
         </div>
@@ -646,13 +712,6 @@ function sourceLink(item: {
       </span>
     );
   return 'Existencia personalizada';
-}
-function itemTypeLabel(type: string) {
-  return type === 'PREPARED_FOOD'
-    ? 'Preparación'
-    : type === 'CUSTOM'
-      ? 'Personalizado'
-      : 'Alimento';
 }
 function statusLabel(status: string) {
   return status === 'ARCHIVED'

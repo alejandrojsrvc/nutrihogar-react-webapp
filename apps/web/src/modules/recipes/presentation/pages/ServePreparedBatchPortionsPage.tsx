@@ -1,9 +1,8 @@
-import { Trash2, Users } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { AvailabilitySummary } from '../components/AvailabilitySummary';
@@ -55,16 +54,6 @@ export function ServePreparedBatchPortionsPage() {
     return (
       <section className="page-section preparation-page" role="alert">
         <BackButton fallback={`/app/preparaciones/${batchId}`} />
-        <PageHeader
-          eyebrow="Porciones"
-          title={cancelled ? 'Preparación cancelada' : 'La preparación todavía no está lista'}
-          description={
-            cancelled
-              ? 'No se pueden servir porciones de una preparación cancelada.'
-              : 'Completa los pasos pendientes antes de distribuir porciones.'
-          }
-          icon={<Users size={22} />}
-        />
         {!cancelled ? (
           <>
             <PreparationProgress
@@ -95,7 +84,8 @@ export function ServePreparedBatchPortionsPage() {
   const invalidWeight = rows.some(
     (row) =>
       row.servedWeight !== '' &&
-      (!Number.isFinite(Number(row.servedWeight)) || Number(row.servedWeight) <= 0),
+      (!Number.isFinite(Number(row.servedWeight)) ||
+        Number(row.servedWeight) <= 0),
   );
   const invalid =
     !availability ||
@@ -113,20 +103,13 @@ export function ServePreparedBatchPortionsPage() {
       aria-labelledby="serve-portions-title"
     >
       <BackButton fallback={`/app/preparaciones/${batchId}`} />
-      <PageHeader
-        eyebrow="Distribución familiar"
-        title="Servir porciones"
-        titleId="serve-portions-title"
-        description="Asigna cada cantidad a un integrante para conservar su seguimiento."
-        icon={<Users size={22} />}
-      />
       <PreparationProgress current="portions" />
       <AvailabilitySummary availability={availability} pendingWeight={total} />
 
       {!activeProfiles.length ? (
         <p className="preparation-callout" role="alert">
-          Este hogar no tiene integrantes activos. Se necesita un integrante para
-          registrar una porción.
+          Este hogar no tiene integrantes activos. Se necesita un integrante
+          para registrar una porción.
         </p>
       ) : null}
 
@@ -151,7 +134,9 @@ export function ServePreparedBatchPortionsPage() {
                   replace: true,
                   state: {
                     successMessage: `${result.portions.length} ${
-                      result.portions.length === 1 ? 'porción guardada' : 'porciones guardadas'
+                      result.portions.length === 1
+                        ? 'porción guardada'
+                        : 'porciones guardadas'
                     }. Quedan ${result.availableWeight} g disponibles.`,
                   },
                 }),
@@ -188,7 +173,9 @@ export function ServePreparedBatchPortionsPage() {
                 </select>
               </div>
               <div className="form-field">
-                <label htmlFor={`portion-weight-${index}`}>Peso servido (g)</label>
+                <label htmlFor={`portion-weight-${index}`}>
+                  Peso servido (g)
+                </label>
                 <input
                   aria-describedby={
                     row.servedWeight !== '' && Number(row.servedWeight) <= 0
@@ -228,7 +215,9 @@ export function ServePreparedBatchPortionsPage() {
                   <button
                     className="button button--text"
                     onClick={() =>
-                      setRows((current) => current.filter((_, position) => position !== index))
+                      setRows((current) =>
+                        current.filter((_, position) => position !== index),
+                      )
                     }
                     type="button"
                   >

@@ -1,11 +1,9 @@
 import { Link, useParams } from 'react-router';
-import { Target } from 'lucide-react';
 
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useNutritionGoalSuggestion } from '../hooks/useNutritionGoals';
 import { NutritionGoalValuesForm } from '../components/NutritionGoalValuesForm';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import '../nutrition-goals.css';
 
@@ -28,14 +26,13 @@ export function NutritionGoalProposalPage() {
     );
   }
 
-  if (
-    households.isError ||
-    !households.activeHousehold ||
-    profiles.isError
-  ) {
+  if (households.isError || !households.activeHousehold || profiles.isError) {
     return (
-      <section className="page-section nutrition-goal-state" role="alert">
-        <h1>No pudimos cargar el perfil</h1>
+      <section
+        className="page-section nutrition-goal-state"
+        aria-labelledby="goal-proposal-profiles-error-title"
+        role="alert"
+      >
         <p>La propuesta no se confirmó.</p>
         <Link className="button button--secondary" to="/app">
           Volver al inicio
@@ -48,9 +45,8 @@ export function NutritionGoalProposalPage() {
     return (
       <section
         className="page-section"
-        aria-labelledby="proposal-missing-title"
+        aria-labelledby="goal-proposal-missing-title"
       >
-        <h1 id="proposal-missing-title">La propuesta ya no está disponible</h1>
         <Link
           className="button button--secondary"
           to={`/app/perfiles/${profileId ?? ''}/meta`}
@@ -65,11 +61,8 @@ export function NutritionGoalProposalPage() {
     return (
       <section
         className="page-section nutrition-goal-state"
-        aria-labelledby="proposal-profile-missing-title"
+        aria-labelledby="goal-proposal-profile-missing-title"
       >
-        <h1 id="proposal-profile-missing-title">
-          No encontramos este perfil
-        </h1>
         <p>La propuesta no se confirmó.</p>
         <Link className="button button--secondary" to="/app">
           Volver al inicio
@@ -81,15 +74,9 @@ export function NutritionGoalProposalPage() {
   return (
     <section
       className="page-section nutrition-goal-page"
-      aria-labelledby="proposal-title"
+      aria-labelledby="goal-proposal-title"
     >
       <BackButton fallback={`/app/perfiles/${profileId}/meta`} />
-      <PageHeader
-        description={`Revisa la estimación para ${profile.name} antes de guardarla.`}
-        icon={<Target size={25} />}
-        title="Revisa tu estimación"
-        titleId="proposal-title"
-      />
       <NutritionGoalValuesForm
         profileId={profileId}
         suggestion={suggestion.data}

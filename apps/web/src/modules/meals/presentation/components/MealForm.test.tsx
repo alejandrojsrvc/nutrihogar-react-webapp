@@ -24,10 +24,20 @@ describe('MealForm consumer layout', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('button', { name: 'Foto. Disponible próximamente' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'IA. Disponible próximamente' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Código. Disponible próximamente' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Registrar comida' })).toBeDisabled();
-    expect(screen.getByRole('heading', { name: 'Tu comida' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Foto. Disponible próximamente' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'IA. Disponible próximamente' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Código. Disponible próximamente' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Registrar comida' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('heading', { name: 'Tu comida' }),
+    ).toBeInTheDocument();
   });
 });

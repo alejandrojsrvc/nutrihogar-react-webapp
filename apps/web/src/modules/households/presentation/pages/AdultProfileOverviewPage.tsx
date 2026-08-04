@@ -1,4 +1,3 @@
-import { UserRound } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router';
 
 import {
@@ -6,7 +5,6 @@ import {
   LoadingState,
 } from '../../../../shared/presentation/components/AsyncState';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { ThemeControl } from '../../../../shared/presentation/components/ThemeControl';
 import { useAuth } from '../../../auth/presentation/providers/useAuth';
 import type { AdultProfile } from '../../application/ports/AdultProfileGateway';
@@ -50,7 +48,6 @@ export function AdultProfileOverviewPage() {
         className="page-section"
         aria-labelledby="profile-household-title"
       >
-        <h1 id="profile-household-title">Selecciona un hogar</h1>
         <p className="lead">Elige el hogar cuyos datos quieres consultar.</p>
         <Link className="button button--primary" to="/app">
           Ir a mis hogares
@@ -65,13 +62,6 @@ export function AdultProfileOverviewPage() {
     return (
       <section className="page-section">
         <BackButton fallback="/app/familia" />
-        <PageHeader
-          icon={<UserRound size={24} />}
-          eyebrow={households.activeHousehold.name}
-          title="Perfil no disponible"
-          titleId="profile-empty-title"
-          description="Este integrante no pertenece al hogar activo o ya no está disponible."
-        />
         <ErrorState
           action={
             <Link className="button button--secondary" to="/app/familia">
@@ -86,14 +76,6 @@ export function AdultProfileOverviewPage() {
   if (!profile)
     return (
       <section className="page-section" aria-labelledby="profile-empty-title">
-        <BackButton fallback="/app" />
-        <PageHeader
-          icon={<UserRound size={24} />}
-          eyebrow={households.activeHousehold.name}
-          title="Tu perfil"
-          titleId="profile-empty-title"
-          description="Configura tus datos para personalizar las metas y recomendaciones del hogar."
-        />
         <Link className="button button--primary" to="/app/perfil/editar">
           Configurar perfil
         </Link>
@@ -101,7 +83,6 @@ export function AdultProfileOverviewPage() {
     );
   return (
     <ProfileOverview
-      householdName={households.activeHousehold.name}
       isOwnProfile={profile.userId === currentUser.id}
       profile={profile}
       showBack={Boolean(profileId)}
@@ -110,12 +91,10 @@ export function AdultProfileOverviewPage() {
 }
 
 function ProfileOverview({
-  householdName,
   isOwnProfile,
   profile,
   showBack,
 }: {
-  householdName: string;
   isOwnProfile: boolean;
   profile: AdultProfile;
   showBack: boolean;
@@ -126,20 +105,6 @@ function ProfileOverview({
       aria-labelledby="profile-overview-title"
     >
       {showBack ? <BackButton fallback="/app/familia" /> : null}
-      <PageHeader
-        action={
-          isOwnProfile ? (
-            <Link className="button button--primary" to="/app/perfil/editar">
-              Editar perfil
-            </Link>
-          ) : null
-        }
-        icon={<UserRound size={24} />}
-        eyebrow={householdName}
-        title={isOwnProfile ? 'Tu perfil' : profile.name}
-        titleId="profile-overview-title"
-        description="Consulta los datos disponibles de este integrante del hogar."
-      />
       <div className="profile-overview__grid">
         <section
           className="profile-overview__section"

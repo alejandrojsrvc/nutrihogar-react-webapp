@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MailPlus } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, Navigate } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
@@ -10,23 +9,29 @@ import {
 } from '../../../../shared/presentation/components/AsyncState';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { BottomSheet } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 
 import type { HouseholdInvitation } from '../../application/ports/HouseholdInvitationGateway';
 import { useHouseholdInvitations } from '../hooks/useHouseholdInvitations';
 import { useHouseholds } from '../hooks/useHouseholds';
+import {
+  getInvitationErrorMessage,
+  getErrorStatus,
+} from '../invitationErrorHelpers';
 import '../households.css';
 import {
   createHouseholdInvitationFormSchema,
   type CreateHouseholdInvitationFormValues,
 } from '../schemas/householdInvitationSchemas';
+import {
+  closeInvitationForm,
+  useInvitationFormOpen,
+} from '../stores/invitationUiStores';
 
 export function HouseholdInvitationsPage() {
   const [revealedInvitationId, setRevealedInvitationId] = useState<
     string | null
   >(null);
-  const [formOpen, setFormOpen] = useState(false);
-  const closeInvitationForm = useCallback(() => setFormOpen(false), []);
+  const formOpen = useInvitationFormOpen();
   const households = useHouseholds();
   const invitations = useHouseholdInvitations(households.activeHousehold?.id);
   const {
@@ -41,6 +46,8 @@ export function HouseholdInvitationsPage() {
     },
     resolver: zodResolver(createHouseholdInvitationFormSchema),
   });
+
+  useEffect(() => () => closeInvitationForm(), []);
 
   const onSubmit: SubmitHandler<CreateHouseholdInvitationFormValues> = async (
     values,
@@ -80,13 +87,6 @@ export function HouseholdInvitationsPage() {
         className="page-section"
         aria-labelledby="invitation-select-title"
       >
-        <PageHeader
-          icon={<MailPlus size={24} />}
-          eyebrow="Invitaciones"
-          title="Selecciona un hogar"
-          titleId="invitation-select-title"
-          description="Primero elige el hogar donde quieres invitar a un adulto."
-        />
         <Link className="button button--primary" to="/app">
           Ir a mis hogares
         </Link>
@@ -106,16 +106,6 @@ export function HouseholdInvitationsPage() {
         className="page-section"
         aria-labelledby="invitation-error-title"
       >
-        <PageHeader
-          icon={<MailPlus size={24} />}
-          eyebrow={households.activeHousehold.name}
-          title={
-            isPermissionError
-              ? 'No tienes permiso para invitar'
-              : 'No pudimos cargar las invitaciones'
-          }
-          titleId="invitation-error-title"
-        />
         <ErrorState
           action={
             isPermissionError ? (
@@ -151,22 +141,6 @@ export function HouseholdInvitationsPage() {
       aria-labelledby="invitations-title"
     >
       <BackButton fallback="/app/familia" />
-      <PageHeader
-        action={
-          <button
-            className="button button--primary"
-            onClick={() => setFormOpen(true)}
-            type="button"
-          >
-            Invitar a alguien
-          </button>
-        }
-        icon={<MailPlus size={24} />}
-        eyebrow={households.activeHousehold.name}
-        title="Invitaciones"
-        titleId="invitations-title"
-        description="Invita a otro adulto para organizar juntos la alimentación del hogar."
-      />
 
       <BottomSheet
         onClose={closeInvitationForm}
@@ -193,10 +167,7 @@ export function HouseholdInvitationsPage() {
                 aria-invalid={errors.email ? 'true' : 'false'}
               />
               {errors.email ? (
-                <p
-                  className="form-field__error"
-                  id="invitation-email-error"
-                >
+                <p className="form-field__error" id="invitation-email-error">
                   {errors.email.message}
                 </p>
               ) : null}
@@ -215,10 +186,7 @@ export function HouseholdInvitationsPage() {
                 <option value="ADMIN">Administrador</option>
               </select>
               {errors.role ? (
-                <p
-                  className="form-field__error"
-                  id="invitation-role-error"
-                >
+                <p className="form-field__error" id="invitation-role-error">
                   {errors.role.message}
                 </p>
               ) : null}
@@ -387,39 +355,4 @@ function formatInvitationDate(value: string): string {
     month: 'short',
     year: 'numeric',
   }).format(date);
-}
-
-function getInvitationErrorMessage(error: unknown, fallback: string): string {
-  const status = getErrorStatus(error);
-
-  if (status === 401) {
-    return 'Tu sesión ya no es válida. Inicia sesión nuevamente.';
-  }
-
-  if (status === 403) {
-    return 'Solo los administradores del hogar pueden gestionar invitaciones.';
-  }
-
-  if (status === 400 || status === 422) {
-    return 'Revisa el correo y el rol antes de crear la invitación.';
-  }
-
-  if (status === 409) {
-    return 'Ese correo ya pertenece al hogar o ya tiene una invitación pendiente.';
-  }
-
-  if (status === 429) {
-    return 'Se alcanzó el límite de intentos. Espera un momento antes de volver a invitar.';
-  }
-
-  return error instanceof Error ? error.message : fallback;
-}
-
-function getErrorStatus(error: unknown): number | undefined {
-  if (typeof error !== 'object' || error === null || !('status' in error)) {
-    return undefined;
-  }
-
-  const status = error.status;
-  return typeof status === 'number' ? status : undefined;
 }

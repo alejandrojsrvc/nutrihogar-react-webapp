@@ -9,7 +9,11 @@ import {
   usePreparedBatchInventoryPreview,
 } from '../hooks/usePreparedBatchInventory';
 import type { PreparedBatchInventoryDecision } from '../../domain/PreparedBatchInventory';
-import { formatQuantity, humanizeEnum, statusTone } from '../recipePresentation';
+import {
+  formatQuantity,
+  humanizeEnum,
+  statusTone,
+} from '../recipePresentation';
 import '../recipes.css';
 
 export function PreparedBatchInventoryPage() {
@@ -105,86 +109,96 @@ export function PreparedBatchInventoryPage() {
                     )}
                   >
                     {statusLabel(
-                    decision?.action === 'IGNORE'
-                      ? 'IGNORED'
-                      : ingredient.status,
+                      decision?.action === 'IGNORE'
+                        ? 'IGNORED'
+                        : ingredient.status,
                     )}
                   </Badge>
                 </div>
                 <p className="inventory-choice__amounts">
-                  Utilizado: {formatQuantity(ingredient.usedQuantity, ingredient.unit)} ·{' '}
-                  Disponible: {formatQuantity(ingredient.availableQuantity, ingredient.unit)}
+                  Utilizado:{' '}
+                  {formatQuantity(ingredient.usedQuantity, ingredient.unit)} ·{' '}
+                  Disponible:{' '}
+                  {formatQuantity(
+                    ingredient.availableQuantity,
+                    ingredient.unit,
+                  )}
                 </p>
-              {ingredient.options.length > 1 &&
-              decision?.action !== 'IGNORE' ? (
-                <div className="form-field">
-                  <label htmlFor={`inventory-option-${ingredient.ingredientId}`}>
-                    Existencia a descontar
-                  </label>
-                  <select
-                    id={`inventory-option-${ingredient.ingredientId}`}
-                    onChange={(event) =>
-                      setDecision({
-                        action: 'CONSUME',
-                        ingredientId: ingredient.ingredientId,
-                        inventoryItemId: event.target.value,
-                      })
-                    }
-                    value={
-                      decision?.inventoryItemId ??
-                      ingredient.selectedInventoryItemId ??
-                      ''
-                    }
-                  >
-                    {ingredient.options.map((option) => (
-                      <option
-                        key={option.inventoryItemId}
-                        value={option.inventoryItemId}
-                      >
-                        {formatQuantity(option.availableQuantity, option.unit)}
-                        {option.location
-                          ? ` · ${humanizeEnum(option.location)}`
-                          : ' · Ubicación no indicada'}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
-              <div className="recipe-row-actions">
-                {!value.alreadyConfirmed ? (
-                  <>
-                    <button
-                      className="button button--secondary"
-                      disabled={unavailable}
-                      onClick={() =>
+                {ingredient.options.length > 1 &&
+                decision?.action !== 'IGNORE' ? (
+                  <div className="form-field">
+                    <label
+                      htmlFor={`inventory-option-${ingredient.ingredientId}`}
+                    >
+                      Existencia a descontar
+                    </label>
+                    <select
+                      id={`inventory-option-${ingredient.ingredientId}`}
+                      onChange={(event) =>
                         setDecision({
                           action: 'CONSUME',
                           ingredientId: ingredient.ingredientId,
-                          inventoryItemId:
-                            decision?.inventoryItemId ??
-                            ingredient.selectedInventoryItemId ??
-                            ingredient.options[0]?.inventoryItemId,
+                          inventoryItemId: event.target.value,
                         })
                       }
-                      type="button"
-                    >
-                      Consumir
-                    </button>
-                    <button
-                      className="button button--text"
-                      onClick={() =>
-                        setDecision({
-                          action: 'IGNORE',
-                          ingredientId: ingredient.ingredientId,
-                        })
+                      value={
+                        decision?.inventoryItemId ??
+                        ingredient.selectedInventoryItemId ??
+                        ''
                       }
-                      type="button"
                     >
-                      Ignorar
-                    </button>
-                  </>
+                      {ingredient.options.map((option) => (
+                        <option
+                          key={option.inventoryItemId}
+                          value={option.inventoryItemId}
+                        >
+                          {formatQuantity(
+                            option.availableQuantity,
+                            option.unit,
+                          )}
+                          {option.location
+                            ? ` · ${humanizeEnum(option.location)}`
+                            : ' · Ubicación no indicada'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 ) : null}
-              </div>
+                <div className="recipe-row-actions">
+                  {!value.alreadyConfirmed ? (
+                    <>
+                      <button
+                        className="button button--secondary"
+                        disabled={unavailable}
+                        onClick={() =>
+                          setDecision({
+                            action: 'CONSUME',
+                            ingredientId: ingredient.ingredientId,
+                            inventoryItemId:
+                              decision?.inventoryItemId ??
+                              ingredient.selectedInventoryItemId ??
+                              ingredient.options[0]?.inventoryItemId,
+                          })
+                        }
+                        type="button"
+                      >
+                        Consumir
+                      </button>
+                      <button
+                        className="button button--text"
+                        onClick={() =>
+                          setDecision({
+                            action: 'IGNORE',
+                            ingredientId: ingredient.ingredientId,
+                          })
+                        }
+                        type="button"
+                      >
+                        Ignorar
+                      </button>
+                    </>
+                  ) : null}
+                </div>
               </div>
             </li>
           );

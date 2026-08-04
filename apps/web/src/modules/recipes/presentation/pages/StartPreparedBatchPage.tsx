@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { CookingPot, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useFoodDetail } from '../../../food-catalog/presentation/hooks/useFoodCatalog';
 import { PreparationProgress } from '../components/PreparationProgress';
 import { humanizeUnit } from '../recipePresentation';
@@ -91,18 +90,6 @@ export function StartPreparedBatchPage() {
     return (
       <section className="page-section preparation-page">
         <BackButton fallback={`/app/preparaciones/${batch.data.id}`} />
-        <PageHeader
-          eyebrow="Preparación familiar"
-          title={cancelled ? 'Preparación cancelada' : 'Ingredientes ya confirmados'}
-          description={
-            cancelled
-              ? 'Esta preparación ya no puede modificarse.'
-              : finalized
-                ? 'La preparación ya tiene su cálculo nutricional definitivo.'
-                : 'Las cantidades ya no pueden editarse. Continúa con el peso cocido.'
-          }
-          icon={<CookingPot size={22} />}
-        />
         {!cancelled ? (
           <PreparationProgress current={finalized ? 'portions' : 'weight'} />
         ) : null}
@@ -153,15 +140,11 @@ export function StartPreparedBatchPage() {
       aria-labelledby="preparation-title"
     >
       <BackButton fallback={`/app/recetas/${recipeId}`} />
-      <PageHeader
-        eyebrow="Preparación familiar"
-        title={`Cocinar ${recipe.data.name}`}
-        titleId="preparation-title"
-        description="Ajusta las cantidades reales sin modificar la receta original."
-        icon={<CookingPot size={22} />}
-      />
       <PreparationProgress current="ingredients" />
-      <form className="preparation-form" onSubmit={(event) => event.preventDefault()}>
+      <form
+        className="preparation-form"
+        onSubmit={(event) => event.preventDefault()}
+      >
         {!currentBatchId ? (
           <fieldset className="preparation-fieldset">
             <legend>Cuándo cocinaste</legend>
@@ -210,13 +193,14 @@ export function StartPreparedBatchPage() {
                     value={item.quantity}
                     onChange={(event) =>
                       setDraftIngredients((current) =>
-                        (current ?? ingredients).map((ingredient, currentIndex) =>
-                          currentIndex === index
-                            ? {
-                                ...ingredient,
-                                quantity: Number(event.target.value),
-                              }
-                            : ingredient,
+                        (current ?? ingredients).map(
+                          (ingredient, currentIndex) =>
+                            currentIndex === index
+                              ? {
+                                  ...ingredient,
+                                  quantity: Number(event.target.value),
+                                }
+                              : ingredient,
                         ),
                       )
                     }

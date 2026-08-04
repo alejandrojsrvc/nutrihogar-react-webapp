@@ -93,7 +93,10 @@ describe('ServePreparedBatchPortionsPage', () => {
         portions: Array<{ id: string }>;
       }) => void;
     };
-    options.onSuccess({ availableWeight: 320, portions: [{ id: 'portion-1' }] });
+    options.onSuccess({
+      availableWeight: 320,
+      portions: [{ id: 'portion-1' }],
+    });
     expect(
       await screen.findByText('1 porción guardada. Quedan 320 g disponibles.'),
     ).toBeInTheDocument();
@@ -123,7 +126,10 @@ function renderPage() {
           path="/app/preparaciones/:batchId/servir"
           element={<ServePreparedBatchPortionsPage />}
         />
-        <Route path="/app/preparaciones/:batchId" element={<PreparationResult />} />
+        <Route
+          path="/app/preparaciones/:batchId"
+          element={<PreparationResult />}
+        />
       </Routes>
     </MemoryRouter>,
   );

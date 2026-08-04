@@ -78,6 +78,10 @@ export class HttpHouseholdInvitationGateway implements HouseholdInvitationGatewa
         throw normalizeApiError(result.error, result.response);
       }
 
+      if (result.response && !result.response.ok) {
+        throw normalizeApiError(undefined, result.response);
+      }
+
       if (!result.data) {
         throw new ApiClientError(
           'unknown',

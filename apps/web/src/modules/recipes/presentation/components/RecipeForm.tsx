@@ -99,246 +99,315 @@ export function RecipeForm({
       >
         <div className="recipe-form__workspace">
           <div className="recipe-form__main">
-        <section className="recipe-form__section">
-          <h2><Utensils size={19} aria-hidden="true" /> Información básica</h2>
-          <div className="form-field">
-              <label htmlFor="recipe-name">Nombre de la receta</label>
-            <input
-              id="recipe-name"
-              aria-invalid={Boolean(form.formState.errors.name)}
-              {...form.register('name')}
-            />
-            {form.formState.errors.name ? (
-              <p className="form-field__error">
-                {form.formState.errors.name.message}
-              </p>
-            ) : null}
-          </div>
-          <div className="form-field">
-            <label htmlFor="recipe-description">Descripción</label>
-            <textarea
-              id="recipe-description"
-              {...form.register('description')}
-            />
-          </div>
-          <fieldset className="recipe-category-options">
-            <legend>Categoría</legend>
-            <input type="hidden" {...form.register('category')} />
-            {['Desayuno', 'Almuerzo', 'Cena', 'Snack'].map((category) => (
-              <button aria-pressed={form.watch('category') === category} key={category} onClick={() => form.setValue('category', category, { shouldDirty: true })} type="button">{category}</button>
-            ))}
-            <label className="recipe-category-custom">
-              Otra categoría
-              <input
-                onChange={(event) => form.setValue('category', event.target.value, { shouldDirty: true })}
-                placeholder="Ej. postre"
-                type="text"
-                value={isKnownRecipeCategory(form.watch('category')) ? '' : form.watch('category')}
-              />
-            </label>
-          </fieldset>
-          <button className="recipe-photo-placeholder" disabled type="button">
-            <ImageUp size={25} aria-hidden="true" />
-            <strong>Foto de la receta</strong>
-            <span>Disponible próximamente</span>
-          </button>
-        </section>
-        <section className="recipe-form__section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Ingredientes</p>
-              <h2>Qué necesitas</h2>
-            </div>
-              <button
-                className="button button--tertiary"
-              onClick={() => {
-                setEditingIngredient(null);
-                setSelectorOpen(true);
-              }}
-              type="button"
-            >
-               <Plus size={18} aria-hidden="true" /> Agregar ingrediente
-            </button>
-          </div>
-          {ingredients.fields.length === 0 ? (
-            <p className="empty-state">Agrega al menos un ingrediente.</p>
-          ) : (
-            ingredients.fields.map((field, index) => (
-              <article className="recipe-ingredient-row" key={field.id}>
-                <div className="recipe-ingredient-row__main">
-                  <strong>{form.watch(`ingredients.${index}.foodName`)}</strong>
-                  <span>
-                    {form.watch(`ingredients.${index}.preparationState`) ||
-                      'Preparación no indicada'}
-                  </span>
-                  <div className="recipe-form__grid">
-                    <div className="form-field">
-                      <label htmlFor={`ingredient-${index}-quantity`}>
-                        Cantidad
-                      </label>
-                      <input
-                        id={`ingredient-${index}-quantity`}
-                        min="0.000001"
-                        step="any"
-                        type="number"
-                        {...form.register(`ingredients.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
-                      />
-                    </div>
-                    <div className="form-field">
-                      <label htmlFor={`ingredient-${index}-unit`}>Unidad</label>
-                      <select
-                        id={`ingredient-${index}-unit`}
-                        {...form.register(`ingredients.${index}.unit`)}
-                      >
-                        <option value="GRAM">Gramos</option>
-                        <option value="MILLILITER">Mililitros</option>
-                        <option value="UNIT">Unidad</option>
-                        <option value="SERVING">Porción</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="form-field">
-                    <label htmlFor={`ingredient-${index}-notes`}>Nota</label>
-                    <input
-                      id={`ingredient-${index}-notes`}
-                      {...form.register(`ingredients.${index}.notes`)}
-                    />
-                  </div>
-                </div>
-                <div className="recipe-row-actions">
+            <section className="recipe-form__section">
+              <h2>
+                <Utensils size={19} aria-hidden="true" /> Información básica
+              </h2>
+              <div className="form-field">
+                <label htmlFor="recipe-name">Nombre de la receta</label>
+                <input
+                  id="recipe-name"
+                  aria-invalid={Boolean(form.formState.errors.name)}
+                  {...form.register('name')}
+                />
+                {form.formState.errors.name ? (
+                  <p className="form-field__error">
+                    {form.formState.errors.name.message}
+                  </p>
+                ) : null}
+              </div>
+              <div className="form-field">
+                <label htmlFor="recipe-description">Descripción</label>
+                <textarea
+                  id="recipe-description"
+                  {...form.register('description')}
+                />
+              </div>
+              <fieldset className="recipe-category-options">
+                <legend>Categoría</legend>
+                <input type="hidden" {...form.register('category')} />
+                {['Desayuno', 'Almuerzo', 'Cena', 'Snack'].map((category) => (
                   <button
-                    aria-label={`Subir ${form.watch(`ingredients.${index}.foodName`)}`}
-                    className="icon-button"
-                    onClick={() => moveIngredient(index, -1)}
+                    aria-pressed={form.watch('category') === category}
+                    key={category}
+                    onClick={() =>
+                      form.setValue('category', category, { shouldDirty: true })
+                    }
                     type="button"
                   >
-                    <ChevronUp size={18} aria-hidden="true" />
+                    {category}
                   </button>
-                  <button
-                    aria-label={`Bajar ${form.watch(`ingredients.${index}.foodName`)}`}
-                    className="icon-button"
-                    onClick={() => moveIngredient(index, 1)}
-                    type="button"
-                  >
-                    <ChevronDown size={18} aria-hidden="true" />
-                  </button>
-                  <button
-                    aria-label={`Cambiar ${form.watch(`ingredients.${index}.foodName`)}`}
-                    className="icon-button"
-                    onClick={() => {
-                      setEditingIngredient(index);
-                      setSelectorOpen(true);
-                    }}
-                    type="button"
-                  >
-                    <RefreshCw size={18} aria-hidden="true" />
-                  </button>
-                  <button
-                    aria-label={`Eliminar ${form.watch(`ingredients.${index}.foodName`)}`}
-                    className="icon-button"
-                    onClick={() => ingredients.remove(index)}
-                    type="button"
-                  >
-                    <Trash2 size={18} aria-hidden="true" />
-                  </button>
-                </div>
-              </article>
-            ))
-          )}
-          {form.formState.errors.ingredients ? (
-            <p className="form-field__error" role="alert">
-              {typeof form.formState.errors.ingredients.message === 'string'
-                ? form.formState.errors.ingredients.message
-                : 'Revisa los ingredientes.'}
-            </p>
-          ) : null}
-        </section>
-        <section className="recipe-form__section recipe-portions">
-          <h2><Users size={19} aria-hidden="true" /> Porciones y nutrición</h2>
-          <div className="recipe-form__grid">
-            <div className="form-field">
-              <label htmlFor="recipe-servings">Porciones</label>
-              <input id="recipe-servings" inputMode="numeric" min="1" type="number" {...form.register('defaultServings', { valueAsNumber: true })} />
-            </div>
-            <div className="form-field">
-              <label htmlFor="recipe-time">Tiempo total (minutos)</label>
-              <input id="recipe-time" inputMode="numeric" min="1" type="number" {...form.register('estimatedPreparationMinutes', { valueAsNumber: true })} />
-            </div>
-          </div>
-        </section>
-        <section className="recipe-form__section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Preparación</p>
-              <h2>Instrucciones</h2>
-            </div>
-            <button
-              className="button button--secondary"
-              onClick={() => instructions.append({ description: '' })}
-              type="button"
-            >
-              Agregar paso
-            </button>
-          </div>
-          {instructions.fields.length === 0 ? (
-            <p className="supporting-text">Las instrucciones son opcionales.</p>
-          ) : (
-            instructions.fields.map((field, index) => (
-              <div className="recipe-instruction-row" key={field.id}>
-                <span aria-hidden="true">{index + 1}</span>
-                <div className="form-field">
-                  <label htmlFor={`instruction-${index}`}>
-                    Paso {index + 1}
-                  </label>
-                  <textarea
-                    id={`instruction-${index}`}
-                    {...form.register(`instructions.${index}.description`)}
+                ))}
+                <label className="recipe-category-custom">
+                  Otra categoría
+                  <input
+                    onChange={(event) =>
+                      form.setValue('category', event.target.value, {
+                        shouldDirty: true,
+                      })
+                    }
+                    placeholder="Ej. postre"
+                    type="text"
+                    value={
+                      isKnownRecipeCategory(form.watch('category') ?? '')
+                        ? ''
+                        : form.watch('category')
+                    }
                   />
+                </label>
+              </fieldset>
+              <button
+                className="recipe-photo-placeholder"
+                disabled
+                type="button"
+              >
+                <ImageUp size={25} aria-hidden="true" />
+                <strong>Foto de la receta</strong>
+                <span>Disponible próximamente</span>
+              </button>
+            </section>
+            <section className="recipe-form__section">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Ingredientes</p>
+                  <h2>Qué necesitas</h2>
                 </div>
                 <button
                   className="button button--tertiary"
-                  onClick={() => moveInstruction(index, -1)}
+                  onClick={() => {
+                    setEditingIngredient(null);
+                    setSelectorOpen(true);
+                  }}
                   type="button"
                 >
-                  Subir
-                </button>
-                <button
-                  className="button button--tertiary"
-                  onClick={() => moveInstruction(index, 1)}
-                  type="button"
-                >
-                  Bajar
-                </button>
-                <button
-                  className="button button--danger"
-                  onClick={() => instructions.remove(index)}
-                  type="button"
-                >
-                  Eliminar
+                  <Plus size={18} aria-hidden="true" /> Agregar ingrediente
                 </button>
               </div>
-            ))
-          )}
-        </section>
+              {ingredients.fields.length === 0 ? (
+                <p className="empty-state">Agrega al menos un ingrediente.</p>
+              ) : (
+                ingredients.fields.map((field, index) => (
+                  <article className="recipe-ingredient-row" key={field.id}>
+                    <div className="recipe-ingredient-row__main">
+                      <strong>
+                        {form.watch(`ingredients.${index}.foodName`)}
+                      </strong>
+                      <span>
+                        {form.watch(`ingredients.${index}.preparationState`) ||
+                          'Preparación no indicada'}
+                      </span>
+                      <div className="recipe-form__grid">
+                        <div className="form-field">
+                          <label htmlFor={`ingredient-${index}-quantity`}>
+                            Cantidad
+                          </label>
+                          <input
+                            id={`ingredient-${index}-quantity`}
+                            min="0.000001"
+                            step="any"
+                            type="number"
+                            {...form.register(`ingredients.${index}.quantity`, {
+                              valueAsNumber: true,
+                            })}
+                          />
+                        </div>
+                        <div className="form-field">
+                          <label htmlFor={`ingredient-${index}-unit`}>
+                            Unidad
+                          </label>
+                          <select
+                            id={`ingredient-${index}-unit`}
+                            {...form.register(`ingredients.${index}.unit`)}
+                          >
+                            <option value="GRAM">Gramos</option>
+                            <option value="MILLILITER">Mililitros</option>
+                            <option value="UNIT">Unidad</option>
+                            <option value="SERVING">Porción</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-field">
+                        <label htmlFor={`ingredient-${index}-notes`}>
+                          Nota
+                        </label>
+                        <input
+                          id={`ingredient-${index}-notes`}
+                          {...form.register(`ingredients.${index}.notes`)}
+                        />
+                      </div>
+                    </div>
+                    <div className="recipe-row-actions">
+                      <button
+                        aria-label={`Subir ${form.watch(`ingredients.${index}.foodName`)}`}
+                        className="icon-button"
+                        onClick={() => moveIngredient(index, -1)}
+                        type="button"
+                      >
+                        <ChevronUp size={18} aria-hidden="true" />
+                      </button>
+                      <button
+                        aria-label={`Bajar ${form.watch(`ingredients.${index}.foodName`)}`}
+                        className="icon-button"
+                        onClick={() => moveIngredient(index, 1)}
+                        type="button"
+                      >
+                        <ChevronDown size={18} aria-hidden="true" />
+                      </button>
+                      <button
+                        aria-label={`Cambiar ${form.watch(`ingredients.${index}.foodName`)}`}
+                        className="icon-button"
+                        onClick={() => {
+                          setEditingIngredient(index);
+                          setSelectorOpen(true);
+                        }}
+                        type="button"
+                      >
+                        <RefreshCw size={18} aria-hidden="true" />
+                      </button>
+                      <button
+                        aria-label={`Eliminar ${form.watch(`ingredients.${index}.foodName`)}`}
+                        className="icon-button"
+                        onClick={() => ingredients.remove(index)}
+                        type="button"
+                      >
+                        <Trash2 size={18} aria-hidden="true" />
+                      </button>
+                    </div>
+                  </article>
+                ))
+              )}
+              {form.formState.errors.ingredients ? (
+                <p className="form-field__error" role="alert">
+                  {typeof form.formState.errors.ingredients.message === 'string'
+                    ? form.formState.errors.ingredients.message
+                    : 'Revisa los ingredientes.'}
+                </p>
+              ) : null}
+            </section>
+            <section className="recipe-form__section recipe-portions">
+              <h2>
+                <Users size={19} aria-hidden="true" /> Porciones y nutrición
+              </h2>
+              <div className="recipe-form__grid">
+                <div className="form-field">
+                  <label htmlFor="recipe-servings">Porciones</label>
+                  <input
+                    id="recipe-servings"
+                    inputMode="numeric"
+                    min="1"
+                    type="number"
+                    {...form.register('defaultServings', {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label htmlFor="recipe-time">Tiempo total (minutos)</label>
+                  <input
+                    id="recipe-time"
+                    inputMode="numeric"
+                    min="1"
+                    type="number"
+                    {...form.register('estimatedPreparationMinutes', {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+              </div>
+            </section>
+            <section className="recipe-form__section">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Preparación</p>
+                  <h2>Instrucciones</h2>
+                </div>
+                <button
+                  className="button button--secondary"
+                  onClick={() => instructions.append({ description: '' })}
+                  type="button"
+                >
+                  Agregar paso
+                </button>
+              </div>
+              {instructions.fields.length === 0 ? (
+                <p className="supporting-text">
+                  Las instrucciones son opcionales.
+                </p>
+              ) : (
+                instructions.fields.map((field, index) => (
+                  <div className="recipe-instruction-row" key={field.id}>
+                    <span aria-hidden="true">{index + 1}</span>
+                    <div className="form-field">
+                      <label htmlFor={`instruction-${index}`}>
+                        Paso {index + 1}
+                      </label>
+                      <textarea
+                        id={`instruction-${index}`}
+                        {...form.register(`instructions.${index}.description`)}
+                      />
+                    </div>
+                    <button
+                      className="button button--tertiary"
+                      onClick={() => moveInstruction(index, -1)}
+                      type="button"
+                    >
+                      Subir
+                    </button>
+                    <button
+                      className="button button--tertiary"
+                      onClick={() => moveInstruction(index, 1)}
+                      type="button"
+                    >
+                      Bajar
+                    </button>
+                    <button
+                      className="button button--danger"
+                      onClick={() => instructions.remove(index)}
+                      type="button"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                ))
+              )}
+            </section>
           </div>
-          <aside className="recipe-form__aside" aria-label="Resumen de la receta">
+          <aside
+            className="recipe-form__aside"
+            aria-label="Resumen de la receta"
+          >
             <section>
-              <h2><ShieldCheck size={19} aria-hidden="true" /> Resumen nutricional por porción</h2>
-              <div className="recipe-nutrition-placeholder" aria-disabled="true">
+              <h2>
+                <ShieldCheck size={19} aria-hidden="true" /> Resumen nutricional
+                por porción
+              </h2>
+              <div
+                className="recipe-nutrition-placeholder"
+                aria-disabled="true"
+              >
                 <span>--</span>
-                <p><strong>Se calculará al guardar</strong><br />Los valores definitivos vienen del servidor.</p>
+                <p>
+                  <strong>Se calculará al guardar</strong>
+                  <br />
+                  Los valores definitivos vienen del servidor.
+                </p>
               </div>
             </section>
             <section>
-              <h2><ImageUp size={19} aria-hidden="true" /> Vista previa</h2>
+              <h2>
+                <ImageUp size={19} aria-hidden="true" /> Vista previa
+              </h2>
               <div className="recipe-preview-placeholder">
                 <ImageUp size={28} aria-hidden="true" />
                 <span>Agrega una foto cuando la función esté disponible.</span>
               </div>
               <strong>{form.watch('name') || 'Nombre de la receta'}</strong>
-              <p><Users size={15} aria-hidden="true" /> {form.watch('defaultServings') || 1} porciones <Timer size={15} aria-hidden="true" /> {form.watch('estimatedPreparationMinutes') || '—'} min</p>
+              <p>
+                <Users size={15} aria-hidden="true" />{' '}
+                {Number(form.watch('defaultServings')) || 1} porciones{' '}
+                <Timer size={15} aria-hidden="true" />{' '}
+                {Number(form.watch('estimatedPreparationMinutes')) || '—'} min
+              </p>
             </section>
           </aside>
         </div>

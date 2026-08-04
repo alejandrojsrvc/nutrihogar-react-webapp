@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { HousePlus } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -8,7 +7,6 @@ import {
   ErrorState,
   LoadingState,
 } from '../../../../shared/presentation/components/AsyncState';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useOnboardingStatus } from '../hooks/useOnboardingStatus';
 import '../onboarding.css';
 import {
@@ -76,13 +74,10 @@ export function OnboardingPage() {
 
   if (onboarding.isError) {
     return (
-      <section className="page-section onboarding-page">
-        <PageHeader
-          icon={<HousePlus size={24} />}
-          eyebrow="Primeros pasos"
-          title="No pudimos preparar tu hogar"
-          titleId="onboarding-error-title"
-        />
+      <section
+        className="page-section onboarding-page"
+        aria-labelledby="onboarding-error-title"
+      >
         <ErrorState
           action={
             <button
@@ -111,13 +106,6 @@ export function OnboardingPage() {
         className="page-section onboarding-page"
         aria-labelledby="household-select-title"
       >
-        <PageHeader
-          icon={<HousePlus size={24} />}
-          eyebrow="Primeros pasos"
-          title="Elige un hogar para continuar"
-          titleId="household-select-title"
-          description="Selecciona el espacio familiar donde quieres configurar tu perfil."
-        />
         <OnboardingProgress currentStep={1} />
         <div className="household-list" role="list">
           {onboarding.households.households.map((household) => (
@@ -152,13 +140,6 @@ export function OnboardingPage() {
       className="page-section onboarding-page"
       aria-labelledby="onboarding-title"
     >
-      <PageHeader
-        icon={<HousePlus size={24} />}
-        eyebrow="Primeros pasos"
-        title="Crea tu hogar"
-        titleId="onboarding-title"
-        description="Empieza con un espacio compartido para organizar la alimentación y el bienestar de tu familia."
-      />
       <OnboardingProgress currentStep={1} />
       <form
         className="auth-form onboarding-form"

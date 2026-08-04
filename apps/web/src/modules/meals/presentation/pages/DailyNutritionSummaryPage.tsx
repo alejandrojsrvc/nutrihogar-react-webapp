@@ -1,5 +1,4 @@
 import { Link, useNavigate, useParams } from 'react-router';
-import { ChartNoAxesCombined, Plus } from 'lucide-react';
 
 import {
   formatCalories,
@@ -7,7 +6,6 @@ import {
   type NutritionSummary,
 } from '@nutrihogar/domain';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -64,8 +62,11 @@ export function DailyNutritionSummaryPage() {
     profilesQuery.isError
   ) {
     return (
-      <section className="page-section summary-page-state" role="alert">
-        <h1>No pudimos abrir el resumen</h1>
+      <section
+        className="page-section summary-page-state"
+        aria-labelledby="summary-error-title"
+        role="alert"
+      >
         <p>Revisa el hogar activo e inténtalo nuevamente.</p>
         <button
           className="button button--secondary"
@@ -87,11 +88,6 @@ export function DailyNutritionSummaryPage() {
         className="page-section"
         aria-labelledby="summary-empty-profile-title"
       >
-        <PageHeader
-          eyebrow="Resumen diario"
-          title="Configura un adulto primero"
-          titleId="summary-empty-profile-title"
-        />
         <p className="lead">
           Necesitas un perfil adulto para consultar el consumo del día.
         </p>
@@ -107,20 +103,6 @@ export function DailyNutritionSummaryPage() {
       className="page-section daily-summary-page"
       aria-labelledby="daily-summary-title"
     >
-      <PageHeader
-        action={
-          <Link
-            className="button button--primary"
-            to={`/app/comidas/nueva?profileId=${activeProfileId}&date=${date}`}
-          >
-            <Plus aria-hidden="true" size={19} />
-            Registrar comida
-          </Link>
-        }
-        icon={<ChartNoAxesCombined size={25} />}
-        title="Resumen del día"
-        titleId="daily-summary-title"
-      />
       <div className="summary-filters">
         {profiles.length > 1 ? (
           <div className="summary-filter-pill">

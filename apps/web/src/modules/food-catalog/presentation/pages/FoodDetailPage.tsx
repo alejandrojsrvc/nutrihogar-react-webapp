@@ -1,9 +1,8 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
-import { Apple, Pencil, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useDeleteCustomFood, useFoodDetail } from '../hooks/useFoodCatalog';
 import '../food-catalog.css';
 import {
@@ -65,24 +64,6 @@ export function FoodDetailPage() {
       aria-labelledby="food-detail-title"
     >
       <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
-      <PageHeader
-        action={
-          canManage ? (
-            <Link
-              aria-label="Editar alimento"
-              className="button button--secondary"
-              to={`/app/alimentos/${food.id}/editar`}
-            >
-              <Pencil aria-hidden="true" size={18} />
-              Editar
-            </Link>
-          ) : undefined
-        }
-        description={food.brand ?? `Valores por ${formatReference(food)}`}
-        icon={<Apple size={25} />}
-        title={food.name}
-        titleId="food-detail-title"
-      />
       {savedFeedback ? (
         <p className="food-feedback" role="status">
           {savedFeedback}
@@ -309,11 +290,6 @@ function FoodDetailStatus({
       className="page-section"
       aria-labelledby="food-detail-status-title"
     >
-      <PageHeader
-        icon={<Apple size={25} />}
-        title="Detalle del alimento"
-        titleId="food-detail-status-title"
-      />
       <p className="lead" role={isError ? 'alert' : 'status'}>
         {message}
       </p>

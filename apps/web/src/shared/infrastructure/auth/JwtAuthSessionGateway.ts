@@ -41,7 +41,11 @@ export class JwtAuthSessionGateway implements AuthSessionGateway {
     this.setTokens(response);
   }
 
-  async registerWithEmail({ email, fullName, password }: RegisterWithEmailInput) {
+  async registerWithEmail({
+    email,
+    fullName,
+    password,
+  }: RegisterWithEmailInput) {
     const response = await this.request<AuthResponse>('/auth/register', {
       body: {
         displayName: fullName.trim(),
@@ -51,7 +55,9 @@ export class JwtAuthSessionGateway implements AuthSessionGateway {
       method: 'POST',
     });
     this.setTokens(response);
-    const result: RegisterWithEmailResult = { requiresEmailConfirmation: false };
+    const result: RegisterWithEmailResult = {
+      requiresEmailConfirmation: false,
+    };
     return result;
   }
 
@@ -83,7 +89,10 @@ export class JwtAuthSessionGateway implements AuthSessionGateway {
   }
 
   async handleUnauthorized(request: Request): Promise<Response | undefined> {
-    if (request.url.endsWith('/auth/refresh') || request.url.endsWith('/auth/logout')) {
+    if (
+      request.url.endsWith('/auth/refresh') ||
+      request.url.endsWith('/auth/logout')
+    ) {
       this.expireSession();
       return undefined;
     }
@@ -151,7 +160,8 @@ export class JwtAuthSessionGateway implements AuthSessionGateway {
     options: { body?: unknown; method: string },
   ): Promise<T> {
     const response = await this.fetchImplementation(`${this.baseUrl}${path}`, {
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body:
+        options.body === undefined ? undefined : JSON.stringify(options.body),
       headers: { 'Content-Type': 'application/json' },
       method: options.method,
     });
@@ -174,7 +184,10 @@ export class JwtAuthSessionGateway implements AuthSessionGateway {
   private setTokens(response: AuthResponse): void {
     this.accessToken = response.accessToken;
     this.userId = response.user.id;
-    globalThis.sessionStorage?.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+    globalThis.sessionStorage?.setItem(
+      REFRESH_TOKEN_KEY,
+      response.refreshToken,
+    );
   }
 
   private getRefreshToken(): string | null {

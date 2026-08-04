@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { Sparkles, Target } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   useCurrentNutritionGoal,
   useGenerateNutritionGoalSuggestion,
@@ -35,14 +33,13 @@ export function NutritionGoalPage() {
     );
   }
 
-  if (
-    households.isError ||
-    !households.activeHousehold ||
-    profiles.isError
-  ) {
+  if (households.isError || !households.activeHousehold || profiles.isError) {
     return (
-      <section className="page-section nutrition-goal-state" role="alert">
-        <h1>No pudimos cargar los perfiles</h1>
+      <section
+        className="page-section nutrition-goal-state"
+        aria-labelledby="goal-profiles-error-title"
+        role="alert"
+      >
         <p>La meta se conserva sin cambios.</p>
         <button
           className="button button--secondary"
@@ -61,7 +58,6 @@ export function NutritionGoalPage() {
   if (!profile) {
     return (
       <section className="page-section" aria-labelledby="goal-profile-error">
-        <h1 id="goal-profile-error">No encontramos este perfil</h1>
         <Link className="button button--secondary" to="/app">
           Volver al inicio
         </Link>
@@ -71,8 +67,11 @@ export function NutritionGoalPage() {
 
   if (currentGoal.isError) {
     return (
-      <section className="page-section nutrition-goal-state" role="alert">
-        <h1>No pudimos cargar la meta nutricional</h1>
+      <section
+        className="page-section nutrition-goal-state"
+        aria-labelledby="goal-error-title"
+        role="alert"
+      >
         <p>El perfil seleccionado sigue siendo {profile.name}.</p>
         <button
           className="button button--secondary"
@@ -91,13 +90,6 @@ export function NutritionGoalPage() {
         className="page-section nutrition-goal-page"
         aria-labelledby="current-goal-title"
       >
-        <BackButton fallback="/app" />
-        <PageHeader
-          description={`Referencia diaria vigente para ${profile.name}.`}
-          icon={<Target size={25} />}
-          title="Meta nutricional"
-          titleId="current-goal-title"
-        />
         <p className="nutrition-goal-validity">
           Vigente desde {formatDate(currentGoal.data.validFrom)}
           {currentGoal.data.validUntil
@@ -135,16 +127,10 @@ export function NutritionGoalPage() {
     );
   }
 
-  return <GenerateGoal profileId={profileId} profileName={profile.name} />;
+  return <GenerateGoal profileId={profileId} />;
 }
 
-function GenerateGoal({
-  profileId,
-  profileName,
-}: {
-  profileId: string;
-  profileName: string;
-}) {
+function GenerateGoal({ profileId }: { profileId: string }) {
   const navigate = useNavigate();
   const generate = useGenerateNutritionGoalSuggestion();
   const [hasRequested, setHasRequested] = useState(false);
@@ -154,13 +140,6 @@ function GenerateGoal({
       className="page-section nutrition-goal-page"
       aria-labelledby="goal-start-title"
     >
-      <BackButton fallback="/app" />
-      <PageHeader
-        icon={<Target size={25} />}
-        title={`Configura la meta de ${profileName}`}
-        titleId="goal-start-title"
-        description="Usaremos los datos de tu perfil para preparar una estimación que podrás revisar antes de confirmarla."
-      />
       {hasRequested && generate.isError ? (
         <p className="nutrition-goal-error" role="alert">
           El perfil está incompleto o no pudimos generar la propuesta.

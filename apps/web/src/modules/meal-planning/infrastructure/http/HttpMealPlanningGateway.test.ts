@@ -48,7 +48,6 @@ describe('HttpMealPlanningGateway meal-planning endpoints', () => {
   it('treats a missing preparation as absent data', async () => {
     const client = {
       GET: vi.fn().mockResolvedValue({
-        error: { message: 'Preparation not found' },
         response: new Response(null, { status: 404 }),
       }),
     };

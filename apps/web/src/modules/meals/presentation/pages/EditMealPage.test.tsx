@@ -17,7 +17,7 @@ describe('EditMealPage', () => {
 
     expect(await screen.findByText('Arroz cocido')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Editar comida' }),
+      await screen.findByRole('button', { name: 'Editar comida' }),
     ).toBeDisabled();
     expect(screen.getByText(/captura histórica/)).toBeInTheDocument();
   });

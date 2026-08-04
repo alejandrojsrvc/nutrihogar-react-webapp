@@ -56,17 +56,16 @@ export function PrivateLayout() {
 
   return (
     <ActiveProfileProvider
-      key={activeHousehold?.id ?? 'no-household'}
       profiles={profiles.profiles}
     >
       <div className="private-layout">
         <div className="app-shell">
           <Sidebar secondaryItems={secondaryItems} />
           <div className="app-workspace">
-           <Topbar
-            householdName={activeHousehold?.name ?? 'Mi hogar'}
-            isSigningOut={isSigningOut}
-            onLogout={() => void handleLogout()}
+            <Topbar
+              householdName={activeHousehold?.name ?? 'Mi hogar'}
+              isSigningOut={isSigningOut}
+              onLogout={() => void handleLogout()}
             />
             {connectionMessage ? (
               <ConnectionNotice message={connectionMessage} />

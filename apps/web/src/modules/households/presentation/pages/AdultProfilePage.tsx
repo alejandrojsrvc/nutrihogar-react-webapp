@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserRoundPen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
   useFieldArray,
@@ -15,12 +14,10 @@ import {
   type UseFormRegister,
 } from 'react-hook-form';
 import { Link, Navigate, useNavigate } from 'react-router';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   ErrorState,
   LoadingState,
 } from '../../../../shared/presentation/components/AsyncState';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 
 import { adultProfileDraftStorage } from '../../../../app/composition/dependencies';
 import type {
@@ -168,13 +165,6 @@ export function AdultProfilePage() {
   if (!households.activeHousehold) {
     return (
       <section className="page-section" aria-labelledby="profile-select-title">
-        <PageHeader
-          icon={<UserRoundPen size={24} />}
-          eyebrow="Perfil adulto"
-          title="Selecciona un hogar"
-          titleId="profile-select-title"
-          description="Primero elige el hogar donde quieres configurar tu perfil."
-        />
         <Link className="button button--primary" to="/app">
           Ir a mis hogares
         </Link>
@@ -238,14 +228,6 @@ export function AdultProfilePage() {
       className="page-section profile-wizard"
       aria-labelledby="profile-title"
     >
-      <BackButton fallback="/app" />
-      <PageHeader
-        icon={<UserRoundPen size={24} />}
-        eyebrow={households.activeHousehold.name}
-        title={isEditing ? 'Edita tu perfil' : 'Configura tu perfil'}
-        titleId="profile-title"
-        description="Completa estos pasos para adaptar la experiencia a tus necesidades."
-      />
       <ProfileStepIndicator currentStep={currentStep} />
       <form
         className="auth-form profile-form"
@@ -827,8 +809,8 @@ function hasNestedFieldError(
   const error = errors[index];
   return Boolean(
     typeof error === 'object' &&
-      error !== null &&
-      (error as Record<string, unknown>)[field],
+    error !== null &&
+    (error as Record<string, unknown>)[field],
   );
 }
 

@@ -75,7 +75,10 @@ export function PlannedMealQuantitiesPage() {
       <BackButton
         fallback={`/app/plan-semanal/${weeklyPlanId}/comidas/${plannedMealId}/participantes`}
       />
-      <section className="quantity-tools" aria-labelledby="quantity-tools-title">
+      <section
+        className="quantity-tools"
+        aria-labelledby="quantity-tools-title"
+      >
         <div>
           <h2 id="quantity-tools-title">Sugerencias del plan</h2>
           <p>Calculadas con los objetivos vigentes de cada adulto.</p>

@@ -69,9 +69,7 @@ export function WeeklyRequirementsPage() {
         />
       )}
       <RelatedActions>
-        <Link
-          to={`/app/plan-semanal/${weeklyPlanId}/comparacion-inventario`}
-        >
+        <Link to={`/app/plan-semanal/${weeklyPlanId}/comparacion-inventario`}>
           Comparar con inventario
         </Link>
         <Link to={`/app/plan-semanal/${weeklyPlanId}/adherencia`}>

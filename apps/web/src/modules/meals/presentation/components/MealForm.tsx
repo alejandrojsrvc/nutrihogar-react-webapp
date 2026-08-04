@@ -108,8 +108,15 @@ export function MealForm({
           className="meal-form meal-form--consumer"
           onSubmit={form.handleSubmit((values) => onSubmit(values, items))}
         >
-          <div className="meal-source-bar" aria-label="Formas de agregar alimentos">
-            <button className="meal-source-bar__search" onClick={() => setShowSelector(true)} type="button">
+          <div
+            className="meal-source-bar"
+            aria-label="Formas de agregar alimentos"
+          >
+            <button
+              className="meal-source-bar__search"
+              onClick={() => setShowSelector(true)}
+              type="button"
+            >
               <Search size={20} aria-hidden="true" />
               <span>Describe o busca lo que comiste...</span>
             </button>
@@ -119,43 +126,73 @@ export function MealForm({
           </div>
 
           <div className="meal-composer-grid">
-            <section className="meal-quick-add" aria-labelledby="meal-quick-add-title">
+            <section
+              className="meal-quick-add"
+              aria-labelledby="meal-quick-add-title"
+            >
               <h2 id="meal-quick-add-title">Agregar rápido</h2>
-              <button className="meal-quick-option" onClick={() => setShowSelector(true)} type="button">
-                <span><Search size={19} aria-hidden="true" /></span>
+              <button
+                className="meal-quick-option"
+                onClick={() => setShowSelector(true)}
+                type="button"
+              >
+                <span>
+                  <Search size={19} aria-hidden="true" />
+                </span>
                 <strong>Buscar alimento</strong>
                 <small>Explora nuestra base de datos</small>
               </button>
               <button className="meal-quick-option" disabled type="button">
-                <span><ChefHat size={19} aria-hidden="true" /></span>
+                <span>
+                  <ChefHat size={19} aria-hidden="true" />
+                </span>
                 <strong>Mis recetas</strong>
                 <small>Disponible próximamente</small>
               </button>
               <button className="meal-quick-option" disabled type="button">
-                <span><Clock3 size={19} aria-hidden="true" /></span>
+                <span>
+                  <Clock3 size={19} aria-hidden="true" />
+                </span>
                 <strong>Comidas recientes</strong>
                 <small>Disponible próximamente</small>
               </button>
               <button className="meal-quick-option" disabled type="button">
-                <span><Star size={19} aria-hidden="true" /></span>
+                <span>
+                  <Star size={19} aria-hidden="true" />
+                </span>
                 <strong>Comida frecuente</strong>
                 <small>Disponible próximamente</small>
               </button>
-              <button className="meal-quick-option" onClick={() => setShowSelector(true)} type="button">
-                <span><PenLine size={19} aria-hidden="true" /></span>
+              <button
+                className="meal-quick-option"
+                onClick={() => setShowSelector(true)}
+                type="button"
+              >
+                <span>
+                  <PenLine size={19} aria-hidden="true" />
+                </span>
                 <strong>Componer manualmente</strong>
                 <small>Agrega cada alimento desde cero</small>
               </button>
               <div className="meal-ai-hint" aria-disabled="true">
                 <Sparkles size={23} aria-hidden="true" />
-                <p><strong>Descripción asistida</strong><br />Estará disponible cuando se habilite la interpretación con IA.</p>
+                <p>
+                  <strong>Descripción asistida</strong>
+                  <br />
+                  Estará disponible cuando se habilite la interpretación con IA.
+                </p>
               </div>
             </section>
 
-            <section className="meal-review" aria-labelledby="meal-review-title">
+            <section
+              className="meal-review"
+              aria-labelledby="meal-review-title"
+            >
               <div className="meal-review__heading">
                 <h2 id="meal-review-title">Tu comida</h2>
-                <span>{items.length} alimento{items.length === 1 ? '' : 's'}</span>
+                <span>
+                  {items.length} alimento{items.length === 1 ? '' : 's'}
+                </span>
               </div>
               <div className="meal-review__context">
                 {profiles.length > 1 && !readOnlyProfile ? (
@@ -173,17 +210,26 @@ export function MealForm({
                   Comida
                   <select {...form.register('mealType')}>
                     {Object.entries(mealTypeLabels).map(([value, label]) => (
-                      <option key={value} value={value}>{label}</option>
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
                     ))}
                   </select>
                 </label>
                 <label>
                   Fecha y hora
-                  <input type="datetime-local" {...form.register('consumedAt', { valueAsDate: true })} />
+                  <input
+                    type="datetime-local"
+                    {...form.register('consumedAt', { valueAsDate: true })}
+                  />
                 </label>
               </div>
               {items.length === 0 ? (
-                <button className="meal-review__empty" onClick={() => setShowSelector(true)} type="button">
+                <button
+                  className="meal-review__empty"
+                  onClick={() => setShowSelector(true)}
+                  type="button"
+                >
                   <Plus size={21} aria-hidden="true" />
                   Agrega el primer alimento
                 </button>
@@ -191,17 +237,29 @@ export function MealForm({
                 <div className="meal-review__items">
                   {items.map((item) => (
                     <article className="meal-review-item" key={item.id}>
-                      <span className="meal-review-item__image" aria-hidden="true"><ChefHat size={20} /></span>
+                      <span
+                        className="meal-review-item__image"
+                        aria-hidden="true"
+                      >
+                        <ChefHat size={20} />
+                      </span>
                       <div className="meal-review-item__name">
                         <strong>{item.food.name}</strong>
                         <small>{formatItemPreview(item)}</small>
                       </div>
                       <label>
-                        <span className="visually-hidden">Cantidad de {item.food.name}</span>
+                        <span className="visually-hidden">
+                          Cantidad de {item.food.name}
+                        </span>
                         <input
                           aria-label={`Cantidad de ${item.food.name}`}
                           min="0.1"
-                          onChange={(event) => updateItemQuantity(item.id, Number(event.target.value))}
+                          onChange={(event) =>
+                            updateItemQuantity(
+                              item.id,
+                              Number(event.target.value),
+                            )
+                          }
                           step="0.1"
                           type="number"
                           value={item.quantity}
@@ -237,20 +295,57 @@ export function MealForm({
               </div>
               <label className="form-field meal-review__notes">
                 <span>Nota (opcional)</span>
-                <textarea {...form.register('notes')} placeholder="Agrega un detalle si lo necesitas" />
+                <textarea
+                  {...form.register('notes')}
+                  placeholder="Agrega un detalle si lo necesitas"
+                />
               </label>
             </section>
           </div>
 
-          {form.formState.errors.items ? <p className="form-field__error" role="alert">{form.formState.errors.items.message}</p> : null}
-          {form.formState.errors.profileId ? <p className="form-field__error" role="alert">{form.formState.errors.profileId.message}</p> : null}
-          {form.formState.errors.consumedAt ? <p className="form-field__error" role="alert">{form.formState.errors.consumedAt.message}</p> : null}
-          {form.formState.errors.mealType ? <p className="form-field__error" role="alert">{form.formState.errors.mealType.message}</p> : null}
-          {form.formState.errors.notes ? <p className="form-field__error" role="alert">{form.formState.errors.notes.message}</p> : null}
-          {errorMessage ? <p className="meal-form__error" role="alert">{errorMessage}</p> : null}
+          {form.formState.errors.items ? (
+            <p className="form-field__error" role="alert">
+              {form.formState.errors.items.message}
+            </p>
+          ) : null}
+          {form.formState.errors.profileId ? (
+            <p className="form-field__error" role="alert">
+              {form.formState.errors.profileId.message}
+            </p>
+          ) : null}
+          {form.formState.errors.consumedAt ? (
+            <p className="form-field__error" role="alert">
+              {form.formState.errors.consumedAt.message}
+            </p>
+          ) : null}
+          {form.formState.errors.mealType ? (
+            <p className="form-field__error" role="alert">
+              {form.formState.errors.mealType.message}
+            </p>
+          ) : null}
+          {form.formState.errors.notes ? (
+            <p className="form-field__error" role="alert">
+              {form.formState.errors.notes.message}
+            </p>
+          ) : null}
+          {errorMessage ? (
+            <p className="meal-form__error" role="alert">
+              {errorMessage}
+            </p>
+          ) : null}
           <div className="meal-form__actions meal-form__actions--consumer">
-            <Link className="button button--secondary" to={cancelTo}>Cancelar</Link>
-            <button className="button button--primary" disabled={Boolean(isSubmitting) || !selectedProfileId || items.length === 0} type="submit">
+            <Link className="button button--secondary" to={cancelTo}>
+              Cancelar
+            </Link>
+            <button
+              className="button button--primary"
+              disabled={
+                Boolean(isSubmitting) ||
+                !selectedProfileId ||
+                items.length === 0
+              }
+              type="submit"
+            >
               {isSubmitting ? 'Guardando...' : submitLabel}
             </button>
           </div>
@@ -470,10 +565,22 @@ function NutritionPreview({ summary }: { summary: NutritionSummary }) {
   );
 }
 
-function UnavailableAction({ icon, label }: { icon: ReactNode; label: string }) {
+function UnavailableAction({
+  icon,
+  label,
+}: {
+  icon: ReactNode;
+  label: string;
+}) {
   return (
-    <button aria-label={`${label}. Disponible próximamente`} className="meal-source-bar__option" disabled type="button">
-      {icon}<span>{label}</span>
+    <button
+      aria-label={`${label}. Disponible próximamente`}
+      className="meal-source-bar__option"
+      disabled
+      type="button"
+    >
+      {icon}
+      <span>{label}</span>
     </button>
   );
 }

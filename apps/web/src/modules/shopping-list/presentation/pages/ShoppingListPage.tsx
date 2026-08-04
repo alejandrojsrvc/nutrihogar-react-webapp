@@ -1,13 +1,14 @@
 import { useCallback, useState, type ReactElement } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ShoppingCart } from 'lucide-react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { ShoppingListEditDialog } from '../components/ShoppingListEditDialog';
 import { ShoppingListItem } from '../components/ShoppingListItem';
-import { BottomSheet, Dialog } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  BottomSheet,
+  Dialog,
+} from '../../../../shared/presentation/components/Overlay';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
   useAddShoppingListItem,
@@ -86,7 +87,11 @@ export function ShoppingListPage() {
             ? 'No se pudo cargar el hogar activo.'
             : 'No se pudo identificar el hogar sin conexión.'}
         </p>
-        <button className="button button--secondary" onClick={() => void households.refetch()} type="button">
+        <button
+          className="button button--secondary"
+          onClick={() => void households.refetch()}
+          type="button"
+        >
           Reintentar
         </button>
       </section>
@@ -163,7 +168,9 @@ export function ShoppingListPage() {
       setEditingItemId(null);
     } catch (error) {
       setEditError(
-        error instanceof Error ? error.message : 'No se pudo guardar el cambio.',
+        error instanceof Error
+          ? error.message
+          : 'No se pudo guardar el cambio.',
       );
     }
   }
@@ -233,18 +240,6 @@ export function ShoppingListPage() {
       className="page-section shopping-list-page"
       aria-labelledby="shopping-list-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--secondary" to="/app/compras">
-            Ver compras
-          </Link>
-        }
-        eyebrow={households.activeHousehold.name}
-        icon={<ShoppingCart size={22} />}
-        title="Lista de compras"
-        titleId="shopping-list-title"
-        description="Organiza lo pendiente sin confundir comprar con actualizar el inventario."
-      />
       <div className="shopping-list-actions">
         <button
           className={`button ${selected.length ? 'button--secondary' : 'button--primary'}`}
@@ -269,76 +264,76 @@ export function ShoppingListPage() {
         </button>
       </div>
       {!isOnline ? (
-        <p className="feature-connectivity feature-connectivity--offline" role="status">
-          Sin conexión. Puedes revisar la lista cargada, pero los cambios requieren conexión y no se pondrán en cola.
+        <p
+          className="feature-connectivity feature-connectivity--offline"
+          role="status"
+        >
+          Sin conexión. Puedes revisar la lista cargada, pero los cambios
+          requieren conexión y no se pondrán en cola.
         </p>
       ) : null}
       {addOpen ? (
-        <BottomSheet
-          onClose={closeAdd}
-          open
-          title="Agregar producto"
-        >
-            <form
-              className="shopping-list-add-form"
-              noValidate
-              onSubmit={handleSubmit(onAdd)}
+        <BottomSheet onClose={closeAdd} open title="Agregar producto">
+          <form
+            className="shopping-list-add-form"
+            noValidate
+            onSubmit={handleSubmit(onAdd)}
+          >
+            <Field
+              error={errors.name?.message}
+              id="shopping-name"
+              label="Producto"
             >
-              <Field
-                error={errors.name?.message}
-                id="shopping-name"
-                label="Producto"
-              >
-                <input id="shopping-name" {...register('name')} />
-              </Field>
-              <Field
-                error={errors.quantity?.message}
+              <input id="shopping-name" {...register('name')} />
+            </Field>
+            <Field
+              error={errors.quantity?.message}
+              id="shopping-quantity"
+              label="Cantidad"
+            >
+              <input
                 id="shopping-quantity"
-                label="Cantidad"
+                inputMode="decimal"
+                min="0"
+                step="any"
+                type="number"
+                {...register('quantity')}
+              />
+            </Field>
+            <Field
+              error={errors.unit?.message}
+              id="shopping-unit"
+              label="Unidad"
+            >
+              <select id="shopping-unit" {...register('unit')}>
+                <option value="GRAM">Gramos</option>
+                <option value="MILLILITER">Mililitros</option>
+                <option value="UNIT">Unidad</option>
+                <option value="SERVING">Porción</option>
+              </select>
+            </Field>
+            <div className="shopping-list-sheet__actions">
+              <button
+                className="button button--secondary"
+                onClick={closeAdd}
+                type="button"
               >
-                <input
-                  id="shopping-quantity"
-                  inputMode="decimal"
-                  min="0"
-                  step="any"
-                  type="number"
-                  {...register('quantity')}
-                />
-              </Field>
-              <Field
-                error={errors.unit?.message}
-                id="shopping-unit"
-                label="Unidad"
+                Cancelar
+              </button>
+              <button
+                className="button button--primary"
+                disabled={add.isPending}
+                type="submit"
               >
-                <select id="shopping-unit" {...register('unit')}>
-                  <option value="GRAM">Gramos</option>
-                  <option value="MILLILITER">Mililitros</option>
-                  <option value="UNIT">Unidad</option>
-                  <option value="SERVING">Porción</option>
-                </select>
-              </Field>
-              <div className="shopping-list-sheet__actions">
-                <button
-                  className="button button--secondary"
-                  onClick={closeAdd}
-                  type="button"
-                >
-                  Cancelar
-                </button>
-                <button
-                  className="button button--primary"
-                  disabled={add.isPending}
-                  type="submit"
-                >
-                  {add.isPending ? 'Agregando...' : 'Agregar a la lista'}
-                </button>
-              </div>
-              {add.error ? (
-                <p className="form-field__error" role="alert">
-                  {errorMessage(add.error, 'No se pudo agregar el producto.')}
-                </p>
-              ) : null}
-            </form>
+                {add.isPending ? 'Agregando...' : 'Agregar a la lista'}
+              </button>
+            </div>
+            {add.error ? (
+              <p className="form-field__error" role="alert">
+                {errorMessage(add.error, 'No se pudo agregar el producto.')}
+              </p>
+            ) : null}
+          </form>
         </BottomSheet>
       ) : null}
       {list.isPending ? <p role="status">Cargando lista...</p> : null}
@@ -416,34 +411,30 @@ export function ShoppingListPage() {
           )}
         </p>
       ) : null}
-      {editingItemId ? (
-        (() => {
-          const item = items.find(
-            (candidate) => candidate.id === editingItemId,
-          );
-          return item ? (
-            <ShoppingListEditDialog
-              draft={draftFor(item)}
-              error={editError}
-              isSaving={update.isPending}
-              onChange={(patch) => updateDraft(item, patch)}
-              onClose={closeEditor}
-              onSave={() => void saveItem(item)}
-            />
-          ) : null;
-        })()
-      ) : null}
+      {editingItemId
+        ? (() => {
+            const item = items.find(
+              (candidate) => candidate.id === editingItemId,
+            );
+            return item ? (
+              <ShoppingListEditDialog
+                draft={draftFor(item)}
+                error={editError}
+                isSaving={update.isPending}
+                onChange={(patch) => updateDraft(item, patch)}
+                onClose={closeEditor}
+                onSave={() => void saveItem(item)}
+              />
+            ) : null;
+          })()
+        : null}
       {conversionOpen ? (
-        <Dialog
-          onClose={closeConversion}
-          open
-          title="Completar compra"
-        >
+        <Dialog onClose={closeConversion} open title="Completar compra">
           <div className="shopping-conversion">
             <p className="shopping-conversion__intro">
-              Se creará un borrador con los elementos seleccionados. La lista
-              se marcará como comprada y el inventario cambiará solo al
-              confirmar la compra.
+              Se creará un borrador con los elementos seleccionados. La lista se
+              marcará como comprada y el inventario cambiará solo al confirmar
+              la compra.
             </p>
             <ul className="shopping-conversion__items">
               {pendingItems
