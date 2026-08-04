@@ -1,7 +1,8 @@
 import { Pencil, Utensils } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useMealDetails } from '../hooks/useMeals';
 
 const mealTypeLabels: Record<string, string> = {
@@ -13,7 +14,7 @@ const mealTypeLabels: Record<string, string> = {
 };
 
 export function MealDetailHeader() {
-  const { mealId } = useParams();
+  const { mealId } = useRouteParams();
   const details = useMealDetails(mealId);
   const meal = details.data;
 

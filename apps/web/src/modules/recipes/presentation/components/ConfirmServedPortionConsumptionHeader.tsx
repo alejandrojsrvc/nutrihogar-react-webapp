@@ -1,11 +1,12 @@
 import { UserCheck } from 'lucide-react';
-import { useParams, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { usePreparedBatchDetails } from '../hooks/usePreparedBatches';
 
 export function ConfirmServedPortionConsumptionHeader() {
-  const { portionId = '' } = useParams();
+  const { portionId = '' } = useRouteParams();
   const [params] = useSearchParams();
   const batchId = params.get('batchId') ?? '';
   const details = usePreparedBatchDetails(batchId || undefined);

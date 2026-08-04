@@ -1,11 +1,11 @@
 import { Utensils } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useInventoryItem } from '../hooks/useInventory';
 
 export function ConsumePreparedFoodHeader() {
-  const { inventoryItemId } = useParams();
+  const { inventoryItemId } = useRouteParams();
   const item = useInventoryItem(inventoryItemId);
 
   return (

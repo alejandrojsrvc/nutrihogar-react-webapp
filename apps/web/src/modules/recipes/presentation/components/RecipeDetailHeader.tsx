@@ -1,11 +1,11 @@
 import { ChefHat } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useRecipe } from '../hooks/useRecipes';
 
 export function RecipeDetailHeader() {
-  const { recipeId } = useParams();
+  const { recipeId } = useRouteParams();
   const recipe = useRecipe(recipeId);
 
   return (

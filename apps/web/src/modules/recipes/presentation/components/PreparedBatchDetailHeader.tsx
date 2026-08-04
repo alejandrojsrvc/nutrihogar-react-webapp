@@ -1,12 +1,12 @@
 import { CookingPot } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { usePreparedBatchDetails } from '../hooks/usePreparedBatches';
 import { formatDateTime } from '../recipePresentation';
 
 export function PreparedBatchDetailHeader() {
-  const { batchId } = useParams();
+  const { batchId } = useRouteParams();
   const details = usePreparedBatchDetails(batchId);
   const batch = details.data?.batch;
 

@@ -18,6 +18,8 @@ import { AdultProfileHeader } from '../../modules/households/presentation/compon
 import { AdultProfileOverviewPage } from '../../modules/households/presentation/pages/AdultProfileOverviewPage';
 import { AdultProfileOverviewHeader } from '../../modules/households/presentation/components/AdultProfileOverviewHeader';
 import { HouseholdInvitationsPage } from '../../modules/households/presentation/pages/HouseholdInvitationsPage';
+import { HouseholdInvitationsHeader } from '../../modules/households/presentation/components/HouseholdInvitationsHeader';
+import { AcceptHouseholdInvitationHeader } from '../../modules/households/presentation/components/AcceptHouseholdInvitationHeader';
 import { FamilyPage } from '../../modules/households/presentation/pages/FamilyPage';
 import { FamilyHeader } from '../../modules/households/presentation/components/FamilyHeader';
 import { FoodCatalogPage } from '../../modules/food-catalog/presentation/pages/FoodCatalogPage';
@@ -327,7 +329,7 @@ export const appRoutes: RouteObject[] = [
             element: <WeeklyAdherencePage />,
             handle: { pageHeader: WeeklyAdherenceHeader },
           },
-          { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
+          { path: '/app/invitaciones', element: <HouseholdInvitationsPage />, handle: { pageHeader: HouseholdInvitationsHeader } },
           {
             element: <RequireCompletedOnboarding />,
             children: [
@@ -341,6 +343,7 @@ export const appRoutes: RouteObject[] = [
           {
             path: '/invitaciones/:token',
             element: <AcceptHouseholdInvitationPage />,
+            handle: { pageHeader: AcceptHouseholdInvitationHeader },
           },
         ],
       },

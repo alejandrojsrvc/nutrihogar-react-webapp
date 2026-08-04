@@ -1,13 +1,14 @@
 import { ChartNoAxesCombined, Plus } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 
 export function DailyNutritionSummaryHeader() {
-  const { date = '' } = useParams();
+  const { date = '' } = useRouteParams();
   const households = useHouseholds();
   const profilesQuery = useAdultProfiles(households.activeHousehold?.id);
   const { activeProfile, activeProfileId, profiles } = useActiveProfile();

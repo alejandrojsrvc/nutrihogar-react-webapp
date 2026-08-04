@@ -12,6 +12,7 @@ import type {
   CreateHouseholdInvitationInput,
   HouseholdInvitation,
 } from '../../application/ports/HouseholdInvitationGateway';
+import { markInvitationAccepted } from '../stores/invitationUiStores';
 import { householdQueryKeys } from './useHouseholds';
 import { householdInvitationQueryKeys } from './householdInvitationQueryKeys';
 
@@ -68,8 +69,11 @@ export function useAcceptHouseholdInvitation() {
   const mutation = useMutation({
     mutationFn: (token: string) =>
       acceptHouseholdInvitationUseCase.execute(token),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: householdQueryKeys.all });
+    onSuccess: (acceptedInvitation) => {
+      markInvitationAccepted(acceptedInvitation);
+      void queryClient.invalidateQueries({
+        queryKey: householdQueryKeys.all,
+      });
     },
   });
 

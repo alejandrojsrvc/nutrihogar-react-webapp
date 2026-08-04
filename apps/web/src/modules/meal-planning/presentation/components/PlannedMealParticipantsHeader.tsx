@@ -1,12 +1,12 @@
 import { Users } from 'lucide-react';
-import { useParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import type { PlannedMeal } from '../../domain/MealPlanning';
 import { useWeeklyPlan } from '../hooks/useMealPlanning';
 
 export function PlannedMealParticipantsHeader() {
-  const { weeklyPlanId, plannedMealId } = useParams();
+  const { weeklyPlanId, plannedMealId } = useRouteParams();
   const plan = useWeeklyPlan(weeklyPlanId);
   const meal = plan.data?.meals.find((item) => item.id === plannedMealId);
 
