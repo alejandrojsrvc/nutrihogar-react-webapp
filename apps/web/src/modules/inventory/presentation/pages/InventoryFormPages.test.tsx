@@ -12,6 +12,7 @@ vi.mock(
   () => ({
     DexieInventoryLocalRepository: class {
       getSnapshot = async () => null;
+      getSnapshotForItem = async () => item();
       saveSnapshot = async () => undefined;
       saveOperation = async () => undefined;
       listPendingOperations = async () => [];
@@ -46,9 +47,9 @@ describe('Inventory form pages', () => {
     await user.click(
       await screen.findByRole('button', { name: 'Agregar existencia' }),
     );
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Selecciona un alimento.',
-    );
+    expect(
+      await screen.findByText('Selecciona un alimento.'),
+    ).toBeInTheDocument();
   });
 
   it('requires a reason when adjusting a quantity', async () => {
@@ -88,6 +89,35 @@ describe('Inventory form pages', () => {
       await screen.findByText('Explica la razón del ajuste.'),
     ).toBeInTheDocument();
   });
+
+  it('labels an offline adjustment as pending instead of server-confirmed', async () => {
+    setOffline();
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+      if (new URL(request.url).pathname === '/api/households')
+        return jsonResponse([
+          {
+            currency: 'ARS',
+            id: 'household-1',
+            name: 'Hogar',
+            timezone: 'UTC',
+          },
+        ]);
+      throw new Error(`Unexpected request: ${request.url}`);
+    });
+
+    renderRoute(
+      '/app/inventario/item-1/ajustar',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+
+    expect(
+      await screen.findByText(/no estará confirmado por el servidor/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Guardar ajuste pendiente' }),
+    ).toBeInTheDocument();
+  });
 });
 
 function item() {
@@ -116,5 +146,12 @@ function setOnline() {
   Object.defineProperty(window.navigator, 'onLine', {
     configurable: true,
     get: () => true,
+  });
+}
+
+function setOffline() {
+  Object.defineProperty(window.navigator, 'onLine', {
+    configurable: true,
+    get: () => false,
   });
 }

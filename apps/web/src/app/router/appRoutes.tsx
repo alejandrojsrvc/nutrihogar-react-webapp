@@ -55,6 +55,24 @@ import { WeeklyRequirementsPage } from '../../modules/meal-planning/presentation
 import { InventoryComparisonPage } from '../../modules/meal-planning/presentation/pages/InventoryComparisonPage';
 import { PlannedMealPreparationPage } from '../../modules/meal-planning/presentation/pages/PlannedMealPreparationPage';
 import { WeeklyAdherencePage } from '../../modules/meal-planning/presentation/pages/WeeklyAdherencePage';
+import {
+  CustomFoodFormHeader,
+  FoodCatalogHeader,
+  InventoryComparisonHeader,
+  InventoryCreateHeader,
+  InventoryListHeader,
+  PlannedMealFormHeader,
+  PlannedMealQuantitiesHeader,
+  PreparedBatchInventoryHeader,
+  PreparedFoodLeftoverDetailHeader,
+  PurchaseFormHeader,
+  RecipeCreateHeader,
+  RecipeEditHeader,
+  RecipeListHeader,
+  RegisterMealHeader,
+  WeeklyAdherenceHeader,
+  WeeklyRequirementsHeader,
+} from './pageHeaders';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -94,11 +112,17 @@ export const appRoutes: RouteObject[] = [
           {
             path: '/app/alimentos',
             element: <FoodCatalogPage />,
+            handle: { pageHeader: FoodCatalogHeader },
           },
-          { path: '/app/alimentos/nuevo', element: <CustomFoodFormPage /> },
+          {
+            path: '/app/alimentos/nuevo',
+            element: <CustomFoodFormPage />,
+            handle: { pageHeader: CustomFoodFormHeader },
+          },
           {
             path: '/app/alimentos/:foodId/editar',
             element: <CustomFoodFormPage />,
+            handle: { pageHeader: CustomFoodFormHeader },
           },
           { path: '/app/alimentos/:foodId', element: <FoodDetailPage /> },
           {
@@ -109,7 +133,11 @@ export const appRoutes: RouteObject[] = [
             path: '/app/perfiles/:profileId/meta/propuesta',
             element: <NutritionGoalProposalPage />,
           },
-          { path: '/app/comidas/nueva', element: <RegisterMealPage /> },
+          {
+            path: '/app/comidas/nueva',
+            element: <RegisterMealPage />,
+            handle: { pageHeader: RegisterMealHeader },
+          },
           { path: '/app/comidas/:mealId/editar', element: <EditMealPage /> },
           {
             path: '/app/comidas/:mealId/repetir',
@@ -129,11 +157,20 @@ export const appRoutes: RouteObject[] = [
             path: '/app/resumen/:date',
             element: <DailyNutritionSummaryPage />,
           },
-          { path: '/app/recetas', element: <RecipeListPage /> },
-          { path: '/app/recetas/nueva', element: <RecipeFormPage /> },
+          {
+            path: '/app/recetas',
+            element: <RecipeListPage />,
+            handle: { pageHeader: RecipeListHeader },
+          },
+          {
+            path: '/app/recetas/nueva',
+            element: <RecipeFormPage />,
+            handle: { pageHeader: RecipeCreateHeader },
+          },
           {
             path: '/app/recetas/:recipeId/editar',
             element: <RecipeFormPage />,
+            handle: { pageHeader: RecipeEditHeader },
           },
           { path: '/app/recetas/:recipeId', element: <RecipeDetailPage /> },
           {
@@ -163,14 +200,24 @@ export const appRoutes: RouteObject[] = [
           {
             path: '/app/preparaciones/:batchId/inventario',
             element: <PreparedBatchInventoryPage />,
+            handle: { pageHeader: PreparedBatchInventoryHeader },
           },
           { path: '/app/sobrantes', element: <PreparedFoodLeftoversPage /> },
           {
             path: '/app/sobrantes/:leftoverId',
             element: <PreparedFoodLeftoverDetailPage />,
+            handle: { pageHeader: PreparedFoodLeftoverDetailHeader },
           },
-          { path: '/app/inventario', element: <InventoryListPage /> },
-          { path: '/app/inventario/nuevo', element: <InventoryCreatePage /> },
+          {
+            path: '/app/inventario',
+            element: <InventoryListPage />,
+            handle: { pageHeader: InventoryListHeader },
+          },
+          {
+            path: '/app/inventario/nuevo',
+            element: <InventoryCreatePage />,
+            handle: { pageHeader: InventoryCreateHeader },
+          },
           {
             path: '/app/inventario/:inventoryItemId/ajustar',
             element: <InventoryAdjustPage />,
@@ -184,10 +231,15 @@ export const appRoutes: RouteObject[] = [
             element: <InventoryDetailPage />,
           },
           { path: '/app/compras', element: <PurchaseListPage /> },
-          { path: '/app/compras/nueva', element: <PurchaseFormPage /> },
+          {
+            path: '/app/compras/nueva',
+            element: <PurchaseFormPage />,
+            handle: { pageHeader: PurchaseFormHeader },
+          },
           {
             path: '/app/compras/:purchaseId/editar',
             element: <PurchaseFormPage />,
+            handle: { pageHeader: PurchaseFormHeader },
           },
           { path: '/app/compras/:purchaseId', element: <PurchaseDetailPage /> },
           { path: '/app/lista-de-compras', element: <ShoppingListPage /> },
@@ -195,10 +247,12 @@ export const appRoutes: RouteObject[] = [
           {
             path: '/app/plan-semanal/:weeklyPlanId/comidas/nueva',
             element: <PlannedMealFormPage />,
+            handle: { pageHeader: PlannedMealFormHeader },
           },
           {
             path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/editar',
             element: <PlannedMealFormPage />,
+            handle: { pageHeader: PlannedMealFormHeader },
           },
           {
             path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/participantes',
@@ -207,6 +261,7 @@ export const appRoutes: RouteObject[] = [
           {
             path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/cantidades',
             element: <PlannedMealQuantitiesPage />,
+            handle: { pageHeader: PlannedMealQuantitiesHeader },
           },
           {
             path: '/app/plan-semanal/:weeklyPlanId/comidas/:plannedMealId/preparar',
@@ -215,14 +270,17 @@ export const appRoutes: RouteObject[] = [
           {
             path: '/app/plan-semanal/:weeklyPlanId/requerimientos',
             element: <WeeklyRequirementsPage />,
+            handle: { pageHeader: WeeklyRequirementsHeader },
           },
           {
             path: '/app/plan-semanal/:weeklyPlanId/comparacion-inventario',
             element: <InventoryComparisonPage />,
+            handle: { pageHeader: InventoryComparisonHeader },
           },
           {
             path: '/app/plan-semanal/:weeklyPlanId/adherencia',
             element: <WeeklyAdherencePage />,
+            handle: { pageHeader: WeeklyAdherenceHeader },
           },
           { path: '/app/invitaciones', element: <HouseholdInvitationsPage /> },
           {

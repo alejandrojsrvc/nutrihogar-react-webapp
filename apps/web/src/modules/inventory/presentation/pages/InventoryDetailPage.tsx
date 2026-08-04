@@ -1,17 +1,25 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { PackageSearch } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { BottomSheet, Dialog } from '../../../../shared/presentation/components/Overlay';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import type { PendingInventoryOperation } from '../../application/ports/InventoryLocalRepository';
 import '../inventory.css';
 import {
   useArchiveInventoryItem,
   useConsumeInventoryItem,
+  useDiscardInventoryOperation,
   useExpireInventoryItem,
+  useInventoryConflicts,
   useInventoryItem,
   useInventoryMovements,
   useInventorySyncStatus,
   usePendingInventoryOperations,
+  useRetryInventoryOperation,
+  useSynchronizeInventory,
   useUpdateInventoryItem,
   useWasteInventoryItem,
 } from '../hooks/useInventory';
@@ -23,12 +31,20 @@ export function InventoryDetailPage() {
   const item = useInventoryItem(inventoryItemId);
   const movements = useInventoryMovements(inventoryItemId);
   const pending = usePendingInventoryOperations(households.activeHousehold?.id);
+  const conflicts = useInventoryConflicts(households.activeHousehold?.id);
   const syncStatus = useInventorySyncStatus(households.activeHousehold?.id);
+  const synchronize = useSynchronizeInventory(households.activeHousehold?.id);
   const consume = useConsumeInventoryItem();
   const waste = useWasteInventoryItem();
   const expiration = useExpireInventoryItem();
   const update = useUpdateInventoryItem();
   const archive = useArchiveInventoryItem();
+  const discardOperation = useDiscardInventoryOperation(
+    households.activeHousehold?.id,
+  );
+  const retryOperation = useRetryInventoryOperation(
+    households.activeHousehold?.id,
+  );
   const [action, setAction] = useState<
     'CONSUME' | 'WASTE' | 'EXPIRATION' | 'MINIMUM' | null
   >(null);
@@ -36,6 +52,14 @@ export function InventoryDetailPage() {
   const [reason, setReason] = useState('');
   const [occurredAt, setOccurredAt] = useState(toDateTimeLocal(new Date()));
   const [minimum, setMinimum] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const closeAction = useCallback(() => {
+    setAction(null);
+    setActionError('');
+  }, []);
+  const closeArchive = useCallback(() => setArchiveOpen(false), []);
 
   if (households.isPending || item.isPending)
     return (
@@ -54,7 +78,11 @@ export function InventoryDetailPage() {
         <p>No se pudo cargar la existencia.</p>
         <button
           className="button button--secondary"
-          onClick={() => void item.refetch()}
+          onClick={() =>
+            void (households.isError || !households.activeHousehold
+              ? households.refetch()
+              : item.refetch())
+          }
           type="button"
         >
           Reintentar
@@ -68,25 +96,37 @@ export function InventoryDetailPage() {
     pending.data?.filter(
       (operation) => operation.inventoryItemId === value.id,
     ) ?? [];
+  const itemConflicts =
+    conflicts.data?.filter(
+      (operation) => operation.inventoryItemId === value.id,
+    ) ?? [];
   const sortedMovements = [...(movements.data ?? [])].sort(
     (a, b) =>
       new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
   );
   const isArchived = value.status === 'ARCHIVED';
-  const mutationError =
-    consume.error ??
-    waste.error ??
-    expiration.error ??
-    update.error ??
-    archive.error;
+  const exitError = consume.error ?? waste.error ?? expiration.error;
+  const mutationError = exitError ?? update.error ?? archive.error;
 
   async function submitExit(kind: 'CONSUME' | 'WASTE' | 'EXPIRATION') {
     if (
       !quantity ||
       Number(quantity) <= 0 ||
       Number(quantity) > value.currentQuantity
-    )
+    ) {
+      setActionError(
+        `Ingresa una cantidad mayor que cero que no supere ${formatQuantity(value.currentQuantity, value.unit)}.`,
+      );
       return;
+    }
+    if (!occurredAt || Number.isNaN(new Date(occurredAt).getTime())) {
+      setActionError('Indica una fecha y hora válidas.');
+      return;
+    }
+    setActionError('');
+    const queued =
+      syncStatus.data?.isOnline === false ||
+      (typeof navigator !== 'undefined' && !navigator.onLine);
     const input = {
       quantity: Number(quantity),
       reason: reason.trim() || undefined,
@@ -102,13 +142,26 @@ export function InventoryDetailPage() {
       setAction(null);
       setQuantity('');
       setReason('');
+      setFeedback(
+        queued
+          ? 'Cambio guardado en este dispositivo. Está pendiente de sincronización y todavía no fue confirmado por el servidor.'
+          : 'Movimiento confirmado. El saldo mostrado fue actualizado por el servidor.',
+      );
     } catch {
       // El error se muestra en la sección de acciones.
     }
   }
 
   async function updateMinimum() {
-    if (!minimum.trim() || Number(minimum) < 0) return;
+    if (
+      !minimum.trim() ||
+      !Number.isFinite(Number(minimum)) ||
+      Number(minimum) < 0
+    ) {
+      setActionError('Ingresa un mínimo mayor o igual que cero.');
+      return;
+    }
+    setActionError('');
     try {
       await update.mutateAsync({
         itemId: value.id,
@@ -116,19 +169,26 @@ export function InventoryDetailPage() {
       });
       setAction(null);
       setMinimum('');
+      setFeedback('Mínimo actualizado por el servidor.');
     } catch {
       // El error se muestra en la sección de acciones.
     }
   }
 
   function archiveItem() {
-    if (
-      !window.confirm(
-        'Archivar esta existencia la retirará del inventario activo. ¿Quieres continuar?',
-      )
-    )
-      return;
-    archive.mutate(value.id, { onSuccess: () => navigate('/app/inventario') });
+    archive.mutate(value.id, {
+      onSuccess: () => navigate('/app/inventario'),
+    });
+  }
+
+  function toggleAction(next: NonNullable<typeof action>) {
+    consume.reset();
+    waste.reset();
+    expiration.reset();
+    update.reset();
+    setActionError('');
+    setFeedback('');
+    setAction(action === next ? null : next);
   }
 
   return (
@@ -137,12 +197,13 @@ export function InventoryDetailPage() {
       aria-labelledby="inventory-detail-title"
     >
       <BackButton fallback="/app/inventario" />
-      <p className="eyebrow">{itemTypeLabel(value.itemType)}</p>
-      <h1 id="inventory-detail-title">{value.name}</h1>
-      <p className="lead">
-        Consulta el saldo actual y la historia de movimientos de esta
-        existencia.
-      </p>
+      <PageHeader
+        description="Consulta el saldo disponible, sus alertas y el historial de cambios."
+        eyebrow={itemTypeLabel(value.itemType)}
+        icon={<PackageSearch size={22} />}
+        title={value.name}
+        titleId="inventory-detail-title"
+      />
       <div className="inventory-detail-actions">
         <span
           className={`status-badge${isArchived ? ' status-badge--danger' : ''}`}
@@ -167,25 +228,21 @@ export function InventoryDetailPage() {
               <>
                 <button
                   className="button button--secondary"
-                  onClick={() =>
-                    setAction(action === 'CONSUME' ? null : 'CONSUME')
-                  }
+                  onClick={() => toggleAction('CONSUME')}
                   type="button"
                 >
                   Registrar consumo
                 </button>
                 <button
                   className="button button--secondary"
-                  onClick={() => setAction(action === 'WASTE' ? null : 'WASTE')}
+                  onClick={() => toggleAction('WASTE')}
                   type="button"
                 >
                   Registrar desperdicio
                 </button>
                 <button
                   className="button button--secondary"
-                  onClick={() =>
-                    setAction(action === 'EXPIRATION' ? null : 'EXPIRATION')
-                  }
+                  onClick={() => toggleAction('EXPIRATION')}
                   type="button"
                 >
                   Registrar vencimiento
@@ -196,14 +253,55 @@ export function InventoryDetailPage() {
         ) : null}
       </div>
       <div className="inventory-sync-summary" role="status">
-        {syncStatus.data?.isOnline === false ? 'Sin conexión' : 'Conectado'}
-        {itemPending.length
-          ? ` · ${itemPending.length} operación${itemPending.length === 1 ? '' : 'es'} pendiente${itemPending.length === 1 ? '' : 's'}`
-          : ''}
+        <strong>
+          {syncStatus.isPending
+            ? 'Comprobando sincronización'
+            : synchronize.isPending
+              ? 'Sincronizando cambios'
+              : synchronize.isError
+                ? 'No se pudieron sincronizar los cambios'
+            : syncStatus.isError || pending.isError || conflicts.isError
+              ? 'No se pudo comprobar la sincronización'
+            : syncStatus.data?.isOnline === false
+              ? 'Viendo datos guardados en este dispositivo'
+              : syncStatus.data?.conflictsCount
+                ? 'Hay un conflicto de sincronización'
+                : itemPending.length
+                  ? 'Pendiente de sincronización'
+                  : 'Saldo confirmado por el servidor'}
+        </strong>
+        <span>
+          {itemPending.length
+            ? `${itemPending.length} cambio${itemPending.length === 1 ? '' : 's'} local${itemPending.length === 1 ? '' : 'es'} todavía sin confirmar.`
+            : syncStatus.isError || pending.isError || conflicts.isError
+              ? 'Reintenta para verificar si existen cambios locales pendientes.'
+            : syncStatus.data?.isOnline === false
+              ? 'El saldo puede no incluir cambios realizados desde otros dispositivos.'
+              : itemConflicts.length
+                ? 'Revisa el conflicto de esta existencia antes de continuar.'
+                : 'No hay cambios locales pendientes para esta existencia.'}
+        </span>
+        {syncStatus.isError || pending.isError || conflicts.isError || synchronize.isError ? (
+          <button
+            className="button button--secondary"
+            onClick={() => {
+              if (synchronize.isError && navigator.onLine) synchronize.mutate();
+              void Promise.all([
+                syncStatus.refetch(),
+                pending.refetch(),
+                conflicts.refetch(),
+              ]);
+            }}
+            type="button"
+          >
+            Reintentar estado
+          </button>
+        ) : null}
       </div>
+      {feedback ? <p className="inventory-feedback" role="status">{feedback}</p> : null}
       <dl className="inventory-detail-meta">
         <div>
-          <dt>Cantidad actual</dt>
+          <dt>{itemPending.length ? 'Cantidad mostrada' : 'Cantidad actual'}</dt>
           <dd>{formatQuantity(value.currentQuantity, value.unit)}</dd>
         </div>
         <div>
@@ -246,7 +344,7 @@ export function InventoryDetailPage() {
           {!isArchived ? (
             <button
               className="button button--secondary"
-              onClick={() => setAction(action === 'MINIMUM' ? null : 'MINIMUM')}
+              onClick={() => toggleAction('MINIMUM')}
               type="button"
             >
               Cambiar mínimo
@@ -254,38 +352,20 @@ export function InventoryDetailPage() {
           ) : null}
         </div>
         <p>{sourceLink(value)}</p>
-        {action === 'MINIMUM' ? (
-          <div className="inventory-inline-form">
-            <label htmlFor="inventory-minimum">Nuevo mínimo</label>
-            <input
-              id="inventory-minimum"
-              inputMode="decimal"
-              min="0"
-              onChange={(event) => setMinimum(event.target.value)}
-              step="any"
-              type="number"
-              value={minimum}
-            />
-            <button
-              className="button button--primary"
-              disabled={update.isPending}
-              onClick={() => void updateMinimum()}
-              type="button"
-            >
-              Guardar mínimo
-            </button>
-          </div>
-        ) : null}
       </section>
       {action === 'CONSUME' || action === 'WASTE' || action === 'EXPIRATION' ? (
-        <section className="inventory-detail-section inventory-action-form">
-          <h2>
-            {action === 'CONSUME'
+        <BottomSheet
+          onClose={closeAction}
+          open
+          title={
+            action === 'CONSUME'
               ? 'Registrar consumo'
               : action === 'WASTE'
                 ? 'Registrar desperdicio'
-                : 'Registrar vencimiento'}
-          </h2>
+                : 'Registrar vencimiento'
+          }
+        >
+          <div className="inventory-action-form">
           {action === 'EXPIRATION' ? (
             <p role="note">
               Al confirmar, esta cantidad se retirará por vencimiento y no
@@ -334,19 +414,36 @@ export function InventoryDetailPage() {
               disabled={
                 consume.isPending ||
                 waste.isPending ||
-                expiration.isPending ||
-                !quantity ||
-                Number(quantity) > value.currentQuantity
+                expiration.isPending
               }
               onClick={() => void submitExit(action)}
               type="button"
             >
               {consume.isPending || waste.isPending || expiration.isPending
-                ? 'Guardando...'
-                : 'Confirmar'}
+                ? syncStatus.data?.isOnline === false
+                  ? 'Guardando en dispositivo...'
+                  : 'Guardando...'
+                : syncStatus.data?.isOnline === false
+                  ? action === 'CONSUME'
+                    ? 'Guardar consumo pendiente'
+                    : action === 'WASTE'
+                      ? 'Guardar desperdicio pendiente'
+                      : 'Guardar vencimiento pendiente'
+                  : action === 'CONSUME'
+                    ? 'Registrar consumo'
+                    : action === 'WASTE'
+                      ? 'Registrar desperdicio'
+                      : 'Registrar vencimiento'}
             </button>
           </div>
-        </section>
+          {actionError ? <p className="form-field__error" role="alert">{actionError}</p> : null}
+          {exitError ? (
+            <p className="form-field__error" role="alert">
+              {exitError instanceof Error ? exitError.message : 'No se pudo completar la acción.'}
+            </p>
+          ) : null}
+          </div>
+        </BottomSheet>
       ) : null}
       {mutationError ? (
         <p className="form-field__error" role="alert">
@@ -361,7 +458,10 @@ export function InventoryDetailPage() {
           <p role="status">Cargando movimientos...</p>
         ) : null}
         {movements.isError ? (
-          <p role="alert">No se pudo cargar el historial.</p>
+          <div role="alert">
+            <p>No se pudo cargar el historial.</p>
+            <button className="button button--secondary" onClick={() => void movements.refetch()} type="button">Reintentar historial</button>
+          </div>
         ) : null}
         {!movements.isPending &&
         !movements.isError &&
@@ -399,17 +499,76 @@ export function InventoryDetailPage() {
           <ul className="inventory-pending-list">
             {itemPending.map((operation) => (
               <li key={operation.operationId}>
-                Ajuste a {operation.newQuantity ?? operation.quantity}{' '}
-                {unitLabel(operation.unit)} · pendiente de sincronización
+                {pendingOperationLabel(operation)} ·{' '}
+                {inventoryOperationStatusLabel(operation.syncStatus)}
               </li>
             ))}
           </ul>
         </section>
       ) : null}
+      {itemConflicts.length ? (
+        <section className="inventory-detail-section" aria-labelledby="inventory-conflicts-title">
+          <h2 id="inventory-conflicts-title">Conflictos por revisar</h2>
+          <p className="supporting-text">
+            El saldo del servidor cambió antes de aplicar estos cambios locales. Reintentar los vuelve a poner en cola; no los confirma de inmediato.
+          </p>
+          <ul className="inventory-conflict-list">
+            {itemConflicts.map((operation) => (
+              <li key={operation.operationId}>
+                <div>
+                  <strong>{operation.movementType ? movementLabel(operation.movementType) : 'Ajuste de cantidad'}</strong>
+                  <span>{operation.lastError ?? 'El servidor rechazó la versión usada por este cambio.'}</span>
+                </div>
+                <div className="inventory-conflict-actions">
+                  {operation.retryable !== false ? (
+                    <button
+                      className="button button--secondary"
+                      disabled={retryOperation.isPending || syncStatus.data?.isOnline === false}
+                      onClick={() => {
+                        void retryOperation
+                          .mutateAsync({
+                            baseVersion:
+                              operation.resultingVersion ??
+                              operation.baseVersion,
+                            operationId: operation.operationId,
+                          })
+                          .then(() => {
+                            if (navigator.onLine) synchronize.mutate();
+                          })
+                          .catch(() => undefined);
+                      }}
+                      type="button"
+                    >
+                      Reintentar al sincronizar
+                    </button>
+                  ) : null}
+                  <button
+                    className="button button--text inventory-danger-text"
+                    disabled={discardOperation.isPending}
+                    onClick={() => discardOperation.mutate(operation.operationId)}
+                    type="button"
+                  >
+                    Descartar cambio local
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {retryOperation.error || discardOperation.error || synchronize.error ? (
+            <p className="form-field__error" role="alert">
+              No se pudo actualizar el cambio pendiente. Inténtalo nuevamente.
+            </p>
+          ) : null}
+        </section>
+      ) : null}
       {!isArchived ? (
         <button
           className="button button--danger"
-          onClick={archiveItem}
+          disabled={syncStatus.data?.isOnline === false}
+          onClick={() => {
+            archive.reset();
+            setArchiveOpen(true);
+          }}
           type="button"
         >
           Archivar existencia
@@ -419,6 +578,49 @@ export function InventoryDetailPage() {
           Esta existencia está archivada y se conserva como historial.
         </p>
       )}
+      <BottomSheet
+        onClose={closeAction}
+        open={action === 'MINIMUM'}
+        title="Cambiar mínimo"
+      >
+        <div className="inventory-inline-form">
+          <label htmlFor="inventory-minimum">Nuevo mínimo ({unitLabel(value.unit)})</label>
+          <input
+            id="inventory-minimum"
+            inputMode="decimal"
+            min="0"
+            onChange={(event) => setMinimum(event.target.value)}
+            step="any"
+            type="number"
+            value={minimum}
+          />
+          {actionError ? <p className="form-field__error" role="alert">{actionError}</p> : null}
+          {update.error ? (
+            <p className="form-field__error" role="alert">
+              {update.error instanceof Error ? update.error.message : 'No se pudo cambiar el mínimo.'}
+            </p>
+          ) : null}
+          <button
+            className="button button--primary"
+            disabled={update.isPending || syncStatus.data?.isOnline === false}
+            onClick={() => void updateMinimum()}
+            type="button"
+          >
+            {update.isPending ? 'Guardando...' : 'Guardar mínimo'}
+          </button>
+          {syncStatus.data?.isOnline === false ? <p className="supporting-text">Cambiar el mínimo requiere conexión y no se guarda como operación pendiente.</p> : null}
+        </div>
+      </BottomSheet>
+      <Dialog onClose={closeArchive} open={archiveOpen} title="Archivar existencia">
+        <p>La existencia se retirará del inventario activo, pero su historial se conservará. Esta acción requiere confirmación del servidor.</p>
+        {archive.error ? <p className="form-field__error" role="alert">No se pudo archivar la existencia.</p> : null}
+        <div className="inventory-dialog-actions">
+          <button className="button button--secondary" onClick={closeArchive} type="button">Conservar existencia</button>
+          <button className="button button--danger" disabled={archive.isPending} onClick={archiveItem} type="button">
+            {archive.isPending ? 'Archivando...' : 'Archivar existencia'}
+          </button>
+        </div>
+      </Dialog>
     </section>
   );
 }
@@ -497,6 +699,22 @@ function movementDirection(type: string) {
   ].includes(type)
     ? 'movement-in'
     : 'movement-out';
+}
+
+function pendingOperationLabel(operation: PendingInventoryOperation) {
+  if (operation.type === 'ABSOLUTE_ADJUSTMENT')
+    return `Ajuste a ${operation.newQuantity} ${unitLabel(operation.unit)}`;
+  return `${movementLabel(operation.movementType ?? 'MOVEMENT')} de ${operation.quantity} ${unitLabel(operation.unit)}`;
+}
+
+function inventoryOperationStatusLabel(
+  status: PendingInventoryOperation['syncStatus'],
+) {
+  return status === 'SYNCING'
+    ? 'sincronizando'
+    : status === 'FAILED'
+      ? 'falló la sincronización; se reintentará'
+      : 'pendiente de sincronización';
 }
 function toDateTimeLocal(value: Date) {
   const offset = value.getTimezoneOffset() * 60000;

@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { PackagePlus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { AvailabilitySummary } from '../components/AvailabilitySummary';
+import { PreparationProgress } from '../components/PreparationProgress';
 import { usePreparedBatchDetails } from '../hooks/usePreparedBatches';
 import { useCreatePreparedFoodLeftover } from '../hooks/usePreparedFoodLeftovers';
+import '../recipes.css';
 
 export function CreatePreparedFoodLeftoverPage() {
   const { batchId = '' } = useParams();
@@ -16,6 +20,12 @@ export function CreatePreparedFoodLeftoverPage() {
   const [storageLocation, setStorageLocation] = useState('REFRIGERATOR');
   const [notes, setNotes] = useState('');
 
+  if (!batchId)
+    return (
+      <p className="page-section" role="alert">
+        Falta identificar la preparación. Abre esta acción desde su detalle.
+      </p>
+    );
   if (details.isPending)
     return (
       <p className="page-section" role="status">
@@ -29,7 +39,42 @@ export function CreatePreparedFoodLeftoverPage() {
       </p>
     );
 
-  const availableWeight = details.data.availability?.availableWeight ?? 0;
+  if (details.data.batch.status !== 'FINALIZED') {
+    const cancelled = details.data.batch.status === 'CANCELLED';
+    return (
+      <section className="page-section leftover-page" role="alert">
+        <BackButton fallback={`/app/preparaciones/${batchId}`} />
+        <PageHeader
+          eyebrow="Sobrante"
+          title={cancelled ? 'Preparación cancelada' : 'La preparación todavía no está lista'}
+          description={
+            cancelled
+              ? 'No se pueden guardar sobrantes de una preparación cancelada.'
+              : 'Registra el peso cocido antes de guardar un sobrante.'
+          }
+          icon={<PackagePlus size={22} />}
+        />
+        {!cancelled ? (
+          <PreparationProgress
+            current={
+              details.data.batch.status === 'DRAFT' ? 'ingredients' : 'weight'
+            }
+          />
+        ) : null}
+        {!cancelled ? (
+          <Link
+            className="button button--primary"
+            to={`/app/preparaciones/${batchId}`}
+          >
+            Continuar preparación
+          </Link>
+        ) : null}
+      </section>
+    );
+  }
+
+  const availability = details.data.availability;
+  const availableWeight = availability?.availableWeight ?? 0;
   const requestedWeight = Number(weight);
   const invalid =
     !Number.isFinite(requestedWeight) ||
@@ -48,19 +93,37 @@ export function CreatePreparedFoodLeftoverPage() {
           weight: requestedWeight,
         },
       },
-      { onSuccess: () => navigate(`/app/preparaciones/${batchId}`) },
+      {
+        onSuccess: () =>
+          navigate(`/app/preparaciones/${batchId}`, {
+            replace: true,
+            state: { successMessage: 'El sobrante quedó guardado.' },
+          }),
+      },
     );
   }
 
   return (
-    <section className="page-section" aria-labelledby="create-leftover-title">
+    <section className="page-section leftover-page" aria-labelledby="create-leftover-title">
       <BackButton fallback={`/app/preparaciones/${batchId}`} />
       <PageHeader
         eyebrow="Preparación familiar"
-        title="Guardar sobrante"
+        title={`Guardar sobrante de ${details.data.batch.recipeNameSnapshot}`}
         titleId="create-leftover-title"
-        description={`Disponible: ${availableWeight} g`}
+        description="Registra únicamente la cantidad que vas a guardar de esta preparación."
+        icon={<PackagePlus size={22} />}
       />
+      <PreparationProgress current="leftover" />
+      <AvailabilitySummary availability={availability} pendingWeight={invalid ? 0 : requestedWeight} />
+      <form
+        className="leftover-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          submit();
+        }}
+      >
+      <fieldset className="preparation-fieldset">
+        <legend>Cantidad y guardado</legend>
       <div className="form-field">
         <label htmlFor="leftover-weight">Peso del sobrante (g)</label>
         <input
@@ -82,18 +145,26 @@ export function CreatePreparedFoodLeftoverPage() {
         <input
           id="leftover-stored-at"
           onChange={(event) => setStoredAt(event.target.value)}
+          required
           type="datetime-local"
           value={storedAt}
         />
       </div>
       <div className="form-field">
         <label htmlFor="leftover-location">Ubicación</label>
-        <input
+        <select
           id="leftover-location"
           onChange={(event) => setStorageLocation(event.target.value)}
           value={storageLocation}
-        />
+        >
+          <option value="REFRIGERATOR">Refrigerador</option>
+          <option value="FREEZER">Congelador</option>
+          <option value="PANTRY">Despensa</option>
+        </select>
       </div>
+      </fieldset>
+      <fieldset className="preparation-fieldset">
+        <legend>Nota opcional</legend>
       <div className="form-field">
         <label htmlFor="leftover-notes">Nota (opcional)</label>
         <textarea
@@ -102,16 +173,16 @@ export function CreatePreparedFoodLeftoverPage() {
           value={notes}
         />
       </div>
+      </fieldset>
       <p className="supporting-text">
-        El sobrante conserva la densidad nutricional de la preparación. La
-        integración con inventario llegará después.
+        El sobrante conserva la densidad nutricional definitiva de la preparación.
       </p>
       {create.isError ? (
         <p role="alert">
           No se pudo guardar el sobrante. Inténtalo nuevamente.
         </p>
       ) : null}
-      <div className="recipe-form__actions">
+      <div className="recipe-page-actions">
         <Link
           className="button button--secondary"
           to={`/app/preparaciones/${batchId}`}
@@ -121,12 +192,12 @@ export function CreatePreparedFoodLeftoverPage() {
         <button
           className="button button--primary"
           disabled={invalid || create.isPending}
-          onClick={submit}
-          type="button"
+          type="submit"
         >
           {create.isPending ? 'Guardando...' : 'Guardar sobrante'}
         </button>
       </div>
+      </form>
     </section>
   );
 }

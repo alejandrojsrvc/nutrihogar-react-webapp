@@ -1,7 +1,12 @@
+import { Users } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import type { PlannedMeal } from '../../domain/MealPlanning';
@@ -10,30 +15,31 @@ import {
   useDeleteParticipant,
   useWeeklyPlan,
 } from '../hooks/useMealPlanning';
+import { RelatedActions } from '../components/RelatedActions';
 
 export function PlannedMealParticipantsPage() {
   const { weeklyPlanId, plannedMealId } = useParams();
-  const navigate = useNavigate();
   const households = useHouseholds();
   const plan = useWeeklyPlan(weeklyPlanId);
   const profiles = useAdultProfiles(households.activeHousehold?.id);
   const assign = useAssignParticipant();
   const remove = useDeleteParticipant();
+  const [submitting, setSubmitting] = useState(false);
   const [selectedOverride, setSelectedOverride] = useState<string[] | null>(
     null,
   );
   const meal = plan.data?.meals.find((item) => item.id === plannedMealId);
   if (households.isPending || plan.isPending || profiles.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando participantes...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando participantes..." />
+      </section>
     );
   if (households.isError || profiles.isError || plan.isError || !meal)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar la comida o sus participantes.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No se pudo cargar la comida o sus participantes." />
+      </section>
     );
   const activeProfiles = profiles.profiles.filter(
     (profile) => profile.isActive !== false,
@@ -41,20 +47,25 @@ export function PlannedMealParticipantsPage() {
   const selected =
     selectedOverride ??
     meal.participants.map((participant) => participant.adultProfileId);
-  const saving = assign.isPending || remove.isPending;
+  const saving = submitting || assign.isPending || remove.isPending;
   const save = async () => {
-    const current = new Set(
-      meal.participants.map((participant) => participant.adultProfileId),
-    );
-    for (const adultProfileId of selected.filter((id) => !current.has(id)))
-      await assign.mutateAsync({
-        plannedMealId: plannedMealId!,
-        adultProfileId,
-      });
-    for (const participant of meal.participants.filter(
-      (item) => !selected.includes(item.adultProfileId),
-    ))
-      await remove.mutateAsync(participant.id);
+    setSubmitting(true);
+    try {
+      const current = new Set(
+        meal.participants.map((participant) => participant.adultProfileId),
+      );
+      for (const adultProfileId of selected.filter((id) => !current.has(id)))
+        await assign.mutateAsync({
+          plannedMealId: plannedMealId!,
+          adultProfileId,
+        });
+      for (const participant of meal.participants.filter(
+        (item) => !selected.includes(item.adultProfileId),
+      ))
+        await remove.mutateAsync(participant.id);
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <section
@@ -66,6 +77,7 @@ export function PlannedMealParticipantsPage() {
       />
       <PageHeader
         eyebrow="Comida planificada"
+        icon={<Users size={22} />}
         title={`Participantes de ${meal.name ?? mealLabel(meal)}`}
         titleId="participants-title"
         description="Selecciona los adultos que compartirán esta comida."
@@ -73,7 +85,7 @@ export function PlannedMealParticipantsPage() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          void save();
+          void save().catch(() => undefined);
         }}
       >
         <fieldset className="participant-selection" disabled={saving}>
@@ -99,7 +111,7 @@ export function PlannedMealParticipantsPage() {
             <p>No hay adultos activos disponibles.</p>
           )}
         </fieldset>
-        <div className="form-actions">
+        <div className="form-actions meal-planning-detail__sticky-actions">
           <button
             className="button button--primary"
             disabled={saving || !activeProfiles.length}
@@ -107,12 +119,6 @@ export function PlannedMealParticipantsPage() {
           >
             {saving ? 'Guardando...' : 'Guardar participantes'}
           </button>
-          <Link
-            className="button button--secondary"
-            to={`/app/plan-semanal/${weeklyPlanId}/comidas/${plannedMealId}/cantidades`}
-          >
-            Configurar cantidades
-          </Link>
         </div>
         {assign.isError || remove.isError ? (
           <p role="alert">
@@ -124,15 +130,16 @@ export function PlannedMealParticipantsPage() {
           <p role="status">Participantes actualizados.</p>
         ) : null}
       </form>
-      <button
-        className="button button--secondary"
-        type="button"
-        onClick={() =>
-          navigate(`/app/plan-semanal?semana=${plan.data!.weekStart}`)
-        }
-      >
-        Volver al plan
-      </button>
+      <RelatedActions>
+        <Link
+          to={`/app/plan-semanal/${weeklyPlanId}/comidas/${plannedMealId}/cantidades`}
+        >
+          Configurar cantidades
+        </Link>
+        <Link to={`/app/plan-semanal?semana=${plan.data!.weekStart}`}>
+          Volver al plan
+        </Link>
+      </RelatedActions>
     </section>
   );
 }

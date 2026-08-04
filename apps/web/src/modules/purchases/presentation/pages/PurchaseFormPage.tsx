@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState, type ReactElement } from 'react';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
 
@@ -11,6 +11,7 @@ import type { PurchaseItemInput } from '../../application/ports/PurchaseGateway'
 import '../purchases.css';
 import {
   useCreatePurchase,
+  usePurchaseConnectivity,
   usePurchase,
   useUpdatePurchase,
 } from '../hooks/usePurchases';
@@ -36,11 +37,13 @@ export function PurchaseFormPage() {
   const purchase = usePurchase(purchaseId);
   const create = useCreatePurchase();
   const update = useUpdatePurchase();
+  const isOnline = usePurchaseConnectivity();
   const [draftItems, setDraftItems] = useState<PurchaseItemInput[] | null>(
     null,
   );
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [itemsError, setItemsError] = useState('');
+  const initializedPurchaseId = useRef<string | null>(null);
   const {
     formState: { errors },
     handleSubmit,
@@ -52,13 +55,18 @@ export function PurchaseFormPage() {
   });
 
   useEffect(() => {
-    if (purchase.data && isEditing) {
+    if (
+      purchase.data &&
+      isEditing &&
+      initializedPurchaseId.current !== purchase.data.id
+    ) {
       reset({
         currency: purchase.data.currency,
         purchaseDate: formatDateInput(purchase.data.purchaseDate),
         storeName: purchase.data.storeName,
         total: String(purchase.data.total),
       });
+      initializedPurchaseId.current = purchase.data.id;
     }
   }, [isEditing, purchase.data, reset]);
 
@@ -74,9 +82,26 @@ export function PurchaseFormPage() {
     (isEditing && (purchase.isError || !purchase.data))
   )
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar la compra.
-      </p>
+      <section className="page-section" role="alert">
+        <p>
+          {isOnline
+            ? 'No se pudo cargar la compra.'
+            : isEditing
+              ? 'Esta compra no está disponible para editar sin conexión.'
+              : 'No se pudo preparar el formulario sin conexión.'}
+        </p>
+        <button
+          className="button button--secondary"
+          onClick={() =>
+            void (households.isError || !households.activeHousehold
+              ? households.refetch()
+              : purchase.refetch())
+          }
+          type="button"
+        >
+          Reintentar
+        </button>
+      </section>
     );
   if (isEditing && purchase.data?.status !== 'DRAFT')
     return (
@@ -111,9 +136,20 @@ export function PurchaseFormPage() {
     setSelectorOpen(false);
   };
 
+  const updateItem = (index: number, patch: Partial<PurchaseItemInput>) => {
+    setDraftItems(items.map((item, itemIndex) =>
+      itemIndex === index ? { ...item, ...patch } : item,
+    ));
+    setItemsError('');
+  };
+
   const onSubmit: SubmitHandler<PurchaseFormValues> = async (values) => {
     if (items.length === 0) {
       setItemsError('Agrega al menos un producto a la compra.');
+      return;
+    }
+    if (items.some((item) => !Number.isFinite(item.quantity) || item.quantity <= 0 || !item.unit)) {
+      setItemsError('Revisa que cada producto tenga una cantidad mayor que cero y una unidad.');
       return;
     }
     const input = {
@@ -143,21 +179,18 @@ export function PurchaseFormPage() {
       <BackButton
         fallback={isEditing ? `/app/compras/${purchaseId}` : '/app/compras'}
       />
-      <p className="eyebrow">Compras del hogar</p>
-      <h1 id="purchase-form-title">
-        {isEditing ? 'Editar compra' : 'Registrar compra'}
-      </h1>
-      <p className="lead">
-        Crea un borrador, revisa sus productos y confirma solo cuando quieras
-        actualizar el inventario.
-      </p>
+      {!isOnline ? (
+        <p className="feature-connectivity feature-connectivity--offline" role="status">
+          Sin conexión. Este formulario conserva los valores en pantalla, pero el borrador no puede guardarse ni se pondrá en cola.
+        </p>
+      ) : null}
       <form
         className="purchase-form"
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset>
-          <legend>Datos de la compra</legend>
+          <legend><span>1</span> Datos de la compra</legend>
           <div className="purchase-form-grid">
             <Field
               error={errors.storeName?.message}
@@ -205,9 +238,10 @@ export function PurchaseFormPage() {
           </div>
         </fieldset>
         <fieldset>
-          <legend>Productos</legend>
+          <legend><span>2</span> Productos</legend>
           <button
             className="button button--secondary"
+            disabled={!isOnline}
             onClick={() => setSelectorOpen(true)}
             type="button"
           >
@@ -224,9 +258,33 @@ export function PurchaseFormPage() {
                 <li key={`${item.foodId ?? item.nameSnapshot}-${index}`}>
                   <div>
                     <strong>{item.nameSnapshot}</strong>
-                    <span>
-                      {item.quantity} {item.unit}
-                    </span>
+                    <div className="purchase-item-editors">
+                      <label>
+                        <span>Cantidad</span>
+                        <input
+                          aria-label={`Cantidad de ${item.nameSnapshot}`}
+                          inputMode="decimal"
+                          min="0.1"
+                          onChange={(event) => updateItem(index, { quantity: Number(event.target.value) })}
+                          step="any"
+                          type="number"
+                          value={item.quantity}
+                        />
+                      </label>
+                      <label>
+                        <span>Unidad</span>
+                        <select
+                          aria-label={`Unidad de ${item.nameSnapshot}`}
+                          onChange={(event) => updateItem(index, { unit: event.target.value })}
+                          value={item.unit}
+                        >
+                          <option value="GRAM">Gramos</option>
+                          <option value="MILLILITER">Mililitros</option>
+                          <option value="UNIT">Unidad</option>
+                          <option value="SERVING">Porción</option>
+                        </select>
+                      </label>
+                    </div>
                   </div>
                   <button
                     className="button button--text"
@@ -246,6 +304,9 @@ export function PurchaseFormPage() {
             <p>No agregaste productos todavía.</p>
           )}
         </fieldset>
+        <p className="purchase-inventory-preview" role="note">
+          Guardar mantiene la compra como borrador. Ningún saldo de inventario cambia hasta que confirmes la compra desde su detalle.
+        </p>
         <div className="purchase-form-actions">
           <Link
             className="button button--secondary"
@@ -255,7 +316,7 @@ export function PurchaseFormPage() {
           </Link>
           <button
             className="button button--primary"
-            disabled={saving}
+            disabled={!isOnline || saving}
             type="submit"
           >
             {saving ? 'Guardando...' : 'Guardar borrador'}
@@ -294,7 +355,7 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {error ? <p className="form-field__error" role="alert">{error}</p> : null}
     </div>
   );
 }

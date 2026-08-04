@@ -1,5 +1,6 @@
-import { useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import type { MealFormValues } from '@nutrihogar/schemas';
+import { Utensils } from 'lucide-react';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import type { FoodSummary } from '../../../food-catalog/application/ports/FoodCatalogGateway';
@@ -11,6 +12,7 @@ import { useAdultProfiles } from '../../../households/presentation/hooks/useAdul
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { MealForm } from '../components/MealForm';
 import { useMealDetails, useUpdateMeal } from '../hooks/useMeals';
+import '../meals.css';
 
 export function EditMealPage() {
   const { mealId } = useParams();
@@ -20,30 +22,63 @@ export function EditMealPage() {
   const detail = useMealDetails(mealId);
   const updateMeal = useUpdateMeal();
 
-  if (detail.isPending || profiles.isPending)
+  if (
+    households.isPending ||
+    detail.isPending ||
+    (Boolean(households.activeHousehold) && profiles.isPending)
+  )
     return (
-      <p className="page-section" role="status">
-        Cargando comida...
-      </p>
+      <section className="page-section meal-page-state" role="status">
+        <PageHeader
+          icon={<Utensils size={25} />}
+          title="Editar comida"
+        />
+        <p>Cargando comida...</p>
+      </section>
     );
-  if (detail.isError || !detail.data || profiles.isError)
+  if (
+    households.isError ||
+    !households.activeHousehold ||
+    detail.isError ||
+    !detail.data ||
+    profiles.isError
+  )
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar la comida para editar.
-      </p>
+      <section className="page-section meal-page-state" role="alert">
+        <h1>No pudimos abrir la edición</h1>
+        <p>La comida se conserva sin cambios.</p>
+        <button
+          className="button button--secondary"
+          onClick={() => {
+            void detail.refetch();
+            void households.refetch();
+            void profiles.refetch();
+          }}
+          type="button"
+        >
+          Reintentar
+        </button>
+      </section>
     );
   if (detail.data.status !== 'CONFIRMED')
     return (
-      <p className="page-section" role="alert">
-        Una comida cancelada no se puede editar.
-      </p>
+      <MealEditUnavailable
+        mealId={detail.data.id}
+        reason="Las comidas canceladas se conservan como historial y no pueden modificarse."
+      />
     );
 
   const meal = detail.data;
+  if (meal.items.some((item) => item.foodId === null)) {
+    return (
+      <MealEditUnavailable
+        mealId={meal.id}
+        reason="Uno o más alimentos existen solo como una captura histórica. La edición está desactivada para no descartarlos ni sustituir sus valores confirmados."
+      />
+    );
+  }
   const initialValues = toFormValues(meal);
-  const initialItems = meal.items
-    .filter((item) => item.foodId)
-    .map(toDraftItem);
+  const initialItems = meal.items.map(toDraftItem);
 
   function submit(values: MealFormValues, items: MealDraftItem[]) {
     if (!mealId) return;
@@ -77,8 +112,9 @@ export function EditMealPage() {
     >
       <BackButton fallback={`/app/comidas/${meal.id}`} />
       <PageHeader
-        eyebrow="Registro de comida"
-        title="Edita la comida"
+        description="Ajusta los datos y revisa los alimentos antes de guardar."
+        icon={<Utensils size={25} />}
+        title="Editar comida"
         titleId="edit-meal-title"
       />
       <MealForm
@@ -89,7 +125,8 @@ export function EditMealPage() {
         isSubmitting={updateMeal.isPending}
         onSubmit={submit}
         profiles={profiles.profiles.filter(
-          (profile) => profile.isActive !== false,
+          (profile) =>
+            profile.isActive !== false || profile.id === meal.adultProfileId,
         )}
         readOnlyProfile
         submitLabel="Guardar cambios"
@@ -116,22 +153,22 @@ function toFormValues(meal: MealDetails): MealFormValues {
 function toDraftItem(item: MealDetails['items'][number]): MealDraftItem {
   const food = {
     brand: item.brand,
-    carbohydrateGrams: null,
+    carbohydrateGrams: item.totals.carbohydrateGrams ?? null,
     category: {
       displayOrder: 0,
       id: 'snapshot',
       name: 'Alimento',
       code: 'SNAPSHOT',
     },
-    energyKcal: item.totals.calories || null,
-    fatGrams: item.totals.fatGrams || null,
+    energyKcal: item.totals.calories ?? null,
+    fatGrams: item.totals.fatGrams ?? null,
     foodType: 'CUSTOM',
     householdId: null,
     id: item.foodId ?? '',
     name: item.foodName,
     preparationState: item.preparationState ?? 'NOT_APPLICABLE',
-    proteinGrams: item.totals.proteinGrams || null,
-    referenceQuantity: item.baseQuantity || item.quantity,
+    proteinGrams: item.totals.proteinGrams ?? null,
+    referenceQuantity: item.baseQuantity ?? item.quantity,
     referenceUnit: (item.baseUnit ||
       item.unit ||
       'GRAM') as FoodSummary['referenceUnit'],
@@ -145,4 +182,32 @@ function toDraftItem(item: MealDetails['items'][number]): MealDraftItem {
     servingId: item.foodServingId ?? undefined,
     unit: item.unit as MealDraftItem['unit'],
   };
+}
+
+function MealEditUnavailable({
+  mealId,
+  reason,
+}: {
+  mealId: string;
+  reason: string;
+}) {
+  return (
+    <section
+      className="page-section meal-page-state"
+      aria-labelledby="meal-edit-unavailable-title"
+    >
+      <BackButton fallback={`/app/comidas/${mealId}`} />
+      <PageHeader
+        icon={<Utensils size={25} />}
+        title="Edición no disponible"
+        titleId="meal-edit-unavailable-title"
+      />
+      <p className="meal-disabled-reason" role="status">
+        {reason}
+      </p>
+      <Link className="button button--primary" to={`/app/comidas/${mealId}`}>
+        Volver al detalle
+      </Link>
+    </section>
+  );
 }

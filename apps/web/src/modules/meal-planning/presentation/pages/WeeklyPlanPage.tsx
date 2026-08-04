@@ -1,8 +1,13 @@
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { MealType, PlannedMeal } from '../../domain/MealPlanning';
 import {
@@ -16,6 +21,7 @@ import {
   useCreateWeeklyPlan,
   useWeeklyPlanForWeek,
 } from '../hooks/useMealPlanning';
+import { RelatedActions } from '../components/RelatedActions';
 import '../meal-planning.css';
 
 const mealTypes: Array<[MealType, string]> = [
@@ -58,39 +64,43 @@ export function WeeklyPlanPage() {
 
   if (households.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando hogar...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando hogar..." />
+      </section>
     );
   if (households.isError)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar el hogar.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No se pudo cargar el hogar." />
+      </section>
     );
   if (!households.activeHousehold)
     return (
-      <p className="page-section" role="alert">
-        No tienes un hogar activo.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No tienes un hogar activo." />
+      </section>
     );
   if (plan.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando plan semanal...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando plan semanal..." />
+      </section>
     );
   if (plan.isError)
     return (
-      <section className="page-section" role="alert">
-        <p>No se pudo cargar el plan semanal.</p>
-        <button
-          className="button button--secondary"
-          onClick={() => void plan.refetch()}
-          type="button"
-        >
-          Reintentar
-        </button>
+      <section className="page-section">
+        <ErrorState
+          message="No se pudo cargar el plan semanal."
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() => void plan.refetch()}
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+        />
       </section>
     );
 
@@ -136,6 +146,7 @@ export function WeeklyPlanPage() {
           ) : null
         }
         eyebrow="Organización del hogar"
+        icon={<CalendarDays size={22} />}
         title="Plan semanal"
         titleId="weekly-plan-title"
         description="Una vista sencilla de lo que quieren comer esta semana."
@@ -143,7 +154,7 @@ export function WeeklyPlanPage() {
       <div className="meal-planning__navigation">
         <button
           aria-label="Semana anterior"
-          className="button button--secondary"
+          className="icon-button"
           onClick={() => navigateWeek(-1)}
           type="button"
         >
@@ -155,7 +166,7 @@ export function WeeklyPlanPage() {
         </strong>
         <button
           aria-label="Semana siguiente"
-          className="button button--secondary"
+          className="icon-button"
           onClick={() => navigateWeek(1)}
           type="button"
         >
@@ -163,9 +174,10 @@ export function WeeklyPlanPage() {
         </button>
       </div>
       {!value ? (
-        <div className="empty-state">
-          <h2>Aún no hay plan para esta semana</h2>
-          <p>Créalo cuando quieras organizar las comidas del hogar.</p>
+        <EmptyState
+          title="Aún no hay plan para esta semana"
+          description="Créalo cuando quieras organizar las comidas del hogar."
+        >
           <button
             className="button button--primary"
             disabled={create.isPending}
@@ -180,7 +192,7 @@ export function WeeklyPlanPage() {
               No se pudo crear el plan semanal. Inténtalo nuevamente.
             </p>
           ) : null}
-        </div>
+        </EmptyState>
       ) : (
         <>
           <p aria-live="polite" className="meal-planning__announcement">
@@ -189,27 +201,13 @@ export function WeeklyPlanPage() {
               ? `${value.meals.length} comida${value.meals.length === 1 ? '' : 's'} planificada${value.meals.length === 1 ? '' : 's'}.`
               : 'Todavía no hay comidas.'}
           </p>
-          <nav
-            className="meal-planning__plan-links"
-            aria-label="Resumen del plan"
-          >
-            <Link to={`/app/plan-semanal/${value.id}/requerimientos`}>
-              Ingredientes requeridos
-            </Link>
-            <Link to={`/app/plan-semanal/${value.id}/comparacion-inventario`}>
-              Comparar inventario
-            </Link>
-            <Link to={`/app/plan-semanal/${value.id}/adherencia`}>
-              Ver adherencia
-            </Link>
-          </nav>
           <div
             className="meal-planning__mobile-day-navigation"
             aria-label="Navegar por día"
           >
             <button
               aria-label="Día anterior"
-              className="button button--secondary"
+              className="icon-button"
               onClick={() => navigateDay(-1)}
               type="button"
             >
@@ -224,13 +222,25 @@ export function WeeklyPlanPage() {
             </strong>
             <button
               aria-label="Día siguiente"
-              className="button button--secondary"
+              className="icon-button"
               onClick={() => navigateDay(1)}
               type="button"
             >
               <ChevronRight size={18} />
             </button>
           </div>
+          <nav className="meal-planning__day-selector" aria-label="Elegir día">
+            {dates.map((date) => (
+              <Link
+                aria-current={date === selectedDate ? 'date' : undefined}
+                key={date}
+                to={`?semana=${weekStart}&dia=${date}`}
+              >
+                <span>{formatDate(date, timezone, { weekday: 'short' })}</span>
+                <strong>{formatDate(date, timezone, { day: 'numeric' })}</strong>
+              </Link>
+            ))}
+          </nav>
           <div className="meal-planning__calendar meal-planning__calendar--mobile">
             {[selectedDate].map((date) => (
               <MealPlanningDay
@@ -253,6 +263,17 @@ export function WeeklyPlanPage() {
               />
             ))}
           </div>
+          <RelatedActions label="Resumen del plan">
+            <Link to={`/app/plan-semanal/${value.id}/requerimientos`}>
+              Ingredientes requeridos
+            </Link>
+            <Link to={`/app/plan-semanal/${value.id}/comparacion-inventario`}>
+              Comparar inventario
+            </Link>
+            <Link to={`/app/plan-semanal/${value.id}/adherencia`}>
+              Ver adherencia
+            </Link>
+          </RelatedActions>
         </>
       )}
     </section>
@@ -272,26 +293,32 @@ function MealPlanningDay({
 }) {
   return (
     <section className="meal-planning__day">
-      <h2>{formatDate(date, timezone, { weekday: 'long' })}</h2>
-      <time dateTime={date}>{date}</time>
-      {mealTypes.map(([type, label]) => (
-        <MealSlot
-          date={date}
-          label={label}
-          meals={meals
-            .filter((meal) => meal.date === date && meal.type === type)
-            .sort((a, b) => a.position - b.position)}
+      <header className="meal-planning__day-header">
+        <h2>{formatDate(date, timezone, { weekday: 'long' })}</h2>
+        <time dateTime={date}>
+          {formatDate(date, timezone, { day: 'numeric', month: 'short' })}
+        </time>
+      </header>
+      <div className="meal-planning__day-body">
+        {mealTypes.map(([type, label]) => (
+          <MealSlot
+            date={date}
+            label={label}
+            meals={meals
+              .filter((meal) => meal.date === date && meal.type === type)
+              .sort((a, b) => a.position - b.position)}
+            planId={planId}
+            type={type}
+            key={type}
+          />
+        ))}
+        <ExtraMeals
+          meals={meals.filter(
+            (meal) => meal.date === date && meal.type === 'EXTRA',
+          )}
           planId={planId}
-          type={type}
-          key={type}
         />
-      ))}
-      <ExtraMeals
-        meals={meals.filter(
-          (meal) => meal.date === date && meal.type === 'EXTRA',
-        )}
-        planId={planId}
-      />
+      </div>
     </section>
   );
 }
@@ -310,7 +337,7 @@ function MealSlot({
   type: MealType;
 }) {
   return (
-    <div className="meal-planning__slot">
+    <section className="meal-planning__slot">
       <h3>{label}</h3>
       {meals.length ? (
         meals.map((meal) => (
@@ -324,7 +351,7 @@ function MealSlot({
           Agregar comida
         </Link>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -337,14 +364,14 @@ function ExtraMeals({
 }) {
   if (!meals.length) return null;
   return (
-    <div className="meal-planning__extras">
+    <section className="meal-planning__slot meal-planning__extras">
       <h3>Otras comidas</h3>
       {meals
         .sort((a, b) => a.position - b.position)
         .map((meal) => (
           <PlannedMealCard key={meal.id} meal={meal} planId={planId} />
         ))}
-    </div>
+    </section>
   );
 }
 
@@ -357,18 +384,21 @@ function PlannedMealCard({
 }) {
   return (
     <article className="meal-planning__card">
-      <strong>{meal.name ?? sourceLabel(meal.source)}</strong>
-      <span>
-        {statusLabels[meal.status]} · {sourceLabel(meal.source)}
-      </span>
-      <span>
-        {meal.participants.length} participante
+      <div className="meal-planning__meal-summary">
+        <strong>{meal.name ?? sourceLabel(meal.source)}</strong>
+        <span>{statusLabels[meal.status]}</span>
+      </div>
+      <p>
+        {sourceLabel(meal.source)} · {meal.participants.length} participante
         {meal.participants.length === 1 ? '' : 's'}
-      </span>
-      <Link to={`/app/plan-semanal/${planId}/comidas/${meal.id}/editar`}>
-        Editar
-      </Link>
-      <div className="meal-planning__quick-actions">
+      </p>
+      <nav
+        className="meal-planning__quick-actions"
+        aria-label={`Acciones para ${meal.name ?? sourceLabel(meal.source)}`}
+      >
+        <Link to={`/app/plan-semanal/${planId}/comidas/${meal.id}/editar`}>
+          Editar
+        </Link>
         <Link
           to={`/app/plan-semanal/${planId}/comidas/${meal.id}/participantes`}
         >
@@ -391,7 +421,7 @@ function PlannedMealCard({
             Registrar consumo
           </Link>
         ) : null}
-      </div>
+      </nav>
     </article>
   );
 }

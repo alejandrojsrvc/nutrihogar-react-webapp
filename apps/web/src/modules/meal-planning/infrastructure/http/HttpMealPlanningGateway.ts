@@ -220,12 +220,17 @@ export class HttpMealPlanningGateway implements MealPlanningGateway {
     );
   }
   async getPreparation(plannedMealId: string) {
-    return this.request(() =>
-      (this.apiClient as unknown as Client).GET(
-        `/api/planned-meals/${plannedMealId}/preparation`,
-        { params: { path: { plannedMealId } } },
-      ),
-    );
+    try {
+      return await this.request(() =>
+        (this.apiClient as unknown as Client).GET(
+          `/api/planned-meals/${plannedMealId}/preparation`,
+          { params: { path: { plannedMealId } } },
+        ),
+      );
+    } catch (error) {
+      if (error instanceof ApiClientError && error.status === 404) return null;
+      throw error;
+    }
   }
   async prepare(plannedMealId: string) {
     return this.request(() =>

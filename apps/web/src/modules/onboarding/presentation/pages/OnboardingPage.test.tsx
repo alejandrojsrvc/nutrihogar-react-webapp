@@ -119,7 +119,7 @@ describe('OnboardingPage', () => {
     await user.click(screen.getByRole('button', { name: 'Crear hogar' }));
 
     expect(
-      await screen.findByText('La API respondio con el estado 503.'),
+      await screen.findByText('La API respondió con el estado 503.'),
     ).toBeInTheDocument();
   });
 

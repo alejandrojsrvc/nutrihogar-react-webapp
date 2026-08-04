@@ -1,7 +1,9 @@
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
+import { Pencil, Repeat2, Utensils } from 'lucide-react';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
 import { isPreparedMealSource } from '../../domain/MealOrigin';
 import '../meals.css';
@@ -36,6 +38,8 @@ const methodLabels: Record<string, string> = {
 export function MealDetailPage() {
   const { mealId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { profiles } = useActiveProfile();
   const query = useMealDetails(mealId);
   const cancelMeal = useCancelMeal();
 
@@ -61,6 +65,11 @@ export function MealDetailPage() {
   }
 
   const meal = query.data;
+  const profileName =
+    profiles.find((profile) => profile.id === meal.adultProfileId)?.name ??
+    'Integrante no disponible';
+  const editDisabledReason = getEditDisabledReason(meal);
+  const feedback = getMealFeedback(location.state);
   function cancel() {
     const warning =
       isPreparedMealSource(meal.source) || meal.preparation
@@ -81,20 +90,51 @@ export function MealDetailPage() {
     >
       <BackButton fallback="/app" />
       <PageHeader
-        eyebrow="Registro de comida"
+        action={
+          editDisabledReason ? (
+            <button
+              aria-describedby="meal-edit-disabled-reason"
+              className="button button--primary"
+              disabled
+              type="button"
+            >
+              <Pencil aria-hidden="true" size={18} />
+              Editar comida
+            </button>
+          ) : (
+            <Link
+              className="button button--primary"
+              to={`/app/comidas/${meal.id}/editar`}
+            >
+              <Pencil aria-hidden="true" size={18} />
+              Editar comida
+            </Link>
+          )
+        }
+        icon={<Utensils size={25} />}
         title={mealTypeLabels[meal.mealType] ?? meal.mealType}
         titleId="meal-detail-title"
       />
       <p className="supporting-text">{formatDateTime(meal.consumedAt)}</p>
+      {feedback ? (
+        <p className="meal-feedback" role="status">
+          {feedback}
+        </p>
+      ) : null}
       {meal.status !== 'CONFIRMED' ? (
         <p className="status-badge" role="status">
           {statusLabels[meal.status] ?? meal.status}
         </p>
       ) : null}
+      {editDisabledReason ? (
+        <p className="meal-disabled-reason" id="meal-edit-disabled-reason">
+          <strong>Edición no disponible.</strong> {editDisabledReason}
+        </p>
+      ) : null}
       <dl className="meal-detail-meta">
         <div>
           <dt>Integrante</dt>
-          <dd>{meal.adultProfileId ?? 'No disponible'}</dd>
+          <dd>{profileName}</dd>
         </div>
         <div>
           <dt>Origen</dt>
@@ -154,7 +194,9 @@ export function MealDetailPage() {
       >
         <h2 id="meal-detail-items-title">Alimentos</h2>
         {meal.items.length === 0 ? (
-          <p>No hay alimentos disponibles para este registro.</p>
+          <p className="empty-copy">
+            Este registro no contiene alimentos para mostrar.
+          </p>
         ) : (
           <ul>
             {meal.items.map((item) => (
@@ -201,15 +243,10 @@ export function MealDetailPage() {
       ) : null}
       <div className="meal-detail-actions">
         <Link
-          className="button button--primary"
-          to={`/app/comidas/${meal.id}/editar`}
-        >
-          Editar comida
-        </Link>
-        <Link
           className="button button--secondary"
           to={`/app/comidas/${meal.id}/repetir`}
         >
+          <Repeat2 aria-hidden="true" size={18} />
           Repetir comida
         </Link>
         <button
@@ -228,6 +265,29 @@ export function MealDetailPage() {
       </div>
     </section>
   );
+}
+
+function getEditDisabledReason(
+  meal: NonNullable<ReturnType<typeof useMealDetails>['data']>,
+) {
+  if (meal.status !== 'CONFIRMED') {
+    return 'Las comidas canceladas se conservan como historial y no pueden modificarse.';
+  }
+  if (meal.items.some((item) => item.foodId === null)) {
+    return 'Uno o más alimentos existen solo como una captura histórica. Para conservarlos sin cambios, esta comida no se puede editar.';
+  }
+  return null;
+}
+
+function getMealFeedback(state: unknown) {
+  if (!state || typeof state !== 'object') return null;
+  const feedback = state as {
+    mealDuplicated?: boolean;
+    mealUpdated?: boolean;
+  };
+  if (feedback.mealUpdated) return 'La comida se actualizó correctamente.';
+  if (feedback.mealDuplicated) return 'La comida se repitió correctamente.';
+  return null;
 }
 
 function formatDateTime(value: string) {

@@ -44,6 +44,32 @@ describe('HttpMealPlanningGateway meal-planning endpoints', () => {
       { params: { path: { participantId: 'participant-1' } } },
     );
   });
+
+  it('treats a missing preparation as absent data', async () => {
+    const client = {
+      GET: vi.fn().mockResolvedValue({
+        error: { message: 'Preparation not found' },
+        response: new Response(null, { status: 404 }),
+      }),
+    };
+
+    await expect(
+      new HttpMealPlanningGateway(client as never).getPreparation('meal-1'),
+    ).resolves.toBeNull();
+  });
+
+  it('keeps non-404 preparation failures as errors', async () => {
+    const client = {
+      GET: vi.fn().mockResolvedValue({
+        error: { message: 'Unavailable' },
+        response: new Response(null, { status: 503 }),
+      }),
+    };
+
+    await expect(
+      new HttpMealPlanningGateway(client as never).getPreparation('meal-1'),
+    ).rejects.toMatchObject({ status: 503 });
+  });
 });
 
 function planResponse() {

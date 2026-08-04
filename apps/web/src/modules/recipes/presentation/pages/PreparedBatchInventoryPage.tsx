@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { Badge } from '../../../../shared/presentation/components/Badge';
+import { PreparationProgress } from '../components/PreparationProgress';
 import {
   useConfirmPreparedBatchInventory,
   usePreparedBatchInventoryPreview,
 } from '../hooks/usePreparedBatchInventory';
 import type { PreparedBatchInventoryDecision } from '../../domain/PreparedBatchInventory';
+import { formatQuantity, humanizeEnum, statusTone } from '../recipePresentation';
+import '../recipes.css';
 
 export function PreparedBatchInventoryPage() {
   const { batchId = '' } = useParams();
@@ -18,6 +21,12 @@ export function PreparedBatchInventoryPage() {
     Record<string, PreparedBatchInventoryDecision>
   >({});
 
+  if (!batchId)
+    return (
+      <p className="page-section" role="alert">
+        Falta identificar la preparación. Abre esta revisión desde su detalle.
+      </p>
+    );
   if (preview.isPending)
     return (
       <p className="page-section" role="status">
@@ -67,18 +76,15 @@ export function PreparedBatchInventoryPage() {
 
   return (
     <section
-      className="page-section"
+      className="page-section preparation-page"
       aria-labelledby="prepared-batch-inventory-title"
     >
       <BackButton fallback={`/app/preparaciones/${batchId}`} />
-      <PageHeader
-        eyebrow="Confirmación de inventario"
-        title="Ingredientes utilizados"
-        titleId="prepared-batch-inventory-title"
-        description="Confirma qué existencias se descontarán. La preparación no se bloquea si ignoras un ingrediente."
-      />
+      <PreparationProgress current="portions" />
       {value.alreadyConfirmed ? (
-        <p role="status">El consumo de ingredientes ya fue confirmado.</p>
+        <p className="preparation-callout" role="status">
+          El consumo de ingredientes ya fue confirmado y no puede repetirse.
+        </p>
       ) : null}
       <ul className="recipe-list">
         {value.ingredients.map((ingredient) => {
@@ -87,28 +93,36 @@ export function PreparedBatchInventoryPage() {
             ingredient.availability === 'UNAVAILABLE' ||
             ingredient.availability === 'PARTIAL';
           return (
-            <li className="recipe-card" key={ingredient.ingredientId}>
-              <div>
-                <h2>{ingredient.name}</h2>
-                <p>
-                  Utilizado: {ingredient.usedQuantity} {ingredient.unit} ·
-                  Disponible: {ingredient.availableQuantity} {ingredient.unit}
-                </p>
-                <p className="supporting-text">
-                  Estado:{' '}
-                  {statusLabel(
+            <li className="recipe-list-row" key={ingredient.ingredientId}>
+              <div className="recipe-list-row__content inventory-choice">
+                <div className="recipe-list-row__heading">
+                  <h2>{ingredient.name}</h2>
+                  <Badge
+                    tone={statusTone(
+                      decision?.action === 'IGNORE'
+                        ? 'IGNORED'
+                        : ingredient.status,
+                    )}
+                  >
+                    {statusLabel(
                     decision?.action === 'IGNORE'
                       ? 'IGNORED'
                       : ingredient.status,
-                  )}
+                    )}
+                  </Badge>
+                </div>
+                <p className="inventory-choice__amounts">
+                  Utilizado: {formatQuantity(ingredient.usedQuantity, ingredient.unit)} ·{' '}
+                  Disponible: {formatQuantity(ingredient.availableQuantity, ingredient.unit)}
                 </p>
-              </div>
               {ingredient.options.length > 1 &&
               decision?.action !== 'IGNORE' ? (
-                <label>
-                  Existencia
+                <div className="form-field">
+                  <label htmlFor={`inventory-option-${ingredient.ingredientId}`}>
+                    Existencia a descontar
+                  </label>
                   <select
-                    aria-label={`Existencia para ${ingredient.name}`}
+                    id={`inventory-option-${ingredient.ingredientId}`}
                     onChange={(event) =>
                       setDecision({
                         action: 'CONSUME',
@@ -127,15 +141,16 @@ export function PreparedBatchInventoryPage() {
                         key={option.inventoryItemId}
                         value={option.inventoryItemId}
                       >
-                        {option.inventoryItemId} · {option.availableQuantity}{' '}
-                        {option.unit}
-                        {option.location ? ` · ${option.location}` : ''}
+                        {formatQuantity(option.availableQuantity, option.unit)}
+                        {option.location
+                          ? ` · ${humanizeEnum(option.location)}`
+                          : ' · Ubicación no indicada'}
                       </option>
                     ))}
                   </select>
-                </label>
+                </div>
               ) : null}
-              <div className="recipe-form__actions">
+              <div className="recipe-row-actions">
                 {!value.alreadyConfirmed ? (
                   <>
                     <button
@@ -170,6 +185,7 @@ export function PreparedBatchInventoryPage() {
                   </>
                 ) : null}
               </div>
+              </div>
             </li>
           );
         })}
@@ -200,7 +216,7 @@ export function PreparedBatchInventoryPage() {
             nuevamente.
           </p>
         ) : null}
-        <div className="recipe-form__actions">
+        <div className="recipe-page-actions">
           <Link
             className="button button--secondary"
             to={`/app/preparaciones/${batchId}`}
@@ -233,6 +249,6 @@ function statusLabel(status: string) {
         IGNORED: 'Ignorado',
         CONFIRMED: 'Confirmado',
       } as Record<string, string>
-    )[status] ?? status
+    )[status] ?? humanizeEnum(status)
   );
 }

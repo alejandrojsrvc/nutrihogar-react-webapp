@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
 import type { MealFormValues } from '@nutrihogar/schemas';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -8,6 +7,7 @@ import type { MealDraftItem } from '../../application/ports/MealGateway';
 import { useRegisterMeal } from '../hooks/useMeals';
 import { MealForm } from '../components/MealForm';
 import { useLinkConsumption } from '../../../meal-planning/presentation/hooks/useMealPlanning';
+import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import '../meals.css';
 
 const mealTypes = ['BREAKFAST', 'LUNCH', 'SNACK', 'DINNER', 'EXTRA'] as const;
@@ -17,6 +17,7 @@ export function RegisterMealPage() {
   const location = useLocation();
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
+  const { activeProfileId } = useActiveProfile();
   const registerMeal = useRegisterMeal();
   const linkConsumption = useLinkConsumption();
   const params = new URLSearchParams(location.search);
@@ -36,7 +37,8 @@ export function RegisterMealPage() {
     mealType,
     notes: '',
     profileId:
-      params.get('profileId') ??
+      params.get('profileId') ||
+      activeProfileId ||
       (activeProfiles.length === 1 ? (activeProfiles[0]?.id ?? '') : ''),
   };
 
@@ -107,17 +109,13 @@ export function RegisterMealPage() {
       aria-labelledby="register-meal-title"
     >
       <BackButton fallback="/app" />
-      <PageHeader
-        eyebrow="Registro de comida"
-        title="Registra lo que comiste"
-        titleId="register-meal-title"
-      />
       {params.get('plannedMealId') ? (
         <p className="supporting-text">
           Al registrar, esta comida se vinculará al plan semanal.
         </p>
       ) : null}
       <MealForm
+        consumerLayout
         initialValues={initialValues}
         isSubmitting={registerMeal.isPending || linkConsumption.isPending}
         onSubmit={submit}

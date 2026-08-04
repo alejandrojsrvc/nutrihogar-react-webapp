@@ -57,8 +57,22 @@ function mockHouseholdAndHealthRequests(): void {
 
     return new Response(
       JSON.stringify({
-        status: 'ok',
-        timestamp: '2026-07-29T17:00:00.000Z',
+        consumed: {
+          dailyCalories: 1420,
+          proteinGrams: 102,
+          carbohydrateGrams: 120,
+          fatGrams: 42,
+        },
+        date: '2026-08-03',
+        goal: {
+          dailyCalories: 2150,
+          proteinGrams: 160,
+          carbohydrateGrams: 190,
+          fatGrams: 70,
+        },
+        meals: [],
+        profileId: 'profile-1',
+        profileName: 'Alejandro',
       }),
       {
         headers: { 'Content-Type': 'application/json' },
@@ -77,30 +91,12 @@ describe('HomePage', () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Qué hacemos hoy?' }),
+      await screen.findByRole('heading', { name: 'Hoy' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Hogar Sojo' }),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText('Alejandro', { selector: 'strong' }),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Integrantes')).toBeInTheDocument();
-    expect(
-      screen
-        .getAllByRole('link', { name: /Inventario/ })
-        .some((link) => link.getAttribute('href') === '/app/inventario'),
-    ).toBe(true);
-    expect(
-      screen
-        .getAllByRole('link', { name: /Lista de compras/ })
-        .some((link) => link.getAttribute('href') === '/app/lista-de-compras'),
-    ).toBe(true);
-    expect(
-      screen
-        .getAllByRole('link', { name: /Historial de compras/ })
-        .some((link) => link.getAttribute('href') === '/app/compras'),
-    ).toBe(true);
+    expect(await screen.findByLabelText('Menú de Alejandro')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'En casa' })).toBeInTheDocument();
+    expect(screen.getByText(/1\.420 kcal consumidas/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Hoy' })).toBeInTheDocument();
   });
 
   it('shows a readable message when the API is unavailable', async () => {
@@ -219,17 +215,12 @@ describe('HomePage', () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Lo que requiere atención' }),
+      await screen.findByRole('heading', { name: 'Comidas de hoy' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Agotados')).toBeInTheDocument();
-    expect(screen.getByText('Por comprar')).toBeInTheDocument();
-    expect(screen.getByText('Por vencer')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'En casa' })).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Agregar compra' }),
-    ).toHaveAttribute('href', '/app/compras/nueva');
-    expect(
-      screen.getByRole('link', { name: 'Ajustar inventario' }),
-    ).toHaveAttribute('href', '/app/inventario');
+      screen.getByRole('link', { name: /Registrar comida/ }),
+    ).toHaveAttribute('href', expect.stringContaining('/app/comidas/nueva?profileId=profile-1'));
     expect(await screen.findByText('Arroz')).toBeInTheDocument();
   });
 });

@@ -59,10 +59,10 @@ describe('FoodCatalogPage', () => {
     ).toBe(true);
 
     await user.selectOptions(
-      screen.getByLabelText('Categoria'),
+      screen.getByLabelText('Categoría'),
       'category-meat',
     );
-    await user.selectOptions(screen.getByLabelText('Preparacion'), 'COOKED');
+    await user.selectOptions(screen.getByLabelText('Preparación'), 'COOKED');
 
     await waitFor(() => {
       expect(

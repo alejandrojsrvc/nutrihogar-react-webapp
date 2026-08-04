@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
 import { Link } from 'react-router';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { Badge } from '../../../../shared/presentation/components/Badge';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
+import { humanizeEnum, statusTone } from '../recipePresentation';
 import { useRecipes } from '../hooks/useRecipes';
 import '../recipes.css';
 
@@ -46,27 +48,20 @@ export function RecipeListPage() {
       className="page-section recipe-list-page"
       aria-labelledby="recipe-list-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--primary" to="/app/recetas/nueva">
-            Crear receta
-          </Link>
-        }
-        eyebrow="Recetas familiares"
-        title="Recetas del hogar"
-        titleId="recipe-list-title"
-        description="Encuentra preparaciones que tu familia repite con frecuencia."
-      />
       <div className="recipe-filters">
         <div className="form-field">
           <label htmlFor="recipe-search">Buscar receta</label>
           <input
+            aria-describedby="recipe-search-hint"
             id="recipe-search"
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Ej. arroz con pollo"
             type="search"
             value={search}
           />
+          <span className="supporting-text" id="recipe-search-hint">
+            <Search size={14} aria-hidden="true" /> Busca por nombre o ingrediente.
+          </span>
         </div>
         <div className="form-field">
           <label htmlFor="recipe-category">Categoría</label>
@@ -114,43 +109,46 @@ export function RecipeListPage() {
         />
       ) : null}
       {recipes.data && recipes.data.items.length > 0 ? (
-        <div className="recipe-list" aria-label="Recetas familiares">
+        <ul className="recipe-list" aria-label="Recetas familiares">
           {recipes.data.items.map((recipe) => (
-            <Link
-              className="recipe-card"
-              key={recipe.id}
-              to={`/app/recetas/${recipe.id}`}
-            >
-              <div className="recipe-card__heading">
-                <h2>{recipe.name}</h2>
-                <span className="badge">
-                  {recipe.status === 'ACTIVE' ? 'Activa' : 'Archivada'}
-                </span>
-              </div>
-              {recipe.category ? (
-                <p className="supporting-text">{recipe.category}</p>
-              ) : null}
-              <dl>
-                <div>
-                  <dt>Preparación</dt>
-                  <dd>
-                    {recipe.estimatedPreparationMinutes == null
-                      ? 'Sin estimar'
-                      : `${recipe.estimatedPreparationMinutes} min`}
-                  </dd>
+            <li className="recipe-list-row" key={recipe.id}>
+              <Link
+                className="recipe-list-row__link"
+                to={`/app/recetas/${recipe.id}`}
+              >
+                <div className="recipe-list-row__heading">
+                  <h2>{recipe.name}</h2>
+                  <Badge tone={statusTone(recipe.status)}>
+                    {humanizeEnum(recipe.status)}
+                  </Badge>
                 </div>
-                <div>
-                  <dt>Ingredientes</dt>
-                  <dd>{recipe.ingredients.length}</dd>
-                </div>
-                <div>
-                  <dt>Porciones</dt>
-                  <dd>{recipe.defaultServings}</dd>
-                </div>
-              </dl>
-            </Link>
+                {recipe.category ? (
+                  <p className="supporting-text">
+                    {humanizeEnum(recipe.category)}
+                  </p>
+                ) : null}
+                <dl>
+                  <div>
+                    <dt>Preparación</dt>
+                    <dd>
+                      {recipe.estimatedPreparationMinutes == null
+                        ? 'Sin estimar'
+                        : `${recipe.estimatedPreparationMinutes} min`}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Ingredientes</dt>
+                    <dd>{recipe.ingredients.length}</dd>
+                  </div>
+                  <div>
+                    <dt>Porciones</dt>
+                    <dd>{recipe.defaultServings}</dd>
+                  </div>
+                </dl>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : null}
       {recipes.data && recipes.data.total > pageSize ? (
         <nav className="recipe-pagination" aria-label="Paginación de recetas">

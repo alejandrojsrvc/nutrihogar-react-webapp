@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import {
   useAddMissingShoppingItems,
   useInventoryComparison,
 } from '../hooks/useMealPlanning';
+import { RelatedActions } from '../components/RelatedActions';
 
 const statusLabels = {
   COMPLETE: 'Completo',
@@ -20,21 +25,25 @@ export function InventoryComparisonPage() {
   const [selected, setSelected] = useState<string[]>([]);
   if (query.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando comparación...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando comparación..." />
+      </section>
     );
   if (query.isError)
     return (
-      <section className="page-section" role="alert">
-        <p>No se pudo comparar el inventario.</p>
-        <button
-          className="button button--secondary"
-          onClick={() => void query.refetch()}
-          type="button"
-        >
-          Reintentar
-        </button>
+      <section className="page-section">
+        <ErrorState
+          message="No se pudo comparar el inventario."
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() => void query.refetch()}
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+        />
       </section>
     );
   const items = query.data?.items ?? [];
@@ -67,24 +76,12 @@ export function InventoryComparisonPage() {
       <BackButton
         fallback={`/app/plan-semanal/${weeklyPlanId}/requerimientos`}
       />
-      <PageHeader
-        eyebrow="Plan semanal"
-        title="Disponibilidad del inventario"
-        titleId="comparison-title"
-        description="Selecciona los faltantes que quieres enviar a la lista de compras."
-      />
       <p className="coverage-summary">
         <strong>
           {covered}/{items.length}
         </strong>{' '}
         ingredientes cubiertos
       </p>
-      <Link
-        className="button button--secondary"
-        to={`/app/plan-semanal/${weeklyPlanId}/requerimientos`}
-      >
-        Ver requerimientos
-      </Link>
       {query.data?.warnings.map((warning) => (
         <p className="notice" key={warning}>
           {warning}
@@ -165,11 +162,19 @@ export function InventoryComparisonPage() {
           ))}
         </ul>
       ) : (
-        <div className="empty-state">
-          <h2>No hay comparación</h2>
-          <p>Cuando existan requerimientos podrás ver su disponibilidad.</p>
-        </div>
+        <EmptyState
+          title="No hay comparación"
+          description="Cuando existan requerimientos podrás ver su disponibilidad."
+        />
       )}
+      <RelatedActions>
+        <Link to={`/app/plan-semanal/${weeklyPlanId}/requerimientos`}>
+          Ver requerimientos
+        </Link>
+        <Link to={`/app/plan-semanal/${weeklyPlanId}/adherencia`}>
+          Ver adherencia
+        </Link>
+      </RelatedActions>
     </section>
   );
 }

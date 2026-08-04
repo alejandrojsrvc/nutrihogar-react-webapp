@@ -7,7 +7,7 @@ const dietaryRestrictionTypeSchema = z.enum([
 ]);
 
 const dietaryRestrictionFormSchema = z.object({
-  name: z.string().trim().min(1, 'Indica el nombre de la restriccion.'),
+  name: z.string().trim().min(1, 'Indica el nombre de la restricción.'),
   notes: z
     .string()
     .trim()
@@ -27,11 +27,11 @@ export const adultProfileFormSchema = z.object({
   birthDate: z
     .string()
     .min(1, 'Indica tu fecha de nacimiento.')
-    .refine(isValidDateInput, 'Indica una fecha valida.')
+    .refine(isValidDateInput, 'Indica una fecha válida.')
     .refine((value) => !isFutureDate(value), {
       message: 'La fecha de nacimiento no puede ser futura.',
     }),
-  biologicalSex: z.enum(['MALE', 'FEMALE'], 'Selecciona una opcion.'),
+  biologicalSex: z.enum(['MALE', 'FEMALE'], 'Selecciona una opción.'),
   dietaryRestrictions: z.array(dietaryRestrictionFormSchema),
   hasKitchenScale: z.boolean(),
   weightKg: z
@@ -41,14 +41,14 @@ export const adultProfileFormSchema = z.object({
         value.trim() === '' ||
         (Number.isFinite(Number(value)) && Number(value) > 0),
       {
-        message: 'El peso debe ser un numero mayor que cero.',
+         message: 'El peso debe ser un número mayor que cero.',
       },
     ),
   heightCm: z
     .string()
     .min(1, 'Indica tu altura.')
     .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
-      message: 'La altura debe ser un numero mayor que cero.',
+       message: 'La altura debe ser un número mayor que cero.',
     }),
   name: z.string().trim().min(1, 'Ingresa el nombre del perfil.'),
   primaryGoal: z.enum(

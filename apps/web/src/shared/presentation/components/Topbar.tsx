@@ -1,53 +1,47 @@
-import { Link, useLocation } from 'react-router';
+import { createElement, type ComponentType } from 'react';
+import { useMatches } from 'react-router';
 
 import { ProfileMenu } from './ProfileMenu';
-import { getAppSection } from '../navigation/mainNavigation';
+import { BrandLockup } from './BrandLockup';
+import { useActiveProfile } from '../providers/ActiveProfileContext';
+import type { RouteHandle } from '../navigation/routeHandle';
 
 export function Topbar({
   householdName,
   isSigningOut,
-  kitchenMode = false,
   onLogout,
-  profileName,
 }: {
   householdName: string;
   isSigningOut: boolean;
-  kitchenMode?: boolean;
   onLogout: () => void;
-  profileName: string;
 }) {
-  const { pathname } = useLocation();
-  const context = kitchenMode ? 'Preparación' : sectionLabels[getAppSection(pathname)];
+  const { activeProfile } = useActiveProfile();
+  const matches = useMatches();
+  const pageHeader = matches.reduceRight<ComponentType | undefined>(
+    (current, match) =>
+      current ?? (match.handle as RouteHandle | undefined)?.pageHeader,
+    undefined,
+  );
 
   return (
     <header className="app-topbar">
-      <Link
-        className="app-topbar__brand"
-        to="/app"
-        aria-label="Inicio de NutriHogar"
-      >
-        <span className="brand-mark" aria-hidden="true">
-          N
-        </span>
-        <span>NutriHogar</span>
-      </Link>
-      <div className="app-topbar__context">
-        <span className="app-topbar__context-label">Sección actual</span>
-        <strong>{context}</strong>
+      <div className="app-topbar__row">
+        <div className="app-topbar__brand">
+          <BrandLockup />
+        </div>
+
+        <ProfileMenu
+          householdName={householdName}
+          isSigningOut={isSigningOut}
+          onLogout={onLogout}
+          profileName={activeProfile?.name ?? 'Mi perfil'}
+        />
       </div>
-      <ProfileMenu
-        householdName={householdName}
-        isSigningOut={isSigningOut}
-        onLogout={onLogout}
-        profileName={profileName}
-      />
+      {pageHeader ? (
+        <div className="app-topbar__page-header">
+          {createElement(pageHeader)}
+        </div>
+      ) : null}
     </header>
   );
 }
-
-const sectionLabels = {
-  hoy: 'Hoy',
-  planificar: 'Planificar',
-  hogar: 'Hogar',
-  progreso: 'Progreso',
-} as const;

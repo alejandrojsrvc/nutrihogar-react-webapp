@@ -12,6 +12,7 @@ import type {
   AddPreparedFoodLeftoverToInventoryInput,
   PreparedFoodLeftoverStatus,
 } from '../../application/ports/PreparedFoodLeftoverGateway';
+import { preparedBatchQueryKeys } from './usePreparedBatches';
 
 export const preparedFoodLeftoverQueryKeys = {
   all: ['prepared-food-leftovers'] as const,
@@ -62,6 +63,11 @@ export function useCreatePreparedFoodLeftover() {
       void queryClient.invalidateQueries({
         queryKey: preparedFoodLeftoverQueryKeys.all,
       });
+      void queryClient.invalidateQueries({
+        queryKey: preparedBatchQueryKeys.operationalDetails(
+          leftover.preparedBatchId,
+        ),
+      });
     },
   });
 }
@@ -83,6 +89,11 @@ export function useUpdatePreparedFoodLeftoverStatus() {
       );
       void queryClient.invalidateQueries({
         queryKey: preparedFoodLeftoverQueryKeys.all,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: preparedBatchQueryKeys.operationalDetails(
+          leftover.preparedBatchId,
+        ),
       });
     },
   });

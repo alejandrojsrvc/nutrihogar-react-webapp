@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { UserCheck } from 'lucide-react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
@@ -7,7 +8,9 @@ import { PageHeader } from '../../../../shared/presentation/components/PageHeade
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { usePreparedBatchDetails } from '../hooks/usePreparedBatches';
 import { useConfirmServedPortionConsumption } from '../hooks/usePortionConsumption';
+import { PreparationProgress } from '../components/PreparationProgress';
 import type { RemainderDisposition } from '../../application/ports/ServedPortionConsumptionGateway';
+import '../recipes.css';
 
 const dispositions: Array<{ value: RemainderDisposition; label: string }> = [
   { value: 'SAVED', label: 'Guardado' },
@@ -30,6 +33,24 @@ export function ConfirmServedPortionConsumptionPage() {
   const [remainderDisposition, setRemainderDisposition] =
     useState<RemainderDisposition>('SAVED');
 
+  if (!portionId)
+    return (
+      <p className="page-section" role="alert">
+        Falta identificar la porción. Abre esta acción desde una preparación.
+      </p>
+    );
+  if (!batchId)
+    return (
+      <section className="page-section" role="alert">
+        <p>
+          Falta el contexto de la preparación y no es posible verificar esta
+          porción de forma segura.
+        </p>
+        <Link className="button button--secondary" to="/app">
+          Volver al inicio
+        </Link>
+      </section>
+    );
   if (details.isPending)
     return (
       <p className="page-section" role="status">
@@ -53,6 +74,25 @@ export function ConfirmServedPortionConsumptionPage() {
       </p>
     );
 
+  if (portion.consumedWeight != null)
+    return (
+      <section className="page-section portion-page" role="status">
+        <BackButton fallback={`/app/preparaciones/${batchId}`} />
+        <PageHeader
+          eyebrow="Consumo confirmado"
+          title="Esta porción ya fue registrada"
+          description={`Se registraron ${portion.consumedWeight} g consumidos. La confirmación no puede repetirse.`}
+          icon={<UserCheck size={22} />}
+        />
+        <Link
+          className="button button--primary"
+          to={`/app/preparaciones/${batchId}`}
+        >
+          Ver preparación
+        </Link>
+      </section>
+    );
+
   const servedWeight = portion.servedWeight;
   const remainder = remainderWeight === '' ? 0 : Number(remainderWeight);
   const consumedWeight = Math.max(
@@ -63,7 +103,8 @@ export function ConfirmServedPortionConsumptionPage() {
     !Number.isFinite(remainder) || remainder < 0 || remainder > servedWeight;
   const profileName =
     profiles.profiles.find((profile) => profile.id === portion.adultProfileId)
-      ?.name ?? portion.adultProfileId;
+      ?.name ??
+    (profiles.isPending ? 'El integrante' : 'El integrante no disponible');
   const nutrients = scaleNutrients(
     portion.nutritionSnapshot,
     servedWeight === 0 ? 0 : consumedWeight / servedWeight,
@@ -81,6 +122,7 @@ export function ConfirmServedPortionConsumptionPage() {
           remainderWeight: remainder,
         },
         portionId,
+        batchId,
       },
       { onSuccess: () => navigate(`/app/resumen/${consumedAt.slice(0, 10)}`) },
     );
@@ -88,7 +130,7 @@ export function ConfirmServedPortionConsumptionPage() {
 
   return (
     <section
-      className="page-section"
+      className="page-section portion-page"
       aria-labelledby="confirm-consumption-title"
     >
       <BackButton
@@ -98,10 +140,20 @@ export function ConfirmServedPortionConsumptionPage() {
         eyebrow="Seguimiento de consumo"
         title="Confirma lo consumido"
         titleId="confirm-consumption-title"
+        description="Registra lo que quedó para calcular el consumo real sin estimaciones locales definitivas."
+        icon={<UserCheck size={22} />}
       />
-      <p className="lead">
-        {profileName} recibió {servedWeight} g de la preparación.
-      </p>
+      <PreparationProgress current="portions" />
+      <form
+        className="portion-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          submit();
+        }}
+      >
+      <fieldset className="preparation-fieldset">
+        <legend>Porción de {profileName}</legend>
+        <p className="lead">Peso servido: {servedWeight} g</p>
       <div className="form-field">
         <label htmlFor="remainder-weight">Peso restante (g)</label>
         <input
@@ -118,7 +170,7 @@ export function ConfirmServedPortionConsumptionPage() {
             El resto no puede superar la porción servida.
           </p>
         ) : null}
-        <div className="recipe-form__actions">
+        <div className="recipe-inline-actions">
           <button
             className="button button--secondary"
             onClick={() => setRemainderWeight('0')}
@@ -155,6 +207,7 @@ export function ConfirmServedPortionConsumptionPage() {
           </select>
         </div>
       ) : null}
+      </fieldset>
       <dl className="nutrition-value-list">
         <div>
           <dt>Consumo real</dt>
@@ -177,6 +230,8 @@ export function ConfirmServedPortionConsumptionPage() {
           <dd>{formatGrams(nutrients.fatGrams)}</dd>
         </div>
       </dl>
+      <fieldset className="preparation-fieldset">
+        <legend>Momento del consumo</legend>
       <div className="form-field">
         <label htmlFor="consumption-meal-type">Tipo de comida</label>
         <select
@@ -196,10 +251,12 @@ export function ConfirmServedPortionConsumptionPage() {
         <input
           id="consumption-date"
           onChange={(event) => setConsumedAt(event.target.value)}
+          required
           type="datetime-local"
           value={consumedAt}
         />
       </div>
+      </fieldset>
       <p className="supporting-text">
         El backend confirmará los valores nutricionales definitivos.
       </p>
@@ -208,7 +265,7 @@ export function ConfirmServedPortionConsumptionPage() {
           No se pudo confirmar el consumo. Inténtalo nuevamente.
         </p>
       ) : null}
-      <div className="recipe-form__actions">
+      <div className="recipe-page-actions">
         <Link
           className="button button--secondary"
           to={batchId ? `/app/preparaciones/${batchId}` : '/app'}
@@ -218,12 +275,12 @@ export function ConfirmServedPortionConsumptionPage() {
         <button
           className="button button--primary"
           disabled={invalidRemainder || confirm.isPending}
-          onClick={submit}
-          type="button"
+          type="submit"
         >
           {confirm.isPending ? 'Confirmando...' : 'Confirmar consumo'}
         </button>
       </div>
+      </form>
     </section>
   );
 }

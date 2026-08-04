@@ -91,7 +91,7 @@ describe('FoodDetailPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Eliminar alimento' }));
     expect(confirmSpy).toHaveBeenCalledWith(
-      '¿Eliminar Pan casero de tu catalogo?',
+      '¿Eliminar Pan casero de tu catálogo?',
     );
     expect(requests.some((request) => request.method === 'DELETE')).toBe(false);
 

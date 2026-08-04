@@ -74,7 +74,7 @@ describe('InventoryListPage', () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Inventario del hogar' }),
+      await screen.findByRole('heading', { name: 'Inventario' }),
     ).toBeInTheDocument();
     expect(
       await screen.findByRole('heading', { name: 'Arroz' }),
@@ -86,15 +86,15 @@ describe('InventoryListPage', () => {
     expect(inventoryRequests[0]?.url).toContain(
       '/api/households/household-1/inventory',
     );
-    await user.selectOptions(screen.getByLabelText('Tipo'), 'PREPARED_FOOD');
+    await user.click(screen.getByRole('button', { name: 'Preparados' }));
     expect(
       await screen.findByRole('heading', { name: 'Tarta familiar' }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: 'Arroz' }),
     ).not.toBeInTheDocument();
-    await user.clear(screen.getByLabelText('Buscar existencia'));
-    await user.type(screen.getByLabelText('Buscar existencia'), 'arroz');
+    await user.clear(screen.getByLabelText('Buscar productos'));
+    await user.type(screen.getByLabelText('Buscar productos'), 'arroz');
     expect(
       await screen.findByRole('heading', {
         name: 'No encontramos existencias',
@@ -157,7 +157,7 @@ describe('InventoryListPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    expect(await screen.findByLabelText('Estado')).toHaveValue('DEPLETED');
+    expect(await screen.findByRole('button', { name: 'Agotados' })).toHaveAttribute('aria-pressed', 'true');
   });
 });
 

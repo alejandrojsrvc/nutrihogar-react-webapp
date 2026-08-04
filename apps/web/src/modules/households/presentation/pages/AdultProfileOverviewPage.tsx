@@ -1,5 +1,10 @@
+import { UserRound } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router';
 
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { ThemeControl } from '../../../../shared/presentation/components/ThemeControl';
@@ -15,18 +20,28 @@ export function AdultProfileOverviewPage() {
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
 
-  if (households.isPending || isCurrentUserLoading || profiles.isPending)
+  if (
+    households.isPending ||
+    isCurrentUserLoading ||
+    (Boolean(households.activeHousehold) && profiles.isPending)
+  ) {
     return (
-      <p className="page-section" role="status">
-        Cargando tus datos...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando los datos del perfil..." />
+      </section>
     );
-  if (households.isError || profiles.isError || !currentUser)
+  }
+  if (
+    households.isError ||
+    (Boolean(households.activeHousehold) && profiles.isError) ||
+    !currentUser
+  ) {
     return (
-      <p className="page-section" role="alert">
-        No se pudieron cargar tus datos.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No pudimos cargar los datos de este perfil." />
+      </section>
     );
+  }
   if (households.households.length === 0)
     return <Navigate replace to="/onboarding" />;
   if (!households.activeHousehold)
@@ -46,11 +61,34 @@ export function AdultProfileOverviewPage() {
   const profile = profiles.profiles.find((item) =>
     profileId ? item.id === profileId : item.userId === currentUser.id,
   );
+  if (!profile && profileId) {
+    return (
+      <section className="page-section">
+        <BackButton fallback="/app/familia" />
+        <PageHeader
+          icon={<UserRound size={24} />}
+          eyebrow={households.activeHousehold.name}
+          title="Perfil no disponible"
+          titleId="profile-empty-title"
+          description="Este integrante no pertenece al hogar activo o ya no está disponible."
+        />
+        <ErrorState
+          action={
+            <Link className="button button--secondary" to="/app/familia">
+              Volver a Familia
+            </Link>
+          }
+          message="No encontramos el perfil solicitado."
+        />
+      </section>
+    );
+  }
   if (!profile)
     return (
       <section className="page-section" aria-labelledby="profile-empty-title">
         <BackButton fallback="/app" />
         <PageHeader
+          icon={<UserRound size={24} />}
           eyebrow={households.activeHousehold.name}
           title="Tu perfil"
           titleId="profile-empty-title"
@@ -96,6 +134,7 @@ function ProfileOverview({
             </Link>
           ) : null
         }
+        icon={<UserRound size={24} />}
         eyebrow={householdName}
         title={isOwnProfile ? 'Tu perfil' : profile.name}
         titleId="profile-overview-title"
@@ -141,9 +180,11 @@ function ProfileOverview({
             />
             <Info label="Objetivo" value={goalLabel(profile.primaryGoal)} />
           </dl>
-          <Link className="button button--secondary" to="/app/perfil/editar">
-            Actualizar mis datos
-          </Link>
+          {isOwnProfile ? (
+            <Link className="button button--secondary" to="/app/perfil/editar">
+              Actualizar mis datos
+            </Link>
+          ) : null}
         </section>
         <section
           className="profile-overview__section"
@@ -153,14 +194,14 @@ function ProfileOverview({
           <p>
             {profile.dietaryRestrictions.length
               ? `${profile.dietaryRestrictions.length} restricción${profile.dietaryRestrictions.length === 1 ? '' : 'es'} registrada${profile.dietaryRestrictions.length === 1 ? '' : 's'}.`
-              : 'No tienes restricciones registradas.'}
+              : `${isOwnProfile ? 'No tienes' : 'No tiene'} restricciones registradas.`}
           </p>
           <p>
             {profile.hasKitchenScale
-              ? 'Tienes una balanza de cocina.'
-              : 'No tienes una balanza de cocina configurada.'}
+              ? `${isOwnProfile ? 'Tienes' : 'Tiene'} una balanza de cocina.`
+              : `${isOwnProfile ? 'No tienes' : 'No tiene'} una balanza de cocina configurada.`}
           </p>
-          <ThemeControl />
+          {isOwnProfile ? <ThemeControl /> : null}
         </section>
       </div>
       <section
@@ -169,9 +210,12 @@ function ProfileOverview({
       >
         <div>
           <p className="eyebrow">Nutrición</p>
-          <h2 id="profile-goal-title">Tu meta nutricional</h2>
+          <h2 id="profile-goal-title">
+            {isOwnProfile ? 'Tu meta nutricional' : 'Meta nutricional'}
+          </h2>
           <p className="supporting-text">
-            Consulta las calorías y nutrientes objetivo de tu perfil.
+            Consulta las calorías y nutrientes objetivo de{' '}
+            {isOwnProfile ? 'tu perfil' : 'este perfil'}.
           </p>
         </div>
         <Link

@@ -1,9 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, type ReactElement } from 'react';
+import { Scale } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { useForm, useWatch, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { Dialog } from '../../../../shared/presentation/components/Overlay';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
 import {
@@ -25,6 +28,9 @@ export function InventoryAdjustPage() {
   const item = useInventoryItem(inventoryItemId);
   const syncStatus = useInventorySyncStatus(households.activeHousehold?.id);
   const adjust = useAdjustInventoryItem();
+  const [pendingValues, setPendingValues] =
+    useState<AdjustInventoryValues | null>(null);
+  const initializedItemId = useRef<string | null>(null);
   const {
     control,
     formState: { errors },
@@ -38,13 +44,15 @@ export function InventoryAdjustPage() {
   const quantity = useWatch({ control, name: 'quantity' });
 
   useEffect(() => {
-    if (item.data)
+    if (item.data && initializedItemId.current !== item.data.id) {
       reset({
         occurredAt: formatDateInput(new Date().toISOString()),
         quantity: String(item.data.currentQuantity),
         reason: '',
         unit: item.data.unit,
       });
+      initializedItemId.current = item.data.id;
+    }
   }, [item.data, reset]);
 
   if (households.isPending || item.isPending)
@@ -62,6 +70,17 @@ export function InventoryAdjustPage() {
     return (
       <section className="page-section" role="alert">
         <p>No se pudo cargar la existencia.</p>
+        <button
+          className="button button--secondary"
+          onClick={() =>
+            void (households.isError || !households.activeHousehold
+              ? households.refetch()
+              : item.refetch())
+          }
+          type="button"
+        >
+          Reintentar
+        </button>
         <Link className="button button--secondary" to="/app/inventario">
           Volver al inventario
         </Link>
@@ -75,15 +94,8 @@ export function InventoryAdjustPage() {
     difference != null &&
     Math.abs(difference) > Math.max(current.currentQuantity * 0.5, 1000);
 
-  const onSubmit: SubmitHandler<AdjustInventoryValues> = async (values) => {
+  const saveAdjustment = async (values: AdjustInventoryValues) => {
     if (!inventoryItemId || !households.activeHousehold) return;
-    if (
-      largeAdjustment &&
-      !window.confirm(
-        'Este ajuste cambia mucho la cantidad disponible. ¿Quieres continuar?',
-      )
-    )
-      return;
     try {
       await adjust.mutateAsync({
         householdId: households.activeHousehold.id,
@@ -104,26 +116,35 @@ export function InventoryAdjustPage() {
     }
   };
 
+  const onSubmit: SubmitHandler<AdjustInventoryValues> = (values) => {
+    if (largeAdjustment) {
+      setPendingValues(values);
+      return;
+    }
+    void saveAdjustment(values);
+  };
+
   return (
     <section
       className="page-section inventory-form-page"
       aria-labelledby="inventory-adjust-title"
     >
       <BackButton fallback={`/app/inventario/${current.id}`} />
-      <p className="eyebrow">Ajustar existencia</p>
-      <h1 id="inventory-adjust-title">{current.name}</h1>
-      <p className="lead">
-        El ajuste crea un movimiento de inventario; no edita el saldo
-        directamente.
-      </p>
-      {!syncStatus.data?.isOnline ? (
+      <PageHeader
+        description="Registra el resultado de un conteo sin reemplazar el historial del inventario."
+        eyebrow="Ajustar existencia"
+        icon={<Scale size={22} />}
+        title={current.name}
+        titleId="inventory-adjust-title"
+      />
+      {syncStatus.data?.isOnline === false ? (
         <p className="inventory-offline-note" role="status">
-          Sin conexión: el ajuste quedará pendiente de sincronización.
+          Sin conexión. El ajuste se guardará en este dispositivo como pendiente; el saldo mostrado no estará confirmado por el servidor hasta sincronizar.
         </p>
       ) : null}
       <dl className="inventory-current-summary">
         <div>
-          <dt>Cantidad actual</dt>
+          <dt>Cantidad mostrada</dt>
           <dd>{formatQuantity(current.currentQuantity, current.unit)}</dd>
         </div>
         <div>
@@ -136,6 +157,8 @@ export function InventoryAdjustPage() {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
+        <fieldset>
+          <legend>Nuevo conteo</legend>
         <Field
           error={errors.quantity?.message}
           id="inventory-adjust-quantity"
@@ -191,6 +214,7 @@ export function InventoryAdjustPage() {
               : `${difference > 0 ? '+' : ''}${formatQuantity(difference, current.unit)}`}
           </strong>
         </p>
+        </fieldset>
         <div className="inventory-form-actions">
           <Link
             className="button button--secondary"
@@ -203,7 +227,13 @@ export function InventoryAdjustPage() {
             disabled={adjust.isPending}
             type="submit"
           >
-            {adjust.isPending ? 'Guardando...' : 'Confirmar ajuste'}
+            {adjust.isPending
+              ? syncStatus.data?.isOnline === false
+                ? 'Guardando en dispositivo...'
+                : 'Guardando...'
+              : syncStatus.data?.isOnline === false
+                ? 'Guardar ajuste pendiente'
+                : 'Confirmar ajuste'}
           </button>
         </div>
       </form>
@@ -214,6 +244,45 @@ export function InventoryAdjustPage() {
             : 'No se pudo guardar el ajuste.'}
         </p>
       ) : null}
+      <Dialog
+        onClose={() => setPendingValues(null)}
+        open={Boolean(pendingValues)}
+        title="Revisar ajuste"
+      >
+        <p>
+          Este cambio es grande frente al saldo actual. Revisa el resultado antes de guardarlo.
+        </p>
+        <dl className="inventory-adjust-review">
+          <div><dt>Saldo actual</dt><dd>{formatQuantity(current.currentQuantity, current.unit)}</dd></div>
+          <div><dt>Nuevo saldo</dt><dd>{formatQuantity(Number(pendingValues?.quantity ?? 0), current.unit)}</dd></div>
+        </dl>
+        {adjust.error ? (
+          <p className="form-field__error" role="alert">
+            {adjust.error instanceof Error ? adjust.error.message : 'No se pudo guardar el ajuste.'}
+          </p>
+        ) : null}
+        <div className="inventory-dialog-actions">
+          <button className="button button--secondary" onClick={() => setPendingValues(null)} type="button">
+            Corregir cantidad
+          </button>
+          <button
+            className="button button--primary"
+            disabled={adjust.isPending}
+            onClick={() => {
+              if (pendingValues) void saveAdjustment(pendingValues);
+            }}
+            type="button"
+          >
+            {adjust.isPending
+              ? syncStatus.data?.isOnline === false
+                ? 'Guardando en dispositivo...'
+                : 'Guardando...'
+              : syncStatus.data?.isOnline === false
+                ? 'Guardar ajuste pendiente'
+                : 'Guardar ajuste'}
+          </button>
+        </div>
+      </Dialog>
     </section>
   );
 }
@@ -233,7 +302,7 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {error ? <p className="form-field__error" role="alert">{error}</p> : null}
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -21,6 +22,7 @@ vi.mock(
 
 describe('InventoryDetailPage', () => {
   it('shows inventory metadata, traceability and movements in descending order', async () => {
+    const user = userEvent.setup();
     setOnline();
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
@@ -85,6 +87,19 @@ describe('InventoryDetailPage', () => {
     const movements = await screen.findAllByRole('listitem');
     expect(movements[0]).toHaveTextContent('Ajuste de aumento');
     expect(movements[1]).toHaveTextContent('Compra');
+
+    await user.click(screen.getByRole('button', { name: 'Registrar consumo' }));
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Registrar consumo',
+    });
+    expect(dialog).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/Cantidad disponible/), '-1');
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Registrar consumo' }),
+    );
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Ingresa una cantidad mayor que cero',
+    );
   });
 });
 

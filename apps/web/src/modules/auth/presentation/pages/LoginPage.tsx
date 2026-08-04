@@ -8,6 +8,7 @@ import {
   loginFormSchema,
   type LoginFormValues,
 } from '../schemas/emailAuthSchemas';
+import { FormField } from '../../../../shared/presentation/components/FormField';
 
 export function LoginPage() {
   const location = useLocation();
@@ -30,60 +31,41 @@ export function LoginPage() {
 
   return (
     <section className="welcome-panel" aria-labelledby="login-title">
-      <p className="eyebrow">Tu alimentacion, en familia</p>
+      <p className="eyebrow">Tu alimentación, en familia</p>
       <h1 id="login-title">Bienvenido a NutriHogar</h1>
       <p className="lead">
-        Un espacio simple para organizar la nutricion y el bienestar de tu
+        Un espacio simple para organizar la nutrición y el bienestar de tu
         hogar.
       </p>
       <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="form-field">
-          <label htmlFor="login-email">Correo electronico</label>
-          <input
-            autoComplete="email"
-            id="login-email"
-            type="email"
-            {...register('email')}
-            aria-invalid={errors.email ? 'true' : 'false'}
-          />
-          {errors.email ? (
-            <p className="form-field__error">{errors.email.message}</p>
-          ) : null}
-        </div>
-        <div className="form-field">
-          <label htmlFor="login-password">Contrasena</label>
-          <input
-            autoComplete="current-password"
-            id="login-password"
-            type="password"
-            {...register('password')}
-            aria-invalid={errors.password ? 'true' : 'false'}
-          />
-          {errors.password ? (
-            <p className="form-field__error">{errors.password.message}</p>
-          ) : null}
-        </div>
+        <FormField error={errors.email?.message} htmlFor="login-email" label="Correo electrónico">
+          {(fieldProps) => <input autoComplete="email" id="login-email" type="email" {...register('email')} {...fieldProps} />}
+        </FormField>
+        <FormField error={errors.password?.message} htmlFor="login-password" label="Contraseña">
+          {(fieldProps) => <input autoComplete="current-password" id="login-password" type="password" {...register('password')} {...fieldProps} />}
+        </FormField>
         <button
           className="button button--primary auth-form__submit"
+          aria-busy={isSigningIn}
           disabled={isSigningIn}
           type="submit"
         >
-          {isSigningIn ? 'Iniciando sesion...' : 'Iniciar sesion'}
+          {isSigningIn ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
       </form>
       {error ? (
         <p className="auth-error" role="alert">
-          {error.message}
+          No pudimos iniciar sesión. Revisa tus datos e inténtalo nuevamente.
         </p>
       ) : null}
       <p className="supporting-text">
-        ¿Todavia no tienes una cuenta?{' '}
+        ¿Todavía no tienes una cuenta?{' '}
         <Link
           className="auth-link"
           state={{ from: redirectPath }}
           to="/register"
         >
-          Registrate
+          Regístrate
         </Link>
       </p>
     </section>

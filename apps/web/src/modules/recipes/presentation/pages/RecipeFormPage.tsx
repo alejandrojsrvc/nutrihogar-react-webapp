@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from 'react-router';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
@@ -54,11 +53,6 @@ export function RecipeFormPage() {
     >
       <BackButton
         fallback={isEditing ? `/app/recetas/${recipeId}` : '/app/recetas'}
-      />
-      <PageHeader
-        eyebrow="Recetas familiares"
-        title={isEditing ? 'Editar receta' : 'Crear receta'}
-        titleId="recipe-form-title"
       />
       <RecipeForm
         initialValues={initialValues}

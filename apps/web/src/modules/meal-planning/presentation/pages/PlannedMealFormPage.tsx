@@ -1,6 +1,9 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
   useAddPlannedMeal,
@@ -22,22 +25,22 @@ export function PlannedMealFormPage() {
   const editing = Boolean(plannedMealId);
   if (households.isPending || plan.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando comida...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando comida..." />
+      </section>
     );
   if (!households.activeHousehold || plan.isError || !plan.data)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar el plan semanal.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No se pudo cargar el plan semanal." />
+      </section>
     );
   const meal = plan.data.meals.find((item) => item.id === plannedMealId);
   if (editing && !meal)
     return (
-      <p className="page-section" role="alert">
-        No se encontró la comida planificada.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No se encontró la comida planificada." />
+      </section>
     );
   const dates = weekDates(plan.data.weekStart);
   if (!dates.length)
@@ -88,13 +91,6 @@ export function PlannedMealFormPage() {
       aria-labelledby="planned-meal-title"
     >
       <BackButton fallback={back} />
-      <PageHeader
-        eyebrow="Plan semanal"
-        title={
-          editing ? 'Editar comida planificada' : 'Agregar comida planificada'
-        }
-        titleId="planned-meal-title"
-      />
       <PlannedMealForm
         householdId={households.activeHousehold.id}
         initialDate={date}

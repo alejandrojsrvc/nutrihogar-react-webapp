@@ -1,0 +1,162 @@
+.nutrition-goal-page {
+  max-width: 52rem;
+}
+
+.nutrition-goal-state {
+  max-width: 40rem;
+}
+
+.nutrition-goal-state p {
+  color: var(--color-text-secondary);
+}
+
+.nutrition-goal-validity {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  margin-bottom: var(--space-5);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+}
+
+.nutrition-goal-values {
+  overflow: hidden;
+  margin: 0 0 var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.nutrition-goal-values > div {
+  min-height: 3.75rem;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+}
+
+.nutrition-goal-values > div:last-child {
+  border-bottom: 0;
+}
+
+.nutrition-goal-values dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.nutrition-goal-form {
+  display: grid;
+  max-width: 48rem;
+  gap: var(--space-6);
+}
+
+.nutrition-calculation-section,
+.nutrition-goal-fields {
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.nutrition-calculation-section h2 {
+  margin-bottom: var(--space-4);
+}
+
+.nutrition-calculation {
+  margin: 0;
+}
+
+.nutrition-calculation > div {
+  min-height: 3rem;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+}
+
+.nutrition-calculation > div:last-child {
+  border-bottom: 0;
+}
+
+.nutrition-calculation dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.nutrition-goal-fields legend {
+  padding-inline: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.nutrition-goal-fields > .supporting-text {
+  margin-top: 0;
+}
+
+.nutrition-goal-field-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.nutrition-goal-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+.nutrition-goal-actions {
+  position: sticky;
+  z-index: 5;
+  bottom: calc(var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.nutrition-goal-actions .button {
+  width: 100%;
+}
+
+@media (min-width: 48rem) {
+  .nutrition-goal-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nutrition-goal-field-grid .form-field:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .nutrition-goal-values {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .nutrition-goal-values > div {
+    display: grid;
+    justify-content: start;
+    gap: var(--space-1);
+    border-right: 1px solid var(--color-border);
+    border-bottom: 0;
+  }
+
+  .nutrition-goal-values > div:last-child {
+    border-right: 0;
+  }
+
+  .nutrition-goal-actions .button {
+    width: auto;
+    min-width: 15rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .nutrition-goal-actions {
+    bottom: var(--space-3);
+  }
+}

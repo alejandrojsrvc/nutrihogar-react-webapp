@@ -1,5 +1,6 @@
 import {
   CalendarDays,
+  CirclePlus,
   House,
   Package,
   ChartNoAxesCombined,
@@ -11,6 +12,7 @@ export interface NavigationItem {
   to: string;
   icon: ReactNode;
   end?: boolean;
+  action?: boolean;
   primary?: boolean;
 }
 
@@ -19,7 +21,12 @@ export interface NavigationGroup {
   items: NavigationItem[];
 }
 
-export type AppSection = 'hoy' | 'planificar' | 'hogar' | 'progreso';
+export type AppSection =
+  | 'hoy'
+  | 'planificar'
+  | 'registrar'
+  | 'hogar'
+  | 'progreso';
 
 export const primaryNavigation: NavigationItem[] = [
   {
@@ -30,18 +37,24 @@ export const primaryNavigation: NavigationItem[] = [
   },
   {
     icon: <CalendarDays size={19} aria-hidden="true" />,
-    label: 'Planificar',
+    label: 'Plan',
     to: '/app/plan-semanal',
   },
   {
-    icon: <Package size={19} aria-hidden="true" />,
-    label: 'Hogar',
-    to: '/app/inventario',
+    action: true,
+    icon: <CirclePlus size={22} aria-hidden="true" />,
+    label: 'Registrar',
+    to: '/app/comidas/nueva',
   },
   {
     icon: <ChartNoAxesCombined size={19} aria-hidden="true" />,
     label: 'Progreso',
     to: '/app/resumen',
+  },
+  {
+    icon: <Package size={19} aria-hidden="true" />,
+    label: 'Hogar',
+    to: '/app/inventario',
   },
 ];
 
@@ -49,12 +62,14 @@ export const secondaryNavigation = {
   planificar: [
     { label: 'Semana', to: '/app/plan-semanal', end: true },
     { label: 'Recetas', to: '/app/recetas' },
-    { label: 'Compras', to: '/app/lista-de-compras' },
   ],
   hogar: [
     { label: 'Inventario', to: '/app/inventario' },
+    { label: 'Compras', to: '/app/compras' },
+    { label: 'Lista de compras', to: '/app/lista-de-compras' },
     { label: 'Familia', to: '/app/familia' },
   ],
+  progreso: [{ label: 'Resumen', to: '/app/resumen' }],
 } as const;
 
 export function getAppSection(pathname: string): AppSection {
@@ -62,16 +77,19 @@ export function getAppSection(pathname: string): AppSection {
     pathname.startsWith('/app/plan-semanal') ||
     pathname.startsWith('/app/recetas') ||
     pathname.startsWith('/app/preparaciones') ||
-    pathname.startsWith('/app/lista-de-compras') ||
-    pathname.startsWith('/app/compras')
+    pathname.startsWith('/app/porciones') ||
+    pathname.startsWith('/app/sobrantes')
   )
     return 'planificar';
+  if (pathname.startsWith('/app/comidas') || pathname.startsWith('/app/alimentos')) return 'registrar';
   if (
     pathname.startsWith('/app/inventario') ||
     pathname.startsWith('/app/perfil') ||
     pathname.startsWith('/app/perfiles') ||
     pathname.startsWith('/app/familia') ||
-    pathname.startsWith('/app/invitaciones')
+    pathname.startsWith('/app/invitaciones') ||
+    pathname.startsWith('/app/lista-de-compras') ||
+    pathname.startsWith('/app/compras')
   )
     return 'hogar';
   if (
@@ -88,12 +106,15 @@ export function secondaryNavigationForPath(pathname: string) {
     ? secondaryNavigation.planificar
     : section === 'hogar'
       ? secondaryNavigation.hogar
-      : null;
+      : section === 'progreso'
+        ? secondaryNavigation.progreso
+        : null;
 }
 
 export function isPrimaryNavigationActive(to: string, pathname: string) {
-  if (to === '/app') return pathname === '/app';
+  if (to === '/app') return pathname === '/app' || pathname === '/app/';
   if (to === '/app/plan-semanal') return getAppSection(pathname) === 'planificar';
+  if (to === '/app/comidas/nueva') return getAppSection(pathname) === 'registrar';
   if (to === '/app/inventario') return getAppSection(pathname) === 'hogar';
   if (to === '/app/resumen') return getAppSection(pathname) === 'progreso';
   return false;

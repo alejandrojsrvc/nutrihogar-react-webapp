@@ -1,10 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { HousePlus } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useOnboardingStatus } from '../hooks/useOnboardingStatus';
-import '../../../households/presentation/households.css';
+import '../onboarding.css';
 import {
   createHouseholdFormSchema,
   getDefaultTimezone,
@@ -56,39 +62,45 @@ export function OnboardingPage() {
       });
       navigate('/app/perfil/editar', { replace: true });
     } catch {
-      // El error de la mutacion se muestra debajo del formulario.
+      // El error de la mutación se muestra debajo del formulario.
     }
   };
 
   if (onboarding.isLoading) {
     return (
-      <section
-        className="page-section"
-        aria-labelledby="onboarding-loading-title"
-      >
-        <p className="eyebrow">Primeros pasos</p>
-        <h1 id="onboarding-loading-title">Estamos preparando tu hogar</h1>
-        <p className="lead" role="status">
-          Consultando los hogares asociados a tu cuenta...
-        </p>
+      <section className="page-section onboarding-page">
+        <LoadingState message="Consultando los hogares asociados a tu cuenta..." />
       </section>
     );
   }
 
   if (onboarding.isError) {
     return (
-      <section
-        className="page-section"
-        aria-labelledby="onboarding-error-title"
-      >
-        <p className="eyebrow">Primeros pasos</p>
-        <h1 id="onboarding-error-title">No pudimos cargar tus hogares</h1>
-        <p className="lead" role="alert">
-          {getErrorMessage(
+      <section className="page-section onboarding-page">
+        <PageHeader
+          icon={<HousePlus size={24} />}
+          eyebrow="Primeros pasos"
+          title="No pudimos preparar tu hogar"
+          titleId="onboarding-error-title"
+        />
+        <ErrorState
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() => {
+                void onboarding.households.refetch();
+                void onboarding.profiles.refetch();
+              }}
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+          message={getErrorMessage(
             onboarding.error,
             'No se pudo conectar con la API de NutriHogar.',
           )}
-        </p>
+        />
       </section>
     );
   }
@@ -96,14 +108,17 @@ export function OnboardingPage() {
   if (onboarding.step === 'select-household') {
     return (
       <section
-        className="page-section"
+        className="page-section onboarding-page"
         aria-labelledby="household-select-title"
       >
-        <p className="eyebrow">Primeros pasos</p>
-        <h1 id="household-select-title">Elige un hogar para continuar</h1>
-        <p className="lead">
-          Selecciona el espacio familiar donde quieres configurar tu perfil.
-        </p>
+        <PageHeader
+          icon={<HousePlus size={24} />}
+          eyebrow="Primeros pasos"
+          title="Elige un hogar para continuar"
+          titleId="household-select-title"
+          description="Selecciona el espacio familiar donde quieres configurar tu perfil."
+        />
+        <OnboardingProgress currentStep={1} />
         <div className="household-list" role="list">
           {onboarding.households.households.map((household) => (
             <button
@@ -112,7 +127,10 @@ export function OnboardingPage() {
               onClick={() => selectActiveHousehold(household)}
               type="button"
             >
-              <span>{household.name}</span>
+              <span>
+                <strong>{household.name}</strong>
+                <small>{household.timezone}</small>
+              </span>
               <small>{household.currency}</small>
             </button>
           ))}
@@ -123,72 +141,88 @@ export function OnboardingPage() {
 
   if (onboarding.step !== 'create-household') {
     return (
-      <section
-        className="page-section"
-        aria-labelledby="onboarding-continue-title"
-      >
-        <p className="eyebrow">Primeros pasos</p>
-        <h1 id="onboarding-continue-title">Estamos preparando tu espacio</h1>
-        <p className="lead" role="status">
-          Recuperando tu progreso...
-        </p>
+      <section className="page-section onboarding-page">
+        <LoadingState message="Recuperando tu progreso..." />
       </section>
     );
   }
 
   return (
-    <section className="page-section" aria-labelledby="onboarding-title">
-      <p className="eyebrow">Primeros pasos</p>
-      <h1 id="onboarding-title">Crea tu hogar</h1>
-      <p className="lead">
-        Empieza con un espacio compartido para organizar la alimentacion y el
-        bienestar de tu familia.
-      </p>
+    <section
+      className="page-section onboarding-page"
+      aria-labelledby="onboarding-title"
+    >
+      <PageHeader
+        icon={<HousePlus size={24} />}
+        eyebrow="Primeros pasos"
+        title="Crea tu hogar"
+        titleId="onboarding-title"
+        description="Empieza con un espacio compartido para organizar la alimentación y el bienestar de tu familia."
+      />
+      <OnboardingProgress currentStep={1} />
       <form
-        className="auth-form household-form"
+        className="auth-form onboarding-form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
-        <div className="form-field">
-          <label htmlFor="household-name">Nombre del hogar</label>
-          <input
-            autoComplete="organization"
-            id="household-name"
-            type="text"
-            {...register('name')}
-            aria-invalid={errors.name ? 'true' : 'false'}
-          />
-          {errors.name ? (
-            <p className="form-field__error">{errors.name.message}</p>
-          ) : null}
-        </div>
-        <div className="form-field">
-          <label htmlFor="household-timezone">Zona horaria</label>
-          <input
-            id="household-timezone"
-            type="text"
-            {...register('timezone')}
-            aria-invalid={errors.timezone ? 'true' : 'false'}
-          />
-          {errors.timezone ? (
-            <p className="form-field__error">{errors.timezone.message}</p>
-          ) : null}
-        </div>
-        <div className="form-field">
-          <label htmlFor="household-currency">Moneda</label>
-          <select
-            id="household-currency"
-            {...register('currency')}
-            aria-invalid={errors.currency ? 'true' : 'false'}
-          >
-            <option value="ARS">Peso argentino (ARS)</option>
-            <option value="USD">Dolar estadounidense (USD)</option>
-            <option value="EUR">Euro (EUR)</option>
-          </select>
-          {errors.currency ? (
-            <p className="form-field__error">{errors.currency.message}</p>
-          ) : null}
-        </div>
+        <fieldset className="onboarding-form__fields">
+          <legend>Datos del hogar</legend>
+          <div className="form-field">
+            <label htmlFor="household-name">Nombre del hogar</label>
+            <input
+              autoComplete="organization"
+              id="household-name"
+              type="text"
+              {...register('name')}
+              aria-describedby={
+                errors.name ? 'household-name-error' : undefined
+              }
+              aria-invalid={errors.name ? 'true' : 'false'}
+            />
+            {errors.name ? (
+              <p className="form-field__error" id="household-name-error">
+                {errors.name.message}
+              </p>
+            ) : null}
+          </div>
+          <div className="form-field">
+            <label htmlFor="household-timezone">Zona horaria</label>
+            <input
+              id="household-timezone"
+              type="text"
+              {...register('timezone')}
+              aria-describedby={
+                errors.timezone ? 'household-timezone-error' : undefined
+              }
+              aria-invalid={errors.timezone ? 'true' : 'false'}
+            />
+            {errors.timezone ? (
+              <p className="form-field__error" id="household-timezone-error">
+                {errors.timezone.message}
+              </p>
+            ) : null}
+          </div>
+          <div className="form-field">
+            <label htmlFor="household-currency">Moneda</label>
+            <select
+              id="household-currency"
+              {...register('currency')}
+              aria-describedby={
+                errors.currency ? 'household-currency-error' : undefined
+              }
+              aria-invalid={errors.currency ? 'true' : 'false'}
+            >
+              <option value="ARS">Peso argentino (ARS)</option>
+              <option value="USD">Dólar estadounidense (USD)</option>
+              <option value="EUR">Euro (EUR)</option>
+            </select>
+            {errors.currency ? (
+              <p className="form-field__error" id="household-currency-error">
+                {errors.currency.message}
+              </p>
+            ) : null}
+          </div>
+        </fieldset>
         <button
           className="button button--primary auth-form__submit"
           disabled={isCreatingHousehold}
@@ -201,7 +235,7 @@ export function OnboardingPage() {
         <p className="auth-error" role="alert">
           {getErrorMessage(
             createHouseholdError,
-            'No se pudo crear el hogar. Intentalo nuevamente.',
+            'No se pudo crear el hogar. Inténtalo nuevamente.',
           )}
         </p>
       ) : null}
@@ -209,6 +243,29 @@ export function OnboardingPage() {
   );
 }
 
+function OnboardingProgress({ currentStep }: { currentStep: 1 | 2 }) {
+  return (
+    <ol className="onboarding-progress" aria-label="Progreso de configuración">
+      <li
+        aria-current={currentStep === 1 ? 'step' : undefined}
+        className={currentStep === 1 ? 'is-current' : 'is-complete'}
+      >
+        <span>1</span>
+        <small>Hogar</small>
+      </li>
+      <li
+        aria-current={currentStep === 2 ? 'step' : undefined}
+        className={currentStep === 2 ? 'is-current' : undefined}
+      >
+        <span>2</span>
+        <small>Perfil</small>
+      </li>
+    </ol>
+  );
+}
+
 function getErrorMessage(error: unknown, fallback: string): string {
-  return error instanceof Error ? error.message : fallback;
+  return error instanceof Error
+    ? error.message.replace('respondio', 'respondió')
+    : fallback;
 }

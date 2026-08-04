@@ -10,6 +10,18 @@ import { recipeFormSchema, type RecipeFormValues } from '@nutrihogar/schemas';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
 import type { FoodSelection } from '../../../food-catalog/application/ports/FoodCatalogGateway';
 import type { CreateRecipeInput } from '../../application/ports/RecipeGateway';
+import {
+  ChevronDown,
+  ChevronUp,
+  ImageUp,
+  Plus,
+  RefreshCw,
+  ShieldCheck,
+  Timer,
+  Trash2,
+  Utensils,
+  Users,
+} from 'lucide-react';
 
 type RecipeFormInput = z.input<typeof recipeFormSchema>;
 
@@ -85,10 +97,12 @@ export function RecipeForm({
           onSubmit(toRecipeInput(values)),
         )}
       >
+        <div className="recipe-form__workspace">
+          <div className="recipe-form__main">
         <section className="recipe-form__section">
-          <h2>Información general</h2>
+          <h2><Utensils size={19} aria-hidden="true" /> Información básica</h2>
           <div className="form-field">
-            <label htmlFor="recipe-name">Nombre</label>
+              <label htmlFor="recipe-name">Nombre de la receta</label>
             <input
               id="recipe-name"
               aria-invalid={Boolean(form.formState.errors.name)}
@@ -107,34 +121,27 @@ export function RecipeForm({
               {...form.register('description')}
             />
           </div>
-          <div className="recipe-form__grid">
-            <div className="form-field">
-              <label htmlFor="recipe-category">Categoría</label>
-              <input id="recipe-category" {...form.register('category')} />
-            </div>
-            <div className="form-field">
-              <label htmlFor="recipe-servings">Porciones de referencia</label>
+          <fieldset className="recipe-category-options">
+            <legend>Categoría</legend>
+            <input type="hidden" {...form.register('category')} />
+            {['Desayuno', 'Almuerzo', 'Cena', 'Snack'].map((category) => (
+              <button aria-pressed={form.watch('category') === category} key={category} onClick={() => form.setValue('category', category, { shouldDirty: true })} type="button">{category}</button>
+            ))}
+            <label className="recipe-category-custom">
+              Otra categoría
               <input
-                id="recipe-servings"
-                inputMode="numeric"
-                min="1"
-                type="number"
-                {...form.register('defaultServings', { valueAsNumber: true })}
+                onChange={(event) => form.setValue('category', event.target.value, { shouldDirty: true })}
+                placeholder="Ej. postre"
+                type="text"
+                value={isKnownRecipeCategory(form.watch('category')) ? '' : form.watch('category')}
               />
-            </div>
-            <div className="form-field">
-              <label htmlFor="recipe-time">Tiempo estimado (minutos)</label>
-              <input
-                id="recipe-time"
-                inputMode="numeric"
-                min="1"
-                type="number"
-                {...form.register('estimatedPreparationMinutes', {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
-          </div>
+            </label>
+          </fieldset>
+          <button className="recipe-photo-placeholder" disabled type="button">
+            <ImageUp size={25} aria-hidden="true" />
+            <strong>Foto de la receta</strong>
+            <span>Disponible próximamente</span>
+          </button>
         </section>
         <section className="recipe-form__section">
           <div className="section-heading">
@@ -142,15 +149,15 @@ export function RecipeForm({
               <p className="eyebrow">Ingredientes</p>
               <h2>Qué necesitas</h2>
             </div>
-            <button
-              className="button button--secondary"
+              <button
+                className="button button--tertiary"
               onClick={() => {
                 setEditingIngredient(null);
                 setSelectorOpen(true);
               }}
               type="button"
             >
-              Agregar ingrediente
+               <Plus size={18} aria-hidden="true" /> Agregar ingrediente
             </button>
           </div>
           {ingredients.fields.length === 0 ? (
@@ -202,35 +209,39 @@ export function RecipeForm({
                 </div>
                 <div className="recipe-row-actions">
                   <button
-                    className="button button--tertiary"
+                    aria-label={`Subir ${form.watch(`ingredients.${index}.foodName`)}`}
+                    className="icon-button"
                     onClick={() => moveIngredient(index, -1)}
                     type="button"
                   >
-                    Subir
+                    <ChevronUp size={18} aria-hidden="true" />
                   </button>
                   <button
-                    className="button button--tertiary"
+                    aria-label={`Bajar ${form.watch(`ingredients.${index}.foodName`)}`}
+                    className="icon-button"
                     onClick={() => moveIngredient(index, 1)}
                     type="button"
                   >
-                    Bajar
+                    <ChevronDown size={18} aria-hidden="true" />
                   </button>
                   <button
-                    className="button button--secondary"
+                    aria-label={`Cambiar ${form.watch(`ingredients.${index}.foodName`)}`}
+                    className="icon-button"
                     onClick={() => {
                       setEditingIngredient(index);
                       setSelectorOpen(true);
                     }}
                     type="button"
                   >
-                    Cambiar
+                    <RefreshCw size={18} aria-hidden="true" />
                   </button>
                   <button
-                    className="button button--danger"
+                    aria-label={`Eliminar ${form.watch(`ingredients.${index}.foodName`)}`}
+                    className="icon-button"
                     onClick={() => ingredients.remove(index)}
                     type="button"
                   >
-                    Eliminar
+                    <Trash2 size={18} aria-hidden="true" />
                   </button>
                 </div>
               </article>
@@ -243,6 +254,19 @@ export function RecipeForm({
                 : 'Revisa los ingredientes.'}
             </p>
           ) : null}
+        </section>
+        <section className="recipe-form__section recipe-portions">
+          <h2><Users size={19} aria-hidden="true" /> Porciones y nutrición</h2>
+          <div className="recipe-form__grid">
+            <div className="form-field">
+              <label htmlFor="recipe-servings">Porciones</label>
+              <input id="recipe-servings" inputMode="numeric" min="1" type="number" {...form.register('defaultServings', { valueAsNumber: true })} />
+            </div>
+            <div className="form-field">
+              <label htmlFor="recipe-time">Tiempo total (minutos)</label>
+              <input id="recipe-time" inputMode="numeric" min="1" type="number" {...form.register('estimatedPreparationMinutes', { valueAsNumber: true })} />
+            </div>
+          </div>
         </section>
         <section className="recipe-form__section">
           <div className="section-heading">
@@ -298,6 +322,26 @@ export function RecipeForm({
             ))
           )}
         </section>
+          </div>
+          <aside className="recipe-form__aside" aria-label="Resumen de la receta">
+            <section>
+              <h2><ShieldCheck size={19} aria-hidden="true" /> Resumen nutricional por porción</h2>
+              <div className="recipe-nutrition-placeholder" aria-disabled="true">
+                <span>--</span>
+                <p><strong>Se calculará al guardar</strong><br />Los valores definitivos vienen del servidor.</p>
+              </div>
+            </section>
+            <section>
+              <h2><ImageUp size={19} aria-hidden="true" /> Vista previa</h2>
+              <div className="recipe-preview-placeholder">
+                <ImageUp size={28} aria-hidden="true" />
+                <span>Agrega una foto cuando la función esté disponible.</span>
+              </div>
+              <strong>{form.watch('name') || 'Nombre de la receta'}</strong>
+              <p><Users size={15} aria-hidden="true" /> {form.watch('defaultServings') || 1} porciones <Timer size={15} aria-hidden="true" /> {form.watch('estimatedPreparationMinutes') || '—'} min</p>
+            </section>
+          </aside>
+        </div>
         {errorMessage ? <p role="alert">{errorMessage}</p> : null}
         <div className="recipe-form__actions">
           <Link className="button button--secondary" to={cancelTo}>
@@ -398,4 +442,8 @@ function toRecipeInput(values: RecipeFormValues): CreateRecipeInput {
     })),
     name: values.name,
   };
+}
+
+function isKnownRecipeCategory(value: string) {
+  return ['Desayuno', 'Almuerzo', 'Cena', 'Snack'].includes(value);
 }

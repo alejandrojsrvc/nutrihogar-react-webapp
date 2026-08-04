@@ -61,7 +61,7 @@ describe('AcceptHouseholdInvitationPage', () => {
     );
 
     await user.click(
-      await screen.findByRole('button', { name: 'Aceptar invitacion' }),
+      await screen.findByRole('button', { name: 'Aceptar invitación' }),
     );
 
     expect(
@@ -95,12 +95,12 @@ describe('AcceptHouseholdInvitationPage', () => {
     );
 
     await user.click(
-      await screen.findByRole('button', { name: 'Aceptar invitacion' }),
+      await screen.findByRole('button', { name: 'Aceptar invitación' }),
     );
 
     expect(
       await screen.findByText(
-        'La invitacion ha expirado. Solicita una nueva invitacion.',
+        'La invitación ha expirado. Solicita una nueva invitación.',
       ),
     ).toBeInTheDocument();
   });

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 
 export function EmptyState({
   children,
@@ -9,10 +9,12 @@ export function EmptyState({
   description: string;
   title: string;
 }) {
+  const titleId = useId();
+
   return (
-    <section className="empty-state-card" aria-labelledby="empty-state-title">
+    <section className="empty-state-card" aria-labelledby={titleId}>
       <div className="empty-state-card__mark" aria-hidden="true" />
-      <h2 id="empty-state-title">{title}</h2>
+      <h2 id={titleId}>{title}</h2>
       <p>{description}</p>
       {children ? (
         <div className="empty-state-card__action">{children}</div>

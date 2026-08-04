@@ -7,6 +7,8 @@ import { useHouseholds } from '../../modules/households/presentation/hooks/useHo
 import { Sidebar } from '../../shared/presentation/components/Sidebar';
 import { SectionNavigation } from '../../shared/presentation/components/SectionNavigation';
 import { Topbar } from '../../shared/presentation/components/Topbar';
+import { ConnectionNotice } from '../../shared/presentation/components/AsyncState';
+import { ActiveProfileProvider } from '../../shared/presentation/providers/ActiveProfileContext';
 import {
   isPrimaryNavigationActive,
   primaryNavigation,
@@ -19,12 +21,6 @@ export function PrivateLayout() {
   const { error, isSigningOut, logout } = useAuth();
   const { activeHousehold } = useHouseholds();
   const profiles = useAdultProfiles(activeHousehold?.id);
-  const kitchenMode = /^\/app\/(preparaciones|porciones)/.test(
-    location.pathname,
-  );
-  const profileName =
-    profiles.profiles.find((profile) => profile.isActive !== false)?.name ??
-    'Mi perfil';
   const [connectionMessage, setConnectionMessage] = useState<string | null>(
     null,
   );
@@ -59,59 +55,63 @@ export function PrivateLayout() {
   }
 
   return (
-    <div
-      className={`private-layout${kitchenMode ? ' private-layout--kitchen' : ''}`}
+    <ActiveProfileProvider
+      key={activeHousehold?.id ?? 'no-household'}
+      profiles={profiles.profiles}
     >
-      <Topbar
-        householdName={activeHousehold?.name ?? 'Mi hogar'}
-        isSigningOut={isSigningOut}
-        kitchenMode={kitchenMode}
-        onLogout={() => void handleLogout()}
-        profileName={profileName}
-      />
-      {connectionMessage ? (
-        <p className="connection-feedback" role="status" aria-live="polite">
-          {connectionMessage}
-        </p>
-      ) : null}
-      {error ? (
-        <p className="auth-error auth-error--layout" role="alert">
-          {error.message}
-        </p>
-      ) : null}
-      <div className="app-shell">
-        <Sidebar />
-        <main className="private-layout__content">
-          {secondaryItems ? (
-            <SectionNavigation
-              ariaLabel="Secciones de la aplicación"
-              items={secondaryItems}
+      <div className="private-layout">
+        <div className="app-shell">
+          <Sidebar secondaryItems={secondaryItems} />
+          <div className="app-workspace">
+           <Topbar
+            householdName={activeHousehold?.name ?? 'Mi hogar'}
+            isSigningOut={isSigningOut}
+            onLogout={() => void handleLogout()}
             />
-          ) : null}
-          <Outlet />
-        </main>
+            {connectionMessage ? (
+              <ConnectionNotice message={connectionMessage} />
+            ) : null}
+            {error ? (
+              <p className="auth-error auth-error--layout" role="alert">
+                No pudimos completar la sesión. Inténtalo nuevamente.
+              </p>
+            ) : null}
+            <main className="private-layout__content">
+              {secondaryItems ? (
+                <div className="section-navigation-mobile">
+                  <SectionNavigation
+                    ariaLabel="Secciones de la aplicación"
+                    items={secondaryItems}
+                  />
+                </div>
+              ) : null}
+              <Outlet />
+            </main>
+          </div>
+        </div>
+        <nav className="mobile-bottom-bar" aria-label="Secciones principales">
+          {primaryNavigation.map((item) => (
+            <NavLink
+              aria-current={
+                isPrimaryNavigationActive(item.to, location.pathname)
+                  ? 'page'
+                  : undefined
+              }
+              className={
+                isPrimaryNavigationActive(item.to, location.pathname)
+                  ? `mobile-bottom-bar__link is-active${item.action ? ' mobile-bottom-bar__link--action' : ''}`
+                  : `mobile-bottom-bar__link${item.action ? ' mobile-bottom-bar__link--action' : ''}`
+              }
+              end={item.end}
+              key={item.to}
+              to={item.to}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
       </div>
-      <nav className="mobile-bottom-bar" aria-label="Secciones principales">
-        {primaryNavigation.map((item) => (
-          <NavLink
-            aria-current={
-              isPrimaryNavigationActive(item.to, location.pathname)
-                ? 'page'
-                : undefined
-            }
-            className={
-              isPrimaryNavigationActive(item.to, location.pathname)
-                ? 'mobile-bottom-bar__link is-active'
-                : 'mobile-bottom-bar__link'
-            }
-            key={item.to}
-            to={item.to}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
-      </nav>
-    </div>
+    </ActiveProfileProvider>
   );
 }
