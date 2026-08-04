@@ -50,11 +50,11 @@ export function RecipeDetailPage() {
     );
   const value = recipe.data;
   const archived = value.status === 'ARCHIVED';
-  function archiveRecipe() {
+  const archiveRecipe = () => {
     archive.mutate(recipeId, {
       onSuccess: () => navigate('/app/recetas'),
     });
-  }
+  };
   return (
     <section
       className="page-section recipe-detail-page"

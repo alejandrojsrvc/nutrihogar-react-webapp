@@ -9,10 +9,16 @@ import {
 } from '../../../test/renderRoute';
 import { ActiveProfileProvider } from '../providers/ActiveProfileContext';
 import { Topbar } from './Topbar';
+import { useRouteParams } from '../hooks/useRouteParams';
 import type { RouteHandle } from '../navigation/routeHandle';
 
 function TestHeader() {
   return <h1>Header de prueba</h1>;
+}
+
+function ParamHeader() {
+  const { id } = useRouteParams();
+  return <h1>Recurso {id}</h1>;
 }
 
 function renderTopbar(handle?: RouteHandle) {
@@ -33,6 +39,37 @@ function renderTopbar(handle?: RouteHandle) {
     { initialEntries: ['/'] },
   );
 
+  return renderTopbarWithRouter(router);
+}
+
+function renderTopbarAtParamRoute() {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/',
+        element: (
+          <Topbar
+            householdName="Hogar"
+            isSigningOut={false}
+            onLogout={vi.fn()}
+          />
+        ),
+        children: [
+          {
+            path: '/app/:id',
+            element: <p>Contenido de la ruta</p>,
+            handle: { pageHeader: ParamHeader },
+          },
+        ],
+      },
+    ],
+    { initialEntries: ['/app/abc'] },
+  );
+
+  return renderTopbarWithRouter(router);
+}
+
+function renderTopbarWithRouter(router: ReturnType<typeof createMemoryRouter>) {
   return render(
     <AppProviders
       authGateway={createTestAuthGateway({
@@ -61,5 +98,13 @@ describe('Topbar', () => {
     renderTopbar();
 
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+  });
+
+  it('exposes the leaf route params to a page header rendered by the Topbar', () => {
+    renderTopbarAtParamRoute();
+
+    expect(
+      screen.getByRole('heading', { name: 'Recurso abc' }),
+    ).toBeInTheDocument();
   });
 });

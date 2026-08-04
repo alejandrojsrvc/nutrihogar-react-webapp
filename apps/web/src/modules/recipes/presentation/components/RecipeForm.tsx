@@ -149,7 +149,7 @@ export function RecipeForm({
                     placeholder="Ej. postre"
                     type="text"
                     value={
-                      isKnownRecipeCategory(form.watch('category'))
+                      isKnownRecipeCategory(form.watch('category') ?? '')
                         ? ''
                         : form.watch('category')
                     }
@@ -404,9 +404,9 @@ export function RecipeForm({
               <strong>{form.watch('name') || 'Nombre de la receta'}</strong>
               <p>
                 <Users size={15} aria-hidden="true" />{' '}
-                {form.watch('defaultServings') || 1} porciones{' '}
+                {Number(form.watch('defaultServings')) || 1} porciones{' '}
                 <Timer size={15} aria-hidden="true" />{' '}
-                {form.watch('estimatedPreparationMinutes') || '—'} min
+                {Number(form.watch('estimatedPreparationMinutes')) || '—'} min
               </p>
             </section>
           </aside>
