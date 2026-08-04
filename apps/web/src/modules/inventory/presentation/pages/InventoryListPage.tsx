@@ -161,7 +161,9 @@ export function InventoryListPage() {
       <div className="inventory-toolbar">
         <div className="inventory-search">
           <Search size={20} aria-hidden="true" />
-          <label className="visually-hidden" htmlFor="inventory-search">Buscar productos</label>
+          <label className="visually-hidden" htmlFor="inventory-search">
+            Buscar productos
+          </label>
           <input
             id="inventory-search"
             onChange={(event) => setSearch(event.target.value)}
@@ -171,14 +173,73 @@ export function InventoryListPage() {
           />
         </div>
         <div className="inventory-filter-chips" aria-label="Filtrar inventario">
-          <FilterChip active={specialFilter === 'ALL' && !itemType} label="Todo" onClick={() => { setItemType(''); setSpecialFilter('ALL'); }} />
-          <FilterChip active={specialFilter === 'BELOW_MINIMUM'} label="Bajo stock" onClick={() => { setItemType(''); setSpecialFilter('BELOW_MINIMUM'); }} tone="warning" />
-          <FilterChip active={specialFilter === 'EXPIRING'} label="Por vencer" onClick={() => { setItemType(''); setSpecialFilter('EXPIRING'); }} tone="danger" />
-          <FilterChip active={specialFilter === 'DEPLETED'} label="Agotados" onClick={() => { setItemType(''); setSpecialFilter('DEPLETED'); }} tone="warning" />
-          <FilterChip active={itemType === 'FOOD'} label="Alimentos" onClick={() => { setItemType('FOOD'); setSpecialFilter('ALL'); }} />
-          <FilterChip active={itemType === 'PREPARED_FOOD'} label="Preparados" onClick={() => { setItemType('PREPARED_FOOD'); setSpecialFilter('ALL'); }} />
-          <FilterChip active={itemType === 'CUSTOM'} label="Personalizados" onClick={() => { setItemType('CUSTOM'); setSpecialFilter('ALL'); }} />
-          <button className="inventory-filter-chip" disabled title="Disponible próximamente" type="button">Compras pendientes</button>
+          <FilterChip
+            active={specialFilter === 'ALL' && !itemType}
+            label="Todo"
+            onClick={() => {
+              setItemType('');
+              setSpecialFilter('ALL');
+            }}
+          />
+          <FilterChip
+            active={specialFilter === 'BELOW_MINIMUM'}
+            label="Bajo stock"
+            onClick={() => {
+              setItemType('');
+              setSpecialFilter('BELOW_MINIMUM');
+            }}
+            tone="warning"
+          />
+          <FilterChip
+            active={specialFilter === 'EXPIRING'}
+            label="Por vencer"
+            onClick={() => {
+              setItemType('');
+              setSpecialFilter('EXPIRING');
+            }}
+            tone="danger"
+          />
+          <FilterChip
+            active={specialFilter === 'DEPLETED'}
+            label="Agotados"
+            onClick={() => {
+              setItemType('');
+              setSpecialFilter('DEPLETED');
+            }}
+            tone="warning"
+          />
+          <FilterChip
+            active={itemType === 'FOOD'}
+            label="Alimentos"
+            onClick={() => {
+              setItemType('FOOD');
+              setSpecialFilter('ALL');
+            }}
+          />
+          <FilterChip
+            active={itemType === 'PREPARED_FOOD'}
+            label="Preparados"
+            onClick={() => {
+              setItemType('PREPARED_FOOD');
+              setSpecialFilter('ALL');
+            }}
+          />
+          <FilterChip
+            active={itemType === 'CUSTOM'}
+            label="Personalizados"
+            onClick={() => {
+              setItemType('CUSTOM');
+              setSpecialFilter('ALL');
+            }}
+          />
+          <button
+            className="inventory-filter-chip"
+            disabled
+            title="Disponible próximamente"
+            type="button"
+          >
+            Compras pendientes
+          </button>
         </div>
       </div>
       {inventory.isPending ? (
@@ -218,7 +279,11 @@ export function InventoryListPage() {
         <div className="inventory-dashboard">
           <div className="inventory-list" aria-label="Existencias del hogar">
             <div className="inventory-list__head" aria-hidden="true">
-              <span>Producto</span><span>Cantidad</span><span>Ubicación</span><span>Estado</span><span>Acciones</span>
+              <span>Producto</span>
+              <span>Cantidad</span>
+              <span>Ubicación</span>
+              <span>Estado</span>
+              <span>Acciones</span>
             </div>
             {visibleItems.map((item) => (
               <InventoryCard item={item} key={item.id} />
@@ -240,68 +305,154 @@ function InventoryCard({ item }: { item: InventoryItem }) {
     <article className="inventory-row">
       <div className="inventory-row__product">
         <span className="inventory-row__icon" aria-hidden="true">
-          {item.itemType === 'PREPARED_FOOD' ? <Snowflake size={22} /> : <PackageOpen size={22} />}
+          {item.itemType === 'PREPARED_FOOD' ? (
+            <Snowflake size={22} />
+          ) : (
+            <PackageOpen size={22} />
+          )}
         </span>
         <div>
           <h2>{item.name}</h2>
           <small>{itemTypeLabel(item.itemType)}</small>
         </div>
       </div>
-      <p className="inventory-row__quantity">{formatQuantity(item.currentQuantity, item.unit)}</p>
-      <p className="inventory-row__location">{item.location ?? 'Sin ubicación'}{item.expiresAt ? <small>Vence {formatDate(item.expiresAt)}</small> : null}</p>
+      <p className="inventory-row__quantity">
+        {formatQuantity(item.currentQuantity, item.unit)}
+      </p>
+      <p className="inventory-row__location">
+        {item.location ?? 'Sin ubicación'}
+        {item.expiresAt ? (
+          <small>Vence {formatDate(item.expiresAt)}</small>
+        ) : null}
+      </p>
       <div className="inventory-row__status">
-        <span className={`inventory-status inventory-status--${depleted ? 'danger' : belowMinimum ? 'warning' : item.itemType === 'PREPARED_FOOD' ? 'info' : 'success'}`}>
-          {depleted ? 'Agotado' : belowMinimum ? 'Bajo stock' : item.itemType === 'PREPARED_FOOD' ? 'Preparado' : 'Buen stock'}
+        <span
+          className={`inventory-status inventory-status--${depleted ? 'danger' : belowMinimum ? 'warning' : item.itemType === 'PREPARED_FOOD' ? 'info' : 'success'}`}
+        >
+          {depleted
+            ? 'Agotado'
+            : belowMinimum
+              ? 'Bajo stock'
+              : item.itemType === 'PREPARED_FOOD'
+                ? 'Preparado'
+                : 'Buen stock'}
         </span>
       </div>
       <div className="inventory-row__actions">
-        <Link className="button button--tertiary" to={`/app/inventario/${item.id}/ajustar`}>Ajustar</Link>
-        <Link className="button button--text" to={`/app/inventario/${item.id}`}>Ver detalle</Link>
+        <Link
+          className="button button--tertiary"
+          to={`/app/inventario/${item.id}/ajustar`}
+        >
+          Ajustar
+        </Link>
+        <Link className="button button--text" to={`/app/inventario/${item.id}`}>
+          Ver detalle
+        </Link>
       </div>
     </article>
   );
 }
 
-function FilterChip({ active, label, onClick, tone }: { active: boolean; label: string; onClick: () => void; tone?: 'warning' | 'danger' }) {
-  return <button aria-pressed={active} className={`inventory-filter-chip${tone ? ` inventory-filter-chip--${tone}` : ''}`} onClick={onClick} type="button">{label}</button>;
+function FilterChip({
+  active,
+  label,
+  onClick,
+  tone,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+  tone?: 'warning' | 'danger';
+}) {
+  return (
+    <button
+      aria-pressed={active}
+      className={`inventory-filter-chip${tone ? ` inventory-filter-chip--${tone}` : ''}`}
+      onClick={onClick}
+      type="button"
+    >
+      {label}
+    </button>
+  );
 }
 
 function InventoryInsights({ items }: { items: InventoryItem[] }) {
-  const depleted = items.filter((item) => item.status === 'DEPLETED' || item.currentQuantity <= 0).length;
-  const belowMinimum = items.filter((item) => item.currentQuantity > 0 && item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity).length;
-  const expiring = items.filter((item) => isExpiringSoon(item.expiresAt)).length;
+  const depleted = items.filter(
+    (item) => item.status === 'DEPLETED' || item.currentQuantity <= 0,
+  ).length;
+  const belowMinimum = items.filter(
+    (item) =>
+      item.currentQuantity > 0 &&
+      item.minimumQuantity != null &&
+      item.currentQuantity <= item.minimumQuantity,
+  ).length;
+  const expiring = items.filter((item) =>
+    isExpiringSoon(item.expiresAt),
+  ).length;
   const attention = items.filter(
     (item) =>
       item.status === 'DEPLETED' ||
       item.currentQuantity <= 0 ||
-      (item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity) ||
+      (item.minimumQuantity != null &&
+        item.currentQuantity <= item.minimumQuantity) ||
       isExpiringSoon(item.expiresAt),
   ).length;
   const healthy = items.length - attention;
   return (
     <aside className="inventory-insights" aria-label="Resumen del inventario">
       <section>
-        <div className="inventory-insights__heading"><AlertTriangle size={19} aria-hidden="true" /><h2>Alertas</h2></div>
+        <div className="inventory-insights__heading">
+          <AlertTriangle size={19} aria-hidden="true" />
+          <h2>Alertas</h2>
+        </div>
         <ul>
-          <li><strong>{expiring} por vencer</strong><span>Revisa las próximas fechas</span></li>
-          <li><strong>{belowMinimum} bajo stock</strong><span>Puede ser momento de reponer</span></li>
-          <li><strong>{depleted} agotados</strong><span>Sin unidades disponibles</span></li>
+          <li>
+            <strong>{expiring} por vencer</strong>
+            <span>Revisa las próximas fechas</span>
+          </li>
+          <li>
+            <strong>{belowMinimum} bajo stock</strong>
+            <span>Puede ser momento de reponer</span>
+          </li>
+          <li>
+            <strong>{depleted} agotados</strong>
+            <span>Sin unidades disponibles</span>
+          </li>
         </ul>
       </section>
       <section>
-        <div className="inventory-insights__heading"><ChartPie size={19} aria-hidden="true" /><h2>Resumen</h2></div>
+        <div className="inventory-insights__heading">
+          <ChartPie size={19} aria-hidden="true" />
+          <h2>Resumen</h2>
+        </div>
         <dl>
-          <div><dt>Total productos</dt><dd>{items.length}</dd></div>
-          <div><dt>Buen stock</dt><dd>{healthy}</dd></div>
-          <div><dt>Requieren atención</dt><dd>{attention}</dd></div>
+          <div>
+            <dt>Total productos</dt>
+            <dd>{items.length}</dd>
+          </div>
+          <div>
+            <dt>Buen stock</dt>
+            <dd>{healthy}</dd>
+          </div>
+          <div>
+            <dt>Requieren atención</dt>
+            <dd>{attention}</dd>
+          </div>
         </dl>
       </section>
       <section>
-        <div className="inventory-insights__heading"><ShoppingCart size={19} aria-hidden="true" /><h2>Lista de compras</h2></div>
+        <div className="inventory-insights__heading">
+          <ShoppingCart size={19} aria-hidden="true" />
+          <h2>Lista de compras</h2>
+        </div>
         <p>Consulta los productos que el hogar necesita reponer.</p>
         <Link to="/app/lista-de-compras">Ver lista completa</Link>
       </section>
-      {items.length > 0 && healthy === items.length ? <p className="inventory-insights__ok"><CircleCheck size={18} aria-hidden="true" /> Todo está en orden</p> : null}
+      {items.length > 0 && healthy === items.length ? (
+        <p className="inventory-insights__ok">
+          <CircleCheck size={18} aria-hidden="true" /> Todo está en orden
+        </p>
+      ) : null}
     </aside>
   );
 }

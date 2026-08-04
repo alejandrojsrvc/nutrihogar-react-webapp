@@ -1,10 +1,7 @@
 import { Check } from 'lucide-react';
 
 export type PreparationStep =
-  | 'ingredients'
-  | 'weight'
-  | 'portions'
-  | 'leftover';
+  'ingredients' | 'weight' | 'portions' | 'leftover';
 
 const steps: Array<{ id: PreparationStep; label: string }> = [
   { id: 'ingredients', label: 'Ingredientes' },
@@ -17,13 +14,22 @@ export function PreparationProgress({ current }: { current: PreparationStep }) {
   const currentIndex = steps.findIndex((step) => step.id === current);
 
   return (
-    <nav className="preparation-progress" aria-label="Progreso de la preparación">
+    <nav
+      className="preparation-progress"
+      aria-label="Progreso de la preparación"
+    >
       <ol>
         {steps.map((step, index) => {
           const complete = index < currentIndex;
           return (
             <li
-              className={complete ? 'is-complete' : index === currentIndex ? 'is-current' : ''}
+              className={
+                complete
+                  ? 'is-complete'
+                  : index === currentIndex
+                    ? 'is-current'
+                    : ''
+              }
               key={step.id}
               aria-current={index === currentIndex ? 'step' : undefined}
             >

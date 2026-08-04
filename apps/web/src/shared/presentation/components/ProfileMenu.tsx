@@ -29,20 +29,23 @@ export function ProfileMenu({
       <summary
         aria-label={`Menú de ${profileName}`}
         className="profile-menu__trigger"
-        >
-          <span className="profile-menu__avatar" aria-hidden="true">
-            {initials(profileName)}
-          </span>
-          <span className="profile-menu__name">{profileName}</span>
-          <ChevronDown size={16} aria-hidden="true" />
-        </summary>
+      >
+        <span className="profile-menu__avatar" aria-hidden="true">
+          {initials(profileName)}
+        </span>
+        <span className="profile-menu__name">{profileName}</span>
+        <ChevronDown size={16} aria-hidden="true" />
+      </summary>
       <div className="profile-menu__content">
         <p className="profile-menu__heading">
           {householdName}
           <small>{profileName}</small>
         </p>
         {profiles.length > 1 ? (
-          <div className="profile-menu__profiles" aria-label="Cambiar integrante">
+          <div
+            className="profile-menu__profiles"
+            aria-label="Cambiar integrante"
+          >
             {profiles.map((profile) => (
               <button
                 aria-pressed={profile.id === activeProfile?.id}
@@ -53,7 +56,9 @@ export function ProfileMenu({
               >
                 <CircleUserRound size={18} aria-hidden="true" />
                 <span>{profile.name}</span>
-                {profile.id === activeProfile?.id ? <small>Activo</small> : null}
+                {profile.id === activeProfile?.id ? (
+                  <small>Activo</small>
+                ) : null}
               </button>
             ))}
           </div>

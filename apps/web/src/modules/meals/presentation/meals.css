@@ -409,7 +409,9 @@
 .meal-form__actions--sticky {
   position: sticky;
   z-index: 5;
-  bottom: calc(var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom));
+  bottom: calc(
+    var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom)
+  );
   padding: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
@@ -684,7 +686,9 @@
 .meal-form__actions--consumer {
   position: sticky;
   z-index: 5;
-  bottom: calc(var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom));
+  bottom: calc(
+    var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom)
+  );
   justify-content: flex-end;
   padding: var(--space-3);
   border: 1px solid var(--color-border);
@@ -755,7 +759,9 @@
     justify-content: center;
     padding-inline: var(--space-2);
   }
-  .meal-source-bar__option:last-child { display: none; }
+  .meal-source-bar__option:last-child {
+    display: none;
+  }
   .meal-composer-grid {
     grid-template-columns: 1fr;
   }

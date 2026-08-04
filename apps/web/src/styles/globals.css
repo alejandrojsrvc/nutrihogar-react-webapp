@@ -507,7 +507,9 @@ a.button:active {
 
 .private-layout {
   min-height: 100vh;
-  padding-bottom: calc(var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom));
+  padding-bottom: calc(
+    var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom)
+  );
   background: var(--color-background);
 }
 .app-shell {
@@ -1101,7 +1103,9 @@ a.button:active {
   .app-topbar__page-header {
     padding: 0 var(--space-8) var(--space-4);
   }
-  .app-topbar__brand { display: none; }
+  .app-topbar__brand {
+    display: none;
+  }
   .app-shell {
     display: grid;
     grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr);
@@ -1128,7 +1132,9 @@ a.button:active {
     margin-inline: auto;
     padding: 0 var(--space-8) var(--space-8);
   }
-  .section-navigation-mobile { display: none; }
+  .section-navigation-mobile {
+    display: none;
+  }
   .private-layout {
     padding-bottom: 0;
   }

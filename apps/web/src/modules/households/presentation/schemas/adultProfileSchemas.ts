@@ -41,14 +41,14 @@ export const adultProfileFormSchema = z.object({
         value.trim() === '' ||
         (Number.isFinite(Number(value)) && Number(value) > 0),
       {
-         message: 'El peso debe ser un número mayor que cero.',
+        message: 'El peso debe ser un número mayor que cero.',
       },
     ),
   heightCm: z
     .string()
     .min(1, 'Indica tu altura.')
     .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
-       message: 'La altura debe ser un número mayor que cero.',
+      message: 'La altura debe ser un número mayor que cero.',
     }),
   name: z.string().trim().min(1, 'Ingresa el nombre del perfil.'),
   primaryGoal: z.enum(

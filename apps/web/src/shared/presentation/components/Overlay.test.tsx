@@ -15,7 +15,9 @@ describe('Dialog', () => {
       </Dialog>,
     );
 
-    expect(screen.getByRole('dialog', { name: 'Confirmar' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('dialog', { name: 'Confirmar' }),
+    ).toBeInTheDocument();
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalledTimes(1);
   });

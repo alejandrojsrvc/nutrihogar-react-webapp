@@ -10,13 +10,16 @@ import {
 export function Sidebar({
   secondaryItems,
 }: {
-  secondaryItems: readonly { label: string; to: string; end?: boolean }[] | null;
+  secondaryItems:
+    readonly { label: string; to: string; end?: boolean }[] | null;
 }) {
   const { pathname } = useLocation();
 
   return (
     <aside className="sidebar" aria-label="Navegación principal">
-      <div className="sidebar__brand"><BrandLockup /></div>
+      <div className="sidebar__brand">
+        <BrandLockup />
+      </div>
       <nav aria-label="Destinos principales" className="sidebar__destinations">
         {primaryNavigation.map((item) => (
           <NavLink
@@ -44,7 +47,11 @@ export function Sidebar({
       ) : null}
       <div className="sidebar__footer">
         <Carrot size={42} strokeWidth={1.5} aria-hidden="true" />
-        <p>Pequeñas decisiones,<br />grandes cambios.</p>
+        <p>
+          Pequeñas decisiones,
+          <br />
+          grandes cambios.
+        </p>
       </div>
     </aside>
   );

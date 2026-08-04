@@ -18,7 +18,9 @@ export function useConfirmServedPortionConsumption() {
     onSuccess: (_, variables) => {
       if (variables.batchId) {
         void queryClient.invalidateQueries({
-          queryKey: preparedBatchQueryKeys.operationalDetails(variables.batchId),
+          queryKey: preparedBatchQueryKeys.operationalDetails(
+            variables.batchId,
+          ),
         });
       }
     },

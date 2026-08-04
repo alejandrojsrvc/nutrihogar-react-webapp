@@ -39,10 +39,10 @@ cp apps/web/.env.example apps/web/.env.local
 
 Variables disponibles:
 
-| Variable                        | Descripcion                                                                               |
-| ------------------------------- | ----------------------------------------------------------------------------------------- |
-| `VITE_API_URL`                  | URL base de la API NestJS, por defecto `http://localhost:3000/api`.                       |
-| `OPENAPI_URL`                   | URL del documento JSON usado por `npm run api:generate`.                                  |
+| Variable       | Descripcion                                                         |
+| -------------- | ------------------------------------------------------------------- |
+| `VITE_API_URL` | URL base de la API NestJS, por defecto `http://localhost:3000/api`. |
+| `OPENAPI_URL`  | URL del documento JSON usado por `npm run api:generate`.            |
 
 La autenticación del frontend usa exclusivamente JWT emitidos por la API NestJS.
 

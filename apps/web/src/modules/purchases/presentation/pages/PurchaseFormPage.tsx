@@ -137,9 +137,11 @@ export function PurchaseFormPage() {
   };
 
   const updateItem = (index: number, patch: Partial<PurchaseItemInput>) => {
-    setDraftItems(items.map((item, itemIndex) =>
-      itemIndex === index ? { ...item, ...patch } : item,
-    ));
+    setDraftItems(
+      items.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, ...patch } : item,
+      ),
+    );
     setItemsError('');
   };
 
@@ -148,8 +150,15 @@ export function PurchaseFormPage() {
       setItemsError('Agrega al menos un producto a la compra.');
       return;
     }
-    if (items.some((item) => !Number.isFinite(item.quantity) || item.quantity <= 0 || !item.unit)) {
-      setItemsError('Revisa que cada producto tenga una cantidad mayor que cero y una unidad.');
+    if (
+      items.some(
+        (item) =>
+          !Number.isFinite(item.quantity) || item.quantity <= 0 || !item.unit,
+      )
+    ) {
+      setItemsError(
+        'Revisa que cada producto tenga una cantidad mayor que cero y una unidad.',
+      );
       return;
     }
     const input = {
@@ -180,8 +189,12 @@ export function PurchaseFormPage() {
         fallback={isEditing ? `/app/compras/${purchaseId}` : '/app/compras'}
       />
       {!isOnline ? (
-        <p className="feature-connectivity feature-connectivity--offline" role="status">
-          Sin conexión. Este formulario conserva los valores en pantalla, pero el borrador no puede guardarse ni se pondrá en cola.
+        <p
+          className="feature-connectivity feature-connectivity--offline"
+          role="status"
+        >
+          Sin conexión. Este formulario conserva los valores en pantalla, pero
+          el borrador no puede guardarse ni se pondrá en cola.
         </p>
       ) : null}
       <form
@@ -190,7 +203,9 @@ export function PurchaseFormPage() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset>
-          <legend><span>1</span> Datos de la compra</legend>
+          <legend>
+            <span>1</span> Datos de la compra
+          </legend>
           <div className="purchase-form-grid">
             <Field
               error={errors.storeName?.message}
@@ -238,7 +253,9 @@ export function PurchaseFormPage() {
           </div>
         </fieldset>
         <fieldset>
-          <legend><span>2</span> Productos</legend>
+          <legend>
+            <span>2</span> Productos
+          </legend>
           <button
             className="button button--secondary"
             disabled={!isOnline}
@@ -265,7 +282,11 @@ export function PurchaseFormPage() {
                           aria-label={`Cantidad de ${item.nameSnapshot}`}
                           inputMode="decimal"
                           min="0.1"
-                          onChange={(event) => updateItem(index, { quantity: Number(event.target.value) })}
+                          onChange={(event) =>
+                            updateItem(index, {
+                              quantity: Number(event.target.value),
+                            })
+                          }
                           step="any"
                           type="number"
                           value={item.quantity}
@@ -275,7 +296,9 @@ export function PurchaseFormPage() {
                         <span>Unidad</span>
                         <select
                           aria-label={`Unidad de ${item.nameSnapshot}`}
-                          onChange={(event) => updateItem(index, { unit: event.target.value })}
+                          onChange={(event) =>
+                            updateItem(index, { unit: event.target.value })
+                          }
                           value={item.unit}
                         >
                           <option value="GRAM">Gramos</option>
@@ -305,7 +328,8 @@ export function PurchaseFormPage() {
           )}
         </fieldset>
         <p className="purchase-inventory-preview" role="note">
-          Guardar mantiene la compra como borrador. Ningún saldo de inventario cambia hasta que confirmes la compra desde su detalle.
+          Guardar mantiene la compra como borrador. Ningún saldo de inventario
+          cambia hasta que confirmes la compra desde su detalle.
         </p>
         <div className="purchase-form-actions">
           <Link
@@ -355,7 +379,11 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-field__error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

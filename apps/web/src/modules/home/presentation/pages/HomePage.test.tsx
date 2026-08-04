@@ -93,8 +93,12 @@ describe('HomePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Hoy' }),
     ).toBeInTheDocument();
-    expect(await screen.findByLabelText('Menú de Alejandro')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'En casa' })).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText('Menú de Alejandro'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'En casa' }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/1\.420 kcal consumidas/)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Hoy' })).toBeInTheDocument();
   });
@@ -217,10 +221,15 @@ describe('HomePage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Comidas de hoy' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'En casa' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'En casa' }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /Registrar comida/ }),
-    ).toHaveAttribute('href', expect.stringContaining('/app/comidas/nueva?profileId=profile-1'));
+    ).toHaveAttribute(
+      'href',
+      expect.stringContaining('/app/comidas/nueva?profileId=profile-1'),
+    );
     expect(await screen.findByText('Arroz')).toBeInTheDocument();
   });
 });

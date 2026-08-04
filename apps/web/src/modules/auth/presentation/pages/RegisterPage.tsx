@@ -50,17 +50,66 @@ export function RegisterPage() {
         Registra tus datos para comenzar a cuidar la alimentación de tu hogar.
       </p>
       <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormField error={errors.fullName?.message} htmlFor="register-full-name" label="Nombre completo">
-          {(fieldProps) => <input autoComplete="name" id="register-full-name" type="text" {...register('fullName')} {...fieldProps} />}
+        <FormField
+          error={errors.fullName?.message}
+          htmlFor="register-full-name"
+          label="Nombre completo"
+        >
+          {(fieldProps) => (
+            <input
+              autoComplete="name"
+              id="register-full-name"
+              type="text"
+              {...register('fullName')}
+              {...fieldProps}
+            />
+          )}
         </FormField>
-        <FormField error={errors.email?.message} htmlFor="register-email" label="Correo electrónico">
-          {(fieldProps) => <input autoComplete="email" id="register-email" type="email" {...register('email')} {...fieldProps} />}
+        <FormField
+          error={errors.email?.message}
+          htmlFor="register-email"
+          label="Correo electrónico"
+        >
+          {(fieldProps) => (
+            <input
+              autoComplete="email"
+              id="register-email"
+              type="email"
+              {...register('email')}
+              {...fieldProps}
+            />
+          )}
         </FormField>
-        <FormField error={errors.password?.message} help="Usa al menos ocho caracteres." htmlFor="register-password" label="Contraseña">
-          {(fieldProps) => <input autoComplete="new-password" id="register-password" type="password" {...register('password')} {...fieldProps} />}
+        <FormField
+          error={errors.password?.message}
+          help="Usa al menos ocho caracteres."
+          htmlFor="register-password"
+          label="Contraseña"
+        >
+          {(fieldProps) => (
+            <input
+              autoComplete="new-password"
+              id="register-password"
+              type="password"
+              {...register('password')}
+              {...fieldProps}
+            />
+          )}
         </FormField>
-        <FormField error={errors.confirmPassword?.message} htmlFor="register-confirm-password" label="Repite la contraseña">
-          {(fieldProps) => <input autoComplete="new-password" id="register-confirm-password" type="password" {...register('confirmPassword')} {...fieldProps} />}
+        <FormField
+          error={errors.confirmPassword?.message}
+          htmlFor="register-confirm-password"
+          label="Repite la contraseña"
+        >
+          {(fieldProps) => (
+            <input
+              autoComplete="new-password"
+              id="register-confirm-password"
+              type="password"
+              {...register('confirmPassword')}
+              {...fieldProps}
+            />
+          )}
         </FormField>
         <button
           className="button button--primary auth-form__submit"
@@ -73,7 +122,8 @@ export function RegisterPage() {
       </form>
       {error ? (
         <p className="auth-error" role="alert">
-          No pudimos crear la cuenta. Conservamos tus datos para que lo intentes nuevamente.
+          No pudimos crear la cuenta. Conservamos tus datos para que lo intentes
+          nuevamente.
         </p>
       ) : null}
       <p className="supporting-text">

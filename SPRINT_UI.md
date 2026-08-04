@@ -94,7 +94,7 @@ inventario;
 
 1
 
-•
+•
 
 compras;
 
@@ -200,7 +200,7 @@ rapidez;
 
 2
 
-•
+•
 
 sensación de producto consumer;
 
@@ -310,7 +310,7 @@ Plan
 
 3
 
-3.
+3.
 
 Registrar
 
@@ -334,9 +334,9 @@ La aplicación es mobile-first.
 
 En móvil utilizar una barra inferior persistente con aproximadamente:
 
-Hoy       Plan       +       Progreso       Hogar
+Hoy Plan + Progreso Hogar
 
-El botón central  +  representa Registrar comida.
+El botón central + representa Registrar comida.
 
 Debe ser la acción visualmente más importante de la navegación.
 
@@ -383,7 +383,7 @@ respetar safe areas;
 •
 
 ser accesible con teclado cuando aplique;
-utilizar  aria-current  correctamente;
+utilizar aria-current correctamente;
 
 •
 
@@ -395,7 +395,7 @@ integrarse con scroll;
 
 4
 
-•
+•
 
 soportar rutas profundas;
 
@@ -487,7 +487,7 @@ Hogar
 
 5
 
-Usuario / perfil
+Usuario / perfil
 
 Configuración
 
@@ -587,7 +587,7 @@ síntomas cuando se incorporen.
 
 6
 
-Hogar
+Hogar
 
 •
 
@@ -651,7 +651,7 @@ Ejemplo Hogar:
 
 Hogar
 
-Resumen   Inventario   Compras   Recetas   Integrantes
+Resumen Inventario Compras Recetas Integrantes
 
 No necesariamente debe implementarse exactamente como tabs.
 
@@ -679,7 +679,7 @@ dropdown;
 
 7
 
-•
+•
 
 section header.
 
@@ -793,7 +793,7 @@ evita elementos simplemente “bonitos” sin propósito.
 
 8
 
-Priorizar:
+Priorizar:
 
 producto antes que decoración.
 
@@ -867,7 +867,7 @@ text-secondary
 
 9
 
-text-muted
+text-muted
 
 border
 
@@ -961,7 +961,7 @@ helper text.
 
 10
 
-No crear tamaños arbitrarios página por página.
+No crear tamaños arbitrarios página por página.
 
 13. Números
 
@@ -1041,7 +1041,7 @@ Regla importante:
 
 11
 
-No todo debe ser una card.
+No todo debe ser una card.
 
 Preferir:
 
@@ -1129,7 +1129,7 @@ separación.
 
 12
 
-17. Bordes
+17. Bordes
 
 Evitar contornos demasiado prominentes.
 
@@ -1181,7 +1181,7 @@ Acción poco prominente.
 
 13
 
-Destructive
+Destructive
 
 Acción destructiva.
 
@@ -1247,7 +1247,7 @@ No duplicar información que ya esté visible en la pantalla.
 
 14
 
-22. Perfil e integrante activo
+22. Perfil e integrante activo
 
 La auditoría detectó que la selección de perfil está dispersa entre páginas.
 
@@ -1303,7 +1303,7 @@ Evitar repetir selectores de hogar en todas partes.
 
 15
 
-Solo mostrar selector cuando:
+Solo mostrar selector cuando:
 
 •
 
@@ -1403,7 +1403,7 @@ reduced-motion.
 
 16
 
-NO migrar todos los modales de la app en este sprint salvo aquellos necesarios para validar estos
+NO migrar todos los modales de la app en este sprint salvo aquellos necesarios para validar estos
 
 primitives.
 
@@ -1469,7 +1469,7 @@ Crear una estrategia compartida para:
 
 17
 
-LoadingState
+LoadingState
 
 ErrorState
 
@@ -1523,13 +1523,13 @@ Empieza con lo que desayunaste.
 
 18
 
-Registrar comida
+Registrar comida
 
 No crear ilustraciones complejas en este sprint salvo que exista una razón.
 
 28. PageHeader
 
-La auditoría detectó que  PageHeader.tsx  acepta  eyebrow  pero actualmente no lo renderiza.
+La auditoría detectó que PageHeader.tsx acepta eyebrow pero actualmente no lo renderiza.
 
 Corregir esta inconsistencia.
 
@@ -1585,7 +1585,7 @@ Validar mínimo en:
 
 19
 
-Mobile
+Mobile
 
 320 px
 
@@ -1661,7 +1661,7 @@ focus visible;
 
 20
 
-•
+•
 
 semantic HTML;
 
@@ -1761,7 +1761,7 @@ Debe convertirse en la fuente principal del lenguaje visual global.
 
 21
 
-Organizar tokens aproximadamente en:
+Organizar tokens aproximadamente en:
 
 colors
 
@@ -1823,7 +1823,7 @@ No es obligatorio utilizar exactamente estos nombres.
 
 22
 
-Seguir las convenciones actuales del proyecto.
+Seguir las convenciones actuales del proyecto.
 
 36. No duplicar componentes
 
@@ -1879,7 +1879,7 @@ Estas páginas pueden seguir existiendo aunque desaparezcan de la navegación pr
 
 23
 
-38. Backwards compatibility
+38. Backwards compatibility
 
 Después del sprint:
 
@@ -1897,7 +1897,7 @@ cómo funcionan internamente.
 
 Muy importante.
 
-No reconstruyas todavía  HomePage.tsx  como el nuevo dashboard consumer.
+No reconstruyas todavía HomePage.tsx como el nuevo dashboard consumer.
 
 Solo realizar los cambios mínimos necesarios para que funcione dentro del nuevo App Shell.
 
@@ -1905,7 +1905,7 @@ El rediseño real de Hoy será otro sprint.
 
 40. No crear Meal Composer todavía
 
-El botón  Registrar  debe integrarse visualmente con la nueva navegación.
+El botón Registrar debe integrarse visualmente con la nueva navegación.
 
 Pero continuar utilizando temporalmente el registro actual.
 
@@ -1939,7 +1939,7 @@ en este sprint.
 
 24
 
-Eso será Sprint UI 2.
+Eso será Sprint UI 2.
 
 41. Archivos a inspeccionar primero
 
@@ -2009,7 +2009,7 @@ Después implementa.
 
 25
 
-No hagas un rewrite completo del frontend.
+No hagas un rewrite completo del frontend.
 
 43. Criterios de aceptación funcionales
 
@@ -2121,7 +2121,7 @@ spacing consistente.
 
 26
 
-Overlays
+Overlays
 
 •
 
@@ -2233,7 +2233,7 @@ bottom navigation.
 
 27
 
-Overlays
+Overlays
 
 •
 
@@ -2338,7 +2338,7 @@ ruta profunda de planificación.
 
 28
 
-46. Calidad técnica
+46. Calidad técnica
 
 Al terminar ejecutar:
 
@@ -2379,7 +2379,7 @@ Listado de archivos creados/modificados/eliminados.
 
 29
 
-Compatibilidad
+Compatibilidad
 
 Qué funcionalidades existentes fueron verificadas.
 
@@ -2469,7 +2469,7 @@ documentarla, no implementarla.
 
 30
 
-49. Resultado esperado
+49. Resultado esperado
 
 Al terminar este sprint quiero poder abrir NutriHogar y sentir que estoy entrando a una app consumer de
 
@@ -2498,5 +2498,3 @@ construiremos en el siguiente sprint:
 Meal Composer + registro diario rápido.
 
 31
-
-

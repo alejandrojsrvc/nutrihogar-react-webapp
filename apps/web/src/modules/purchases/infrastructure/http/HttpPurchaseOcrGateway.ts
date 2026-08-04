@@ -38,7 +38,10 @@ export class HttpPurchaseOcrGateway implements PurchaseOcrGateway {
     );
 
     if (!response.ok) {
-      throw new PurchaseOcrError(response.status, getOcrErrorMessage(response.status));
+      throw new PurchaseOcrError(
+        response.status,
+        getOcrErrorMessage(response.status),
+      );
     }
 
     return response.json();

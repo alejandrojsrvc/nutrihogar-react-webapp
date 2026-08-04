@@ -25,12 +25,14 @@ describe('PrivateLayout', () => {
     expect(
       within(sidebar).getByRole('link', { name: 'Inicio de NutriHogar' }),
     ).toBeInTheDocument();
-    expect(
-      within(sidebar).getByRole('link', { name: 'Hoy' }),
-    ).toHaveAttribute('href', '/app');
-    expect(
-      within(sidebar).getByRole('link', { name: 'Plan' }),
-    ).toHaveAttribute('href', '/app/plan-semanal');
+    expect(within(sidebar).getByRole('link', { name: 'Hoy' })).toHaveAttribute(
+      'href',
+      '/app',
+    );
+    expect(within(sidebar).getByRole('link', { name: 'Plan' })).toHaveAttribute(
+      'href',
+      '/app/plan-semanal',
+    );
     expect(
       within(sidebar).getByRole('link', { name: 'Registrar' }),
     ).toHaveAttribute('href', '/app/comidas/nueva');
@@ -75,10 +77,9 @@ describe('PrivateLayout', () => {
       'aria-current',
       'page',
     );
-    expect(within(sidebar).getByRole('link', { name: 'Hoy' })).not.toHaveAttribute(
-      'aria-current',
-      'page',
-    );
+    expect(
+      within(sidebar).getByRole('link', { name: 'Hoy' }),
+    ).not.toHaveAttribute('aria-current', 'page');
   });
 
   it('opens the small profile menu instead of a second module navigation', async () => {
@@ -146,7 +147,9 @@ describe('PrivateLayout', () => {
     );
 
     await user.click(await screen.findByLabelText('Menú de Mi perfil'));
-    await user.click(await screen.findByRole('button', { name: 'Cerrar sesión' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Cerrar sesión' }),
+    );
 
     expect(
       await screen.findByRole('heading', { name: 'Bienvenido a NutriHogar' }),

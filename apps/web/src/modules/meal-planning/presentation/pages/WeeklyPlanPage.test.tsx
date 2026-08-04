@@ -68,9 +68,9 @@ describe('WeeklyPlanPage', () => {
       await screen.findByRole('heading', { name: 'Plan semanal' }),
     ).toBeInTheDocument();
     expect(screen.getAllByText('Arroz familiar')).not.toHaveLength(0);
-    expect(screen.getAllByRole('link', { name: 'Agregar comida' })).not.toHaveLength(
-      0,
-    );
+    expect(
+      screen.getAllByRole('link', { name: 'Agregar comida' }),
+    ).not.toHaveLength(0);
     expect(screen.getAllByText('1 participante')).not.toHaveLength(0);
     expect(screen.getAllByText('Planificada')).not.toHaveLength(0);
     expect(

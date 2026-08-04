@@ -17,8 +17,12 @@ describe('RecipeForm', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('button', { name: /Foto de la receta/ })).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: /Foto de la receta/ }),
+    ).toBeDisabled();
     expect(screen.getByText('Se calculará al guardar')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Resumen nutricional por porción/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Resumen nutricional por porción/ }),
+    ).toBeInTheDocument();
   });
 });

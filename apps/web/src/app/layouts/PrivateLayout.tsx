@@ -63,10 +63,10 @@ export function PrivateLayout() {
         <div className="app-shell">
           <Sidebar secondaryItems={secondaryItems} />
           <div className="app-workspace">
-           <Topbar
-            householdName={activeHousehold?.name ?? 'Mi hogar'}
-            isSigningOut={isSigningOut}
-            onLogout={() => void handleLogout()}
+            <Topbar
+              householdName={activeHousehold?.name ?? 'Mi hogar'}
+              isSigningOut={isSigningOut}
+              onLogout={() => void handleLogout()}
             />
             {connectionMessage ? (
               <ConnectionNotice message={connectionMessage} />

@@ -28,8 +28,16 @@ export function FormField({
         'aria-describedby': describedBy,
         'aria-invalid': Boolean(error),
       })}
-      {help ? <p className="form-field__help" id={helpId}>{help}</p> : null}
-      {error ? <p className="form-field__error" id={errorId}>{error}</p> : null}
+      {help ? (
+        <p className="form-field__help" id={helpId}>
+          {help}
+        </p>
+      ) : null}
+      {error ? (
+        <p className="form-field__error" id={errorId}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

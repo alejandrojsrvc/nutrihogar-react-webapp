@@ -38,11 +38,35 @@ export function LoginPage() {
         hogar.
       </p>
       <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormField error={errors.email?.message} htmlFor="login-email" label="Correo electrónico">
-          {(fieldProps) => <input autoComplete="email" id="login-email" type="email" {...register('email')} {...fieldProps} />}
+        <FormField
+          error={errors.email?.message}
+          htmlFor="login-email"
+          label="Correo electrónico"
+        >
+          {(fieldProps) => (
+            <input
+              autoComplete="email"
+              id="login-email"
+              type="email"
+              {...register('email')}
+              {...fieldProps}
+            />
+          )}
         </FormField>
-        <FormField error={errors.password?.message} htmlFor="login-password" label="Contraseña">
-          {(fieldProps) => <input autoComplete="current-password" id="login-password" type="password" {...register('password')} {...fieldProps} />}
+        <FormField
+          error={errors.password?.message}
+          htmlFor="login-password"
+          label="Contraseña"
+        >
+          {(fieldProps) => (
+            <input
+              autoComplete="current-password"
+              id="login-password"
+              type="password"
+              {...register('password')}
+              {...fieldProps}
+            />
+          )}
         </FormField>
         <button
           className="button button--primary auth-form__submit"

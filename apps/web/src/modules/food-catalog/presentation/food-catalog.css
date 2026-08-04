@@ -332,7 +332,9 @@
 .food-form-actions {
   position: sticky;
   z-index: 5;
-  bottom: calc(var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom));
+  bottom: calc(
+    var(--layout-mobile-navigation-height) + env(safe-area-inset-bottom)
+  );
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -392,8 +394,7 @@
     flex: 0 0 auto;
   }
   .food-result-card article {
-    grid-template-columns:
-      2.75rem minmax(12rem, 1.25fr) minmax(21rem, 1fr) auto;
+    grid-template-columns: 2.75rem minmax(12rem, 1.25fr) minmax(21rem, 1fr) auto;
   }
   .food-result-card__icon,
   .food-result-card__heading,
@@ -512,7 +513,9 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-elevated);
-    box-shadow: 0 0 0 100vmax var(--color-overlay), var(--shadow-overlay);
+    box-shadow:
+      0 0 0 100vmax var(--color-overlay),
+      var(--shadow-overlay);
   }
   .food-selector__filters {
     grid-template-columns: 2fr 1fr 1fr;

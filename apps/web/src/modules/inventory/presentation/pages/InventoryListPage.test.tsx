@@ -157,7 +157,9 @@ describe('InventoryListPage', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    expect(await screen.findByRole('button', { name: 'Agotados' })).toHaveAttribute('aria-pressed', 'true');
+    expect(
+      await screen.findByRole('button', { name: 'Agotados' }),
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 });
 
