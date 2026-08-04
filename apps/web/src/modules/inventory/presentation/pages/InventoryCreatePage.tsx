@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PackagePlus } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
@@ -9,7 +8,6 @@ import { FoodSelector } from '../../../food-catalog/presentation/components/Food
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   useCreateInventoryItem,
   useInventorySyncStatus,
@@ -104,13 +102,6 @@ export function InventoryCreatePage() {
       aria-labelledby="inventory-create-title"
     >
       <BackButton fallback="/app/inventario" />
-      <PageHeader
-        description="Registra lo que tienes disponible para mantener una referencia clara en casa."
-        eyebrow="Inventario del hogar"
-        icon={<PackagePlus size={22} />}
-        title="Agregar existencia"
-        titleId="inventory-create-title"
-      />
       {syncStatus.data?.isOnline === false ? (
         <p className="inventory-offline-note" role="status">
           Sin conexión. Crear una existencia requiere conexión y no se pondrá en cola; tus valores permanecerán en el formulario.

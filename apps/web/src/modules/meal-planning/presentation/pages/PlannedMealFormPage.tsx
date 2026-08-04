@@ -1,6 +1,4 @@
-import { Utensils } from 'lucide-react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
   ErrorState,
@@ -93,14 +91,6 @@ export function PlannedMealFormPage() {
       aria-labelledby="planned-meal-title"
     >
       <BackButton fallback={back} />
-      <PageHeader
-        eyebrow="Plan semanal"
-        icon={<Utensils size={22} />}
-        title={
-          editing ? 'Editar comida planificada' : 'Agregar comida planificada'
-        }
-        titleId="planned-meal-title"
-      />
       <PlannedMealForm
         householdId={households.activeHousehold.id}
         initialDate={date}

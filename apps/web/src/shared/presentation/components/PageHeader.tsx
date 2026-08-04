@@ -16,7 +16,7 @@ export function PageHeader({
   icon?: ReactNode;
 }) {
   return (
-    <header className="page-header">
+    <div className="page-header">
       <div className="page-header__identity">
         {icon ? <span className="page-header__icon" aria-hidden="true">{icon}</span> : null}
         <div>
@@ -26,6 +26,6 @@ export function PageHeader({
         </div>
       </div>
       {action ? <div className="page-header__action">{action}</div> : null}
-    </header>
+    </div>
   );
 }

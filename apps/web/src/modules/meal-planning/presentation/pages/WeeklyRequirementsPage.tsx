@@ -1,7 +1,5 @@
-import { ClipboardList } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
@@ -43,13 +41,6 @@ export function WeeklyRequirementsPage() {
       aria-labelledby="requirements-title"
     >
       <BackButton fallback="/app/plan-semanal" />
-      <PageHeader
-        eyebrow="Plan semanal"
-        icon={<ClipboardList size={22} />}
-        title="Ingredientes requeridos"
-        titleId="requirements-title"
-        description="El agregado semanal agrupado por unidad de medida."
-      />
       {query.data?.warnings.map((warning) => (
         <p className="notice" key={warning}>
           {warning}

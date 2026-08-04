@@ -4,16 +4,13 @@ import {
   AlertTriangle,
   ChartPie,
   CircleCheck,
-  House,
   PackageOpen,
-  Plus,
   Search,
   ShoppingCart,
   Snowflake,
 } from 'lucide-react';
 
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
 import type {
@@ -95,17 +92,6 @@ export function InventoryListPage() {
       className="page-section inventory-page"
       aria-labelledby="inventory-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--primary" to="/app/inventario/nuevo">
-            <Plus size={19} aria-hidden="true" /> Agregar producto
-          </Link>
-        }
-        icon={<House size={25} />}
-        title="Inventario"
-        titleId="inventory-title"
-        description="Despensa y preparados del hogar"
-      />
       <SyncStatus
         conflictsCount={syncStatus.data?.conflictsCount ?? 0}
         isOnline={syncStatus.data?.isOnline ?? true}

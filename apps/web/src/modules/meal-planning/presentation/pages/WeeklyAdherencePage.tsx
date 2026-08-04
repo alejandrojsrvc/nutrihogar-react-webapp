@@ -1,7 +1,5 @@
-import { ChartNoAxesColumnIncreasing } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
@@ -43,13 +41,6 @@ export function WeeklyAdherencePage() {
     >
       <BackButton
         fallback={`/app/plan-semanal?semana=${query.data.weekStart}`}
-      />
-      <PageHeader
-        eyebrow="Plan semanal"
-        icon={<ChartNoAxesColumnIncreasing size={22} />}
-        title="Adherencia del plan"
-        titleId="adherence-title"
-        description="Valores calculados por el backend a partir del plan y los consumos vinculados."
       />
       <section
         className="adherence-overview"

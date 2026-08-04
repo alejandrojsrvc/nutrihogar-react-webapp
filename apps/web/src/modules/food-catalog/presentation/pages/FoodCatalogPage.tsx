@@ -1,8 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router';
-import { Apple, ChevronRight, Plus, Search } from 'lucide-react';
+import { Apple, ChevronRight, Search } from 'lucide-react';
 
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import type {
   FoodSearchCriteria,
   SearchPreparationState,
@@ -74,18 +73,6 @@ export function FoodCatalogPage() {
       className="page-section food-catalog-page"
       aria-labelledby="food-catalog-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--primary" to="/app/alimentos/nuevo">
-            <Plus aria-hidden="true" size={19} />
-            Crear alimento
-          </Link>
-        }
-        icon={<Apple size={25} />}
-        title="Alimentos"
-        titleId="food-catalog-title"
-        description="Busca ingredientes y consulta sus valores nutricionales."
-      />
       {getCatalogFeedback(location.state) ? (
         <p className="food-feedback" role="status">
           {getCatalogFeedback(location.state)}

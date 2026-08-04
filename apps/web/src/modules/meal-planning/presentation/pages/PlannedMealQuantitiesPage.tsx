@@ -1,4 +1,3 @@
-import { Scale } from 'lucide-react';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -9,7 +8,6 @@ import {
   type ParticipantQuantityValues,
 } from '@nutrihogar/schemas';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
@@ -76,13 +74,6 @@ export function PlannedMealQuantitiesPage() {
     >
       <BackButton
         fallback={`/app/plan-semanal/${weeklyPlanId}/comidas/${plannedMealId}/participantes`}
-      />
-      <PageHeader
-        eyebrow="Comida planificada"
-        icon={<Scale size={22} />}
-        title="Cantidades por adulto"
-        titleId="quantities-title"
-        description="Las sugerencias orientan la decisión; la cantidad confirmada es la que queda guardada."
       />
       <section className="quantity-tools" aria-labelledby="quantity-tools-title">
         <div>

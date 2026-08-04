@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { BookOpen, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Link } from 'react-router';
 import { Badge } from '../../../../shared/presentation/components/Badge';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { humanizeEnum, statusTone } from '../recipePresentation';
@@ -49,18 +48,6 @@ export function RecipeListPage() {
       className="page-section recipe-list-page"
       aria-labelledby="recipe-list-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--primary" to="/app/recetas/nueva">
-            Crear receta
-          </Link>
-        }
-        eyebrow="Recetas familiares"
-        title="Recetas del hogar"
-        titleId="recipe-list-title"
-        description="Encuentra preparaciones que tu familia repite con frecuencia."
-        icon={<BookOpen size={22} />}
-      />
       <div className="recipe-filters">
         <div className="form-field">
           <label htmlFor="recipe-search">Buscar receta</label>

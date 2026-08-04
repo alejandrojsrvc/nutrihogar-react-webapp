@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReceiptText } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
@@ -8,7 +7,6 @@ import type { FoodSelection } from '../../../food-catalog/application/ports/Food
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import type { PurchaseItemInput } from '../../application/ports/PurchaseGateway';
 import '../purchases.css';
 import {
@@ -180,13 +178,6 @@ export function PurchaseFormPage() {
     >
       <BackButton
         fallback={isEditing ? `/app/compras/${purchaseId}` : '/app/compras'}
-      />
-      <PageHeader
-        description="Guarda un borrador para revisar cantidades y confirma después, cuando quieras actualizar el inventario."
-        eyebrow="Compras del hogar"
-        icon={<ReceiptText size={22} />}
-        title={isEditing ? 'Editar compra' : 'Registrar compra'}
-        titleId="purchase-form-title"
       />
       {!isOnline ? (
         <p className="feature-connectivity feature-connectivity--offline" role="status">

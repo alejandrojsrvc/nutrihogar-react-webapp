@@ -1,8 +1,10 @@
+import { createElement, type ComponentType } from 'react';
+import { useMatches } from 'react-router';
+
 import { ProfileMenu } from './ProfileMenu';
 import { BrandLockup } from './BrandLockup';
 import { useActiveProfile } from '../providers/ActiveProfileContext';
-import { PageHeader } from './PageHeader';
-import { PackagePlus } from 'lucide-react';
+import type { RouteHandle } from '../navigation/routeHandle';
 
 export function Topbar({
   householdName,
@@ -14,19 +16,32 @@ export function Topbar({
   onLogout: () => void;
 }) {
   const { activeProfile } = useActiveProfile();
+  const matches = useMatches();
+  const pageHeader = matches.reduceRight<ComponentType | undefined>(
+    (current, match) =>
+      current ?? (match.handle as RouteHandle | undefined)?.pageHeader,
+    undefined,
+  );
 
   return (
     <header className="app-topbar">
-      <div className="app-topbar__brand">
-        <BrandLockup />
+      <div className="app-topbar__row">
+        <div className="app-topbar__brand">
+          <BrandLockup />
+        </div>
+
+        <ProfileMenu
+          householdName={householdName}
+          isSigningOut={isSigningOut}
+          onLogout={onLogout}
+          profileName={activeProfile?.name ?? 'Mi perfil'}
+        />
       </div>
-    
-      <ProfileMenu
-        householdName={householdName}
-        isSigningOut={isSigningOut}
-        onLogout={onLogout}
-        profileName={activeProfile?.name ?? 'Mi perfil'}
-      />
+      {pageHeader ? (
+        <div className="app-topbar__page-header">
+          {createElement(pageHeader)}
+        </div>
+      ) : null}
     </header>
   );
 }

@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { useFieldArray, useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
-import { Apple, Plus, Save } from 'lucide-react';
+import { Plus, Save } from 'lucide-react';
 
 import type {
   FoodDetail,
@@ -19,7 +19,6 @@ import type {
 } from '../../application/ports/FoodCatalogGateway';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   useCreateCustomFood,
   useFoodCategories,
@@ -225,13 +224,6 @@ export function CustomFoodFormPage() {
       aria-labelledby="custom-food-title"
     >
       <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
-      <PageHeader
-        description="Copia los valores de la etiqueta tal como aparecen. Podrás usar este alimento en tus comidas."
-        icon={<Apple size={25} />}
-        title={isEditing ? 'Editar alimento' : 'Crear alimento'}
-        titleId="custom-food-title"
-      />
-
       <form
         className="custom-food-form"
         onSubmit={handleSubmit(onSubmit)}
@@ -710,15 +702,7 @@ function CustomFoodStatus({
   message: string;
 }) {
   return (
-    <section
-      className="page-section"
-      aria-labelledby="custom-food-status-title"
-    >
-      <PageHeader
-        icon={<Apple size={25} />}
-        title="Alimento personalizado"
-        titleId="custom-food-status-title"
-      />
+    <section className="page-section">
       <p className="lead" role={isError ? 'alert' : 'status'}>
         {message}
       </p>

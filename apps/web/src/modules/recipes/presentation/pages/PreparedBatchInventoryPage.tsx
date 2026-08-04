@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { ClipboardCheck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { PreparationProgress } from '../components/PreparationProgress';
 import {
   useConfirmPreparedBatchInventory,
@@ -82,13 +80,6 @@ export function PreparedBatchInventoryPage() {
       aria-labelledby="prepared-batch-inventory-title"
     >
       <BackButton fallback={`/app/preparaciones/${batchId}`} />
-      <PageHeader
-        eyebrow="Confirmación de inventario"
-        title="Ingredientes utilizados"
-        titleId="prepared-batch-inventory-title"
-        description="Confirma qué existencias se descontarán. La preparación no se bloquea si ignoras un ingrediente."
-        icon={<ClipboardCheck size={22} />}
-      />
       <PreparationProgress current="portions" />
       {value.alreadyConfirmed ? (
         <p className="preparation-callout" role="status">

@@ -1,8 +1,6 @@
-import { PackageCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
@@ -77,13 +75,6 @@ export function InventoryComparisonPage() {
     >
       <BackButton
         fallback={`/app/plan-semanal/${weeklyPlanId}/requerimientos`}
-      />
-      <PageHeader
-        eyebrow="Plan semanal"
-        icon={<PackageCheck size={22} />}
-        title="Disponibilidad del inventario"
-        titleId="comparison-title"
-        description="Selecciona los faltantes que quieres enviar a la lista de compras."
       />
       <p className="coverage-summary">
         <strong>

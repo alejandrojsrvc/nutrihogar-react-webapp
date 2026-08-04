@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
 import type { MealFormValues } from '@nutrihogar/schemas';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -10,7 +9,6 @@ import { MealForm } from '../components/MealForm';
 import { useLinkConsumption } from '../../../meal-planning/presentation/hooks/useMealPlanning';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import '../meals.css';
-import { Plus } from 'lucide-react';
 
 const mealTypes = ['BREAKFAST', 'LUNCH', 'SNACK', 'DINNER', 'EXTRA'] as const;
 
@@ -111,12 +109,6 @@ export function RegisterMealPage() {
       aria-labelledby="register-meal-title"
     >
       <BackButton fallback="/app" />
-      <PageHeader
-        description="Rápido, flexible y pensado para la vida real."
-        icon={<Plus size={27} />}
-        title="Registrar comida"
-        titleId="register-meal-title"
-      />
       {params.get('plannedMealId') ? (
         <p className="supporting-text">
           Al registrar, esta comida se vinculará al plan semanal.

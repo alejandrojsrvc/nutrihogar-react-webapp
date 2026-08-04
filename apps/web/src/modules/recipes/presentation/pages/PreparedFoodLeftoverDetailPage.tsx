@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { PackageCheck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
 import { Dialog } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   useAddPreparedFoodLeftoverToInventory,
   usePreparedFoodLeftover,
@@ -76,13 +74,6 @@ export function PreparedFoodLeftoverDetailPage() {
   return (
     <section className="page-section leftover-page" aria-labelledby="leftover-detail-title">
       <BackButton fallback="/app/sobrantes" />
-      <PageHeader
-        eyebrow="Sobrante de preparación"
-        title="Sobrante guardado"
-        titleId="leftover-detail-title"
-        description="El nombre de la receta no está disponible en el detalle del sobrante."
-        icon={<PackageCheck size={22} />}
-      />
       <div className="recipe-status-line">
         <Badge tone={statusTone(value.status)}>{humanizeEnum(value.status)}</Badge>
       </div>
