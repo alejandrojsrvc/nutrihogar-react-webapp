@@ -1,15 +1,12 @@
-import { Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   ErrorState,
   LoadingState,
 } from '../../../../shared/presentation/components/AsyncState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
-import type { PlannedMeal } from '../../domain/MealPlanning';
 import {
   useAssignParticipant,
   useDeleteParticipant,
@@ -75,13 +72,6 @@ export function PlannedMealParticipantsPage() {
       <BackButton
         fallback={`/app/plan-semanal?semana=${plan.data!.weekStart}`}
       />
-      <PageHeader
-        eyebrow="Comida planificada"
-        icon={<Users size={22} />}
-        title={`Participantes de ${meal.name ?? mealLabel(meal)}`}
-        titleId="participants-title"
-        description="Selecciona los adultos que compartirán esta comida."
-      />
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -142,16 +132,4 @@ export function PlannedMealParticipantsPage() {
       </RelatedActions>
     </section>
   );
-}
-
-function mealLabel(meal: PlannedMeal) {
-  return (
-    {
-      BREAKFAST: 'desayuno',
-      LUNCH: 'comida',
-      DINNER: 'cena',
-      SNACK: 'colación',
-      EXTRA: 'comida',
-    } as Record<string, string>
-  )[meal.type];
 }

@@ -1,12 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Scale } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { useForm, useWatch, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Dialog } from '../../../../shared/presentation/components/Overlay';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
 import {
@@ -130,16 +128,11 @@ export function InventoryAdjustPage() {
       aria-labelledby="inventory-adjust-title"
     >
       <BackButton fallback={`/app/inventario/${current.id}`} />
-      <PageHeader
-        description="Registra el resultado de un conteo sin reemplazar el historial del inventario."
-        eyebrow="Ajustar existencia"
-        icon={<Scale size={22} />}
-        title={current.name}
-        titleId="inventory-adjust-title"
-      />
       {syncStatus.data?.isOnline === false ? (
         <p className="inventory-offline-note" role="status">
-          Sin conexión. El ajuste se guardará en este dispositivo como pendiente; el saldo mostrado no estará confirmado por el servidor hasta sincronizar.
+          Sin conexión. El ajuste se guardará en este dispositivo como
+          pendiente; el saldo mostrado no estará confirmado por el servidor
+          hasta sincronizar.
         </p>
       ) : null}
       <dl className="inventory-current-summary">
@@ -159,61 +152,61 @@ export function InventoryAdjustPage() {
       >
         <fieldset>
           <legend>Nuevo conteo</legend>
-        <Field
-          error={errors.quantity?.message}
-          id="inventory-adjust-quantity"
-          label="Nueva cantidad *"
-        >
-          <input
+          <Field
+            error={errors.quantity?.message}
             id="inventory-adjust-quantity"
-            inputMode="decimal"
-            min="0"
-            step="any"
-            type="number"
-            {...register('quantity')}
-          />
-        </Field>
-        <Field
-          error={errors.unit?.message}
-          id="inventory-adjust-unit"
-          label="Unidad *"
-        >
-          <select id="inventory-adjust-unit" {...register('unit')}>
-            <option value="GRAM">Gramos (g)</option>
-            <option value="MILLILITER">Mililitros (ml)</option>
-            <option value="UNIT">Unidades</option>
-          </select>
-        </Field>
-        <Field
-          error={errors.occurredAt?.message}
-          id="inventory-adjust-date"
-          label="Fecha"
-        >
-          <input
+            label="Nueva cantidad *"
+          >
+            <input
+              id="inventory-adjust-quantity"
+              inputMode="decimal"
+              min="0"
+              step="any"
+              type="number"
+              {...register('quantity')}
+            />
+          </Field>
+          <Field
+            error={errors.unit?.message}
+            id="inventory-adjust-unit"
+            label="Unidad *"
+          >
+            <select id="inventory-adjust-unit" {...register('unit')}>
+              <option value="GRAM">Gramos (g)</option>
+              <option value="MILLILITER">Mililitros (ml)</option>
+              <option value="UNIT">Unidades</option>
+            </select>
+          </Field>
+          <Field
+            error={errors.occurredAt?.message}
             id="inventory-adjust-date"
-            type="datetime-local"
-            {...register('occurredAt')}
-          />
-        </Field>
-        <Field
-          error={errors.reason?.message}
-          id="inventory-adjust-reason"
-          label="Razón del ajuste *"
-        >
-          <textarea
+            label="Fecha"
+          >
+            <input
+              id="inventory-adjust-date"
+              type="datetime-local"
+              {...register('occurredAt')}
+            />
+          </Field>
+          <Field
+            error={errors.reason?.message}
             id="inventory-adjust-reason"
-            placeholder="Ej. Conteo semanal"
-            {...register('reason')}
-          />
-        </Field>
-        <p className="inventory-difference" aria-live="polite">
-          Diferencia:{' '}
-          <strong>
-            {difference == null
-              ? 'Completa la cantidad'
-              : `${difference > 0 ? '+' : ''}${formatQuantity(difference, current.unit)}`}
-          </strong>
-        </p>
+            label="Razón del ajuste *"
+          >
+            <textarea
+              id="inventory-adjust-reason"
+              placeholder="Ej. Conteo semanal"
+              {...register('reason')}
+            />
+          </Field>
+          <p className="inventory-difference" aria-live="polite">
+            Diferencia:{' '}
+            <strong>
+              {difference == null
+                ? 'Completa la cantidad'
+                : `${difference > 0 ? '+' : ''}${formatQuantity(difference, current.unit)}`}
+            </strong>
+          </p>
         </fieldset>
         <div className="inventory-form-actions">
           <Link
@@ -250,19 +243,37 @@ export function InventoryAdjustPage() {
         title="Revisar ajuste"
       >
         <p>
-          Este cambio es grande frente al saldo actual. Revisa el resultado antes de guardarlo.
+          Este cambio es grande frente al saldo actual. Revisa el resultado
+          antes de guardarlo.
         </p>
         <dl className="inventory-adjust-review">
-          <div><dt>Saldo actual</dt><dd>{formatQuantity(current.currentQuantity, current.unit)}</dd></div>
-          <div><dt>Nuevo saldo</dt><dd>{formatQuantity(Number(pendingValues?.quantity ?? 0), current.unit)}</dd></div>
+          <div>
+            <dt>Saldo actual</dt>
+            <dd>{formatQuantity(current.currentQuantity, current.unit)}</dd>
+          </div>
+          <div>
+            <dt>Nuevo saldo</dt>
+            <dd>
+              {formatQuantity(
+                Number(pendingValues?.quantity ?? 0),
+                current.unit,
+              )}
+            </dd>
+          </div>
         </dl>
         {adjust.error ? (
           <p className="form-field__error" role="alert">
-            {adjust.error instanceof Error ? adjust.error.message : 'No se pudo guardar el ajuste.'}
+            {adjust.error instanceof Error
+              ? adjust.error.message
+              : 'No se pudo guardar el ajuste.'}
           </p>
         ) : null}
         <div className="inventory-dialog-actions">
-          <button className="button button--secondary" onClick={() => setPendingValues(null)} type="button">
+          <button
+            className="button button--secondary"
+            onClick={() => setPendingValues(null)}
+            type="button"
+          >
             Corregir cantidad
           </button>
           <button
@@ -302,7 +313,11 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-field__error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

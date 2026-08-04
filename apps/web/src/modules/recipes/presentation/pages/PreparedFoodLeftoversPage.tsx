@@ -1,13 +1,16 @@
-import { PackageOpen } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { usePreparedFoodLeftovers } from '../hooks/usePreparedFoodLeftovers';
-import { formatDateTime, formatQuantity, humanizeEnum, statusTone } from '../recipePresentation';
+import {
+  formatDateTime,
+  formatQuantity,
+  humanizeEnum,
+  statusTone,
+} from '../recipePresentation';
 import '../recipes.css';
 
 export function PreparedFoodLeftoversPage() {
@@ -33,15 +36,11 @@ export function PreparedFoodLeftoversPage() {
     );
 
   return (
-    <section className="page-section leftover-page" aria-labelledby="leftovers-title">
+    <section
+      className="page-section leftover-page"
+      aria-labelledby="leftovers-title"
+    >
       <BackButton fallback="/app" />
-      <PageHeader
-        eyebrow={households.activeHousehold.name}
-        title="Sobrantes disponibles"
-        titleId="leftovers-title"
-        description="Preparaciones guardadas para consumir después."
-        icon={<PackageOpen size={22} />}
-      />
       {leftovers.data?.length ? (
         <ul className="recipe-list" aria-label="Sobrantes guardados">
           {leftovers.data.map((leftover) => (

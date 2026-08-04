@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { ReceiptText } from 'lucide-react';
 import { Link } from 'react-router';
 
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { PurchaseStatus } from '../../domain/Purchase';
 import { usePurchaseConnectivity, usePurchases } from '../hooks/usePurchases';
@@ -32,7 +30,11 @@ export function PurchaseListPage() {
             ? 'No se pudo cargar el hogar activo.'
             : 'No se pudo identificar el hogar sin conexión.'}
         </p>
-        <button className="button button--secondary" onClick={() => void households.refetch()} type="button">
+        <button
+          className="button button--secondary"
+          onClick={() => void households.refetch()}
+          type="button"
+        >
           Reintentar
         </button>
       </section>
@@ -44,21 +46,13 @@ export function PurchaseListPage() {
       className="page-section purchase-list-page"
       aria-labelledby="purchase-list-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--primary" to="/app/compras/nueva">
-            Registrar compra
-          </Link>
-        }
-        eyebrow={households.activeHousehold.name}
-        icon={<ReceiptText size={22} />}
-        title="Compras del hogar"
-        titleId="purchase-list-title"
-        description="Consulta lo comprado y relaciona cada compra con tu inventario."
-      />
       {!isOnline ? (
-        <p className="feature-connectivity feature-connectivity--offline" role="status">
-          Sin conexión. Las compras requieren conexión y no se guardan en una cola local.
+        <p
+          className="feature-connectivity feature-connectivity--offline"
+          role="status"
+        >
+          Sin conexión. Las compras requieren conexión y no se guardan en una
+          cola local.
         </p>
       ) : null}
       <div className="purchase-filters">
@@ -113,7 +107,11 @@ export function PurchaseListPage() {
       ) : null}
       {!purchases.isPending && !purchases.isError && items.length === 0 ? (
         <section className="empty-state-card">
-          <h2>{status || storeName ? 'No hay coincidencias' : 'No hay compras todavía'}</h2>
+          <h2>
+            {status || storeName
+              ? 'No hay coincidencias'
+              : 'No hay compras todavía'}
+          </h2>
           <p>
             {status || storeName
               ? 'Prueba con otro comercio o estado.'
@@ -141,10 +139,14 @@ export function PurchaseListPage() {
                   producto{purchase.items.length === 1 ? '' : 's'}
                 </p>
               </div>
-              <span className={`purchase-status purchase-status--${purchase.status.toLowerCase()}`}>
+              <span
+                className={`purchase-status purchase-status--${purchase.status.toLowerCase()}`}
+              >
                 {statusLabel(purchase.status)}
               </span>
-              <strong className="purchase-row__total">{formatMoney(purchase.total, purchase.currency)}</strong>
+              <strong className="purchase-row__total">
+                {formatMoney(purchase.total, purchase.currency)}
+              </strong>
             </Link>
           ))}
         </div>

@@ -1,9 +1,7 @@
-import { CookingPot } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { AvailabilitySummary } from '../components/AvailabilitySummary';
 import {
@@ -31,7 +29,8 @@ export function PreparedBatchDetailPage() {
   if (!batchId)
     return (
       <p className="page-section" role="alert">
-        Falta identificar la preparación. Vuelve a la receta e inténtalo nuevamente.
+        Falta identificar la preparación. Vuelve a la receta e inténtalo
+        nuevamente.
       </p>
     );
   if (details.isPending)
@@ -71,13 +70,6 @@ export function PreparedBatchDetailPage() {
       <BackButton
         fallback={batch.recipeId ? `/app/recetas/${batch.recipeId}` : '/app'}
       />
-      <PageHeader
-        eyebrow="Preparación familiar"
-        title={batch.recipeNameSnapshot}
-        titleId="prepared-batch-title"
-        description={`Preparada el ${formatDateTime(batch.preparedAt)}`}
-        icon={<CookingPot size={22} />}
-      />
       {batch.status !== 'CANCELLED' ? (
         <PreparationProgress current={currentStep} />
       ) : null}
@@ -87,10 +79,13 @@ export function PreparedBatchDetailPage() {
         </p>
       ) : null}
       <div className="recipe-status-line">
-        <Badge tone={statusTone(batch.status)}>{humanizeEnum(batch.status)}</Badge>
+        <Badge tone={statusTone(batch.status)}>
+          {humanizeEnum(batch.status)}
+        </Badge>
         {batch.status === 'CANCELLED' ? (
           <span className="supporting-text">
-            Esta preparación se conserva como historial y no admite nuevas acciones.
+            Esta preparación se conserva como historial y no admite nuevas
+            acciones.
           </span>
         ) : null}
       </div>
@@ -109,10 +104,16 @@ export function PreparedBatchDetailPage() {
         <ul className="recipe-detail-list">
           {batch.ingredients.map((ingredient) => (
             <li key={ingredient.id}>
-              <strong>{ingredient.foodNameSnapshot ?? 'Alimento no disponible'}</strong>
-              <span>{formatQuantity(ingredient.quantity, ingredient.unit)}</span>
+              <strong>
+                {ingredient.foodNameSnapshot ?? 'Alimento no disponible'}
+              </strong>
+              <span>
+                {formatQuantity(ingredient.quantity, ingredient.unit)}
+              </span>
               {ingredient.preparationStateSnapshot ? (
-                <small>{humanizeEnum(ingredient.preparationStateSnapshot)}</small>
+                <small>
+                  {humanizeEnum(ingredient.preparationStateSnapshot)}
+                </small>
               ) : null}
             </li>
           ))}
@@ -126,12 +127,14 @@ export function PreparedBatchDetailPage() {
             Valores calculados por el servidor con el peso cocido registrado.
           </p>
           <dl className="nutrition-value-list">
-            {Object.entries(batch.nutrientsPer100Grams).map(([nutrient, amount]) => (
-              <div key={nutrient}>
-                <dt>{humanizeEnum(nutrient)}</dt>
-                <dd>{formatNutrientAmount(amount, nutrient)} por 100 g</dd>
-              </div>
-            ))}
+            {Object.entries(batch.nutrientsPer100Grams).map(
+              ([nutrient, amount]) => (
+                <div key={nutrient}>
+                  <dt>{humanizeEnum(nutrient)}</dt>
+                  <dd>{formatNutrientAmount(amount, nutrient)} por 100 g</dd>
+                </div>
+              ),
+            )}
           </dl>
         </section>
       ) : null}
@@ -171,7 +174,8 @@ export function PreparedBatchDetailPage() {
                         </Link>
                       ) : (
                         <small>
-                          {formatQuantity(portion.consumedWeight, 'GRAM')} consumidos
+                          {formatQuantity(portion.consumedWeight, 'GRAM')}{' '}
+                          consumidos
                         </small>
                       )}
                     </div>

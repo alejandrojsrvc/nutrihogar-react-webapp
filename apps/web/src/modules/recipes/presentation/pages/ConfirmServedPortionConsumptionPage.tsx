@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { UserCheck } from 'lucide-react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { usePreparedBatchDetails } from '../hooks/usePreparedBatches';
 import { useConfirmServedPortionConsumption } from '../hooks/usePortionConsumption';
@@ -78,12 +76,6 @@ export function ConfirmServedPortionConsumptionPage() {
     return (
       <section className="page-section portion-page" role="status">
         <BackButton fallback={`/app/preparaciones/${batchId}`} />
-        <PageHeader
-          eyebrow="Consumo confirmado"
-          title="Esta porción ya fue registrada"
-          description={`Se registraron ${portion.consumedWeight} g consumidos. La confirmación no puede repetirse.`}
-          icon={<UserCheck size={22} />}
-        />
         <Link
           className="button button--primary"
           to={`/app/preparaciones/${batchId}`}
@@ -136,13 +128,6 @@ export function ConfirmServedPortionConsumptionPage() {
       <BackButton
         fallback={batchId ? `/app/preparaciones/${batchId}` : '/app'}
       />
-      <PageHeader
-        eyebrow="Seguimiento de consumo"
-        title="Confirma lo consumido"
-        titleId="confirm-consumption-title"
-        description="Registra lo que quedó para calcular el consumo real sin estimaciones locales definitivas."
-        icon={<UserCheck size={22} />}
-      />
       <PreparationProgress current="portions" />
       <form
         className="portion-form"
@@ -151,135 +136,137 @@ export function ConfirmServedPortionConsumptionPage() {
           submit();
         }}
       >
-      <fieldset className="preparation-fieldset">
-        <legend>Porción de {profileName}</legend>
-        <p className="lead">Peso servido: {servedWeight} g</p>
-      <div className="form-field">
-        <label htmlFor="remainder-weight">Peso restante (g)</label>
-        <input
-          id="remainder-weight"
-          inputMode="decimal"
-          min="0"
-          onChange={(event) => setRemainderWeight(event.target.value)}
-          step="0.1"
-          type="number"
-          value={remainderWeight}
-        />
-        {invalidRemainder ? (
-          <p className="form-field__error">
-            El resto no puede superar la porción servida.
+        <fieldset className="preparation-fieldset">
+          <legend>Porción de {profileName}</legend>
+          <p className="lead">Peso servido: {servedWeight} g</p>
+          <div className="form-field">
+            <label htmlFor="remainder-weight">Peso restante (g)</label>
+            <input
+              id="remainder-weight"
+              inputMode="decimal"
+              min="0"
+              onChange={(event) => setRemainderWeight(event.target.value)}
+              step="0.1"
+              type="number"
+              value={remainderWeight}
+            />
+            {invalidRemainder ? (
+              <p className="form-field__error">
+                El resto no puede superar la porción servida.
+              </p>
+            ) : null}
+            <div className="recipe-inline-actions">
+              <button
+                className="button button--secondary"
+                onClick={() => setRemainderWeight('0')}
+                type="button"
+              >
+                No quedó nada
+              </button>
+              <button
+                className="button button--secondary"
+                onClick={() => setRemainderWeight(String(servedWeight))}
+                type="button"
+              >
+                Quedó todo
+              </button>
+            </div>
+          </div>
+          {remainder > 0 ? (
+            <div className="form-field">
+              <label htmlFor="remainder-disposition">
+                Qué harás con el resto
+              </label>
+              <select
+                id="remainder-disposition"
+                onChange={(event) =>
+                  setRemainderDisposition(
+                    event.target.value as RemainderDisposition,
+                  )
+                }
+                value={remainderDisposition}
+              >
+                {dispositions.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+        </fieldset>
+        <dl className="nutrition-value-list">
+          <div>
+            <dt>Consumo real</dt>
+            <dd>{consumedWeight.toFixed(1)} g</dd>
+          </div>
+          <div>
+            <dt>Calorías</dt>
+            <dd>{formatCalories(nutrients.calories)}</dd>
+          </div>
+          <div>
+            <dt>Proteína</dt>
+            <dd>{formatGrams(nutrients.proteinGrams)}</dd>
+          </div>
+          <div>
+            <dt>Carbohidratos</dt>
+            <dd>{formatGrams(nutrients.carbohydrateGrams)}</dd>
+          </div>
+          <div>
+            <dt>Grasas</dt>
+            <dd>{formatGrams(nutrients.fatGrams)}</dd>
+          </div>
+        </dl>
+        <fieldset className="preparation-fieldset">
+          <legend>Momento del consumo</legend>
+          <div className="form-field">
+            <label htmlFor="consumption-meal-type">Tipo de comida</label>
+            <select
+              id="consumption-meal-type"
+              onChange={(event) => setMealType(event.target.value)}
+              value={mealType}
+            >
+              <option value="BREAKFAST">Desayuno</option>
+              <option value="LUNCH">Almuerzo</option>
+              <option value="SNACK">Merienda</option>
+              <option value="DINNER">Cena</option>
+              <option value="EXTRA">Extra</option>
+            </select>
+          </div>
+          <div className="form-field">
+            <label htmlFor="consumption-date">Fecha y hora</label>
+            <input
+              id="consumption-date"
+              onChange={(event) => setConsumedAt(event.target.value)}
+              required
+              type="datetime-local"
+              value={consumedAt}
+            />
+          </div>
+        </fieldset>
+        <p className="supporting-text">
+          El backend confirmará los valores nutricionales definitivos.
+        </p>
+        {confirm.isError ? (
+          <p role="alert">
+            No se pudo confirmar el consumo. Inténtalo nuevamente.
           </p>
         ) : null}
-        <div className="recipe-inline-actions">
-          <button
+        <div className="recipe-page-actions">
+          <Link
             className="button button--secondary"
-            onClick={() => setRemainderWeight('0')}
-            type="button"
+            to={batchId ? `/app/preparaciones/${batchId}` : '/app'}
           >
-            No quedó nada
-          </button>
+            Cancelar
+          </Link>
           <button
-            className="button button--secondary"
-            onClick={() => setRemainderWeight(String(servedWeight))}
-            type="button"
+            className="button button--primary"
+            disabled={invalidRemainder || confirm.isPending}
+            type="submit"
           >
-            Quedó todo
+            {confirm.isPending ? 'Confirmando...' : 'Confirmar consumo'}
           </button>
         </div>
-      </div>
-      {remainder > 0 ? (
-        <div className="form-field">
-          <label htmlFor="remainder-disposition">Qué harás con el resto</label>
-          <select
-            id="remainder-disposition"
-            onChange={(event) =>
-              setRemainderDisposition(
-                event.target.value as RemainderDisposition,
-              )
-            }
-            value={remainderDisposition}
-          >
-            {dispositions.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      ) : null}
-      </fieldset>
-      <dl className="nutrition-value-list">
-        <div>
-          <dt>Consumo real</dt>
-          <dd>{consumedWeight.toFixed(1)} g</dd>
-        </div>
-        <div>
-          <dt>Calorías</dt>
-          <dd>{formatCalories(nutrients.calories)}</dd>
-        </div>
-        <div>
-          <dt>Proteína</dt>
-          <dd>{formatGrams(nutrients.proteinGrams)}</dd>
-        </div>
-        <div>
-          <dt>Carbohidratos</dt>
-          <dd>{formatGrams(nutrients.carbohydrateGrams)}</dd>
-        </div>
-        <div>
-          <dt>Grasas</dt>
-          <dd>{formatGrams(nutrients.fatGrams)}</dd>
-        </div>
-      </dl>
-      <fieldset className="preparation-fieldset">
-        <legend>Momento del consumo</legend>
-      <div className="form-field">
-        <label htmlFor="consumption-meal-type">Tipo de comida</label>
-        <select
-          id="consumption-meal-type"
-          onChange={(event) => setMealType(event.target.value)}
-          value={mealType}
-        >
-          <option value="BREAKFAST">Desayuno</option>
-          <option value="LUNCH">Almuerzo</option>
-          <option value="SNACK">Merienda</option>
-          <option value="DINNER">Cena</option>
-          <option value="EXTRA">Extra</option>
-        </select>
-      </div>
-      <div className="form-field">
-        <label htmlFor="consumption-date">Fecha y hora</label>
-        <input
-          id="consumption-date"
-          onChange={(event) => setConsumedAt(event.target.value)}
-          required
-          type="datetime-local"
-          value={consumedAt}
-        />
-      </div>
-      </fieldset>
-      <p className="supporting-text">
-        El backend confirmará los valores nutricionales definitivos.
-      </p>
-      {confirm.isError ? (
-        <p role="alert">
-          No se pudo confirmar el consumo. Inténtalo nuevamente.
-        </p>
-      ) : null}
-      <div className="recipe-page-actions">
-        <Link
-          className="button button--secondary"
-          to={batchId ? `/app/preparaciones/${batchId}` : '/app'}
-        >
-          Cancelar
-        </Link>
-        <button
-          className="button button--primary"
-          disabled={invalidRemainder || confirm.isPending}
-          type="submit"
-        >
-          {confirm.isPending ? 'Confirmando...' : 'Confirmar consumo'}
-        </button>
-      </div>
       </form>
     </section>
   );

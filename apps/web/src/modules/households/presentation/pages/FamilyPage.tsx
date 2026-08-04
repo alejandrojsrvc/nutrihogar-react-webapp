@@ -1,4 +1,4 @@
-import { ChevronRight, UsersRound } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Link, Navigate } from 'react-router';
 
 import {
@@ -6,7 +6,6 @@ import {
   LoadingState,
 } from '../../../../shared/presentation/components/AsyncState';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../hooks/useAdultProfiles';
 import { useHouseholds } from '../hooks/useHouseholds';
 import '../households.css';
@@ -73,18 +72,6 @@ export function FamilyPage() {
       className="page-section family-page"
       aria-labelledby="family-title"
     >
-      <PageHeader
-        action={
-          <Link className="button button--primary" to="/app/invitaciones">
-            Invitar integrante
-          </Link>
-        }
-        icon={<UsersRound size={24} />}
-        eyebrow={households.activeHousehold.name}
-        title="Familia"
-        titleId="family-title"
-        description="Consulta los integrantes del hogar y abre sus datos cuando lo necesites."
-      />
       {profiles.profiles.length === 0 ? (
         <EmptyState
           description="Cuando un adulto complete su perfil, aparecerá en esta lista."

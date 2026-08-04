@@ -45,8 +45,11 @@ export function PlannedMealFormPage() {
   const dates = weekDates(plan.data.weekStart);
   if (!dates.length)
     return (
-      <section className="page-section" role="alert">
-        <h1>No se puede abrir esta comida</h1>
+      <section
+        className="page-section"
+        aria-labelledby="planned-meal-title"
+        role="alert"
+      >
         <p>
           El plan recibido no tiene una semana válida. Vuelve al plan semanal e
           inténtalo nuevamente.
