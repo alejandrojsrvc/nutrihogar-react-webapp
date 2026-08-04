@@ -40,14 +40,14 @@ describe('LoginPage', () => {
     );
 
     await user.type(
-      await screen.findByLabelText('Correo electronico'),
+      await screen.findByLabelText('Correo electrónico'),
       'adult@example.com',
     );
     await user.type(
-      await screen.findByLabelText('Contrasena'),
+      await screen.findByLabelText('Contraseña'),
       'secret-password',
     );
-    await user.click(screen.getByRole('button', { name: 'Iniciar sesion' }));
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
 
     expect(loginWithEmail).toHaveBeenCalledWith({
       email: 'adult@example.com',

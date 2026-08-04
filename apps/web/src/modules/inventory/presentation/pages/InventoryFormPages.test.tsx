@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -111,12 +111,14 @@ describe('Inventory form pages', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    expect(
-      await screen.findByText(/no estará confirmado por el servidor/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Guardar ajuste pendiente' }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/no estará confirmado por el servidor/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Guardar ajuste pendiente' }),
+      ).toBeInTheDocument();
+    });
   });
 });
 

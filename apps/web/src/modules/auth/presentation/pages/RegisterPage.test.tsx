@@ -25,15 +25,15 @@ describe('RegisterPage', () => {
       'Alejandro Sojo',
     );
     await user.type(
-      await screen.findByLabelText('Correo electronico'),
+      await screen.findByLabelText('Correo electrónico'),
       'adult@example.com',
     );
     await user.type(
-      await screen.findByLabelText('Contrasena'),
+      await screen.findByLabelText('Contraseña'),
       'secret-password',
     );
     await user.type(
-      await screen.findByLabelText('Repite la contrasena'),
+      await screen.findByLabelText('Repite la contraseña'),
       'secret-password',
     );
     await user.click(screen.getByRole('button', { name: 'Crear cuenta' }));
@@ -58,15 +58,15 @@ describe('RegisterPage', () => {
       'Alejandro Sojo',
     );
     await user.type(
-      await screen.findByLabelText('Correo electronico'),
+      await screen.findByLabelText('Correo electrónico'),
       'adult@example.com',
     );
     await user.type(
-      await screen.findByLabelText('Contrasena'),
+      await screen.findByLabelText('Contraseña'),
       'secret-password',
     );
     await user.type(
-      await screen.findByLabelText('Repite la contrasena'),
+      await screen.findByLabelText('Repite la contraseña'),
       'different-password',
     );
     await user.click(screen.getByRole('button', { name: 'Crear cuenta' }));
@@ -96,15 +96,15 @@ describe('RegisterPage', () => {
       'Alejandro Sojo',
     );
     await user.type(
-      await screen.findByLabelText('Correo electronico'),
+      await screen.findByLabelText('Correo electrónico'),
       'adult@example.com',
     );
     await user.type(
-      await screen.findByLabelText('Contrasena'),
+      await screen.findByLabelText('Contraseña'),
       'secret-password',
     );
     await user.type(
-      await screen.findByLabelText('Repite la contrasena'),
+      await screen.findByLabelText('Repite la contraseña'),
       'secret-password',
     );
     await user.click(screen.getByRole('button', { name: 'Crear cuenta' }));

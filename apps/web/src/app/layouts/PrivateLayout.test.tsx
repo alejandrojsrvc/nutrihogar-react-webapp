@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -19,12 +19,18 @@ describe('PrivateLayout', () => {
     expect(
       screen.getAllByRole('link', { name: 'Inicio de NutriHogar' }),
     ).toHaveLength(2);
-    const sidebar = await screen.findByRole('complementary', {
+    await waitFor(() =>
+      expect(
+        within(
+          screen.getByRole('complementary', {
+            name: 'Navegación principal',
+          }),
+        ).getByRole('link', { name: 'Inicio de NutriHogar' }),
+      ).toBeInTheDocument(),
+    );
+    const sidebar = screen.getByRole('complementary', {
       name: 'Navegación principal',
     });
-    expect(
-      within(sidebar).getByRole('link', { name: 'Inicio de NutriHogar' }),
-    ).toBeInTheDocument();
     expect(within(sidebar).getByRole('link', { name: 'Hoy' })).toHaveAttribute(
       'href',
       '/app',

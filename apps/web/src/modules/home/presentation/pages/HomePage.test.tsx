@@ -97,9 +97,11 @@ describe('HomePage', () => {
       await screen.findByLabelText('Menú de Alejandro'),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'En casa' }),
+      await screen.findByRole('heading', { name: 'En casa' }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/1\.420 kcal consumidas/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/1\.420 kcal consumidas/),
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Hoy' })).toBeInTheDocument();
   });
 
@@ -206,10 +208,12 @@ describe('HomePage', () => {
         });
       return jsonResponse({
         consumed: { calories: 0 },
+        date: '2026-08-01',
+        goal: null,
         meals: [],
-        profile: { name: 'Alejandro' },
-        status: 'ok',
-        timestamp: '2026-08-01T12:00:00.000Z',
+        profileId: 'profile-1',
+        profileName: 'Alejandro',
+        remaining: null,
       });
     });
 
