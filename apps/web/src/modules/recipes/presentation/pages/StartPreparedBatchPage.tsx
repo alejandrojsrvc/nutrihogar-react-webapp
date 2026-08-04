@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import { CookingPot, Trash2 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import { useFoodDetail } from '../../../food-catalog/presentation/hooks/useFoodCatalog';
+import { PreparationProgress } from '../components/PreparationProgress';
+import { humanizeUnit } from '../recipePresentation';
 import { useRecipe } from '../hooks/useRecipes';
 import {
   useConfirmPreparedBatchIngredients,
@@ -10,6 +14,7 @@ import {
   useUpdatePreparedBatchIngredients,
 } from '../hooks/usePreparedBatches';
 import type { PreparedBatchIngredientInput } from '../../application/ports/PreparedBatchGateway';
+import '../recipes.css';
 
 export function StartPreparedBatchPage() {
   const params = new URLSearchParams(useLocation().search);
@@ -28,6 +33,15 @@ export function StartPreparedBatchPage() {
     new Date().toISOString().slice(0, 16),
   );
 
+  if (!recipeId)
+    return (
+      <section className="page-section" role="alert">
+        <p>Falta indicar qué receta quieres cocinar.</p>
+        <Link className="button button--secondary" to="/app/recetas">
+          Volver a recetas
+        </Link>
+      </section>
+    );
   if (recipe.isPending || (batchId && batch.isPending))
     return (
       <p className="page-section" role="status">
@@ -64,8 +78,52 @@ export function StartPreparedBatchPage() {
       unit: item.unit,
     }));
   const currentBatchId = batch.data?.id ?? '';
+  const invalidIngredients =
+    !ingredients.length ||
+    ingredients.some(
+      (ingredient) =>
+        !Number.isFinite(ingredient.quantity) || ingredient.quantity <= 0,
+    );
+
+  if (batch.data && batch.data.status !== 'DRAFT') {
+    const finalized = batch.data.status === 'FINALIZED';
+    const cancelled = batch.data.status === 'CANCELLED';
+    return (
+      <section className="page-section preparation-page">
+        <BackButton fallback={`/app/preparaciones/${batch.data.id}`} />
+        <PageHeader
+          eyebrow="Preparación familiar"
+          title={cancelled ? 'Preparación cancelada' : 'Ingredientes ya confirmados'}
+          description={
+            cancelled
+              ? 'Esta preparación ya no puede modificarse.'
+              : finalized
+                ? 'La preparación ya tiene su cálculo nutricional definitivo.'
+                : 'Las cantidades ya no pueden editarse. Continúa con el peso cocido.'
+          }
+          icon={<CookingPot size={22} />}
+        />
+        {!cancelled ? (
+          <PreparationProgress current={finalized ? 'portions' : 'weight'} />
+        ) : null}
+        {!cancelled ? (
+          <Link
+            className="button button--primary"
+            to={
+              finalized
+                ? `/app/preparaciones/${batch.data.id}`
+                : `/app/preparaciones/${batch.data.id}/finalizar`
+            }
+          >
+            {finalized ? 'Ver preparación' : 'Registrar peso cocido'}
+          </Link>
+        ) : null}
+      </section>
+    );
+  }
 
   function save(next: 'draft' | 'confirm') {
+    if (invalidIngredients) return;
     const continueWith = (id: string) =>
       update.mutate(
         { batchId: id, ingredients },
@@ -100,101 +158,149 @@ export function StartPreparedBatchPage() {
         title={`Cocinar ${recipe.data.name}`}
         titleId="preparation-title"
         description="Ajusta las cantidades reales sin modificar la receta original."
+        icon={<CookingPot size={22} />}
       />
-      <div className="form-field">
-        <label htmlFor="prepared-at">Fecha y hora</label>
-        <input
-          id="prepared-at"
-          onChange={(event) => setPreparedAt(event.target.value)}
-          type="datetime-local"
-          value={preparedAt}
-        />
-      </div>
-      <section className="recipe-form__section">
-        <h2>Ingredientes utilizados</h2>
-        {ingredients.map((item, index) => (
-          <div
-            className="recipe-ingredient-row"
-            key={item.id ?? `${item.foodId}-${index}`}
-          >
-            <strong>{item.foodId}</strong>
+      <PreparationProgress current="ingredients" />
+      <form className="preparation-form" onSubmit={(event) => event.preventDefault()}>
+        {!currentBatchId ? (
+          <fieldset className="preparation-fieldset">
+            <legend>Cuándo cocinaste</legend>
             <div className="form-field">
-              <label htmlFor={`batch-quantity-${index}`}>
-                Cantidad ({item.unit})
-              </label>
+              <label htmlFor="prepared-at">Fecha y hora</label>
               <input
-                id={`batch-quantity-${index}`}
-                min="0.000001"
-                step="any"
-                type="number"
-                value={item.quantity}
-                onChange={(event) =>
-                  setDraftIngredients((current) =>
-                    (current ?? ingredients).map((ingredient, currentIndex) =>
-                      currentIndex === index
-                        ? {
-                            ...ingredient,
-                            quantity: Number(event.target.value),
-                          }
-                        : ingredient,
-                    ),
-                  )
-                }
+                id="prepared-at"
+                onChange={(event) => setPreparedAt(event.target.value)}
+                required
+                type="datetime-local"
+                value={preparedAt}
               />
             </div>
-            <button
-              className="button button--danger"
-              onClick={() =>
-                setDraftIngredients((current) =>
-                  (current ?? ingredients)
-                    .filter((_, currentIndex) => currentIndex !== index)
-                    .map((ingredient, position) => ({
-                      ...ingredient,
-                      position: position + 1,
-                    })),
-                )
-              }
-              type="button"
-            >
-              Eliminar
-            </button>
+          </fieldset>
+        ) : null}
+        <fieldset className="preparation-fieldset">
+          <legend>Ingredientes utilizados</legend>
+          <div className="preparation-row-list">
+            {ingredients.map((item, index) => (
+              <div
+                className="preparation-row"
+                key={item.id ?? `${item.foodId}-${index}`}
+              >
+                <div className="preparation-row__identity">
+                  <IngredientName foodId={item.foodId} />
+                  <small>{humanizeUnit(item.unit)}</small>
+                </div>
+                <div className="form-field">
+                  <label htmlFor={`batch-quantity-${index}`}>
+                    Cantidad ({humanizeUnit(item.unit)})
+                  </label>
+                  <input
+                    aria-describedby={
+                      !Number.isFinite(item.quantity) || item.quantity <= 0
+                        ? `batch-quantity-error-${index}`
+                        : undefined
+                    }
+                    aria-invalid={
+                      !Number.isFinite(item.quantity) || item.quantity <= 0
+                    }
+                    id={`batch-quantity-${index}`}
+                    inputMode="decimal"
+                    min="0.000001"
+                    step="any"
+                    type="number"
+                    value={item.quantity}
+                    onChange={(event) =>
+                      setDraftIngredients((current) =>
+                        (current ?? ingredients).map((ingredient, currentIndex) =>
+                          currentIndex === index
+                            ? {
+                                ...ingredient,
+                                quantity: Number(event.target.value),
+                              }
+                            : ingredient,
+                        ),
+                      )
+                    }
+                  />
+                  {!Number.isFinite(item.quantity) || item.quantity <= 0 ? (
+                    <p
+                      className="form-field__error"
+                      id={`batch-quantity-error-${index}`}
+                    >
+                      Indica una cantidad mayor que cero.
+                    </p>
+                  ) : null}
+                </div>
+                <div className="recipe-row-actions">
+                  <button
+                    className="button button--text"
+                    onClick={() =>
+                      setDraftIngredients((current) =>
+                        (current ?? ingredients)
+                          .filter((_, currentIndex) => currentIndex !== index)
+                          .map((ingredient, position) => ({
+                            ...ingredient,
+                            position: position + 1,
+                          })),
+                      )
+                    }
+                    type="button"
+                  >
+                    <Trash2 size={16} aria-hidden="true" /> Eliminar
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </section>
-      {update.isError || start.isError || confirm.isError ? (
-        <p role="alert">
-          No se pudo guardar la preparación. Revisa las cantidades.
-        </p>
-      ) : null}
-      <div className="recipe-form__actions">
-        <Link
-          className="button button--secondary"
-          to={`/app/recetas/${recipeId}`}
-        >
-          Cancelar
-        </Link>
-        <button
-          className="button button--secondary"
-          disabled={!ingredients.length || start.isPending || update.isPending}
-          onClick={() => save('draft')}
-          type="button"
-        >
-          Guardar borrador
-        </button>
-        <button
-          className="button button--primary"
-          disabled={
-            !ingredients.length ||
-            start.isPending ||
-            update.isPending ||
-            confirm.isPending
-          }
-          onClick={() => save('confirm')}
-          type="button"
-        >
-          Confirmar ingredientes
-        </button>
-      </div>
+          {!ingredients.length ? (
+            <p role="alert">La preparación necesita al menos un ingrediente.</p>
+          ) : null}
+        </fieldset>
+        {update.isError || start.isError || confirm.isError ? (
+          <p role="alert">
+            No se pudo guardar la preparación. Tus cantidades siguen aquí para
+            que puedas revisarlas.
+          </p>
+        ) : null}
+        <div className="recipe-page-actions">
+          <Link
+            className="button button--secondary"
+            to={`/app/recetas/${recipeId}`}
+          >
+            Cancelar
+          </Link>
+          <button
+            className="button button--secondary"
+            disabled={invalidIngredients || start.isPending || update.isPending}
+            onClick={() => save('draft')}
+            type="button"
+          >
+            Guardar borrador
+          </button>
+          <button
+            className="button button--primary"
+            disabled={
+              invalidIngredients ||
+              start.isPending ||
+              update.isPending ||
+              confirm.isPending
+            }
+            onClick={() => save('confirm')}
+            type="button"
+          >
+            Confirmar ingredientes
+          </button>
+        </div>
+      </form>
     </section>
+  );
+}
+
+function IngredientName({ foodId }: { foodId: string }) {
+  const food = useFoodDetail(foodId);
+  return (
+    <strong>
+      {food.data?.name ??
+        (food.isPending ? 'Cargando alimento...' : 'Alimento no disponible')}
+    </strong>
   );
 }

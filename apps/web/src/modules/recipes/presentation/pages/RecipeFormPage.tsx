@@ -13,6 +13,7 @@ import {
   RecipeForm,
 } from '../components/RecipeForm';
 import '../recipes.css';
+import { ChefHat } from 'lucide-react';
 
 export function RecipeFormPage() {
   const { recipeId } = useParams();
@@ -56,7 +57,8 @@ export function RecipeFormPage() {
         fallback={isEditing ? `/app/recetas/${recipeId}` : '/app/recetas'}
       />
       <PageHeader
-        eyebrow="Recetas familiares"
+        description="Comparte tus recetas caseras y nutre a tu familia."
+        icon={<ChefHat size={25} />}
         title={isEditing ? 'Editar receta' : 'Crear receta'}
         titleId="recipe-form-title"
       />

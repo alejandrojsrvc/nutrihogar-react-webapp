@@ -22,6 +22,7 @@ vi.mock(
 
 describe('Purchase pages', () => {
   it('lists purchases and links to the detail', async () => {
+    setOnline();
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
       const pathname = new URL(request.url).pathname;
@@ -55,6 +56,7 @@ describe('Purchase pages', () => {
 
   it('shows the empty product validation in a new purchase', async () => {
     const user = userEvent.setup();
+    setOnline();
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
       const request = new Request(input, init);
       if (new URL(request.url).pathname === '/api/households')
@@ -83,6 +85,55 @@ describe('Purchase pages', () => {
       await screen.findByText('Agrega al menos un producto a la compra.'),
     ).toBeInTheDocument();
   });
+
+  it('previews inventory effects before confirming a purchase', async () => {
+    const user = userEvent.setup();
+    setOnline();
+    let confirmed = false;
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+      const pathname = new URL(request.url).pathname;
+      if (pathname === '/api/households')
+        return jsonResponse([
+          {
+            currency: 'ARS',
+            id: 'household-1',
+            name: 'Hogar',
+            timezone: 'UTC',
+          },
+        ]);
+      if (pathname === '/api/purchases/purchase-1')
+        return jsonResponse({
+          ...purchase(),
+          status: confirmed ? 'CONFIRMED' : 'DRAFT',
+        });
+      if (pathname === '/api/purchases/purchase-1/confirm') {
+        confirmed = true;
+        return jsonResponse({ ...purchase(), status: 'CONFIRMED' });
+      }
+      throw new Error(`Unexpected request: ${request.url}`);
+    });
+
+    renderRoute(
+      '/app/compras/purchase-1',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Confirmar compra' }),
+    );
+    expect(
+      screen.getByText(/actualizará sus saldos de inventario/),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Confirmar y actualizar inventario',
+      }),
+    );
+    expect(
+      await screen.findByText(/Compra confirmada por el servidor/),
+    ).toBeInTheDocument();
+  });
 });
 
 function purchase() {
@@ -104,5 +155,12 @@ function jsonResponse(body: unknown) {
   return new Response(JSON.stringify(body), {
     headers: { 'Content-Type': 'application/json' },
     status: 200,
+  });
+}
+
+function setOnline() {
+  Object.defineProperty(window.navigator, 'onLine', {
+    configurable: true,
+    get: () => true,
   });
 }

@@ -1,7 +1,9 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
+import { Apple, Pencil, Trash2 } from 'lucide-react';
 
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useDeleteCustomFood, useFoodDetail } from '../hooks/useFoodCatalog';
 import '../food-catalog.css';
 import {
@@ -25,6 +27,7 @@ export function FoodDetailPage() {
       <FoodDetailStatus
         isError
         message="No se pudo cargar el detalle del alimento."
+        onRetry={foodId ? () => void foodDetail.refetch() : undefined}
       />
     );
   }
@@ -41,7 +44,7 @@ export function FoodDetailPage() {
   const savedFeedback = getDetailFeedback(location.state);
 
   async function handleDelete() {
-    if (!window.confirm(`¿Eliminar ${food.name} de tu catalogo?`)) {
+    if (!window.confirm(`¿Eliminar ${food.name} de tu catálogo?`)) {
       return;
     }
 
@@ -62,40 +65,29 @@ export function FoodDetailPage() {
       aria-labelledby="food-detail-title"
     >
       <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
-      <p className="eyebrow">Detalle del alimento</p>
-      <h1 id="food-detail-title">{food.name}</h1>
-      {food.brand ? (
-        <p className="lead food-detail-brand">{food.brand}</p>
-      ) : null}
+      <PageHeader
+        action={
+          canManage ? (
+            <Link
+              aria-label="Editar alimento"
+              className="button button--secondary"
+              to={`/app/alimentos/${food.id}/editar`}
+            >
+              <Pencil aria-hidden="true" size={18} />
+              Editar
+            </Link>
+          ) : undefined
+        }
+        description={food.brand ?? `Valores por ${formatReference(food)}`}
+        icon={<Apple size={25} />}
+        title={food.name}
+        titleId="food-detail-title"
+      />
       {savedFeedback ? (
         <p className="food-feedback" role="status">
           {savedFeedback}
         </p>
       ) : null}
-      {canManage ? (
-        <div className="food-detail-actions">
-          <Link
-            className="button button--secondary"
-            to={`/app/alimentos/${food.id}/editar`}
-          >
-            Editar alimento
-          </Link>
-          <button
-            className="button button--danger"
-            disabled={deleteFood.isPending}
-            onClick={() => void handleDelete()}
-            type="button"
-          >
-            {deleteFood.isPending ? 'Eliminando...' : 'Eliminar alimento'}
-          </button>
-        </div>
-      ) : null}
-      {deleteFood.error ? (
-        <p className="auth-error" role="alert">
-          No se pudo eliminar el alimento. Intentalo nuevamente.
-        </p>
-      ) : null}
-
       <div className="food-detail-meta">
         <span>{food.category.name}</span>
         <span>{preparationStateLabels[food.preparationState]}</span>
@@ -103,18 +95,18 @@ export function FoodDetailPage() {
       </div>
 
       <section
-        className="food-detail-section"
+        className="food-detail-section food-detail-section--summary"
         aria-labelledby="food-main-nutrients-title"
       >
         <h2 id="food-main-nutrients-title">Nutrientes principales</h2>
         <dl className="food-detail-highlights">
           <FoodNutrientHighlight
-            label="Energia"
+            label="Energía"
             unit="kcal"
             value={food.energyKcal}
           />
           <FoodNutrientHighlight
-            label="Proteina"
+            label="Proteína"
             unit="g"
             value={food.proteinGrams}
           />
@@ -227,7 +219,7 @@ export function FoodDetailPage() {
           className="food-detail-section"
           aria-labelledby="food-description-title"
         >
-          <h2 id="food-description-title">Descripcion</h2>
+          <h2 id="food-description-title">Descripción</h2>
           <p>{food.description}</p>
         </section>
       ) : null}
@@ -237,8 +229,37 @@ export function FoodDetailPage() {
           className="food-detail-section"
           aria-labelledby="food-aliases-title"
         >
-          <h2 id="food-aliases-title">Tambien conocido como</h2>
+          <h2 id="food-aliases-title">También conocido como</h2>
           <p>{food.aliases.join(', ')}</p>
+        </section>
+      ) : null}
+
+      {canManage ? (
+        <section
+          className="food-danger-zone"
+          aria-labelledby="food-delete-title"
+        >
+          <div>
+            <h2 id="food-delete-title">Eliminar del catálogo</h2>
+            <p>
+              Dejará de estar disponible para nuevos registros. Las comidas ya
+              registradas conservarán sus valores.
+            </p>
+          </div>
+          <button
+            className="button button--danger"
+            disabled={deleteFood.isPending}
+            onClick={() => void handleDelete()}
+            type="button"
+          >
+            <Trash2 aria-hidden="true" size={18} />
+            {deleteFood.isPending ? 'Eliminando...' : 'Eliminar alimento'}
+          </button>
+          {deleteFood.error ? (
+            <p className="food-inline-error" role="alert">
+              No se pudo eliminar el alimento. Inténtalo nuevamente.
+            </p>
+          ) : null}
         </section>
       ) : null}
     </section>
@@ -251,7 +272,7 @@ function getDetailFeedback(state: unknown): string | null {
   }
 
   return (state as { foodSaved?: boolean }).foodSaved
-    ? 'El alimento se guardo correctamente.'
+    ? 'El alimento se guardó correctamente.'
     : null;
 }
 
@@ -277,24 +298,40 @@ function FoodNutrientHighlight({
 function FoodDetailStatus({
   isError = false,
   message,
+  onRetry,
 }: {
   isError?: boolean;
   message: string;
+  onRetry?: () => void;
 }) {
   return (
     <section
       className="page-section"
       aria-labelledby="food-detail-status-title"
     >
-      <p className="eyebrow">Detalle del alimento</p>
-      <h1 id="food-detail-status-title">Alimento</h1>
+      <PageHeader
+        icon={<Apple size={25} />}
+        title="Detalle del alimento"
+        titleId="food-detail-status-title"
+      />
       <p className="lead" role={isError ? 'alert' : 'status'}>
         {message}
       </p>
       {isError ? (
-        <Link className="button button--secondary" to="/app/alimentos">
-          Volver al catalogo
-        </Link>
+        <div className="food-status-actions">
+          {onRetry ? (
+            <button
+              className="button button--primary"
+              onClick={onRetry}
+              type="button"
+            >
+              Reintentar
+            </button>
+          ) : null}
+          <Link className="button button--secondary" to="/app/alimentos">
+            Volver al catálogo
+          </Link>
+        </div>
       ) : null}
     </section>
   );

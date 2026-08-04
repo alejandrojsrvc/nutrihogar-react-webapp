@@ -16,21 +16,69 @@ describe('PrivateLayout', () => {
   it('renders the private application layout', async () => {
     renderPrivateLayout();
 
+    expect(
+      screen.getAllByRole('link', { name: 'Inicio de NutriHogar' }),
+    ).toHaveLength(2);
     const sidebar = await screen.findByRole('complementary', {
       name: 'Navegación principal',
     });
     expect(
+      within(sidebar).getByRole('link', { name: 'Inicio de NutriHogar' }),
+    ).toBeInTheDocument();
+    expect(
       within(sidebar).getByRole('link', { name: 'Hoy' }),
     ).toHaveAttribute('href', '/app');
     expect(
-      within(sidebar).getByRole('link', { name: 'Planificar' }),
+      within(sidebar).getByRole('link', { name: 'Plan' }),
     ).toHaveAttribute('href', '/app/plan-semanal');
+    expect(
+      within(sidebar).getByRole('link', { name: 'Registrar' }),
+    ).toHaveAttribute('href', '/app/comidas/nueva');
     expect(
       within(sidebar).getByRole('link', { name: 'Hogar' }),
     ).toHaveAttribute('href', '/app/inventario');
     expect(
       within(sidebar).getByRole('link', { name: 'Progreso' }),
     ).toHaveAttribute('href', '/app/resumen');
+  });
+
+  it('does not keep Hoy active on a child route', async () => {
+    const router = createMemoryRouter(
+      [
+        {
+          element: <PrivateLayout />,
+          children: [
+            { path: '/app', element: <p>Inicio</p> },
+            { path: '/app/plan-semanal', element: <p>Plan semanal</p> },
+          ],
+        },
+      ],
+      { initialEntries: ['/app/plan-semanal'] },
+    );
+
+    render(
+      <AppProviders
+        authGateway={createTestAuthGateway({
+          accessToken: 'test-token',
+          userId: 'user-1',
+        })}
+        syncCurrentUser={createTestSyncCurrentUserUseCase()}
+      >
+        <RouterProvider router={router} />
+      </AppProviders>,
+    );
+
+    const sidebar = await screen.findByRole('complementary', {
+      name: 'Navegación principal',
+    });
+    expect(within(sidebar).getByRole('link', { name: 'Plan' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(sidebar).getByRole('link', { name: 'Hoy' })).not.toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
 
   it('opens the small profile menu instead of a second module navigation', async () => {
@@ -50,7 +98,7 @@ describe('PrivateLayout', () => {
     ).toBeDisabled();
   });
 
-  it('exposes the four primary destinations on mobile', () => {
+  it('exposes the five primary destinations on mobile', () => {
     renderPrivateLayout();
 
     const bottomBar = screen.getByRole('navigation', {
@@ -60,8 +108,11 @@ describe('PrivateLayout', () => {
       within(bottomBar).getByRole('link', { name: 'Hoy' }),
     ).toHaveAttribute('href', '/app');
     expect(
-      within(bottomBar).getByRole('link', { name: 'Planificar' }),
+      within(bottomBar).getByRole('link', { name: 'Plan' }),
     ).toHaveAttribute('href', '/app/plan-semanal');
+    expect(
+      within(bottomBar).getByRole('link', { name: 'Registrar' }),
+    ).toHaveAttribute('href', '/app/comidas/nueva');
     expect(
       within(bottomBar).getByRole('link', { name: 'Hogar' }),
     ).toHaveAttribute('href', '/app/inventario');
@@ -94,9 +145,8 @@ describe('PrivateLayout', () => {
       createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
     );
 
-    await user.click(
-      await screen.findByRole('button', { name: 'Cerrar sesión' }),
-    );
+    await user.click(await screen.findByLabelText('Menú de Mi perfil'));
+    await user.click(await screen.findByRole('button', { name: 'Cerrar sesión' }));
 
     expect(
       await screen.findByRole('heading', { name: 'Bienvenido a NutriHogar' }),

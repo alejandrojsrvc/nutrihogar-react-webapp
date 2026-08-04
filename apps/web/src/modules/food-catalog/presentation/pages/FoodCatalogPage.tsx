@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router';
+import { Apple, ChevronRight, Plus, Search } from 'lucide-react';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import type {
@@ -36,6 +37,7 @@ export function FoodCatalogPage() {
   const foods = useFoodSearch(criteria);
   const items = foods.data?.items ?? [];
   const pagination = foods.data?.pagination;
+  const hasFilters = Boolean(searchText || categoryId || preparationState);
   const totalPages = pagination
     ? Math.max(1, Math.ceil(pagination.total / pagination.limit))
     : 1;
@@ -60,62 +62,72 @@ export function FoodCatalogPage() {
     setPage(1);
   }
 
+  function clearFilters() {
+    setSearchText('');
+    setCategoryId('');
+    setPreparationState('');
+    setPage(1);
+  }
+
   return (
     <section
       className="page-section food-catalog-page"
       aria-labelledby="food-catalog-title"
     >
       <PageHeader
-        eyebrow="Catalogo de alimentos"
-        title="Encuentra un alimento"
+        action={
+          <Link className="button button--primary" to="/app/alimentos/nuevo">
+            <Plus aria-hidden="true" size={19} />
+            Crear alimento
+          </Link>
+        }
+        icon={<Apple size={25} />}
+        title="Alimentos"
         titleId="food-catalog-title"
-        description="Busca ingredientes y consulta sus nutrientes para organizar mejor tus comidas."
+        description="Busca ingredientes y consulta sus valores nutricionales."
       />
       {getCatalogFeedback(location.state) ? (
         <p className="food-feedback" role="status">
           {getCatalogFeedback(location.state)}
         </p>
       ) : null}
-      <div className="food-catalog-actions">
-        <Link className="button button--primary" to="/app/alimentos/nuevo">
-          Registrar alimento personalizado
-        </Link>
-      </div>
-
       <form className="food-search-form" onSubmit={handleSearchSubmit}>
-        <div className="form-field food-search-form__query">
-          <label htmlFor="food-search">Buscar alimentos</label>
+        <div className="food-search-control food-search-form__query">
+          <Search aria-hidden="true" size={20} />
+          <label className="visually-hidden" htmlFor="food-search">
+            Buscar alimentos
+          </label>
           <input
             autoComplete="off"
             id="food-search"
             onChange={(event) => handleSearchChange(event.target.value)}
-            placeholder="Ej. pollo"
+            placeholder="Buscar por nombre o marca"
             type="search"
             value={searchText}
           />
         </div>
-        <div className="form-field">
-          <label htmlFor="food-category">Categoria</label>
+        <div className="food-filter-control">
+          <label className="visually-hidden" htmlFor="food-category">
+            Categoría
+          </label>
           <select
+            disabled={categories.isPending || categories.isError}
             id="food-category"
             onChange={(event) => handleCategoryChange(event.target.value)}
             value={categoryId}
           >
-            <option value="">Todas las categorias</option>
+            <option value="">Todas las categorías</option>
             {categories.data?.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
           </select>
-          {categories.isError ? (
-            <p className="form-field__error" role="alert">
-              No se pudieron cargar las categorias.
-            </p>
-          ) : null}
         </div>
-        <div className="form-field">
-          <label htmlFor="food-preparation">Preparacion</label>
+        <div className="food-filter-control">
+          <label className="visually-hidden" htmlFor="food-preparation">
+            Preparación
+          </label>
           <select
             id="food-preparation"
             onChange={(event) => handlePreparationChange(event.target.value)}
@@ -131,30 +143,71 @@ export function FoodCatalogPage() {
             )}
           </select>
         </div>
-        <button className="button button--primary" type="submit">
+        <button
+          className="button button--secondary food-search-submit"
+          type="submit"
+        >
           Buscar
         </button>
       </form>
 
+      {categories.isError ? (
+        <p className="food-inline-error" role="alert">
+          Las categorías no están disponibles. Aún puedes buscar por nombre.
+        </p>
+      ) : null}
+
       <div aria-live="polite" className="food-search-status">
-        {foods.isFetching ? <p role="status">Buscando alimentos...</p> : null}
-        {!foods.isPending && foods.isError ? (
-          <p role="alert">No se pudieron cargar los alimentos.</p>
+        {foods.isPending ? <p role="status">Cargando alimentos...</p> : null}
+        {!foods.isPending && foods.isFetching ? (
+          <p role="status">Actualizando resultados...</p>
         ) : null}
         {!foods.isPending && !foods.isError && pagination ? (
-          <p>{pagination.total} resultados</p>
+          <p>
+            {pagination.total}{' '}
+            {pagination.total === 1 ? 'alimento' : 'alimentos'}
+          </p>
         ) : null}
       </div>
+
+      {!foods.isPending && foods.isError ? (
+        <div className="food-error-state" role="alert">
+          <div>
+            <h2>No pudimos cargar los alimentos</h2>
+            <p>Tu búsqueda y filtros siguen disponibles.</p>
+          </div>
+          <button
+            className="button button--secondary"
+            onClick={() => void foods.refetch()}
+            type="button"
+          >
+            Reintentar
+          </button>
+        </div>
+      ) : null}
 
       {!foods.isPending && !foods.isError && items.length === 0 ? (
         <div className="food-empty-state" role="status">
           <h2>No encontramos alimentos</h2>
-          <p>Prueba con otro nombre o cambia los filtros de busqueda.</p>
+          <p>
+            {hasFilters
+              ? 'Prueba con otro nombre o limpia los filtros.'
+              : 'Todavía no hay alimentos disponibles en este catálogo.'}
+          </p>
+          {hasFilters ? (
+            <button
+              className="button button--secondary"
+              onClick={clearFilters}
+              type="button"
+            >
+              Limpiar búsqueda
+            </button>
+          ) : null}
         </div>
       ) : null}
 
       {items.length > 0 ? (
-        <div className="food-result-list">
+        <div className="food-result-list" aria-label="Resultados de alimentos">
           {items.map((food) => (
             <FoodResultCard key={food.id} food={food} />
           ))}
@@ -162,7 +215,7 @@ export function FoodCatalogPage() {
       ) : null}
 
       {pagination && pagination.total > 0 ? (
-        <nav aria-label="Paginacion de alimentos" className="food-pagination">
+        <nav aria-label="Paginación de alimentos" className="food-pagination">
           <button
             className="button button--secondary"
             disabled={page <= 1 || foods.isFetching}
@@ -172,7 +225,7 @@ export function FoodCatalogPage() {
             Anterior
           </button>
           <span>
-            Pagina {page} de {totalPages}
+            Página {page} de {totalPages}
           </span>
           <button
             className="button button--secondary"
@@ -195,7 +248,7 @@ function getCatalogFeedback(state: unknown): string | null {
 
   const feedback = state as { foodDeleted?: boolean };
   return feedback.foodDeleted
-    ? 'El alimento se elimino correctamente de tu catalogo.'
+    ? 'El alimento se eliminó correctamente de tu catálogo.'
     : null;
 }
 
@@ -207,23 +260,26 @@ function FoodResultCard({
   return (
     <Link className="food-result-card" to={`/app/alimentos/${food.id}`}>
       <article>
+        <span className="food-result-card__icon" aria-hidden="true">
+          <Apple size={21} />
+        </span>
         <div className="food-result-card__heading">
           <div>
             <h2>{food.name}</h2>
             {food.brand ? <p>{food.brand}</p> : null}
           </div>
-          <span className="food-tag">
+          <p className="food-result-card__category">
+            {food.category.name} ·{' '}
             {preparationStateLabels[food.preparationState]}
-          </span>
+          </p>
         </div>
-        <p className="food-result-card__category">{food.category.name}</p>
         <dl className="food-macro-list">
           <div>
-            <dt>Energia</dt>
+            <dt>Energía</dt>
             <dd>{formatAmount(food.energyKcal)} kcal</dd>
           </div>
           <div>
-            <dt>Proteina</dt>
+            <dt>Proteína</dt>
             <dd>{formatAmount(food.proteinGrams)} g</dd>
           </div>
           <div>
@@ -235,7 +291,14 @@ function FoodResultCard({
             <dd>{formatAmount(food.fatGrams)} g</dd>
           </div>
         </dl>
-        <small>Valores por {formatReference(food)}</small>
+        <small className="food-result-card__reference">
+          Por {formatReference(food)}
+        </small>
+        <ChevronRight
+          aria-hidden="true"
+          className="food-result-card__chevron"
+          size={20}
+        />
       </article>
     </Link>
   );

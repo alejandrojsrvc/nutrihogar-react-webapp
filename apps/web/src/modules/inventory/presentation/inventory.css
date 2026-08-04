@@ -4,6 +4,199 @@
   gap: var(--space-4);
   margin-block: var(--space-6);
 }
+.inventory-page {
+  max-width: 72rem;
+}
+.inventory-toolbar {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-5);
+}
+.inventory-search {
+  position: relative;
+  max-width: 30rem;
+}
+.inventory-search svg {
+  position: absolute;
+  top: 50%;
+  left: var(--space-4);
+  color: var(--color-text-secondary);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.inventory-search input {
+  width: 100%;
+  min-height: 3rem;
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  font: inherit;
+}
+.inventory-filter-chips {
+  display: flex;
+  gap: var(--space-2);
+  padding-bottom: var(--space-1);
+  overflow-x: auto;
+}
+.inventory-filter-chip {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+.inventory-filter-chip[aria-pressed='true'] {
+  border-color: var(--color-brand);
+  color: var(--color-text-inverse);
+  background: var(--color-brand);
+  font-weight: var(--font-weight-semibold);
+}
+.inventory-filter-chip:disabled {
+  color: var(--color-text-muted);
+  background: var(--color-surface-secondary);
+  cursor: not-allowed;
+}
+.inventory-sync {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-block: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-secondary);
+  font-size: var(--font-size-xs);
+}
+.inventory-dashboard {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+.inventory-list {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.inventory-list__head {
+  display: none;
+}
+.inventory-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.inventory-row:last-child {
+  border-bottom: 0;
+}
+.inventory-row__product {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+}
+.inventory-row__product > div {
+  min-width: 0;
+}
+.inventory-row__product h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-md);
+}
+.inventory-row__product small,
+.inventory-row__location small {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+.inventory-row__icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border-radius: var(--radius-lg);
+  color: var(--color-brand-active);
+  background: var(--color-brand-soft);
+}
+.inventory-row__quantity,
+.inventory-row__location {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+.inventory-row__quantity {
+  padding-left: 3.75rem;
+}
+.inventory-row__status {
+  grid-column: 2;
+  grid-row: 1;
+}
+.inventory-status {
+  display: inline-flex;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+.inventory-status--success { color: var(--color-success); background: var(--color-success-soft); }
+.inventory-status--warning { color: var(--color-warning); background: var(--color-warning-soft); }
+.inventory-status--danger { color: var(--color-danger); background: var(--color-danger-soft); }
+.inventory-status--info { color: var(--color-info); background: var(--color-info-soft); }
+.inventory-row__actions {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+.inventory-row__actions .button {
+  min-height: 2.5rem;
+  padding-block: var(--space-1);
+  font-size: var(--font-size-sm);
+}
+.inventory-insights {
+  display: none;
+}
+.inventory-insights section {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+.inventory-insights__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: var(--color-brand-active);
+}
+.inventory-insights__heading h2 { margin: 0; color: var(--color-text-primary); }
+.inventory-insights ul { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.inventory-insights li { display: grid; gap: var(--space-1); }
+.inventory-insights li span,
+.inventory-insights section > p { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+.inventory-insights dl { display: grid; gap: var(--space-2); margin: 0; }
+.inventory-insights dl div { display: flex; justify-content: space-between; gap: var(--space-3); }
+.inventory-insights dd { margin: 0; font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+.inventory-insights a { display: inline-flex; margin-top: var(--space-3); color: var(--color-brand-active); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+.inventory-insights__ok { display: flex; align-items: center; gap: var(--space-2); color: var(--color-success); }
 .inventory-list {
   display: grid;
   gap: var(--space-4);
@@ -28,7 +221,8 @@
 }
 .inventory-card__actions,
 .inventory-detail-actions,
-.inventory-form-actions {
+.inventory-form-actions,
+.inventory-prepared-form .recipe-form__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
@@ -106,6 +300,42 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
+
+.inventory-conflict-list {
+  display: grid;
+  gap: 0;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  border-block: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.inventory-conflict-list > li {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inventory-conflict-list > li:last-child { border-bottom: 0; }
+
+.inventory-conflict-list > li > div:first-child {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.inventory-conflict-list span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.inventory-conflict-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.inventory-danger-text { color: var(--color-danger); }
 .movement-in::before,
 .movement-out::before {
   margin-right: var(--space-1);
@@ -159,11 +389,263 @@
   .inventory-form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .inventory-card {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+  .inventory-dashboard {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+  .inventory-list__head,
+  .inventory-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1.5fr) minmax(5rem, 0.7fr) minmax(6rem, 0.8fr) minmax(6rem, 0.75fr) minmax(8rem, 1fr);
+    gap: var(--space-3);
+  }
+  .inventory-list__head {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+  }
+  .inventory-row {
+    min-height: 4.75rem;
+    padding: var(--space-3) var(--space-4);
+  }
+  .inventory-row__quantity { padding-left: 0; }
+  .inventory-row__status,
+  .inventory-row__actions {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .inventory-row__actions {
+    justify-content: flex-start;
+  }
+  .inventory-insights {
+    display: grid;
+    gap: var(--space-3);
   }
   .inventory-detail-meta {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Current compact detail and grouped form treatment. */
+.inventory-detail-page,
+.inventory-form-page {
+  max-width: 72rem;
+}
+
+.inventory-detail-actions {
+  align-items: center;
+  margin-block: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inventory-sync-summary {
+  display: grid;
+  gap: var(--space-1);
+  border-left-color: var(--color-info);
+  background: var(--color-info-soft);
+  color: var(--color-text-primary);
+}
+
+.inventory-sync-summary span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.inventory-sync-summary .button {
+  justify-self: start;
+  margin-top: var(--space-2);
+}
+
+.inventory-feedback {
+  margin-block: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.inventory-offline-note {
+  border-left-color: var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
+.inventory-detail-meta,
+.inventory-current-summary {
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding-block: 0;
+}
+
+.inventory-detail-meta > div,
+.inventory-current-summary > div {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inventory-detail-meta > div:last-child,
+.inventory-current-summary > div:last-child {
+  border-bottom: 0;
+}
+
+.inventory-detail-meta dd,
+.inventory-current-summary dd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.inventory-detail-section {
+  margin-block: var(--space-8);
+}
+
+.inventory-movement-list {
+  gap: 0;
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.inventory-movement-list li {
+  min-height: 4.5rem;
+  padding-block: var(--space-3);
+}
+
+.inventory-pending-list {
+  gap: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
+.inventory-pending-list li {
+  padding-block: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.inventory-action-form,
+.inventory-inline-form {
+  max-width: 32rem;
+}
+
+.inventory-form {
+  gap: var(--space-8);
+  max-width: 42rem;
+}
+
+.inventory-form fieldset {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.inventory-form legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inventory-form legend > span {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-size: var(--font-size-sm);
+}
+
+.inventory-form-grid {
+  margin-block: 0;
+}
+
+.inventory-form-actions {
+  position: sticky;
+  z-index: 4;
+  bottom: 0;
+  justify-content: flex-end;
+  margin: 0;
+  padding: var(--space-3) 0 calc(var(--space-3) + env(safe-area-inset-bottom));
+  background: var(--color-canvas);
+}
+
+.inventory-adjust-review {
+  display: grid;
+  gap: 0;
+  margin-block: var(--space-4);
+  border-block: 1px solid var(--color-border);
+}
+
+.inventory-adjust-review div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inventory-adjust-review div:last-child { border-bottom: 0; }
+.inventory-adjust-review dd { margin: 0; font-weight: var(--font-weight-semibold); }
+
+.inventory-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.inventory-prepared-form {
+  max-width: 42rem;
+}
+
+.inventory-prepared-form .recipe-detail-section {
+  margin-block: 0;
+}
+
+@media (min-width: 48rem) {
+  .inventory-detail-meta,
+  .inventory-current-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+
+  .inventory-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .inventory-detail-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .inventory-form-actions {
+    position: static;
+  }
+
+  .inventory-prepared-form .recipe-form__actions {
+    position: static;
+  }
+}
+
+@media (max-width: 30rem) {
+  .inventory-detail-actions .button,
+  .inventory-form-actions .button,
+  .inventory-prepared-form .recipe-form__actions .button,
+  .inventory-dialog-actions .button {
+    width: 100%;
+  }
+
+  .inventory-movement-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .inventory-movement-list li > div:last-child {
+    text-align: left;
   }
 }

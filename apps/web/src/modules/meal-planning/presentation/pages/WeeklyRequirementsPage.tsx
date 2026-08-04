@@ -1,28 +1,39 @@
+import { ClipboardList } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useWeeklyRequirements } from '../hooks/useMealPlanning';
+import { RelatedActions } from '../components/RelatedActions';
 
 export function WeeklyRequirementsPage() {
   const { weeklyPlanId } = useParams();
   const query = useWeeklyRequirements(weeklyPlanId);
   if (query.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando requerimientos...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando requerimientos..." />
+      </section>
     );
   if (query.isError)
     return (
-      <section className="page-section" role="alert">
-        <p>No se pudieron cargar los requerimientos.</p>
-        <button
-          className="button button--secondary"
-          onClick={() => void query.refetch()}
-          type="button"
-        >
-          Reintentar
-        </button>
+      <section className="page-section">
+        <ErrorState
+          message="No se pudieron cargar los requerimientos."
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() => void query.refetch()}
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+        />
       </section>
     );
   const groups = groupByUnit(query.data?.items ?? []);
@@ -34,16 +45,11 @@ export function WeeklyRequirementsPage() {
       <BackButton fallback="/app/plan-semanal" />
       <PageHeader
         eyebrow="Plan semanal"
+        icon={<ClipboardList size={22} />}
         title="Ingredientes requeridos"
         titleId="requirements-title"
         description="El agregado semanal agrupado por unidad de medida."
       />
-      <Link
-        className="button button--secondary"
-        to={`/app/plan-semanal/${weeklyPlanId}/comparacion-inventario`}
-      >
-        Comparar con inventario
-      </Link>
       {query.data?.warnings.map((warning) => (
         <p className="notice" key={warning}>
           {warning}
@@ -66,11 +72,21 @@ export function WeeklyRequirementsPage() {
           </section>
         ))
       ) : (
-        <div className="empty-state">
-          <h2>No hay requerimientos</h2>
-          <p>Cuando el plan tenga cantidades confirmadas aparecerán aquí.</p>
-        </div>
+        <EmptyState
+          title="No hay requerimientos"
+          description="Cuando el plan tenga cantidades confirmadas aparecerán aquí."
+        />
       )}
+      <RelatedActions>
+        <Link
+          to={`/app/plan-semanal/${weeklyPlanId}/comparacion-inventario`}
+        >
+          Comparar con inventario
+        </Link>
+        <Link to={`/app/plan-semanal/${weeklyPlanId}/adherencia`}>
+          Ver adherencia
+        </Link>
+      </RelatedActions>
     </section>
   );
 }

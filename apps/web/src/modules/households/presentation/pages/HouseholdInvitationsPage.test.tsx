@@ -94,16 +94,19 @@ describe('HouseholdInvitationsPage', () => {
     await user.click(
       await screen.findByRole('button', { name: 'Invitar a alguien' }),
     );
+    expect(
+      await screen.findByRole('dialog', { name: 'Invitar a alguien' }),
+    ).toBeInTheDocument();
     await user.type(
-      await screen.findByLabelText('Correo electronico'),
+      await screen.findByLabelText('Correo electrónico'),
       'adult@example.com',
     );
     await user.selectOptions(screen.getByLabelText('Rol en el hogar'), 'ADMIN');
-    await user.click(screen.getByRole('button', { name: 'Crear invitacion' }));
+    await user.click(screen.getByRole('button', { name: 'Crear invitación' }));
 
-    expect(await screen.findByText('Invitacion lista')).toBeInTheDocument();
+    expect(await screen.findByText('Invitación lista')).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Enlace de invitacion para adult@example.com'),
+      screen.getByLabelText('Enlace de invitación para adult@example.com'),
     ).toHaveValue(
       `${window.location.origin}/invitaciones/raw-invitation-token`,
     );
@@ -112,7 +115,7 @@ describe('HouseholdInvitationsPage', () => {
     );
     expect(
       await screen.findAllByLabelText(
-        'Enlace de invitacion para adult@example.com',
+        'Enlace de invitación para adult@example.com',
       ),
     ).toHaveLength(2);
     expect(await createRequest?.json()).toEqual({
@@ -154,15 +157,50 @@ describe('HouseholdInvitationsPage', () => {
       await screen.findByRole('button', { name: 'Invitar a alguien' }),
     );
     await user.type(
-      await screen.findByLabelText('Correo electronico'),
+      await screen.findByLabelText('Correo electrónico'),
       'adult@example.com',
     );
-    await user.click(screen.getByRole('button', { name: 'Crear invitacion' }));
+    await user.click(screen.getByRole('button', { name: 'Crear invitación' }));
 
     expect(
       await screen.findByText(
-        'Ese correo ya pertenece al hogar o ya tiene una invitacion pendiente.',
+        'Ese correo ya pertenece al hogar o ya tiene una invitación pendiente.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('explains that only administrators can manage invitations', async () => {
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+
+      if (request.url.endsWith('/api/households')) {
+        return householdResponse();
+      }
+
+      if (request.url.includes('/invitations')) {
+        return new Response(null, { status: 403 });
+      }
+
+      return new Response(JSON.stringify({ status: 'ok' }), { status: 200 });
+    });
+
+    renderRoute(
+      '/app/invitaciones',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'No tienes permiso para invitar',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Solo los administradores del hogar pueden gestionar invitaciones.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Invitar a alguien' }),
+    ).not.toBeInTheDocument();
   });
 });

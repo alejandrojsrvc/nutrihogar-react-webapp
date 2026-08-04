@@ -111,8 +111,8 @@ describe('AdultProfilePage', () => {
 
     await fillBasicInformation(user);
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    await user.selectOptions(screen.getByLabelText('Sexo biologico'), 'MALE');
-    await user.type(screen.getByLabelText('Altura en centimetros'), '175.5');
+    await user.selectOptions(screen.getByLabelText('Sexo biológico'), 'MALE');
+    await user.type(screen.getByLabelText('Altura en centímetros'), '175.5');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.selectOptions(
       screen.getByLabelText('Nivel de actividad'),
@@ -124,7 +124,7 @@ describe('AdultProfilePage', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.click(
-      screen.getByRole('button', { name: 'Agregar restriccion' }),
+      screen.getByRole('button', { name: 'Agregar restricción' }),
     );
     await user.type(screen.getByLabelText('Nombre'), 'Mani');
     await user.type(screen.getByLabelText('Severidad (opcional)'), 'Alta');
@@ -174,7 +174,7 @@ describe('AdultProfilePage', () => {
     expect(
       await screen.findByText('La fecha de nacimiento no puede ser futura.'),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText('Sexo biologico')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Sexo biológico')).not.toBeInTheDocument();
   });
 
   it('restores the profile draft and current step after a reload', async () => {
@@ -212,12 +212,12 @@ describe('AdultProfilePage', () => {
 
     await fillBasicInformation(user);
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    await user.selectOptions(screen.getByLabelText('Sexo biologico'), 'MALE');
-    await user.type(screen.getByLabelText('Altura en centimetros'), '0');
+    await user.selectOptions(screen.getByLabelText('Sexo biológico'), 'MALE');
+    await user.type(screen.getByLabelText('Altura en centímetros'), '0');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
 
     expect(
-      await screen.findByText('La altura debe ser un numero mayor que cero.'),
+      await screen.findByText('La altura debe ser un número mayor que cero.'),
     ).toBeInTheDocument();
     expect(
       screen.queryByLabelText('Nivel de actividad'),
@@ -267,8 +267,8 @@ describe('AdultProfilePage', () => {
     ).toBeInTheDocument();
     expect(await screen.findByDisplayValue('Alejandro')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
-    await user.clear(screen.getByLabelText('Altura en centimetros'));
-    await user.type(screen.getByLabelText('Altura en centimetros'), '180');
+    await user.clear(screen.getByLabelText('Altura en centímetros'));
+    await user.type(screen.getByLabelText('Altura en centímetros'), '180');
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.click(screen.getByRole('button', { name: 'Continuar' }));
     await user.clear(screen.getByLabelText('Nombre'));
@@ -284,6 +284,51 @@ describe('AdultProfilePage', () => {
       dietaryRestrictions: [expect.objectContaining({ name: 'Nuez' })],
       heightCm: 180,
     });
+  });
+
+  it('hides personal edit actions when viewing another member', async () => {
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+
+      if (request.url.endsWith('/api/households')) {
+        return jsonResponse([
+          {
+            currency: 'ARS',
+            id: 'household-1',
+            name: 'Hogar Sojo',
+            timezone: 'America/Argentina/Buenos_Aires',
+          },
+        ]);
+      }
+
+      if (request.url.includes('/adult-profiles')) {
+        return jsonResponse([
+          {
+            ...profile,
+            id: 'profile-2',
+            name: 'María',
+            userId: 'user-2',
+          },
+        ]);
+      }
+
+      return jsonResponse({ status: 'ok' });
+    });
+
+    renderRoute(
+      '/app/perfiles/profile-2',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'María' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Editar perfil' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Actualizar mis datos' }),
+    ).not.toBeInTheDocument();
   });
 });
 

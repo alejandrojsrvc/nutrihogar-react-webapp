@@ -1,6 +1,11 @@
-import { CircleUserRound } from 'lucide-react';
-import { Link } from 'react-router';
+import { ChevronRight, UsersRound } from 'lucide-react';
+import { Link, Navigate } from 'react-router';
 
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../hooks/useAdultProfiles';
 import { useHouseholds } from '../hooks/useHouseholds';
@@ -10,18 +15,58 @@ export function FamilyPage() {
   const households = useHouseholds();
   const profiles = useAdultProfiles(households.activeHousehold?.id);
 
-  if (households.isPending || profiles.isPending)
+  if (
+    households.isPending ||
+    (Boolean(households.activeHousehold) && profiles.isPending)
+  ) {
     return (
-      <p className="page-section" role="status">
-        Cargando familia...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando la familia..." />
+      </section>
     );
-  if (households.isError || profiles.isError || !households.activeHousehold)
+  }
+
+  if (households.isError || profiles.isError) {
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar la familia.
-      </p>
+      <section className="page-section">
+        <ErrorState
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() =>
+                void (households.isError
+                  ? households.refetch()
+                  : profiles.refetch())
+              }
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+          message="No pudimos cargar los integrantes de este hogar."
+        />
+      </section>
     );
+  }
+
+  if (households.households.length === 0) {
+    return <Navigate replace to="/onboarding" />;
+  }
+
+  if (!households.activeHousehold) {
+    return (
+      <section className="page-section">
+        <ErrorState
+          action={
+            <Link className="button button--secondary" to="/app">
+              Seleccionar hogar
+            </Link>
+          }
+          message="Selecciona un hogar para consultar su familia."
+        />
+      </section>
+    );
+  }
 
   return (
     <section
@@ -34,35 +79,45 @@ export function FamilyPage() {
             Invitar integrante
           </Link>
         }
+        icon={<UsersRound size={24} />}
         eyebrow={households.activeHousehold.name}
         title="Familia"
         titleId="family-title"
         description="Consulta los integrantes del hogar y abre sus datos cuando lo necesites."
       />
-      <div className="profile-list" aria-label="Integrantes de la familia">
-        {profiles.profiles.map((profile) => (
-          <Link
-            className="profile-card"
-            key={profile.id}
-            to={`/app/perfiles/${profile.id}`}
-          >
-            <span className="profile-card__identity">
-              <CircleUserRound size={20} aria-hidden="true" />
-              <strong>{profile.name}</strong>
-            </span>
-            <span>
-              {profile.weightKg == null
-                ? 'Datos corporales pendientes'
-                : `${profile.weightKg} kg · ${profile.heightCm} cm`}
-            </span>
-          </Link>
-        ))}
-      </div>
       {profiles.profiles.length === 0 ? (
-        <p className="empty-copy">
-          Todavía no hay integrantes registrados en este hogar.
-        </p>
-      ) : null}
+        <EmptyState
+          description="Cuando un adulto complete su perfil, aparecerá en esta lista."
+          title="Todavía no hay integrantes"
+        />
+      ) : (
+        <div className="profile-list" aria-label="Integrantes de la familia">
+          {profiles.profiles.map((profile) => (
+            <Link
+              className="profile-row"
+              key={profile.id}
+              to={`/app/perfiles/${profile.id}`}
+            >
+              <span className="profile-row__avatar" aria-hidden="true">
+                {getInitial(profile.name)}
+              </span>
+              <span className="profile-row__content">
+                <strong>{profile.name}</strong>
+                <span>
+                  {profile.weightKg == null
+                    ? 'Datos corporales pendientes'
+                    : `${profile.weightKg} kg · ${profile.heightCm} cm`}
+                </span>
+              </span>
+              <ChevronRight size={20} aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   );
+}
+
+function getInitial(name: string): string {
+  return name.trim().charAt(0).toLocaleUpperCase('es');
 }

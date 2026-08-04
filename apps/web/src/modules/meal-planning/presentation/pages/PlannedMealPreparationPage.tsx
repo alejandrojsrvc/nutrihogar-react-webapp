@@ -1,11 +1,17 @@
+import { CookingPot } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
 import {
   useWeeklyPlan,
   usePlannedMealPreparation,
   usePreparePlannedMeal,
 } from '../hooks/useMealPlanning';
+import { RelatedActions } from '../components/RelatedActions';
 
 export function PlannedMealPreparationPage() {
   const { weeklyPlanId, plannedMealId = '' } = useParams();
@@ -16,15 +22,15 @@ export function PlannedMealPreparationPage() {
   const meal = plan.data?.meals.find((item) => item.id === plannedMealId);
   if (plan.isPending || preparation.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando preparación...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando preparación..." />
+      </section>
     );
   if (plan.isError || !meal)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar la comida planificada.
-      </p>
+      <section className="page-section">
+        <ErrorState message="No se pudo cargar la comida planificada." />
+      </section>
     );
   if (meal.source !== 'RECIPE' || !meal.recipeId)
     return (
@@ -38,7 +44,27 @@ export function PlannedMealPreparationPage() {
         </p>
       </section>
     );
-  const existing = preparation.data as { id?: string } | undefined;
+  if (preparation.isError)
+    return (
+      <section className="page-section meal-planning-detail">
+        <BackButton
+          fallback={`/app/plan-semanal?semana=${plan.data.weekStart}`}
+        />
+        <ErrorState
+          message="No se pudo consultar la preparación de esta comida."
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() => void preparation.refetch()}
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+        />
+      </section>
+    );
+  const existing = preparation.data as { id?: string } | null | undefined;
   const start = () =>
     prepare.mutate(plannedMealId, {
       onSuccess: (batch) =>
@@ -46,7 +72,7 @@ export function PlannedMealPreparationPage() {
     });
   return (
     <section
-      className="page-section preparation-page"
+      className="page-section meal-planning-detail preparation-page"
       aria-labelledby="planned-preparation-title"
     >
       <BackButton
@@ -54,15 +80,11 @@ export function PlannedMealPreparationPage() {
       />
       <PageHeader
         eyebrow="Comida planificada"
+        icon={<CookingPot size={22} />}
         title={`Cocinar ${meal.name ?? 'receta'}`}
         titleId="planned-preparation-title"
         description="El backend conserva participantes, cantidades y el estado del plan."
       />
-      {preparation.isError ? (
-        <p className="supporting-text">
-          Aún no existe una preparación para esta comida.
-        </p>
-      ) : null}
       {existing?.id ? (
         <>
           <p role="status">Esta comida ya tiene una preparación.</p>
@@ -86,6 +108,16 @@ export function PlannedMealPreparationPage() {
       {prepare.isError ? (
         <p role="alert">No se pudo iniciar la preparación.</p>
       ) : null}
+      <RelatedActions>
+        <Link
+          to={`/app/plan-semanal/${weeklyPlanId}/comidas/${plannedMealId}/cantidades`}
+        >
+          Revisar cantidades
+        </Link>
+        <Link to={`/app/plan-semanal?semana=${plan.data.weekStart}`}>
+          Volver al plan
+        </Link>
+      </RelatedActions>
     </section>
   );
 }

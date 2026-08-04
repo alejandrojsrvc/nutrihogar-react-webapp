@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,6 +12,18 @@ import type { NutritionSummary } from '@nutrihogar/domain';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
 import type { FoodSelection } from '../../../food-catalog/application/ports/FoodCatalogGateway';
 import type { MealDraftItem } from '../../application/ports/MealGateway';
+import {
+  Camera,
+  ChefHat,
+  Clock3,
+  PenLine,
+  Plus,
+  ScanLine,
+  Search,
+  Sparkles,
+  Star,
+  Trash2,
+} from 'lucide-react';
 
 const mealTypeLabels = {
   BREAKFAST: 'Desayuno',
@@ -32,6 +44,7 @@ export function MealForm({
   errorMessage,
   cancelTo = '/app',
   readOnlyProfile = false,
+  consumerLayout = false,
 }: {
   initialItems?: MealDraftItem[];
   initialValues: MealFormValues;
@@ -42,6 +55,7 @@ export function MealForm({
   errorMessage?: string;
   cancelTo?: string;
   readOnlyProfile?: boolean;
+  consumerLayout?: boolean;
 }) {
   const [items, setItems] = useState(initialItems);
   const [showSelector, setShowSelector] = useState(false);
@@ -84,6 +98,173 @@ export function MealForm({
     if (!Number.isFinite(quantity) || quantity <= 0) return;
     syncItems(
       items.map((item) => (item.id === itemId ? { ...item, quantity } : item)),
+    );
+  }
+
+  if (consumerLayout) {
+    return (
+      <>
+        <form
+          className="meal-form meal-form--consumer"
+          onSubmit={form.handleSubmit((values) => onSubmit(values, items))}
+        >
+          <div className="meal-source-bar" aria-label="Formas de agregar alimentos">
+            <button className="meal-source-bar__search" onClick={() => setShowSelector(true)} type="button">
+              <Search size={20} aria-hidden="true" />
+              <span>Describe o busca lo que comiste...</span>
+            </button>
+            <UnavailableAction icon={<Camera size={19} />} label="Foto" />
+            <UnavailableAction icon={<Sparkles size={19} />} label="IA" />
+            <UnavailableAction icon={<ScanLine size={19} />} label="Código" />
+          </div>
+
+          <div className="meal-composer-grid">
+            <section className="meal-quick-add" aria-labelledby="meal-quick-add-title">
+              <h2 id="meal-quick-add-title">Agregar rápido</h2>
+              <button className="meal-quick-option" onClick={() => setShowSelector(true)} type="button">
+                <span><Search size={19} aria-hidden="true" /></span>
+                <strong>Buscar alimento</strong>
+                <small>Explora nuestra base de datos</small>
+              </button>
+              <button className="meal-quick-option" disabled type="button">
+                <span><ChefHat size={19} aria-hidden="true" /></span>
+                <strong>Mis recetas</strong>
+                <small>Disponible próximamente</small>
+              </button>
+              <button className="meal-quick-option" disabled type="button">
+                <span><Clock3 size={19} aria-hidden="true" /></span>
+                <strong>Comidas recientes</strong>
+                <small>Disponible próximamente</small>
+              </button>
+              <button className="meal-quick-option" disabled type="button">
+                <span><Star size={19} aria-hidden="true" /></span>
+                <strong>Comida frecuente</strong>
+                <small>Disponible próximamente</small>
+              </button>
+              <button className="meal-quick-option" onClick={() => setShowSelector(true)} type="button">
+                <span><PenLine size={19} aria-hidden="true" /></span>
+                <strong>Componer manualmente</strong>
+                <small>Agrega cada alimento desde cero</small>
+              </button>
+              <div className="meal-ai-hint" aria-disabled="true">
+                <Sparkles size={23} aria-hidden="true" />
+                <p><strong>Descripción asistida</strong><br />Estará disponible cuando se habilite la interpretación con IA.</p>
+              </div>
+            </section>
+
+            <section className="meal-review" aria-labelledby="meal-review-title">
+              <div className="meal-review__heading">
+                <h2 id="meal-review-title">Tu comida</h2>
+                <span>{items.length} alimento{items.length === 1 ? '' : 's'}</span>
+              </div>
+              <div className="meal-review__context">
+                {profiles.length > 1 && !readOnlyProfile ? (
+                  <label>
+                    Integrante
+                    <select {...form.register('profileId')}>
+                      <option value="">Selecciona</option>
+                      <MealProfileOptions profiles={profiles} />
+                    </select>
+                  </label>
+                ) : (
+                  <input type="hidden" {...form.register('profileId')} />
+                )}
+                <label>
+                  Comida
+                  <select {...form.register('mealType')}>
+                    {Object.entries(mealTypeLabels).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Fecha y hora
+                  <input type="datetime-local" {...form.register('consumedAt', { valueAsDate: true })} />
+                </label>
+              </div>
+              {items.length === 0 ? (
+                <button className="meal-review__empty" onClick={() => setShowSelector(true)} type="button">
+                  <Plus size={21} aria-hidden="true" />
+                  Agrega el primer alimento
+                </button>
+              ) : (
+                <div className="meal-review__items">
+                  {items.map((item) => (
+                    <article className="meal-review-item" key={item.id}>
+                      <span className="meal-review-item__image" aria-hidden="true"><ChefHat size={20} /></span>
+                      <div className="meal-review-item__name">
+                        <strong>{item.food.name}</strong>
+                        <small>{formatItemPreview(item)}</small>
+                      </div>
+                      <label>
+                        <span className="visually-hidden">Cantidad de {item.food.name}</span>
+                        <input
+                          aria-label={`Cantidad de ${item.food.name}`}
+                          min="0.1"
+                          onChange={(event) => updateItemQuantity(item.id, Number(event.target.value))}
+                          step="0.1"
+                          type="number"
+                          value={item.quantity}
+                        />
+                        <small>{unitLabel(item.unit)}</small>
+                      </label>
+                      <button
+                        aria-label={`Eliminar ${item.food.name}`}
+                        className="icon-button meal-review-item__remove"
+                        onClick={() => removeItem(item.id)}
+                        type="button"
+                      >
+                        <Trash2 size={18} aria-hidden="true" />
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              )}
+              <button
+                className="meal-review__add"
+                onClick={() => {
+                  setEditingItemId(null);
+                  setShowSelector(true);
+                }}
+                type="button"
+              >
+                <Plus size={18} aria-hidden="true" /> Agregar alimento
+              </button>
+              <NutritionPreview summary={summary} />
+              <div className="meal-review__verified">
+                <strong>Estimación provisional</strong>
+                <span>Revisa las cantidades antes de registrar.</span>
+              </div>
+              <label className="form-field meal-review__notes">
+                <span>Nota (opcional)</span>
+                <textarea {...form.register('notes')} placeholder="Agrega un detalle si lo necesitas" />
+              </label>
+            </section>
+          </div>
+
+          {form.formState.errors.items ? <p className="form-field__error" role="alert">{form.formState.errors.items.message}</p> : null}
+          {form.formState.errors.profileId ? <p className="form-field__error" role="alert">{form.formState.errors.profileId.message}</p> : null}
+          {form.formState.errors.consumedAt ? <p className="form-field__error" role="alert">{form.formState.errors.consumedAt.message}</p> : null}
+          {form.formState.errors.mealType ? <p className="form-field__error" role="alert">{form.formState.errors.mealType.message}</p> : null}
+          {form.formState.errors.notes ? <p className="form-field__error" role="alert">{form.formState.errors.notes.message}</p> : null}
+          {errorMessage ? <p className="meal-form__error" role="alert">{errorMessage}</p> : null}
+          <div className="meal-form__actions meal-form__actions--consumer">
+            <Link className="button button--secondary" to={cancelTo}>Cancelar</Link>
+            <button className="button button--primary" disabled={Boolean(isSubmitting) || !selectedProfileId || items.length === 0} type="submit">
+              {isSubmitting ? 'Guardando...' : submitLabel}
+            </button>
+          </div>
+        </form>
+        {showSelector ? (
+          <FoodSelector
+            onClose={() => {
+              setEditingItemId(null);
+              setShowSelector(false);
+            }}
+            onSelect={selectItem}
+          />
+        ) : null}
+      </>
     );
   }
 
@@ -287,6 +468,21 @@ function NutritionPreview({ summary }: { summary: NutritionSummary }) {
       </dl>
     </section>
   );
+}
+
+function UnavailableAction({ icon, label }: { icon: ReactNode; label: string }) {
+  return (
+    <button aria-label={`${label}. Disponible próximamente`} className="meal-source-bar__option" disabled type="button">
+      {icon}<span>{label}</span>
+    </button>
+  );
+}
+
+function unitLabel(unit: MealDraftItem['unit']) {
+  if (unit === 'GRAM') return 'g';
+  if (unit === 'MILLILITER') return 'ml';
+  if (unit === 'SERVING') return 'porción';
+  return 'unidad';
 }
 
 function toFormItem(item: MealDraftItem) {

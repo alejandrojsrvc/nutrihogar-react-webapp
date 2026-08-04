@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.6",
+    "@fontsource/manrope": "^5.2.6",
     "@hookform/resolvers": "^5.5.7",
     "@nutrihogar/api-client": "*",
     "@nutrihogar/design-tokens": "*",
@@ -18,7 +18,6 @@
     "@nutrihogar/nutrition-engine": "*",
     "@nutrihogar/schemas": "*",
     "@tanstack/react-query": "^5.101.4",
-    "@phosphor-icons/react": "^2.1.10",
     "dexie": "^4.4.4",
     "lucide-react": "^0.468.0",
     "react": "^19.2.8",

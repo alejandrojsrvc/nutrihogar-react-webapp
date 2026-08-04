@@ -3,7 +3,7 @@ export function AuthLoadingPage() {
     <main className="auth-loading" aria-busy="true" aria-live="polite">
       <p className="eyebrow">NutriHogar</p>
       <h1>Estamos preparando tu espacio</h1>
-      <p className="lead">Restaurando tu sesion de forma segura...</p>
+      <p className="lead">Restaurando tu sesión de forma segura...</p>
     </main>
   );
 }

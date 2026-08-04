@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { ReceiptText } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { PurchaseStatus } from '../../domain/Purchase';
-import { usePurchases } from '../hooks/usePurchases';
+import { usePurchaseConnectivity, usePurchases } from '../hooks/usePurchases';
 import '../purchases.css';
 
 export function PurchaseListPage() {
   const households = useHouseholds();
+  const isOnline = usePurchaseConnectivity();
   const [status, setStatus] = useState<PurchaseStatus | ''>('');
   const [storeName, setStoreName] = useState('');
   const purchases = usePurchases(households.activeHousehold?.id, {
@@ -24,9 +26,16 @@ export function PurchaseListPage() {
     );
   if (households.isError || !households.activeHousehold)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar el hogar activo.
-      </p>
+      <section className="page-section" role="alert">
+        <p>
+          {isOnline
+            ? 'No se pudo cargar el hogar activo.'
+            : 'No se pudo identificar el hogar sin conexión.'}
+        </p>
+        <button className="button button--secondary" onClick={() => void households.refetch()} type="button">
+          Reintentar
+        </button>
+      </section>
     );
 
   const items = purchases.data?.items ?? [];
@@ -42,10 +51,16 @@ export function PurchaseListPage() {
           </Link>
         }
         eyebrow={households.activeHousehold.name}
+        icon={<ReceiptText size={22} />}
         title="Compras del hogar"
         titleId="purchase-list-title"
         description="Consulta lo comprado y relaciona cada compra con tu inventario."
       />
+      {!isOnline ? (
+        <p className="feature-connectivity feature-connectivity--offline" role="status">
+          Sin conexión. Las compras requieren conexión y no se guardan en una cola local.
+        </p>
+      ) : null}
       <div className="purchase-filters">
         <div className="form-field">
           <label htmlFor="purchase-store">Comercio</label>
@@ -72,10 +87,21 @@ export function PurchaseListPage() {
           </select>
         </div>
       </div>
-      {purchases.isPending ? <p role="status">Cargando compras...</p> : null}
+      {purchases.isPending ? (
+        <div className="purchase-loading" role="status">
+          <span />
+          <span />
+          <span />
+          Cargando compras...
+        </div>
+      ) : null}
       {purchases.isError ? (
         <div role="alert">
-          <p>No se pudieron cargar las compras.</p>
+          <p>
+            {isOnline
+              ? 'No se pudieron cargar las compras.'
+              : 'No hay compras guardadas disponibles sin conexión.'}
+          </p>
           <button
             className="button button--secondary"
             onClick={() => void purchases.refetch()}
@@ -87,30 +113,38 @@ export function PurchaseListPage() {
       ) : null}
       {!purchases.isPending && !purchases.isError && items.length === 0 ? (
         <section className="empty-state-card">
-          <h2>No hay compras todavía</h2>
-          <p>Registra tu primera compra para relacionarla con el inventario.</p>
-          <Link className="button button--secondary" to="/app/compras/nueva">
-            Registrar compra
-          </Link>
+          <h2>{status || storeName ? 'No hay coincidencias' : 'No hay compras todavía'}</h2>
+          <p>
+            {status || storeName
+              ? 'Prueba con otro comercio o estado.'
+              : 'Registra tu primera compra para relacionarla con el inventario.'}
+          </p>
+          {!status && !storeName ? (
+            <Link className="button button--secondary" to="/app/compras/nueva">
+              Registrar compra
+            </Link>
+          ) : null}
         </section>
       ) : null}
       {items.length ? (
         <div className="purchase-list">
           {items.map((purchase) => (
             <Link
-              className="purchase-card"
+              className="purchase-row"
               key={purchase.id}
               to={`/app/compras/${purchase.id}`}
             >
-              <div>
-                <p className="eyebrow">{statusLabel(purchase.status)}</p>
+              <div className="purchase-row__identity">
                 <h2>{purchase.storeName}</h2>
                 <p>
                   {formatDate(purchase.purchaseDate)} · {purchase.items.length}{' '}
                   producto{purchase.items.length === 1 ? '' : 's'}
                 </p>
               </div>
-              <strong>{formatMoney(purchase.total, purchase.currency)}</strong>
+              <span className={`purchase-status purchase-status--${purchase.status.toLowerCase()}`}>
+                {statusLabel(purchase.status)}
+              </span>
+              <strong className="purchase-row__total">{formatMoney(purchase.total, purchase.currency)}</strong>
             </Link>
           ))}
         </div>

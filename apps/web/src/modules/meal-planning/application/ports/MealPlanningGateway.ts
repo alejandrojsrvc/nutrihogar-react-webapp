@@ -64,7 +64,7 @@ export interface MealPlanningGateway {
       quantity?: number;
     }>,
   ): Promise<void>;
-  getPreparation(plannedMealId: string): Promise<unknown>;
+  getPreparation(plannedMealId: string): Promise<unknown | null>;
   prepare(plannedMealId: string): Promise<unknown>;
   getConsumption(plannedMealId: string): Promise<unknown | null>;
   linkConsumption(

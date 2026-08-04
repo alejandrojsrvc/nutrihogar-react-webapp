@@ -1,14 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Children,
+  cloneElement,
   isValidElement,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactElement,
 } from 'react';
 import { useFieldArray, useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router';
+import { Apple, Plus, Save } from 'lucide-react';
 
 import type {
   FoodDetail,
@@ -16,6 +19,7 @@ import type {
 } from '../../application/ports/FoodCatalogGateway';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   useCreateCustomFood,
   useFoodCategories,
@@ -32,7 +36,7 @@ import {
 import { preparationStateLabels } from '../utils/foodLabels';
 
 const confidenceOptions = [
-  ['USER_PROVIDED', 'Proporcionada por mi'],
+  ['USER_PROVIDED', 'Proporcionada por mí'],
   ['LOW', 'Baja'],
   ['MEDIUM', 'Media'],
   ['HIGH', 'Alta'],
@@ -56,6 +60,7 @@ export function CustomFoodFormPage() {
   const createFood = useCreateCustomFood();
   const updateFood = useUpdateCustomFood();
   const [nutrientToAdd, setNutrientToAdd] = useState('');
+  const hasInitializedForm = useRef(false);
   const {
     control,
     formState: { errors },
@@ -106,7 +111,7 @@ export function CustomFoodFormPage() {
   );
 
   useEffect(() => {
-    if (!categories.data || !nutrients.data) {
+    if (hasInitializedForm.current || !categories.data || !nutrients.data) {
       return;
     }
 
@@ -115,6 +120,7 @@ export function CustomFoodFormPage() {
     }
 
     reset(toFormValues(currentFood, nutrients.data));
+    hasInitializedForm.current = true;
   }, [categories.data, currentFood, isEditing, nutrients.data, reset]);
 
   if (households.isPending || categories.isPending || nutrients.isPending) {
@@ -159,7 +165,7 @@ export function CustomFoodFormPage() {
         }
         action={
           <Link className="button button--secondary" to="/app/alimentos">
-            Volver al catalogo
+            Volver al catálogo
           </Link>
         }
       />
@@ -209,7 +215,7 @@ export function CustomFoodFormPage() {
         state: { foodSaved: true },
       });
     } catch {
-      // El error de la mutacion se muestra debajo del formulario.
+      // El error de la mutación se muestra debajo del formulario.
     }
   };
 
@@ -219,22 +225,23 @@ export function CustomFoodFormPage() {
       aria-labelledby="custom-food-title"
     >
       <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
-      <p className="eyebrow">Alimentos del hogar</p>
-      <h1 id="custom-food-title">
-        {isEditing ? 'Edita tu alimento' : 'Registra un alimento'}
-      </h1>
-      <p className="lead">
-        Guarda los valores del envase o de tu receta para encontrarlos junto al
-        catalogo.
-      </p>
+      <PageHeader
+        description="Copia los valores de la etiqueta tal como aparecen. Podrás usar este alimento en tus comidas."
+        icon={<Apple size={25} />}
+        title={isEditing ? 'Editar alimento' : 'Crear alimento'}
+        titleId="custom-food-title"
+      />
 
       <form
         className="custom-food-form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
-        <fieldset className="food-form-section">
+        <fieldset className="food-form-section food-form-section--general">
           <legend>Datos generales</legend>
+          <p className="food-form-help">
+            Identifica el alimento y la cantidad usada como referencia.
+          </p>
           <div className="food-form-grid">
             <FormField error={errors.name?.message} label="Nombre" required>
               <input id="custom-food-name" {...register('name')} type="text" />
@@ -248,11 +255,11 @@ export function CustomFoodFormPage() {
             </FormField>
             <FormField
               error={errors.categoryId?.message}
-              label="Categoria"
+              label="Categoría"
               required
             >
               <select id="custom-food-category" {...register('categoryId')}>
-                <option value="">Selecciona una categoria</option>
+                <option value="">Selecciona una categoría</option>
                 {categories.data?.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -262,7 +269,7 @@ export function CustomFoodFormPage() {
             </FormField>
             <FormField
               error={errors.preparationState?.message}
-              label="Estado de preparacion"
+              label="Estado de preparación"
               required
             >
               <select
@@ -365,6 +372,11 @@ export function CustomFoodFormPage() {
                       {definition.name} cantidad
                     </label>
                     <input
+                      aria-describedby={
+                        errors.nutrients?.[index]?.amount
+                          ? `custom-food-nutrient-${index}-error`
+                          : undefined
+                      }
                       aria-invalid={
                         errors.nutrients?.[index]?.amount ? 'true' : 'false'
                       }
@@ -376,14 +388,17 @@ export function CustomFoodFormPage() {
                       {...register(`nutrients.${index}.amount`)}
                     />
                     {errors.nutrients?.[index]?.amount?.message ? (
-                      <p className="form-field__error">
+                      <p
+                        className="form-field__error"
+                        id={`custom-food-nutrient-${index}-error`}
+                      >
                         {errors.nutrients[index]?.amount?.message}
                       </p>
                     ) : null}
                   </div>
                   {!definition.isRequired ? (
                     <button
-                      className="button button--text"
+                      className="button button--text food-row-remove"
                       onClick={() => nutrientFields.remove(index)}
                       type="button"
                     >
@@ -424,6 +439,7 @@ export function CustomFoodFormPage() {
                 onClick={handleAddNutrient}
                 type="button"
               >
+                <Plus aria-hidden="true" size={18} />
                 Agregar micronutriente
               </button>
             </div>
@@ -433,7 +449,7 @@ export function CustomFoodFormPage() {
         <fieldset className="food-form-section">
           <legend>Porciones</legend>
           <p className="food-form-help">
-            Agrega equivalencias utiles para seleccionar este alimento mas
+            Agrega equivalencias útiles para seleccionar este alimento más
             adelante.
           </p>
           <div className="custom-food-serving-list">
@@ -504,11 +520,11 @@ export function CustomFoodFormPage() {
                   />
                 </FormField>
                 <button
-                  className="button button--text"
+                  className="button button--text food-row-remove"
                   onClick={() => servingFields.remove(index)}
                   type="button"
                 >
-                  Quitar porcion
+                  Quitar porción
                 </button>
               </div>
             ))}
@@ -526,12 +542,18 @@ export function CustomFoodFormPage() {
             }
             type="button"
           >
-            Agregar porcion
+            <Plus aria-hidden="true" size={18} />
+            Agregar porción
           </button>
         </fieldset>
 
+        {mutationError ? (
+          <p className="food-form-error" role="alert">
+            No se pudo guardar el alimento. Inténtalo nuevamente.
+          </p>
+        ) : null}
         <div className="food-form-actions">
-          <Link className="button button--secondary" to="/app/alimentos">
+          <Link className="button button--text" to="/app/alimentos">
             Cancelar
           </Link>
           <button
@@ -539,6 +561,7 @@ export function CustomFoodFormPage() {
             disabled={isSaving}
             type="submit"
           >
+            {!isSaving ? <Save aria-hidden="true" size={18} /> : null}
             {isSaving
               ? isEditing
                 ? 'Guardando cambios...'
@@ -549,14 +572,6 @@ export function CustomFoodFormPage() {
           </button>
         </div>
       </form>
-      {mutationError ? (
-        <p className="auth-error" role="alert">
-          {getErrorMessage(
-            mutationError,
-            'No se pudo guardar el alimento. Intentalo nuevamente.',
-          )}
-        </p>
-      ) : null}
     </section>
   );
 }
@@ -567,13 +582,19 @@ function FormField({
   label,
   required = false,
 }: {
-  children: ReactElement<{ id?: string }>;
+  children: ReactElement<{
+    'aria-describedby'?: string;
+    'aria-invalid'?: boolean | 'false' | 'true';
+    'aria-required'?: boolean;
+    id?: string;
+  }>;
   error?: string;
   label: string;
   required?: boolean;
 }) {
   const child = Children.only(children);
   const inputId = isValidElement(child) ? child.props.id : undefined;
+  const errorId = inputId && error ? `${inputId}-error` : undefined;
 
   return (
     <div className="form-field">
@@ -581,8 +602,16 @@ function FormField({
         {label}
         {required ? ' *' : ''}
       </label>
-      {children}
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {cloneElement(child, {
+        'aria-describedby': errorId,
+        'aria-invalid': error ? 'true' : undefined,
+        'aria-required': required || undefined,
+      })}
+      {error ? (
+        <p className="form-field__error" id={errorId}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -685,16 +714,15 @@ function CustomFoodStatus({
       className="page-section"
       aria-labelledby="custom-food-status-title"
     >
-      <p className="eyebrow">Alimentos del hogar</p>
-      <h1 id="custom-food-status-title">Alimento personalizado</h1>
+      <PageHeader
+        icon={<Apple size={25} />}
+        title="Alimento personalizado"
+        titleId="custom-food-status-title"
+      />
       <p className="lead" role={isError ? 'alert' : 'status'}>
         {message}
       </p>
       {action}
     </section>
   );
-}
-
-function getErrorMessage(error: unknown, fallback: string): string {
-  return error instanceof Error ? error.message : fallback;
 }

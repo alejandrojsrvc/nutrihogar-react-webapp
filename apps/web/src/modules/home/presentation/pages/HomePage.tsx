@@ -1,8 +1,24 @@
-import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router';
-import { UserRound } from 'lucide-react';
+import type { CSSProperties, ReactNode } from 'react';
+import {
+  AlertTriangle,
+  Beef,
+  Check,
+  ChevronRight,
+  CircleCheck,
+  CircleDot,
+  Clock3,
+  Coffee,
+  Flame,
+  House,
+  Moon,
+  PackageCheck,
+  Plus,
+  Sun,
+  Utensils,
+  Wheat,
+} from 'lucide-react';
 import { formatCalories } from '@nutrihogar/domain';
-import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useDailyNutritionSummary } from '../../../meals/presentation/hooks/useMeals';
@@ -10,13 +26,12 @@ import {
   useInventoryDashboard,
   useInventorySyncStatus,
 } from '../../../inventory/presentation/hooks/useInventory';
-import { usePreparedFoodLeftovers } from '../../../recipes/presentation/hooks/usePreparedFoodLeftovers';
-import { useShoppingList } from '../../../shopping-list/presentation/hooks/useShoppingList';
 import { useWeeklyPlanForWeek } from '../../../meal-planning/presentation/hooks/useMealPlanning';
 import {
   canonicalWeekStart,
   todayInTimezone,
 } from '../../../meal-planning/domain/week';
+import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import '../home.css';
 
 const mealTypes = [
@@ -36,54 +51,45 @@ export function HomePage() {
     selectActiveHousehold,
   } = useHouseholds();
   const profilesQuery = useAdultProfiles(activeHousehold?.id);
-  const [selectedProfileId, setSelectedProfileId] = useState('');
+  const { activeProfileId } = useActiveProfile();
   const activeProfiles = profilesQuery.profiles.filter(
     (profile) => profile.isActive !== false,
   );
-  const profileId = selectedProfileId || activeProfiles[0]?.id || '';
+  const profileId = activeProfileId || activeProfiles[0]?.id || '';
   const date = todayInTimezone(activeHousehold?.timezone ?? 'UTC');
   const summaryQuery = useDailyNutritionSummary(profileId, date);
   const inventoryDashboard = useInventoryDashboard(activeHousehold?.id);
-  const leftoversQuery = usePreparedFoodLeftovers(activeHousehold?.id);
-  const shoppingListQuery = useShoppingList(activeHousehold?.id);
   const inventorySyncQuery = useInventorySyncStatus(activeHousehold?.id);
   const todayPlan = useWeeklyPlanForWeek(
     activeHousehold?.id,
     canonicalWeekStart(date),
   );
 
-  if (householdsPending)
+  if (householdsPending) {
     return (
       <section className="page-section" aria-labelledby="home-loading-title">
         <p className="eyebrow">Inicio</p>
         <h1 id="home-loading-title">Cargando tu espacio familiar</h1>
-        <p className="lead" role="status">
-          Consultando tus hogares...
-        </p>
+        <p className="lead" role="status">Consultando tus hogares...</p>
       </section>
     );
-  if (householdsError)
+  }
+  if (householdsError) {
     return (
       <section className="page-section" aria-labelledby="home-error-title">
         <p className="eyebrow">Inicio</p>
         <h1 id="home-error-title">No pudimos cargar tu hogar</h1>
-        <p className="lead" role="alert">
-          No se pudo conectar con la API de NutriHogar.
-        </p>
+        <p className="lead" role="alert">No se pudo conectar con la API de NutriHogar.</p>
       </section>
     );
+  }
   if (households.length === 0) return <Navigate replace to="/onboarding" />;
-  if (!activeHousehold)
+  if (!activeHousehold) {
     return (
-      <section
-        className="page-section"
-        aria-labelledby="household-select-title"
-      >
+      <section className="page-section" aria-labelledby="household-select-title">
         <p className="eyebrow">Tus hogares</p>
         <h1 id="household-select-title">Elige un hogar para continuar</h1>
-        <p className="lead">
-          Selecciona el espacio familiar que quieres consultar.
-        </p>
+        <p className="lead">Selecciona el espacio familiar que quieres consultar.</p>
         <div className="household-list" role="list">
           {households.map((household) => (
             <button
@@ -99,516 +105,306 @@ export function HomePage() {
         </div>
       </section>
     );
+  }
 
   return (
     <section className="page-section home-page" aria-labelledby="home-title">
-      <PageHeader
-        action={
-          <Link
-            className="button button--primary home-page__primary-action"
-            to={
-              profileId
-                ? `/app/comidas/nueva?profileId=${profileId}&date=${date}`
-                : '/app/perfil/editar'
-            }
-          >
-            {profileId ? 'Registrar comida' : 'Configurar perfil'}
-          </Link>
-        }
-        eyebrow="Hoy"
-        title="Qué hacemos hoy?"
-        titleId="home-title"
-        description={formatToday(date, activeHousehold.timezone)}
-      />
+      <header className="home-page__intro">
+        <div className="home-page__title-wrap">
+          <span className="home-page__title-icon" aria-hidden="true">
+            <Sun size={28} strokeWidth={1.8} />
+          </span>
+          <div>
+            <h1 id="home-title">Hoy</h1>
+            <p className="home-page__date">{formatToday(date, activeHousehold.timezone)}</p>
+          </div>
+        </div>
+      </header>
       {isSuccessNavigation(location.state) ? (
         <p className="profile-success" role="status">
-          {location.state.mealSaved
-            ? 'Comida registrada correctamente.'
-            : 'Perfil guardado correctamente.'}
+          {location.state.mealSaved ? 'Comida registrada correctamente.' : 'Perfil guardado correctamente.'}
         </p>
       ) : null}
-      <div className="household-summary">
-        <p className="household-summary__label">Hogar activo</p>
-        <h2>{activeHousehold.name}</h2>
-      </div>
-      <HomePlannedMeals date={date} plan={todayPlan} />
-      {activeProfiles.length > 1 ? (
-        <div className="form-field home-page__profile-selector">
-          <label htmlFor="home-profile">Consultar para</label>
-          <select
-            id="home-profile"
-            onChange={(event) => setSelectedProfileId(event.target.value)}
-            value={profileId}
-          >
-            {activeProfiles.map((profile) => (
-              <option key={profile.id} value={profile.id}>
-                {profile.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      ) : null}
-      <HomeInventoryPulse
-        dashboard={inventoryDashboard}
-        leftovers={leftoversQuery.data ?? []}
-        leftoversError={leftoversQuery.isError}
-        leftoversPending={leftoversQuery.isPending}
-        pendingShoppingItems={
-          (shoppingListQuery.data?.items ?? []).filter(
-            (item) => !item.purchased,
-          ).length
-        }
-        shoppingListError={shoppingListQuery.isError}
-        shoppingListPending={shoppingListQuery.isPending}
-        sync={inventorySyncQuery.data}
-      />
-      {profileId ? (
-        <>
-          <section
-            className="home-page__organization"
-            aria-labelledby="home-organization-title"
-          >
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">Organizar tu hogar</p>
-                <h2 id="home-organization-title">Todo en su lugar</h2>
-              </div>
-            </div>
-            <div className="organization-links">
-              <Link to="/app/inventario">
-                <strong>Inventario</strong>
-                <span>Lo que tienes disponible</span>
-              </Link>
-              <Link to="/app/lista-de-compras">
-                <strong>Lista de compras</strong>
-                <span>Lo que falta comprar</span>
-              </Link>
-              <Link to="/app/recetas">
-                <strong>Recetas</strong>
-                <span>Ideas para cocinar</span>
-              </Link>
-              <Link to="/app/compras">
-                <strong>Historial de compras</strong>
-                <span>Revisa tus compras</span>
-              </Link>
-            </div>
-          </section>
-          {summaryQuery.isPending ? (
-            <p role="status">Cargando el resumen de hoy...</p>
-          ) : null}
-          {summaryQuery.isError ? (
-            <p role="alert">No se pudo cargar el resumen de hoy.</p>
-          ) : null}
-          {summaryQuery.data ? (
-            <HomeSummary summary={summaryQuery.data} date={date} />
-          ) : null}
-        </>
-      ) : (
-        <p className="lead">
-          Configura un perfil adulto para comenzar a registrar comidas.
-        </p>
-      )}
-      <div className="household-section">
-        <h2>Integrantes</h2>
-        {profilesQuery.isPending ? (
-          <p role="status">Cargando integrantes...</p>
-        ) : null}
-        {profilesQuery.isError ? (
-          <p role="alert">No se pudieron cargar los integrantes.</p>
-        ) : null}
-        {!profilesQuery.isPending &&
-        !profilesQuery.isError &&
-        activeProfiles.length === 0 ? (
-          <p>Aún no hay perfiles adultos configurados en este hogar.</p>
-        ) : null}
-        {activeProfiles.length > 0 ? (
-          <div className="profile-list">
-            {activeProfiles.map((profile) => (
-              <div className="profile-card" key={profile.id}>
-                <div className="profile-card__identity">
-                  <UserRound size={18} aria-hidden="true" />
-                  <strong>{profile.name}</strong>
-                  <span className="profile-card__sex">
-                    {profile.biologicalSex === 'MALE' ? 'Hombre' : 'Mujer'}
-                  </span>
-                </div>
-                <span>
-                  {profile.weightKg == null
-                    ? 'Peso pendiente'
-                    : `${profile.weightKg} kg`}{' '}
-                  {' · '} {profile.heightCm} cm
-                </span>
-              </div>
-            ))}
+      <div className="home-page__layout">
+        {summaryQuery.data ? (
+          <>
+          <div className="home-page__main-column">
+            <HomeNutritionSummary summary={summaryQuery.data} />
+            <HomeMealTimeline date={date} plan={todayPlan} summary={summaryQuery.data} />
           </div>
-        ) : null}
-        <div className="home-actions">
-          {profileId ? (
-            <Link
-              className="button button--secondary"
-              to={`/app/perfiles/${profileId}/meta`}
-            >
-              Ver meta nutricional
-            </Link>
-          ) : null}
-          <Link
-            className="button button--secondary"
-            to={profileId ? '/app/perfil' : '/app/perfil/editar'}
-          >
-            {profileId ? 'Ver mi perfil' : 'Configurar perfil'}
-          </Link>
-          <Link className="button button--secondary" to="/app/alimentos">
-            Explorar alimentos
-          </Link>
-          <Link className="button button--secondary" to="/app/invitaciones">
-            Gestionar invitaciones
-          </Link>
+          <aside className="home-page__side-column" aria-label="Resumen del hogar">
+            <HomeNextMeal date={date} plan={todayPlan} summary={summaryQuery.data} />
+          </aside>
+          </>
+        ) : (
+          <section className="home-page__nutrition" aria-live="polite">
+            <h2>{profileId ? 'Resumen nutricional' : 'Configura tu perfil'}</h2>
+            <p role={summaryQuery.isError ? 'alert' : 'status'}>
+              {!profileId
+                ? 'Completa un perfil activo para consultar el resumen del día.'
+                : summaryQuery.isError
+                  ? 'No se pudo cargar el resumen de hoy.'
+                  : 'Cargando tu resumen...'}
+            </p>
+          </section>
+        )}
+        <HomeInventoryPulse dashboard={inventoryDashboard} sync={inventorySyncQuery.data} />
+      </div>
+    </section>
+  );
+}
+
+function HomeNutritionSummary({
+  summary,
+}: {
+  summary: NonNullable<ReturnType<typeof useDailyNutritionSummary>['data']>;
+}) {
+  const goal = summary.goal;
+  const calorieGoal = goal?.calories ?? 0;
+  const consumedCalories = summary.consumed.calories;
+  const remainingCalories = Math.max(calorieGoal - consumedCalories, 0);
+  const calorieProgress = progress(consumedCalories, calorieGoal);
+  const hasGoal = calorieGoal > 0;
+
+  return (
+    <section className="home-page__nutrition" aria-labelledby="home-nutrition-title">
+      <h2 id="home-nutrition-title" className="visually-hidden">Resumen nutricional de hoy</h2>
+      <div className="home-nutrition__overview">
+        <div
+          className="home-calorie-ring"
+          role="progressbar"
+          aria-label="Calorías consumidas"
+          aria-valuemax={Math.max(calorieGoal, consumedCalories, 1)}
+          aria-valuemin={0}
+          aria-valuenow={consumedCalories}
+          style={{ '--calorie-progress': `${calorieProgress}%` } as CSSProperties}
+        >
+          <div>
+            <Flame size={15} aria-hidden="true" />
+            <strong>{formatCaloriesNumber(consumedCalories)}</strong>
+            <small>kcal</small>
+          </div>
+        </div>
+        <div className="home-nutrition__copy">
+          <p><strong>{formatCalories(consumedCalories)}</strong> consumidas</p>
+          <p className="home-nutrition__remaining">{formatCalories(remainingCalories)} restantes</p>
+          <p className="home-nutrition__goal">Objetivo diario: {formatCalories(calorieGoal)}</p>
+          <div className="home-page__calorie-track" aria-hidden="true">
+            <span style={{ width: `${calorieProgress}%` }} />
+          </div>
+        </div>
+        <div className="home-nutrition__encouragement">
+          {hasGoal ? <CircleCheck size={31} aria-hidden="true" /> : null}
+          <p>{hasGoal ? <><strong>¡Vas genial!</strong><br />Sigue con tu objetivo diario.</> : 'Configura tu objetivo diario para ver tu progreso.'}</p>
         </div>
       </div>
+      <div className="home-page__macros">
+        <NutritionMetric icon={<Beef size={18} />} label="Proteína" value={summary.consumed.proteinGrams} goal={goal?.proteinGrams} tone="protein" />
+        <NutritionMetric icon={<Wheat size={18} />} label="Carbohidratos" value={summary.consumed.carbohydrateGrams} goal={goal?.carbohydrateGrams} tone="carbohydrates" />
+        <NutritionMetric icon={<CircleDot size={18} />} label="Grasas" value={summary.consumed.fatGrams} goal={goal?.fatGrams} tone="fat" />
+      </div>
+    </section>
+  );
+}
+
+function NutritionMetric({
+  goal,
+  icon,
+  label,
+  tone,
+  value,
+}: {
+  goal?: number;
+  icon: ReactNode;
+  label: string;
+  tone: 'protein' | 'carbohydrates' | 'fat';
+  value: number;
+}) {
+  const percentage = goal ? Math.min(100, Math.round((value / goal) * 100)) : 0;
+  return (
+    <div className={`home-macro home-macro--${tone}`}>
+      <div className="home-macro__content">
+        <span className="home-macro__icon" aria-hidden="true">{icon}</span>
+        <div className="home-macro__copy">
+          <strong>{label}</strong>
+          <span>{Math.round(value)} / {goal == null ? '—' : `${Math.round(goal)} g`}</span>
+        </div>
+      </div>
+      <div className="home-macro__track" aria-hidden="true"><span style={{ width: `${percentage}%` }} /></div>
+      <small>{goal == null ? 'Sin objetivo' : `${percentage}%`}</small>
+    </div>
+  );
+}
+
+function HomeNextMeal({
+  date,
+  plan,
+  summary,
+}: {
+  date: string;
+  plan: ReturnType<typeof useWeeklyPlanForWeek>;
+  summary: NonNullable<ReturnType<typeof useDailyNutritionSummary>['data']>;
+}) {
+  const registered = new Set(summary.meals.map((meal) => meal.mealType));
+  const nextMeal = (plan.data?.meals ?? []).find(
+    (meal) =>
+      meal.date === date &&
+      !['CANCELLED', 'REPLACED', 'SKIPPED'].includes(meal.status) &&
+      !registered.has(meal.type),
+  );
+
+  return (
+    <section className="home-next-meal" aria-labelledby="home-next-meal-title">
+      <div className="home-card__heading"><Clock3 size={19} aria-hidden="true" /><h2 id="home-next-meal-title">Próximo</h2></div>
+      {plan.isPending ? <p className="home-card__muted" role="status">Cargando tu próxima comida...</p> : null}
+      {plan.isError ? <p className="home-card__muted" role="alert">No se pudo cargar el plan de hoy.</p> : null}
+      {!plan.isPending && !plan.isError && nextMeal ? (
+        <>
+          <div className="home-next-meal__body">
+            <p className="home-next-meal__type">{mealLabel(nextMeal.type)}</p>
+            <strong>{nextMeal.name ?? sourceLabel(nextMeal.source)}</strong>
+            <span>Comida planificada</span>
+          </div>
+          <Link className="home-card__link" to="/app/plan-semanal">Ver detalles <ChevronRight size={17} aria-hidden="true" /></Link>
+        </>
+      ) : null}
+      {!plan.isPending && !plan.isError && !nextMeal ? <p className="home-card__muted">No hay una próxima comida planificada.</p> : null}
+    </section>
+  );
+}
+
+function HomeMealTimeline({
+  date,
+  plan,
+  summary,
+}: {
+  date: string;
+  plan: ReturnType<typeof useWeeklyPlanForWeek>;
+  summary: NonNullable<ReturnType<typeof useDailyNutritionSummary>['data']>;
+}) {
+  const registered = new Map(summary.meals.map((meal) => [meal.mealType, meal]));
+  const planned = new Map(
+    (plan.data?.meals ?? []).filter((meal) => meal.date === date).map((meal) => [meal.type, meal]),
+  );
+  return (
+    <section className="home-page__meals" aria-labelledby="home-meals-title">
+      <div className="home-card__heading"><Utensils size={19} aria-hidden="true" /><h2 id="home-meals-title">Comidas de hoy</h2></div>
+      {plan.isError ? <p role="alert">No se pudieron cargar las comidas planificadas.</p> : null}
+      <div className="home-meal-timeline__head" aria-hidden="true">
+        <span />
+        <span>Comida</span>
+        <span>Consumido</span>
+        <span>Estado</span>
+        <span />
+      </div>
+      <ul className="home-meal-timeline">
+        {mealTypes.map(([type, label]) => {
+          const meal = registered.get(type);
+          const plannedMeal = planned.get(type);
+          return (
+            <li className={meal ? 'is-complete' : ''} key={type}>
+              <span className="home-meal-timeline__marker" aria-hidden="true">{meal ? <Check size={17} /> : mealIcon(type)}</span>
+              <div>
+                <strong>{label}</strong>
+                {meal ? <Link to={`/app/comidas/${meal.id}`}>{meal.preparation?.recipeName ?? 'Comida registrada'}</Link> : plannedMeal ? <span>{plannedMeal.name ?? sourceLabel(plannedMeal.source)}</span> : <span>Sin registrar</span>}
+                <small className="home-meal-timeline__subtext">{meal ? formatTime(meal.consumedAt) : plannedMeal ? 'Planificada' : 'Sin registrar'}</small>
+              </div>
+              <span className="home-meal-timeline__calories">{meal ? formatCalories(meal.totals.calories) : '—'}</span>
+              <span className={`home-meal-timeline__status${meal ? ' is-complete' : plannedMeal?.status === 'CANCELLED' ? ' is-cancelled' : ''}`}>{meal ? 'Registrado' : plannedMeal?.status === 'CANCELLED' ? 'Cancelada' : plannedMeal ? 'Pendiente' : 'Sin registrar'}</span>
+              <ChevronRight size={17} aria-hidden="true" />
+            </li>
+          );
+        })}
+      </ul>
+      <Link className="button button--primary home-page__primary-action" to={`/app/comidas/nueva?profileId=${summary.profile.id}&date=${date}`}>
+        <Plus size={20} aria-hidden="true" /> Registrar comida
+      </Link>
     </section>
   );
 }
 
 function HomeInventoryPulse({
   dashboard,
-  leftovers,
-  leftoversError,
-  leftoversPending,
-  pendingShoppingItems,
-  shoppingListError,
-  shoppingListPending,
   sync,
 }: {
   dashboard: ReturnType<typeof useInventoryDashboard>;
-  leftovers: Array<{ id: string; availableWeight: number; status: string }>;
-  leftoversError: boolean;
-  leftoversPending: boolean;
-  pendingShoppingItems: number;
-  shoppingListError: boolean;
-  shoppingListPending: boolean;
-  sync?: {
-    isOnline: boolean;
-    pendingCount: number;
-    conflictsCount: number;
-    lastSyncAt: string | null;
-  };
+  sync?: { isOnline: boolean; pendingCount: number; conflictsCount: number; lastSyncAt: string | null };
 }) {
   const inventory = dashboard.inventory.data?.items ?? [];
   const critical = [...inventory]
-    .filter(
-      (item) =>
-        item.status === 'DEPLETED' ||
-        item.currentQuantity <= 0 ||
-        (item.minimumQuantity != null &&
-          item.currentQuantity <= item.minimumQuantity) ||
-        isExpiring(item.expiresAt),
-    )
+    .filter((item) => item.status === 'DEPLETED' || item.currentQuantity <= 0 || (item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity) || isExpiring(item.expiresAt))
     .sort((a, b) => priority(a) - priority(b))
     .slice(0, 3);
-  const count = (query: {
-    data?: { total: number };
-    isError: boolean;
-    isPending: boolean;
-  }) =>
-    query.isError
-      ? '!'
-      : query.isPending
-        ? '...'
-        : String(query.data?.total ?? 0);
   return (
-    <section
-      className="home-page__inventory-pulse"
-      aria-labelledby="home-inventory-pulse-title"
-    >
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">Estado del hogar</p>
-          <h2 id="home-inventory-pulse-title">Lo que requiere atención</h2>
-        </div>
-        <Link to="/app/inventario">Ver inventario</Link>
+    <section className="home-page__inventory-pulse" aria-labelledby="home-inventory-pulse-title">
+      <div className="home-card__heading">
+        <House size={19} aria-hidden="true" />
+        <h2 id="home-inventory-pulse-title">En casa</h2>
+        <Link to="/app/inventario" aria-label="Ver inventario"><ChevronRight size={18} aria-hidden="true" /></Link>
       </div>
-      {dashboard.inventory.isError ? (
-        <p role="alert">No se pudo cargar el inventario.</p>
-      ) : null}
-      <div className="home-pulse-grid">
-        <Link to="/app/inventario?status=DEPLETED">
-          <strong>{count(dashboard.depleted)}</strong>
-          <span>Agotados</span>
-        </Link>
-        <Link to="/app/inventario?belowMinimum=true">
-          <strong>{count(dashboard.belowMinimum)}</strong>
-          <span>Bajo mínimo</span>
-        </Link>
-        <Link to="/app/inventario?expiresBefore=30-days">
-          <strong>{count(dashboard.expiring)}</strong>
-          <span>Por vencer</span>
-        </Link>
-        <Link to="/app/sobrantes">
-          <strong>
-            {leftoversError
-              ? '!'
-              : leftoversPending
-                ? '...'
-                : leftovers.filter(
-                    (leftover) => leftover.status === 'AVAILABLE',
-                  ).length}
-          </strong>
-          <span>Sobrantes</span>
-        </Link>
-        <Link to="/app/lista-de-compras">
-          <strong>
-            {shoppingListError
-              ? '!'
-              : shoppingListPending
-                ? '...'
-                : pendingShoppingItems}
-          </strong>
-          <span>Por comprar</span>
-        </Link>
-      </div>
+      {dashboard.inventory.isError ? <p role="alert">No se pudo cargar el inventario.</p> : null}
       {critical.length ? (
         <ul className="home-pulse-list">
           {critical.map((item) => (
             <li key={item.id}>
-              <Link
-                to={
-                  item.itemType === 'PREPARED_FOOD'
-                    ? `/app/inventario/${item.id}/consumir-preparado`
-                    : `/app/inventario/${item.id}`
-                }
-              >
-                <span>{item.name}</span>
-                <small>
-                  {item.status === 'DEPLETED' || item.currentQuantity <= 0
-                    ? 'Agotado'
-                    : item.minimumQuantity != null &&
-                        item.currentQuantity <= item.minimumQuantity
-                      ? 'Bajo mínimo'
-                      : 'Próximo a vencer'}
-                </small>
+              <Link to={item.itemType === 'PREPARED_FOOD' ? `/app/inventario/${item.id}/consumir-preparado` : `/app/inventario/${item.id}`}>
+                <span className="home-pulse-list__name">
+                  <span className="home-pulse-list__icon" aria-hidden="true">{item.status === 'DEPLETED' || item.currentQuantity <= 0 ? <AlertTriangle size={17} /> : <PackageCheck size={17} />}</span>
+                  <strong>{item.name}</strong>
+                </span>
+                <small>{item.status === 'DEPLETED' || item.currentQuantity <= 0 ? 'Agotado' : item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity ? 'Bajo mínimo' : 'Próximo a vencer'}</small>
               </Link>
             </li>
           ))}
         </ul>
       ) : dashboard.inventory.isPending ? (
         <p role="status">Cargando alertas del inventario...</p>
-      ) : dashboard.inventory.isError ? null : (
-        <p>El inventario no tiene alertas prioritarias.</p>
-      )}
-      <div className="home-pulse-actions">
-        <Link className="button button--secondary" to="/app/compras/nueva">
-          Agregar compra
-        </Link>
-        <Link className="button button--secondary" to="/app/inventario">
-          Ajustar inventario
-        </Link>
-        <Link className="button button--secondary" to="/app/sobrantes">
-          Consumir sobrante
-        </Link>
-      </div>
-      <p className="supporting-text">
-        {sync?.isOnline === false
-          ? 'Sin conexión: se muestran los datos guardados en este dispositivo.'
-          : sync?.pendingCount
-            ? `${sync.pendingCount} operación${sync.pendingCount === 1 ? '' : 'es'} pendiente${sync.pendingCount === 1 ? '' : 's'} de sincronizar.`
-            : sync?.conflictsCount
-              ? `${sync.conflictsCount} conflicto${sync.conflictsCount === 1 ? '' : 's'} requiere${sync.conflictsCount === 1 ? '' : 'n'} revisión.`
-              : sync?.lastSyncAt
-                ? `Última sincronización: ${formatTime(sync.lastSyncAt)}`
-                : 'Inventario y compras al día.'}
-      </p>
+      ) : dashboard.inventory.isError ? null : <p>El inventario no tiene alertas prioritarias.</p>}
+      <p className="supporting-text">{sync?.isOnline === false ? 'Sin conexión: se muestran los datos guardados en este dispositivo.' : sync?.pendingCount ? `${sync.pendingCount} operación${sync.pendingCount === 1 ? '' : 'es'} pendiente${sync.pendingCount === 1 ? '' : 's'} de sincronizar.` : sync?.conflictsCount ? `${sync.conflictsCount} conflicto${sync.conflictsCount === 1 ? '' : 's'} requiere${sync.conflictsCount === 1 ? '' : 'n'} revisión.` : sync?.lastSyncAt ? `Última sincronización: ${formatTime(sync.lastSyncAt)}` : 'Inventario y compras al día.'}</p>
     </section>
   );
 }
 
-function HomeSummary({
-  summary,
-  date,
-}: {
-  summary: NonNullable<ReturnType<typeof useDailyNutritionSummary>['data']>;
-  date: string;
-}) {
-  const registeredTypes = new Set(summary.meals.map((meal) => meal.mealType));
-  const nextMeal = mealTypes.find(([type]) => !registeredTypes.has(type));
-  return (
-    <section
-      className="home-page__summary"
-      aria-labelledby="home-summary-title"
-    >
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">Resumen de hoy</p>
-          <h2 id="home-summary-title">{summary.profile.name}</h2>
-        </div>
-        <Link to={`/app/resumen/${date}`}>Ver resumen completo</Link>
-      </div>
-      <p className="home-page__calories">
-        {formatCalories(summary.consumed.calories)} <span>consumidas</span>
-      </p>
-      <p className="supporting-text">
-        {nextMeal
-          ? `Próxima comida: ${nextMeal[1]}`
-          : 'Ya registraste las comidas principales de hoy.'}
-      </p>
-      <div className="home-page__recent-meals">
-        <h3>Últimas comidas</h3>
-        {summary.meals.length === 0 ? (
-          <p>Aún no hay comidas registradas hoy.</p>
-        ) : (
-          summary.meals
-            .slice(-3)
-            .reverse()
-            .map((meal) => (
-              <Link
-                className="daily-meal"
-                key={meal.id}
-                to={`/app/comidas/${meal.id}`}
-              >
-                <span>
-                  <strong>{mealTypeLabel(meal.mealType)}</strong>
-                  <small>{formatTime(meal.consumedAt)}</small>
-                </span>
-                <span className="daily-meal__totals">
-                  {formatCalories(meal.totals.calories)}
-                  <small>Ver detalle</small>
-                </span>
-              </Link>
-            ))
-        )}
-      </div>
-    </section>
-  );
+function priority(item: { status: string; currentQuantity: number; minimumQuantity: number | null; expiresAt: string | null }) {
+  return item.status === 'DEPLETED' || item.currentQuantity <= 0 ? 0 : item.minimumQuantity != null && item.currentQuantity <= item.minimumQuantity ? 1 : item.expiresAt ? new Date(item.expiresAt).getTime() : 2;
 }
 
-function priority(item: {
-  status: string;
-  currentQuantity: number;
-  minimumQuantity: number | null;
-  expiresAt: string | null;
-}) {
-  return item.status === 'DEPLETED' || item.currentQuantity <= 0
-    ? 0
-    : item.minimumQuantity != null &&
-        item.currentQuantity <= item.minimumQuantity
-      ? 1
-      : item.expiresAt
-        ? new Date(item.expiresAt).getTime()
-        : 2;
-}
-function mealTypeLabel(value: string) {
-  return mealTypes.find(([type]) => type === value)?.[1] ?? value;
-}
 function formatTime(value: string) {
-  return new Intl.DateTimeFormat('es-AR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value));
-}
-function isSuccessNavigation(
-  state: unknown,
-): state is { mealSaved?: boolean; profileSaved?: boolean } {
-  return (
-    typeof state === 'object' &&
-    state !== null &&
-    ('mealSaved' in state || 'profileSaved' in state)
-  );
-}
-function isExpiring(value: string | null) {
-  return (
-    value != null &&
-    value <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-  );
-}
-function formatToday(date: string, timezone: string) {
-  return new Intl.DateTimeFormat('es-ES', {
-    dateStyle: 'full',
-    timeZone: timezone,
-  }).format(new Date(`${date}T12:00:00`));
+  return new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
-function HomePlannedMeals({
-  date,
-  plan,
-}: {
-  date: string;
-  plan: ReturnType<typeof useWeeklyPlanForWeek>;
-}) {
-  if (plan.isPending)
-    return <p role="status">Cargando comidas planificadas...</p>;
-  if (plan.isError)
-    return <p role="alert">No se pudieron cargar las comidas planificadas.</p>;
-  const meals = (plan.data?.meals ?? [])
-    .filter((meal) => meal.date === date)
-    .sort((a, b) => a.position - b.position);
-  return (
-    <section
-      className="home-page__planned-meals"
-      aria-labelledby="home-planned-meals-title"
-    >
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">Hoy</p>
-          <h2 id="home-planned-meals-title">Comidas planificadas</h2>
-        </div>
-        <Link
-          to={`/app/plan-semanal?semana=${plan.data?.weekStart ?? canonicalWeekStart(date)}`}
-        >
-          Ver plan semanal
-        </Link>
-      </div>
-      {meals.length ? (
-        <ul>
-          {meals.map((meal) => (
-            <li key={meal.id}>
-              <span>
-                <strong>{mealTypeLabel(meal.type)}</strong>
-                <small>
-                  {meal.name ?? sourceLabel(meal.source)} · {meal.position + 1}°
-                  en el orden
-                </small>
-              </span>
-              <span>
-                {meal.status === 'CONSUMED'
-                  ? 'Consumida'
-                  : meal.status === 'PREPARED'
-                    ? 'Preparada'
-                    : meal.status === 'SERVED'
-                      ? 'Servida'
-                      : meal.status === 'CANCELLED'
-                        ? 'Cancelada'
-                        : 'Planificada'}
-              </span>
-              {meal.mealId ? (
-                <Link to={`/app/comidas/${meal.mealId}`}>Ver consumo</Link>
-              ) : meal.source === 'RECIPE' ? (
-                <Link
-                  to={`/app/plan-semanal/${plan.data?.id}/comidas/${meal.id}/preparar`}
-                >
-                  Preparar
-                </Link>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No hay comidas planificadas para hoy.</p>
-      )}
-    </section>
-  );
+function isSuccessNavigation(state: unknown): state is { mealSaved?: boolean; profileSaved?: boolean } {
+  return typeof state === 'object' && state !== null && ('mealSaved' in state || 'profileSaved' in state);
+}
+
+function isExpiring(value: string | null) {
+  return value != null && value <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+}
+
+function formatToday(date: string, timezone: string) {
+  const formatted = new Intl.DateTimeFormat('es-ES', { timeZone: timezone, weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(`${date}T12:00:00`));
+  return formatted.replace(',', '').replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function progress(value: number, goal: number) {
+  return goal > 0 ? Math.min(100, Math.round((value / goal) * 100)) : 0;
+}
+
+function formatCaloriesNumber(value: number) {
+  return formatCalories(value).replace(/\s*kcal$/, '');
 }
 
 function sourceLabel(source: string) {
-  return (
-    (
-      {
-        DELIVERY: 'Delivery',
-        EMPTY: 'Sin asignar',
-        FREE_MEAL: 'Comida libre',
-        PREVIOUS_MEAL: 'Comida anterior',
-        RECIPE: 'Receta',
-        RESTAURANT: 'Restaurante',
-        UNPLANNED: 'No planificada',
-      } as Record<string, string>
-    )[source] ?? source
-  );
+  return ({ DELIVERY: 'Delivery', EMPTY: 'Sin asignar', FREE_MEAL: 'Comida libre', PREVIOUS_MEAL: 'Comida anterior', RECIPE: 'Receta', RESTAURANT: 'Restaurante', UNPLANNED: 'No planificada' } as Record<string, string>)[source] ?? source;
+}
+
+function mealLabel(type: string) {
+  return mealTypes.find(([mealType]) => mealType === type)?.[1] ?? type;
+}
+
+function mealIcon(type: string) {
+  if (type === 'BREAKFAST') return <Sun size={18} />;
+  if (type === 'SNACK') return <Coffee size={18} />;
+  if (type === 'DINNER') return <Moon size={18} />;
+  return <Utensils size={18} />;
 }

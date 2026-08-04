@@ -89,7 +89,7 @@ describe('CustomFoodFormPage', () => {
 
     await user.type(await screen.findByLabelText(/Nombre/), 'Pan casero');
     await user.selectOptions(
-      screen.getByLabelText(/Categoria/),
+      screen.getByLabelText(/Categoría/),
       'category-meat',
     );
     await user.clear(screen.getByLabelText('Energia cantidad'));
@@ -135,7 +135,7 @@ describe('CustomFoodFormPage', () => {
     );
     expect(screen.getByLabelText('Fibra cantidad')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Agregar porcion' }));
+    await user.click(screen.getByRole('button', { name: 'Agregar porción' }));
     expect(screen.getByPlaceholderText('Ej. 1 rebanada')).toBeInTheDocument();
   });
 

@@ -1,10 +1,12 @@
-import { useState, type ReactElement } from 'react';
+import { useCallback, useState, type ReactElement } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ShoppingCart } from 'lucide-react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 
 import { ShoppingListEditDialog } from '../components/ShoppingListEditDialog';
 import { ShoppingListItem } from '../components/ShoppingListItem';
+import { BottomSheet, Dialog } from '../../../../shared/presentation/components/Overlay';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
@@ -14,6 +16,7 @@ import {
   useMarkShoppingListItemPurchased,
   useRemoveShoppingListItem,
   useShoppingList,
+  useShoppingListConnectivity,
   useUpdateShoppingListItem,
 } from '../hooks/useShoppingList';
 import {
@@ -31,6 +34,7 @@ export function ShoppingListPage() {
   const markPurchased = useMarkShoppingListItemPurchased();
   const generate = useGenerateShoppingList();
   const convert = useConvertShoppingListToPurchase();
+  const isOnline = useShoppingListConnectivity();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string[]>([]);
   const [drafts, setDrafts] = useState<
@@ -38,11 +42,26 @@ export function ShoppingListPage() {
   >({});
   const [addOpen, setAddOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editError, setEditError] = useState('');
   const [conversionOpen, setConversionOpen] = useState(false);
   const [storeName, setStoreName] = useState('');
   const [total, setTotal] = useState('');
   const [currency, setCurrency] = useState('ARS');
   const [purchaseDate, setPurchaseDate] = useState(toDateTimeInput(new Date()));
+  const [conversionError, setConversionError] = useState('');
+  const closeAdd = useCallback(() => setAddOpen(false), []);
+  const closeConversion = useCallback(() => setConversionOpen(false), []);
+  const closeEditor = useCallback(() => {
+    if (editingItemId) {
+      setDrafts((current) => {
+        const next = { ...current };
+        delete next[editingItemId];
+        return next;
+      });
+    }
+    setEditError('');
+    setEditingItemId(null);
+  }, [editingItemId]);
   const {
     formState: { errors },
     handleSubmit,
@@ -61,9 +80,16 @@ export function ShoppingListPage() {
     );
   if (households.isError || !households.activeHousehold)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar el hogar activo.
-      </p>
+      <section className="page-section" role="alert">
+        <p>
+          {isOnline
+            ? 'No se pudo cargar el hogar activo.'
+            : 'No se pudo identificar el hogar sin conexión.'}
+        </p>
+        <button className="button button--secondary" onClick={() => void households.refetch()} type="button">
+          Reintentar
+        </button>
+      </section>
     );
 
   const householdId = households.activeHousehold.id;
@@ -119,33 +145,74 @@ export function ShoppingListPage() {
     unit: string;
   }) {
     const value = draftFor(item);
-    if (!value || Number(value.quantity) <= 0 || !value.name.trim()) return;
-    await update.mutateAsync({
-      itemId: item.id,
-      input: {
-        name: value.name.trim(),
-        quantity: Number(value.quantity),
-        unit: value.unit,
-      },
-    });
-    setEditingItemId(null);
+    const parsed = shoppingListItemSchema.safeParse(value);
+    if (!parsed.success) {
+      setEditError(parsed.error.issues[0]?.message ?? 'Revisa el producto.');
+      return;
+    }
+    setEditError('');
+    try {
+      await update.mutateAsync({
+        itemId: item.id,
+        input: {
+          name: parsed.data.name.trim(),
+          quantity: Number(parsed.data.quantity),
+          unit: parsed.data.unit,
+        },
+      });
+      setEditingItemId(null);
+    } catch (error) {
+      setEditError(
+        error instanceof Error ? error.message : 'No se pudo guardar el cambio.',
+      );
+    }
   }
 
   async function convertSelected() {
     const selectedItems = pendingItems.filter((item) =>
       selected.includes(item.id),
     );
-    if (!selectedItems.length || !storeName.trim() || Number(total) <= 0)
+    if (!selectedItems.length) {
+      setConversionError('Selecciona al menos un producto pendiente.');
       return;
+    }
+    if (
+      selectedItems.some(
+        (item) =>
+          !shoppingListItemSchema.safeParse({
+            name: drafts[item.id]?.name ?? item.name,
+            quantity: String(drafts[item.id]?.quantity ?? item.quantity),
+            unit: drafts[item.id]?.unit ?? item.unit,
+          }).success,
+      )
+    ) {
+      setConversionError(
+        'Revisa que cada producto tenga una cantidad mayor que cero y una unidad.',
+      );
+      return;
+    }
+    if (!storeName.trim()) {
+      setConversionError('Indica el comercio.');
+      return;
+    }
+    if (!Number.isFinite(Number(total)) || Number(total) <= 0) {
+      setConversionError('Indica un total mayor que cero.');
+      return;
+    }
+    if (!currency.trim() || Number.isNaN(new Date(purchaseDate).getTime())) {
+      setConversionError('Indica una fecha y una moneda válidas.');
+      return;
+    }
+    setConversionError('');
     try {
       const purchase = await convert.mutateAsync({
         householdId,
         input: {
           currency,
-          itemIds: selected,
+          itemIds: selectedItems.map((item) => item.id),
           items: selectedItems.map((item) => ({
             foodId: item.foodId ?? undefined,
-            nameSnapshot: item.name,
+            nameSnapshot: drafts[item.id]?.name ?? item.name,
             quantity: Number(drafts[item.id]?.quantity ?? item.quantity),
             sourceShoppingItemId: item.id,
             unit: drafts[item.id]?.unit ?? item.unit,
@@ -173,21 +240,26 @@ export function ShoppingListPage() {
           </Link>
         }
         eyebrow={households.activeHousehold.name}
+        icon={<ShoppingCart size={22} />}
         title="Lista de compras"
         titleId="shopping-list-title"
         description="Organiza lo pendiente sin confundir comprar con actualizar el inventario."
       />
       <div className="shopping-list-actions">
         <button
-          className="button button--primary"
-          onClick={() => setAddOpen(true)}
+          className={`button ${selected.length ? 'button--secondary' : 'button--primary'}`}
+          disabled={!isOnline}
+          onClick={() => {
+            add.reset();
+            setAddOpen(true);
+          }}
           type="button"
         >
           Agregar producto
         </button>
         <button
           className="button button--secondary"
-          disabled={generate.isPending}
+          disabled={!isOnline || generate.isPending}
           onClick={() => generate.mutate(householdId)}
           type="button"
         >
@@ -195,25 +267,18 @@ export function ShoppingListPage() {
             ? 'Revisando inventario...'
             : 'Generar desde inventario'}
         </button>
-        {selected.length ? (
-          <button
-            className="button button--primary"
-            onClick={() => setConversionOpen(true)}
-            type="button"
-          >
-            Registrar compra ({selected.length})
-          </button>
-        ) : null}
       </div>
+      {!isOnline ? (
+        <p className="feature-connectivity feature-connectivity--offline" role="status">
+          Sin conexión. Puedes revisar la lista cargada, pero los cambios requieren conexión y no se pondrán en cola.
+        </p>
+      ) : null}
       {addOpen ? (
-        <div className="shopping-list-modal" role="presentation">
-          <section
-            aria-labelledby="shopping-add-title"
-            aria-modal="true"
-            className="shopping-list-modal__content"
-            role="dialog"
-          >
-            <h2 id="shopping-add-title">Agregar producto</h2>
+        <BottomSheet
+          onClose={closeAdd}
+          open
+          title="Agregar producto"
+        >
             <form
               className="shopping-list-add-form"
               noValidate
@@ -252,10 +317,10 @@ export function ShoppingListPage() {
                   <option value="SERVING">Porción</option>
                 </select>
               </Field>
-              <div className="shopping-list-modal__actions">
+              <div className="shopping-list-sheet__actions">
                 <button
                   className="button button--secondary"
-                  onClick={() => setAddOpen(false)}
+                  onClick={closeAdd}
                   type="button"
                 >
                   Cancelar
@@ -268,14 +333,22 @@ export function ShoppingListPage() {
                   {add.isPending ? 'Agregando...' : 'Agregar a la lista'}
                 </button>
               </div>
+              {add.error ? (
+                <p className="form-field__error" role="alert">
+                  {errorMessage(add.error, 'No se pudo agregar el producto.')}
+                </p>
+              ) : null}
             </form>
-          </section>
-        </div>
+        </BottomSheet>
       ) : null}
       {list.isPending ? <p role="status">Cargando lista...</p> : null}
       {list.isError ? (
         <div role="alert">
-          <p>No se pudo cargar la lista de compras.</p>
+          <p>
+            {isOnline
+              ? 'No se pudo cargar la lista de compras.'
+              : 'No hay una lista guardada disponible sin conexión.'}
+          </p>
           <button
             className="button button--secondary"
             onClick={() => void list.refetch()}
@@ -295,12 +368,19 @@ export function ShoppingListPage() {
         <ul className="shopping-list-items">
           {items.map((item) => (
             <ShoppingListItem
-              isMarking={markPurchased.isPending}
-              isRemoving={remove.isPending}
+              isMarking={
+                markPurchased.isPending && markPurchased.variables === item.id
+              }
+              isReadOnly={!isOnline}
+              isRemoving={remove.isPending && remove.variables === item.id}
               isSelected={selected.includes(item.id)}
               item={item}
               key={item.id}
-              onEdit={() => setEditingItemId(item.id)}
+              onEdit={() => {
+                update.reset();
+                setEditError('');
+                setEditingItemId(item.id);
+              }}
               onMarkPurchased={() =>
                 markPurchased.mutate(item.id, {
                   onSuccess: () =>
@@ -310,10 +390,12 @@ export function ShoppingListPage() {
                 })
               }
               onRemove={() => {
-                remove.mutate(item.id);
-                setSelected((current) =>
-                  current.filter((id) => id !== item.id),
-                );
+                remove.mutate(item.id, {
+                  onSuccess: () =>
+                    setSelected((current) =>
+                      current.filter((id) => id !== item.id),
+                    ),
+                });
               }}
               onToggle={(checked) =>
                 setSelected((current) =>
@@ -326,6 +408,14 @@ export function ShoppingListPage() {
           ))}
         </ul>
       ) : null}
+      {markPurchased.error || remove.error || generate.error ? (
+        <p className="form-field__error" role="alert">
+          {errorMessage(
+            markPurchased.error ?? remove.error ?? generate.error,
+            'No se pudo actualizar la lista.',
+          )}
+        </p>
+      ) : null}
       {editingItemId ? (
         (() => {
           const item = items.find(
@@ -334,85 +424,155 @@ export function ShoppingListPage() {
           return item ? (
             <ShoppingListEditDialog
               draft={draftFor(item)}
+              error={editError}
               isSaving={update.isPending}
               onChange={(patch) => updateDraft(item, patch)}
-              onClose={() => setEditingItemId(null)}
+              onClose={closeEditor}
               onSave={() => void saveItem(item)}
             />
           ) : null;
         })()
       ) : null}
       {conversionOpen ? (
-        <section
-          className="shopping-conversion"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="shopping-conversion-title"
+        <Dialog
+          onClose={closeConversion}
+          open
+          title="Completar compra"
         >
-          <h2 id="shopping-conversion-title">Completar compra</h2>
-          <p>
-            Se creará un borrador con los elementos seleccionados. La lista se
-            marcará como comprada solo después de confirmar.
-          </p>
-          <div className="purchase-form-grid">
-            <Field id="conversion-store" label="Comercio">
-              <input
-                id="conversion-store"
-                onChange={(event) => setStoreName(event.target.value)}
-                value={storeName}
-              />
-            </Field>
-            <Field id="conversion-date" label="Fecha">
-              <input
-                id="conversion-date"
-                onChange={(event) => setPurchaseDate(event.target.value)}
-                type="datetime-local"
-                value={purchaseDate}
-              />
-            </Field>
-            <Field id="conversion-total" label="Total">
-              <input
-                id="conversion-total"
-                min="0"
-                onChange={(event) => setTotal(event.target.value)}
-                step="any"
-                type="number"
-                value={total}
-              />
-            </Field>
-            <Field id="conversion-currency" label="Moneda">
-              <input
-                id="conversion-currency"
-                onChange={(event) => setCurrency(event.target.value)}
-                value={currency}
-              />
-            </Field>
-          </div>
-          <div className="shopping-conversion-actions">
-            <button
-              className="button button--secondary"
-              onClick={() => setConversionOpen(false)}
-              type="button"
-            >
-              Cancelar
-            </button>
-            <button
-              className="button button--primary"
-              disabled={convert.isPending}
-              onClick={() => void convertSelected()}
-              type="button"
-            >
-              {convert.isPending ? 'Creando...' : 'Crear borrador'}
-            </button>
-          </div>
-          {convert.error ? (
-            <p className="form-field__error" role="alert">
-              {convert.error instanceof Error
-                ? convert.error.message
-                : 'No se pudo crear la compra.'}
+          <div className="shopping-conversion">
+            <p className="shopping-conversion__intro">
+              Se creará un borrador con los elementos seleccionados. La lista
+              se marcará como comprada y el inventario cambiará solo al
+              confirmar la compra.
             </p>
-          ) : null}
-        </section>
+            <ul className="shopping-conversion__items">
+              {pendingItems
+                .filter((item) => selected.includes(item.id))
+                .map((item) => (
+                  <li key={item.id}>
+                    <span>{item.name}</span>
+                    <div className="shopping-conversion-item-fields">
+                      <label>
+                        <span>Cantidad</span>
+                        <input
+                          aria-label={`Cantidad de ${item.name}`}
+                          inputMode="decimal"
+                          min="0.1"
+                          onChange={(event) =>
+                            updateDraft(item, { quantity: event.target.value })
+                          }
+                          step="any"
+                          type="number"
+                          value={drafts[item.id]?.quantity ?? item.quantity}
+                        />
+                      </label>
+                      <label>
+                        <span>Unidad</span>
+                        <select
+                          aria-label={`Unidad de ${item.name}`}
+                          onChange={(event) =>
+                            updateDraft(item, { unit: event.target.value })
+                          }
+                          value={drafts[item.id]?.unit ?? item.unit}
+                        >
+                          <option value="GRAM">Gramos</option>
+                          <option value="MILLILITER">Mililitros</option>
+                          <option value="UNIT">Unidad</option>
+                          <option value="SERVING">Porción</option>
+                        </select>
+                      </label>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+            <div className="purchase-form-grid">
+              <Field id="conversion-store" label="Comercio">
+                <input
+                  id="conversion-store"
+                  onChange={(event) => setStoreName(event.target.value)}
+                  value={storeName}
+                />
+              </Field>
+              <Field id="conversion-date" label="Fecha">
+                <input
+                  id="conversion-date"
+                  onChange={(event) => setPurchaseDate(event.target.value)}
+                  type="datetime-local"
+                  value={purchaseDate}
+                />
+              </Field>
+              <Field id="conversion-total" label="Total">
+                <input
+                  id="conversion-total"
+                  min="0"
+                  onChange={(event) => setTotal(event.target.value)}
+                  step="any"
+                  type="number"
+                  value={total}
+                />
+              </Field>
+              <Field id="conversion-currency" label="Moneda">
+                <input
+                  id="conversion-currency"
+                  onChange={(event) => setCurrency(event.target.value)}
+                  value={currency}
+                />
+              </Field>
+            </div>
+            <div className="shopping-conversion-actions">
+              <button
+                className="button button--secondary"
+                onClick={closeConversion}
+                type="button"
+              >
+                Cancelar
+              </button>
+              <button
+                className="button button--primary"
+                disabled={!isOnline || convert.isPending}
+                onClick={() => void convertSelected()}
+                type="button"
+              >
+                {convert.isPending ? 'Creando...' : 'Crear borrador'}
+              </button>
+            </div>
+            {convert.error ? (
+              <p className="form-field__error" role="alert">
+                {convert.error instanceof Error
+                  ? convert.error.message
+                  : 'No se pudo crear la compra.'}
+              </p>
+            ) : null}
+            {conversionError ? (
+              <p className="form-field__error" role="alert">
+                {conversionError}
+              </p>
+            ) : null}
+          </div>
+        </Dialog>
+      ) : null}
+      {selected.length ? (
+        <div
+          aria-label="Productos seleccionados"
+          className="shopping-selection-action"
+          role="region"
+        >
+          <span>
+            {selected.length} seleccionado{selected.length === 1 ? '' : 's'}
+          </span>
+          <button
+            className="button button--primary"
+            disabled={!isOnline}
+            onClick={() => {
+              convert.reset();
+              setConversionError('');
+              setConversionOpen(true);
+            }}
+            type="button"
+          >
+            Registrar compra
+          </button>
+        </div>
       ) : null}
     </section>
   );
@@ -433,11 +593,19 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {error ? (
+        <p className="form-field__error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
 function toDateTimeInput(value: Date) {
   const offset = value.getTimezoneOffset() * 60_000;
   return new Date(value.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }

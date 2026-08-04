@@ -1,0 +1,134 @@
+.onboarding-page {
+  max-width: 48rem;
+}
+
+.onboarding-page .page-header,
+.onboarding-form,
+.onboarding-progress,
+.onboarding-page .household-list {
+  max-width: 36rem;
+}
+
+.onboarding-progress {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  list-style: none;
+}
+
+.onboarding-progress li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-disabled);
+  font-weight: var(--font-weight-medium);
+}
+
+.onboarding-progress li::after {
+  position: absolute;
+  z-index: 0;
+  top: 1rem;
+  right: var(--space-2);
+  left: 2.5rem;
+  height: 1px;
+  background: var(--color-border);
+  content: '';
+}
+
+.onboarding-progress li:last-child::after {
+  display: none;
+}
+
+.onboarding-progress li > span {
+  z-index: 1;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+}
+
+.onboarding-progress li.is-current {
+  color: var(--color-primary);
+}
+
+.onboarding-progress li.is-current > span {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.onboarding-form__fields {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.onboarding-form__fields legend {
+  margin-bottom: var(--space-5);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.onboarding-page .household-list {
+  border-block: 1px solid var(--color-border);
+}
+
+.onboarding-page .household-list__item {
+  display: flex;
+  width: 100%;
+  min-height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.onboarding-page .household-list__item:last-child {
+  border-bottom: 0;
+}
+
+.onboarding-page .household-list__item > span {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.onboarding-page .household-list__item small {
+  color: var(--color-text-secondary);
+}
+
+.onboarding-page .household-list__item:hover {
+  color: var(--color-primary);
+}
+
+.onboarding-page .household-list__item:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: var(--space-1);
+}
+
+@media (min-width: 48rem) {
+  .onboarding-page {
+    padding-top: var(--space-8);
+  }
+
+  .onboarding-progress {
+    margin-bottom: var(--space-10);
+  }
+}
+
+@media (min-width: 90rem) {
+  .onboarding-page {
+    padding-top: var(--space-10);
+  }
+}

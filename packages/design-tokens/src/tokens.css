@@ -1,57 +1,91 @@
 :root {
-  --color-primary-50: #eef7f2;
-  --color-primary-100: #ddeee5;
-  --color-primary-300: #96c5ab;
-  --color-primary-400: #68a985;
-  --color-primary-500: #438d68;
-  --color-primary-600: #2f7d5a;
-  --color-primary-700: #276a4c;
-  --color-primary-900: #1d4635;
-  --color-primary: #2f7d5a;
-  --color-primary-hover: #276a4c;
-  --color-primary-soft: #ddeee5;
-  --color-primary-200: #bfddcc;
-  --color-primary-800: #22553f;
-  --color-canvas: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-muted: #e8ebe6;
-  --color-surface-subtle: #f6f7f5;
-  --color-surface-elevated: #ffffff;
-  --color-text-primary: #1f2924;
-  --color-text-secondary: #68736d;
-  --color-text-disabled: #9aa39e;
-  --color-text-inverse: #ffffff;
-  --color-border: #dedcd4;
-  --color-border-strong: #aaa99f;
-  --color-focus-ring: #68a985;
-  --color-success: #24744f;
-  --color-success-soft: #dcefe5;
-  --color-warning: #a96917;
-  --color-warning-soft: #f8ead3;
-  --color-info: #3f7294;
-  --color-info-soft: #dfeaf2;
-  --color-danger: #b74741;
-  --color-danger-soft: #f8dfdc;
-  --color-overlay: rgb(14 15 12 / 0.28);
-  --color-protein: #8e5d45;
-  --color-carbohydrates: #d19a3e;
-  --color-fat: #a47bbd;
-  --color-fiber: #4f8b61;
-  --font-family-body:
-    Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-family-heading: Inter, system-ui, sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
+  /* Typography */
+  --font-family-sans:
+    "Manrope",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  --font-family-body: var(--font-family-sans);
+  --font-family-heading: var(--font-family-sans);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.9375rem;
+  --font-size-base: var(--font-size-md);
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-size-metric: 2.5rem;
+
+  /* Brand */
+  --color-brand: #69c420;
+  --color-brand-hover: #58ae18;
+  --color-brand-active: #4b9715;
+  --color-brand-soft: #eef8df;
+  --color-brand-softer: #f7fbed;
+
+  /* Compatibility aliases used by existing presentation styles */
+  --color-primary-50: var(--color-brand-softer);
+  --color-primary-100: var(--color-brand-soft);
+  --color-primary-200: #dcefc2;
+  --color-primary-300: #b9df88;
+  --color-primary-400: #8bd34c;
+  --color-primary-500: var(--color-brand);
+  --color-primary-600: var(--color-brand);
+  --color-primary-700: var(--color-brand-hover);
+  --color-primary-800: var(--color-brand-active);
+  --color-primary-900: #356d0f;
+  --color-primary: var(--color-brand);
+  --color-primary-hover: var(--color-brand-hover);
+  --color-primary-soft: var(--color-brand-soft);
+
+  /* Surfaces */
+  --color-background: #faf9f5;
+  --color-canvas: var(--color-background);
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f7f7f3;
+  --color-surface-muted: var(--color-surface-secondary);
+  --color-surface-subtle: var(--color-surface-secondary);
+  --color-surface-highlight: #f3f8e9;
+  --color-surface-elevated: #ffffff;
+
+  /* Text */
+  --color-text-primary: #1c211b;
+  --color-text-secondary: #62685f;
+  --color-text-muted: #92978f;
+  --color-text-disabled: var(--color-text-muted);
+  --color-text-inverse: #ffffff;
+
+  /* Borders and interaction */
+  --color-border: #e5e8e1;
+  --color-border-strong: #d5d9d1;
+  --color-focus-ring: #8bd34c;
+  --color-overlay: rgb(20 30 15 / 0.28);
+
+  /* Semantic */
+  --color-success: #5aaf25;
+  --color-success-soft: #edf7e6;
+  --color-warning: #f4a51c;
+  --color-warning-soft: #fff5df;
+  --color-danger: #dc5c50;
+  --color-danger-soft: #fcebe8;
+  --color-info: #637ce4;
+  --color-info-soft: #edf0ff;
+
+  /* Macro accents */
+  --color-protein: #69b62c;
+  --color-carbs: #f4a51c;
+  --color-carbohydrates: var(--color-carbs);
+  --color-fat: #ef8f24;
+  --color-fiber: #5aaf25;
+
+  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -62,58 +96,85 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
+
+  /* Radius */
   --radius-sm: 0.5rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1rem;
-  --radius-pill: 9999px;
-  --shadow-sm: 0 1px 2px rgb(31 41 36 / 0.05);
-  --shadow-md: 0 4px 12px rgb(31 41 36 / 0.08);
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgb(20 30 15 / 0.04);
+  --shadow-md: 0 5px 18px rgb(30 45 20 / 0.07);
+  --shadow-overlay: 0 16px 40px rgb(20 30 15 / 0.14);
+
+  /* Motion */
   --duration-fast: 120ms;
   --duration-normal: 180ms;
   --duration-slow: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout */
+  --sidebar-width: 220px;
+  --content-max-width: 1200px;
+  --mobile-nav-height: 68px;
+  --layout-sidebar-width: var(--sidebar-width);
+  --layout-content-max: var(--content-max-width);
+  --layout-mobile-navigation-height: var(--mobile-nav-height);
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --color-primary: #68a985;
-  --color-primary-hover: #7fbd9a;
-  --color-primary-soft: #1d3c2d;
-  --color-primary-50: #15291f;
-  --color-primary-100: #1d3c2d;
-  --color-primary-300: #4d8b68;
-  --color-primary-400: #68a985;
-  --color-primary-500: #7fbd9a;
-  --color-primary-600: #68a985;
-  --color-primary-700: #7fbd9a;
-  --color-primary-900: #d5f0dd;
-  --color-primary-200: #356c4e;
-  --color-primary-800: #b8e0c7;
-  --color-canvas: #000000;
-  --color-surface: #111111;
-  --color-surface-muted: #1d1d1d;
-  --color-surface-subtle: #171717;
-  --color-surface-elevated: #242424;
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #a6a6a6;
-  --color-text-disabled: #707070;
-  --color-text-inverse: #101010;
-  --color-border: #353535;
-  --color-border-strong: #b7a968;
-  --color-focus-ring: #8bcaa2;
-  --color-success: #68a985;
-  --color-success-soft: #1d3c2d;
-  --color-warning: #e2ad5e;
-  --color-warning-soft: #493718;
-  --color-info: #82afd0;
-  --color-info-soft: #203849;
-  --color-danger: #e5847d;
-  --color-danger-soft: #482522;
+  --color-brand: #9bdd5d;
+  --color-brand-hover: #b2eb7d;
+  --color-brand-active: #c5f29a;
+  --color-brand-soft: #243b17;
+  --color-brand-softer: #1b2b13;
+  --color-primary-50: var(--color-brand-softer);
+  --color-primary-100: var(--color-brand-soft);
+  --color-primary-200: #3e6425;
+  --color-primary-300: #609b35;
+  --color-primary-400: #80bd48;
+  --color-primary-500: var(--color-brand);
+  --color-primary-600: var(--color-brand);
+  --color-primary-700: var(--color-brand-hover);
+  --color-primary-800: var(--color-brand-active);
+  --color-primary-900: #e0f9c4;
+  --color-primary: var(--color-brand);
+  --color-primary-hover: var(--color-brand-hover);
+  --color-primary-soft: var(--color-brand-soft);
+  --color-background: #11130f;
+  --color-canvas: var(--color-background);
+  --color-surface: #191c16;
+  --color-surface-secondary: #22261e;
+  --color-surface-muted: var(--color-surface-secondary);
+  --color-surface-subtle: #1e221b;
+  --color-surface-highlight: #293b1d;
+  --color-surface-elevated: #292e24;
+  --color-text-primary: #f3f7ee;
+  --color-text-secondary: #b8c0b0;
+  --color-text-muted: #818a7b;
+  --color-text-disabled: var(--color-text-muted);
+  --color-text-inverse: #15200f;
+  --color-border: #343b2f;
+  --color-border-strong: #4b5743;
+  --color-focus-ring: #b2eb7d;
   --color-overlay: rgb(0 0 0 / 0.56);
-  --color-protein: #d49a79;
-  --color-carbohydrates: #e5b95f;
-  --color-fat: #c7a4db;
-  --color-fiber: #81ba8e;
+  --color-success: #9bdd5d;
+  --color-success-soft: #243b17;
+  --color-warning: #ffc965;
+  --color-warning-soft: #4b3817;
+  --color-danger: #f28b80;
+  --color-danger-soft: #4b2420;
+  --color-info: #9eafff;
+  --color-info-soft: #26305a;
+  --color-protein: #9bdc5d;
+  --color-carbs: #ffc965;
+  --color-carbohydrates: var(--color-carbs);
+  --color-fat: #ffab53;
+  --color-fiber: #9bdd5d;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.32);
+  --shadow-md: 0 5px 18px rgb(0 0 0 / 0.32);
+  --shadow-overlay: 0 16px 40px rgb(0 0 0 / 0.48);
 }

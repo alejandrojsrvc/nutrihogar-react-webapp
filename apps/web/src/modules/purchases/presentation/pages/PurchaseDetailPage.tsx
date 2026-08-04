@@ -1,10 +1,15 @@
+import { useState } from 'react';
+import { ReceiptText } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { Dialog } from '../../../../shared/presentation/components/Overlay';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
   useCancelPurchase,
   useConfirmPurchase,
+  usePurchaseConnectivity,
   usePurchase,
 } from '../hooks/usePurchases';
 import '../purchases.css';
@@ -16,6 +21,10 @@ export function PurchaseDetailPage() {
   const purchase = usePurchase(purchaseId);
   const confirm = useConfirmPurchase();
   const cancel = useCancelPurchase();
+  const isOnline = usePurchaseConnectivity();
+  const [confirmation, setConfirmation] = useState<'confirm' | 'cancel' | null>(
+    null,
+  );
 
   if (households.isPending || purchase.isPending)
     return (
@@ -31,10 +40,18 @@ export function PurchaseDetailPage() {
   )
     return (
       <section className="page-section" role="alert">
-        <p>No se pudo cargar la compra.</p>
+        <p>
+          {isOnline
+            ? 'No se pudo cargar la compra.'
+            : 'Esta compra no está disponible sin conexión.'}
+        </p>
         <button
           className="button button--secondary"
-          onClick={() => void purchase.refetch()}
+          onClick={() =>
+            void (households.isError || !households.activeHousehold
+              ? households.refetch()
+              : purchase.refetch())
+          }
           type="button"
         >
           Reintentar
@@ -51,38 +68,49 @@ export function PurchaseDetailPage() {
       aria-labelledby="purchase-detail-title"
     >
       <BackButton fallback="/app/compras" />
-      <p className="eyebrow">Compra del hogar</p>
-      <h1 id="purchase-detail-title">{value.storeName}</h1>
-      <p className="lead">
-        {formatDate(value.purchaseDate)} ·{' '}
-        {formatMoney(value.total, value.currency)}
-      </p>
+      <PageHeader
+        description={`${formatDate(value.purchaseDate)} · ${formatMoney(value.total, value.currency)}`}
+        eyebrow="Compra del hogar"
+        icon={<ReceiptText size={22} />}
+        title={value.storeName}
+        titleId="purchase-detail-title"
+      />
+      {!isOnline ? (
+        <p className="feature-connectivity feature-connectivity--offline" role="status">
+          Sin conexión. Puedes revisar esta compra, pero confirmarla, editarla o cancelarla requiere conexión.
+        </p>
+      ) : null}
       <div className="purchase-detail-actions">
         <span className="status-badge">{statusLabel(value.status)}</span>
         {editable ? (
           <>
-            <Link
+            <button
               className="button button--primary"
+              disabled={!isOnline || confirm.isPending}
+              onClick={() => {
+                confirm.reset();
+                setConfirmation('confirm');
+              }}
+              type="button"
+            >
+              {confirm.isPending ? 'Confirmando...' : 'Confirmar compra'}
+            </button>
+            <Link
+              aria-disabled={!isOnline}
+              className="button button--secondary"
+              onClick={(event) => {
+                if (!isOnline) event.preventDefault();
+              }}
               to={`/app/compras/${value.id}/editar`}
             >
               Editar borrador
             </Link>
             <button
-              className="button button--secondary"
-              disabled={confirm.isPending}
-              onClick={() => confirm.mutate(value.id)}
-              type="button"
-            >
-              {confirm.isPending ? 'Confirmando...' : 'Confirmar compra'}
-            </button>
-            <button
-              className="button button--danger"
-              disabled={cancel.isPending}
+              className="button button--text button--danger-text"
+              disabled={!isOnline || cancel.isPending}
               onClick={() => {
-                if (window.confirm('¿Cancelar este borrador?'))
-                  cancel.mutate(value.id, {
-                    onSuccess: () => navigate('/app/compras'),
-                  });
+                cancel.reset();
+                setConfirmation('cancel');
               }}
               type="button"
             >
@@ -117,7 +145,10 @@ export function PurchaseDetailPage() {
         </div>
       </dl>
       <section className="purchase-detail-section">
-        <h2>Productos</h2>
+        <div className="purchase-section-heading">
+          <h2>Productos</h2>
+          <span>{value.items.length} producto{value.items.length === 1 ? '' : 's'}</span>
+        </div>
         {value.items.length ? (
           <ul className="purchase-item-list">
             {value.items.map((item) => (
@@ -125,7 +156,7 @@ export function PurchaseDetailPage() {
                 <div>
                   <strong>{item.nameSnapshot}</strong>
                   <span>
-                    {item.quantity} {item.unit}
+                    {item.quantity} {unitLabel(item.unit)}
                   </span>
                 </div>
                 {item.inventoryItemId ? (
@@ -141,10 +172,79 @@ export function PurchaseDetailPage() {
         )}
       </section>
       {value.status === 'CONFIRMED' ? (
-        <p className="supporting-text">
-          La confirmación de esta compra generó movimientos en el inventario.
+        <p className="purchase-inventory-effect" role="status">
+          Compra confirmada por el servidor. Los productos vinculados generaron movimientos y los saldos actuales se consultan en inventario.
         </p>
       ) : null}
+      <Dialog
+        onClose={() => setConfirmation(null)}
+        open={confirmation === 'confirm'}
+        title="Confirmar compra"
+      >
+        <div className="purchase-confirmation">
+          <p>
+            Al confirmar, el servidor registrará entradas para los productos vinculados y actualizará sus saldos de inventario.
+          </p>
+          <ul>
+            {value.items.map((item) => (
+              <li key={item.id ?? `${item.nameSnapshot}-${item.quantity}`}>
+                <span>{item.nameSnapshot}</span>
+                <strong>{item.quantity} {unitLabel(item.unit)}</strong>
+              </li>
+            ))}
+          </ul>
+          <p className="supporting-text">Esta acción no se guarda offline ni debe repetirse mientras está en curso.</p>
+          {confirm.error ? (
+            <p className="form-field__error" role="alert">
+              {confirm.error instanceof Error ? confirm.error.message : 'No se pudo confirmar la compra.'}
+            </p>
+          ) : null}
+          <div className="purchase-dialog-actions">
+            <button className="button button--secondary" onClick={() => setConfirmation(null)} type="button">
+              Seguir revisando
+            </button>
+            <button
+              className="button button--primary"
+              disabled={confirm.isPending}
+              onClick={() =>
+                confirm.mutate(value.id, { onSuccess: () => setConfirmation(null) })
+              }
+              type="button"
+            >
+              {confirm.isPending ? 'Confirmando...' : 'Confirmar y actualizar inventario'}
+            </button>
+          </div>
+        </div>
+      </Dialog>
+      <Dialog
+        onClose={() => setConfirmation(null)}
+        open={confirmation === 'cancel'}
+        title="Cancelar borrador"
+      >
+        <p>El borrador dejará de estar disponible para edición. El inventario no cambiará.</p>
+        {cancel.error ? (
+          <p className="form-field__error" role="alert">
+            {cancel.error instanceof Error ? cancel.error.message : 'No se pudo cancelar el borrador.'}
+          </p>
+        ) : null}
+        <div className="purchase-dialog-actions">
+          <button className="button button--secondary" onClick={() => setConfirmation(null)} type="button">
+            Conservar borrador
+          </button>
+          <button
+            className="button button--danger"
+            disabled={cancel.isPending}
+            onClick={() =>
+              cancel.mutate(value.id, {
+                onSuccess: () => navigate('/app/compras'),
+              })
+            }
+            type="button"
+          >
+            {cancel.isPending ? 'Cancelando...' : 'Cancelar borrador'}
+          </button>
+        </div>
+      </Dialog>
     </section>
   );
 }
@@ -168,4 +268,14 @@ function formatMoney(value: number, currency: string) {
   return new Intl.NumberFormat('es-AR', { currency, style: 'currency' }).format(
     value,
   );
+}
+
+function unitLabel(unit: string) {
+  return unit === 'GRAM'
+    ? 'g'
+    : unit === 'MILLILITER'
+      ? 'ml'
+      : unit === 'UNIT'
+        ? 'unidad'
+        : unit;
 }

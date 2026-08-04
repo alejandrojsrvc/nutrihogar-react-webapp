@@ -5,6 +5,7 @@ export function ShoppingListItem({
   item,
   isSelected,
   isMarking,
+  isReadOnly,
   isRemoving,
   onToggle,
   onMarkPurchased,
@@ -14,6 +15,7 @@ export function ShoppingListItem({
   item: ShoppingListItemModel;
   isSelected: boolean;
   isMarking: boolean;
+  isReadOnly: boolean;
   isRemoving: boolean;
   onToggle: (selected: boolean) => void;
   onMarkPurchased: () => void;
@@ -26,7 +28,7 @@ export function ShoppingListItem({
         <input
           aria-label={`Incluir ${item.name} en la compra`}
           checked={isSelected}
-          disabled={item.purchased}
+          disabled={item.purchased || isReadOnly}
           onChange={(event) => onToggle(event.target.checked)}
           type="checkbox"
         />
@@ -40,7 +42,7 @@ export function ShoppingListItem({
       <div className="shopping-list-item-actions">
         {!item.purchased ? (
           <Button
-            disabled={isMarking}
+            disabled={isMarking || isReadOnly}
             onClick={onMarkPurchased}
             variant="secondary"
           >
@@ -52,12 +54,16 @@ export function ShoppingListItem({
         <details className="shopping-list-item-more">
           <summary>Más</summary>
           <div>
-            <Button disabled={item.purchased} onClick={onEdit} variant="text">
+            <Button
+              disabled={item.purchased || isReadOnly}
+              onClick={onEdit}
+              variant="text"
+            >
               Editar
             </Button>
             <Button
               className="button--danger-text"
-              disabled={isRemoving}
+              disabled={isRemoving || isReadOnly}
               onClick={onRemove}
               variant="text"
             >

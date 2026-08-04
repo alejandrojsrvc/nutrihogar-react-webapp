@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -77,13 +78,38 @@ export function useUpdatePurchase() {
 }
 
 export function useConfirmPurchase() {
-  return usePurchaseMutation((purchaseId: string) =>
-    confirmPurchaseUseCase.execute(purchaseId),
-  );
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (purchaseId: string) =>
+      confirmPurchaseUseCase.execute(purchaseId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: purchaseQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ['inventory'] });
+      void queryClient.invalidateQueries({ queryKey: ['shopping-list'] });
+    },
+  });
 }
 
 export function useCancelPurchase() {
   return usePurchaseMutation((purchaseId: string) =>
     cancelPurchaseUseCase.execute(purchaseId),
   );
+}
+
+export function usePurchaseConnectivity() {
+  const [isOnline, setIsOnline] = useState(
+    () => typeof navigator === 'undefined' || navigator.onLine,
+  );
+
+  useEffect(() => {
+    const update = () => setIsOnline(navigator.onLine);
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
+
+  return isOnline;
 }

@@ -1,10 +1,14 @@
+import { PackageOpen } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { Badge } from '../../../../shared/presentation/components/Badge';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { usePreparedFoodLeftovers } from '../hooks/usePreparedFoodLeftovers';
+import { formatDateTime, formatQuantity, humanizeEnum, statusTone } from '../recipePresentation';
+import '../recipes.css';
 
 export function PreparedFoodLeftoversPage() {
   const households = useHouseholds();
@@ -29,35 +33,42 @@ export function PreparedFoodLeftoversPage() {
     );
 
   return (
-    <section className="page-section" aria-labelledby="leftovers-title">
+    <section className="page-section leftover-page" aria-labelledby="leftovers-title">
       <BackButton fallback="/app" />
       <PageHeader
         eyebrow={households.activeHousehold.name}
         title="Sobrantes disponibles"
         titleId="leftovers-title"
         description="Preparaciones guardadas para consumir después."
+        icon={<PackageOpen size={22} />}
       />
       {leftovers.data?.length ? (
-        <div className="recipe-list">
+        <ul className="recipe-list" aria-label="Sobrantes guardados">
           {leftovers.data.map((leftover) => (
-            <article className="recipe-card" key={leftover.id}>
-              <div>
-                <h2>{leftover.availableWeight} g disponibles</h2>
-                <p>
-                  {leftover.storageLocation ?? 'Ubicación no indicada'} ·{' '}
-                  {formatDate(leftover.storedAt)}
-                </p>
-                <span className="status-badge">{leftover.status}</span>
-              </div>
+            <li className="recipe-list-row" key={leftover.id}>
               <Link
-                className="button button--secondary"
+                className="recipe-list-row__link"
                 to={`/app/sobrantes/${leftover.id}`}
               >
-                Ver sobrante
+                <div className="recipe-list-row__heading">
+                  <h2>{formatQuantity(leftover.availableWeight, 'GRAM')}</h2>
+                  <Badge tone={statusTone(leftover.status)}>
+                    {humanizeEnum(leftover.status)}
+                  </Badge>
+                </div>
+                <p className="supporting-text">
+                  {leftover.storageLocation
+                    ? humanizeEnum(leftover.storageLocation)
+                    : 'Ubicación no indicada'}{' '}
+                  · {formatDateTime(leftover.storedAt)}
+                </p>
+                <small>
+                  El nombre de la preparación no está incluido en este listado.
+                </small>
               </Link>
-            </article>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
         <EmptyState
           title="No hay sobrantes"
@@ -65,11 +76,5 @@ export function PreparedFoodLeftoversPage() {
         />
       )}
     </section>
-  );
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(
-    new Date(value),
   );
 }

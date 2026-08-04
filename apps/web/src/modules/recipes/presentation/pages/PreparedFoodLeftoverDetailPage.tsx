@@ -1,13 +1,23 @@
 import { useState } from 'react';
+import { PackageCheck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import { Badge } from '../../../../shared/presentation/components/Badge';
+import { Dialog } from '../../../../shared/presentation/components/Overlay';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import {
   useAddPreparedFoodLeftoverToInventory,
   usePreparedFoodLeftover,
   useUpdatePreparedFoodLeftoverStatus,
 } from '../hooks/usePreparedFoodLeftovers';
+import {
+  formatDateTime,
+  formatNutrientAmount,
+  humanizeEnum,
+  statusTone,
+} from '../recipePresentation';
+import '../recipes.css';
 
 export function PreparedFoodLeftoverDetailPage() {
   const { leftoverId = '' } = useParams();
@@ -18,7 +28,14 @@ export function PreparedFoodLeftoverDetailPage() {
   const [quantity, setQuantity] = useState('');
   const [location, setLocation] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
+  const [inventoryDialogOpen, setInventoryDialogOpen] = useState(false);
 
+  if (!leftoverId)
+    return (
+      <p className="page-section" role="alert">
+        Falta identificar el sobrante. Vuelve a la lista e inténtalo nuevamente.
+      </p>
+    );
   if (leftover.isPending)
     return (
       <p className="page-section" role="status">
@@ -42,13 +59,7 @@ export function PreparedFoodLeftoverDetailPage() {
     selectedQuantity > value.availableWeight;
 
   function addInventory() {
-    if (
-      invalidQuantity ||
-      !window.confirm(
-        'Se agregará esta cantidad al inventario con su trazabilidad. ¿Quieres continuar?',
-      )
-    )
-      return;
+    if (invalidQuantity) return;
     addToInventory.mutate(
       {
         leftoverId,
@@ -63,25 +74,30 @@ export function PreparedFoodLeftoverDetailPage() {
   }
 
   return (
-    <section className="page-section" aria-labelledby="leftover-detail-title">
+    <section className="page-section leftover-page" aria-labelledby="leftover-detail-title">
       <BackButton fallback="/app/sobrantes" />
       <PageHeader
         eyebrow="Sobrante de preparación"
-        title={`${value.availableWeight} g disponibles`}
+        title="Sobrante guardado"
         titleId="leftover-detail-title"
+        description="El nombre de la receta no está disponible en el detalle del sobrante."
+        icon={<PackageCheck size={22} />}
       />
+      <div className="recipe-status-line">
+        <Badge tone={statusTone(value.status)}>{humanizeEnum(value.status)}</Badge>
+      </div>
       <dl className="recipe-detail-meta">
         <div>
-          <dt>Estado</dt>
-          <dd>{value.status}</dd>
+          <dt>Disponible</dt>
+          <dd>{value.availableWeight} g</dd>
         </div>
         <div>
           <dt>Guardado</dt>
-          <dd>{formatDate(value.storedAt)}</dd>
+          <dd>{formatDateTime(value.storedAt)}</dd>
         </div>
         <div>
           <dt>Ubicación actual</dt>
-          <dd>{value.storageLocation ?? 'No indicada'}</dd>
+          <dd>{humanizeEnum(value.storageLocation)}</dd>
         </div>
       </dl>
       <section className="recipe-detail-section">
@@ -90,8 +106,8 @@ export function PreparedFoodLeftoverDetailPage() {
           {Object.entries(value.nutrientDensitySnapshot).map(
             ([key, amount]) => (
               <div key={key}>
-                <dt>{key}</dt>
-                <dd>{amount} por g</dd>
+                <dt>{humanizeEnum(key)}</dt>
+                <dd>{formatNutrientAmount(amount, key)} por g</dd>
               </div>
             ),
           )}
@@ -114,6 +130,15 @@ export function PreparedFoodLeftoverDetailPage() {
           aria-labelledby="add-leftover-title"
         >
           <h2 id="add-leftover-title">Agregar al inventario</h2>
+          <form
+            className="leftover-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!invalidQuantity) setInventoryDialogOpen(true);
+            }}
+          >
+          <fieldset className="preparation-fieldset">
+            <legend>Cantidad y ubicación</legend>
           <div className="form-field">
             <label htmlFor="leftover-quantity">Cantidad (g)</label>
             <input
@@ -140,6 +165,9 @@ export function PreparedFoodLeftoverDetailPage() {
               value={location}
             />
           </div>
+          </fieldset>
+          <fieldset className="preparation-fieldset">
+            <legend>Conservación</legend>
           <div className="form-field">
             <label htmlFor="leftover-expires-at">Vencimiento opcional</label>
             <input
@@ -149,12 +177,12 @@ export function PreparedFoodLeftoverDetailPage() {
               value={expiresAt}
             />
           </div>
-          <div className="recipe-form__actions">
+          </fieldset>
+          <div className="recipe-page-actions">
             <button
               className="button button--primary"
               disabled={addToInventory.isPending || invalidQuantity}
-              onClick={addInventory}
-              type="button"
+              type="submit"
             >
               {addToInventory.isPending
                 ? 'Agregando...'
@@ -187,6 +215,7 @@ export function PreparedFoodLeftoverDetailPage() {
               Descartar sobrante
             </button>
           </div>
+          </form>
         </section>
       ) : null}
       <Link
@@ -195,13 +224,39 @@ export function PreparedFoodLeftoverDetailPage() {
       >
         Ver preparación original
       </Link>
+      <Dialog
+        onClose={() => setInventoryDialogOpen(false)}
+        open={inventoryDialogOpen}
+        title="Agregar sobrante al inventario"
+      >
+        <p>
+          Se agregarán {selectedQuantity} g al inventario con la trazabilidad de
+          este sobrante.
+        </p>
+        {addToInventory.isError ? (
+          <p role="alert">
+            No se pudo agregar al inventario. Revisa si esta operación ya fue
+            realizada.
+          </p>
+        ) : null}
+        <div className="recipe-dialog-actions">
+          <button
+            className="button button--secondary"
+            onClick={() => setInventoryDialogOpen(false)}
+            type="button"
+          >
+            Revisar datos
+          </button>
+          <button
+            className="button button--primary"
+            disabled={addToInventory.isPending}
+            onClick={addInventory}
+            type="button"
+          >
+            {addToInventory.isPending ? 'Agregando...' : 'Confirmar en inventario'}
+          </button>
+        </div>
+      </Dialog>
     </section>
   );
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('es-AR', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value));
 }

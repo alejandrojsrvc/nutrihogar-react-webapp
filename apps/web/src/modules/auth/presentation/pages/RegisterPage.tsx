@@ -8,6 +8,7 @@ import {
   registerFormSchema,
   type RegisterFormValues,
 } from '../schemas/emailAuthSchemas';
+import { FormField } from '../../../../shared/presentation/components/FormField';
 
 export function RegisterPage() {
   const location = useLocation();
@@ -46,67 +47,24 @@ export function RegisterPage() {
       <p className="eyebrow">Un hogar para empezar</p>
       <h1 id="register-title">Crea tu cuenta</h1>
       <p className="lead">
-        Registra tus datos para comenzar a cuidar la alimentacion de tu hogar.
+        Registra tus datos para comenzar a cuidar la alimentación de tu hogar.
       </p>
       <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="form-field">
-          <label htmlFor="register-full-name">Nombre completo</label>
-          <input
-            autoComplete="name"
-            id="register-full-name"
-            type="text"
-            {...register('fullName')}
-            aria-invalid={errors.fullName ? 'true' : 'false'}
-          />
-          {errors.fullName ? (
-            <p className="form-field__error">{errors.fullName.message}</p>
-          ) : null}
-        </div>
-        <div className="form-field">
-          <label htmlFor="register-email">Correo electronico</label>
-          <input
-            autoComplete="email"
-            id="register-email"
-            type="email"
-            {...register('email')}
-            aria-invalid={errors.email ? 'true' : 'false'}
-          />
-          {errors.email ? (
-            <p className="form-field__error">{errors.email.message}</p>
-          ) : null}
-        </div>
-        <div className="form-field">
-          <label htmlFor="register-password">Contrasena</label>
-          <input
-            autoComplete="new-password"
-            id="register-password"
-            type="password"
-            {...register('password')}
-            aria-invalid={errors.password ? 'true' : 'false'}
-          />
-          {errors.password ? (
-            <p className="form-field__error">{errors.password.message}</p>
-          ) : null}
-        </div>
-        <div className="form-field">
-          <label htmlFor="register-confirm-password">
-            Repite la contrasena
-          </label>
-          <input
-            autoComplete="new-password"
-            id="register-confirm-password"
-            type="password"
-            {...register('confirmPassword')}
-            aria-invalid={errors.confirmPassword ? 'true' : 'false'}
-          />
-          {errors.confirmPassword ? (
-            <p className="form-field__error">
-              {errors.confirmPassword.message}
-            </p>
-          ) : null}
-        </div>
+        <FormField error={errors.fullName?.message} htmlFor="register-full-name" label="Nombre completo">
+          {(fieldProps) => <input autoComplete="name" id="register-full-name" type="text" {...register('fullName')} {...fieldProps} />}
+        </FormField>
+        <FormField error={errors.email?.message} htmlFor="register-email" label="Correo electrónico">
+          {(fieldProps) => <input autoComplete="email" id="register-email" type="email" {...register('email')} {...fieldProps} />}
+        </FormField>
+        <FormField error={errors.password?.message} help="Usa al menos ocho caracteres." htmlFor="register-password" label="Contraseña">
+          {(fieldProps) => <input autoComplete="new-password" id="register-password" type="password" {...register('password')} {...fieldProps} />}
+        </FormField>
+        <FormField error={errors.confirmPassword?.message} htmlFor="register-confirm-password" label="Repite la contraseña">
+          {(fieldProps) => <input autoComplete="new-password" id="register-confirm-password" type="password" {...register('confirmPassword')} {...fieldProps} />}
+        </FormField>
         <button
           className="button button--primary auth-form__submit"
+          aria-busy={isSigningIn}
           disabled={isSigningIn}
           type="submit"
         >
@@ -115,13 +73,13 @@ export function RegisterPage() {
       </form>
       {error ? (
         <p className="auth-error" role="alert">
-          {error.message}
+          No pudimos crear la cuenta. Conservamos tus datos para que lo intentes nuevamente.
         </p>
       ) : null}
       <p className="supporting-text">
         ¿Ya tienes una cuenta?{' '}
         <Link className="auth-link" state={{ from: redirectPath }} to="/login">
-          Inicia sesion
+          Inicia sesión
         </Link>
       </p>
     </section>

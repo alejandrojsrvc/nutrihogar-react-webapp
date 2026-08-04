@@ -83,7 +83,7 @@ describe('DailyNutritionSummaryPage', () => {
     expect(
       await screen.findByText('Este día no tiene meta'),
     ).toBeInTheDocument();
-    await user.selectOptions(screen.getByLabelText('Adulto'), 'profile-2');
+    await user.selectOptions(screen.getByLabelText('Integrante'), 'profile-2');
     await waitFor(() =>
       expect(
         requests.some((request) =>
@@ -140,6 +140,9 @@ describe('DailyNutritionSummaryPage', () => {
     );
 
     expect(await screen.findByText(/Preparación familiar/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('combobox', { name: 'Integrante' }),
+    ).not.toBeInTheDocument();
   });
 });
 

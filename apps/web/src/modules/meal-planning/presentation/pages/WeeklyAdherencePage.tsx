@@ -1,28 +1,38 @@
+import { ChartNoAxesColumnIncreasing } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
 import { useWeeklyAdherence } from '../hooks/useMealPlanning';
+import { RelatedActions } from '../components/RelatedActions';
 
 export function WeeklyAdherencePage() {
   const { weeklyPlanId } = useParams();
   const query = useWeeklyAdherence(weeklyPlanId);
   if (query.isPending)
     return (
-      <p className="page-section" role="status">
-        Cargando adherencia...
-      </p>
+      <section className="page-section">
+        <LoadingState message="Cargando adherencia..." />
+      </section>
     );
   if (query.isError || !query.data)
     return (
-      <section className="page-section" role="alert">
-        <p>No se pudo cargar el resumen semanal.</p>
-        <button
-          className="button button--secondary"
-          onClick={() => void query.refetch()}
-          type="button"
-        >
-          Reintentar
-        </button>
+      <section className="page-section">
+        <ErrorState
+          message="No se pudo cargar el resumen semanal."
+          action={
+            <button
+              className="button button--secondary"
+              onClick={() => void query.refetch()}
+              type="button"
+            >
+              Reintentar
+            </button>
+          }
+        />
       </section>
     );
   const { counts, percentages, nutrition } = query.data;
@@ -36,15 +46,23 @@ export function WeeklyAdherencePage() {
       />
       <PageHeader
         eyebrow="Plan semanal"
+        icon={<ChartNoAxesColumnIncreasing size={22} />}
         title="Adherencia del plan"
         titleId="adherence-title"
         description="Valores calculados por el backend a partir del plan y los consumos vinculados."
       />
-      <dl className="nutrition-value-list">
+      <section
+        className="adherence-overview"
+        aria-labelledby="adherence-overview-title"
+      >
         <div>
-          <dt>Comidas consumidas</dt>
-          <dd>{percentages.consumed}%</dd>
+          <span id="adherence-overview-title">Comidas consumidas</span>
+          <strong>{percentages.consumed}%</strong>
         </div>
+        <p>Una referencia descriptiva de lo ocurrido, sin juicios.</p>
+      </section>
+      <h2>Plan y consumo</h2>
+      <dl className="nutrition-value-list adherence-nutrition">
         <div>
           <dt>Calorías planificadas</dt>
           <dd>{nutrition.plannedCalories}</dd>
@@ -62,6 +80,7 @@ export function WeeklyAdherencePage() {
           <dd>{nutrition.consumedProtein}</dd>
         </div>
       </dl>
+      <h2>Detalle de comidas</h2>
       <ul className="adherence-counts">
         <li>Planificadas: {counts.planned}</li>
         <li>Consumidas: {counts.consumed}</li>
@@ -77,12 +96,17 @@ export function WeeklyAdherencePage() {
           {warning}
         </p>
       ))}
-      <Link
-        className="button button--secondary"
-        to={`/app/plan-semanal?semana=${query.data.weekStart}`}
-      >
-        Volver al plan
-      </Link>
+      <RelatedActions>
+        <Link to={`/app/plan-semanal/${weeklyPlanId}/requerimientos`}>
+          Ver requerimientos
+        </Link>
+        <Link to={`/app/plan-semanal/${weeklyPlanId}/comparacion-inventario`}>
+          Comparar inventario
+        </Link>
+        <Link to={`/app/plan-semanal?semana=${query.data.weekStart}`}>
+          Volver al plan
+        </Link>
+      </RelatedActions>
     </section>
   );
 }

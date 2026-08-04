@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { UserRoundPen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
   useFieldArray,
@@ -15,6 +16,11 @@ import {
 } from 'react-hook-form';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
+import {
+  ErrorState,
+  LoadingState,
+} from '../../../../shared/presentation/components/AsyncState';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 
 import { adultProfileDraftStorage } from '../../../../app/composition/dependencies';
 import type {
@@ -36,7 +42,7 @@ import {
 } from '../schemas/adultProfileSchemas';
 
 const PROFILE_STEPS = [
-  'Informacion basica',
+  'Información básica',
   'Datos corporales',
   'Actividad y objetivo',
   'Restricciones',
@@ -146,7 +152,7 @@ export function AdultProfilePage() {
     return (
       <ProfileStatus
         isError
-        message="No se pudo identificar tu usuario. Recarga la pagina e intentalo nuevamente."
+        message="No se pudo identificar tu usuario. Recarga la página e inténtalo nuevamente."
       />
     );
   }
@@ -162,11 +168,13 @@ export function AdultProfilePage() {
   if (!households.activeHousehold) {
     return (
       <section className="page-section" aria-labelledby="profile-select-title">
-        <p className="eyebrow">Perfil adulto</p>
-        <h1 id="profile-select-title">Selecciona un hogar</h1>
-        <p className="lead">
-          Primero elige el hogar donde quieres configurar tu perfil.
-        </p>
+        <PageHeader
+          icon={<UserRoundPen size={24} />}
+          eyebrow="Perfil adulto"
+          title="Selecciona un hogar"
+          titleId="profile-select-title"
+          description="Primero elige el hogar donde quieres configurar tu perfil."
+        />
         <Link className="button button--primary" to="/app">
           Ir a mis hogares
         </Link>
@@ -209,7 +217,7 @@ export function AdultProfilePage() {
         state: { profileSaved: true },
       });
     } catch {
-      // El error de la mutacion se muestra debajo del formulario.
+      // El error de la mutación se muestra debajo del formulario.
     }
   };
 
@@ -226,18 +234,18 @@ export function AdultProfilePage() {
   }
 
   return (
-    <section className="page-section" aria-labelledby="profile-title">
+    <section
+      className="page-section profile-wizard"
+      aria-labelledby="profile-title"
+    >
       <BackButton fallback="/app" />
-      <p className="eyebrow">Perfil adulto</p>
-      <h1 id="profile-title">
-        {isEditing ? 'Edita tu perfil' : 'Configura tu perfil'}
-      </h1>
-      <p className="lead">
-        Completa estos pasos para personalizar las recomendaciones de tu hogar.
-      </p>
-      <p className="supporting-text">
-        Hogar activo: <strong>{households.activeHousehold.name}</strong>
-      </p>
+      <PageHeader
+        icon={<UserRoundPen size={24} />}
+        eyebrow={households.activeHousehold.name}
+        title={isEditing ? 'Edita tu perfil' : 'Configura tu perfil'}
+        titleId="profile-title"
+        description="Completa estos pasos para adaptar la experiencia a tus necesidades."
+      />
       <ProfileStepIndicator currentStep={currentStep} />
       <form
         className="auth-form profile-form"
@@ -248,6 +256,11 @@ export function AdultProfilePage() {
           Paso {currentStep} de {PROFILE_STEPS.length}:{' '}
           <strong>{PROFILE_STEPS[currentStep - 1]}</strong>
         </p>
+        {Object.keys(errors).length > 0 ? (
+          <p className="profile-error-summary" role="alert">
+            Revisa los campos indicados antes de continuar.
+          </p>
+        ) : null}
 
         {currentStep === 1 ? (
           <BasicInformationStep errors={errors} register={register} />
@@ -310,7 +323,7 @@ export function AdultProfilePage() {
         <p className="auth-error" role="alert">
           {getErrorMessage(
             profileError,
-            'No se pudo guardar el perfil. Intentalo nuevamente.',
+            'No se pudo guardar el perfil. Inténtalo nuevamente.',
           )}
         </p>
       ) : null}
@@ -326,7 +339,8 @@ function BasicInformationStep({
   register: UseFormRegister<AdultProfileFormValues>;
 }) {
   return (
-    <div className="profile-step-fields">
+    <fieldset className="profile-step-fields">
+      <legend className="visually-hidden">Información básica</legend>
       <div className="form-field">
         <label htmlFor="profile-name">Nombre</label>
         <input
@@ -334,9 +348,10 @@ function BasicInformationStep({
           id="profile-name"
           type="text"
           {...register('name')}
+          aria-describedby={errors.name ? 'profile-name-error' : undefined}
           aria-invalid={errors.name ? 'true' : 'false'}
         />
-        {getFieldError(errors, 'name')}
+        {getFieldError(errors, 'name', 'profile-name-error')}
       </div>
       <div className="form-field">
         <label htmlFor="profile-birth-date">Fecha de nacimiento</label>
@@ -345,11 +360,14 @@ function BasicInformationStep({
           max={getTodayDateInputValue()}
           type="date"
           {...register('birthDate')}
+          aria-describedby={
+            errors.birthDate ? 'profile-birth-date-error' : undefined
+          }
           aria-invalid={errors.birthDate ? 'true' : 'false'}
         />
-        {getFieldError(errors, 'birthDate')}
+        {getFieldError(errors, 'birthDate', 'profile-birth-date-error')}
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -361,31 +379,38 @@ function BodyInformationStep({
   register: UseFormRegister<AdultProfileFormValues>;
 }) {
   return (
-    <div className="profile-step-fields">
+    <fieldset className="profile-step-fields">
+      <legend className="visually-hidden">Datos corporales</legend>
       <div className="form-field">
-        <label htmlFor="profile-sex">Sexo biologico</label>
+        <label htmlFor="profile-sex">Sexo biológico</label>
         <select
           id="profile-sex"
           {...register('biologicalSex')}
+          aria-describedby={
+            errors.biologicalSex ? 'profile-sex-error' : undefined
+          }
           aria-invalid={errors.biologicalSex ? 'true' : 'false'}
         >
-          <option value="">Selecciona una opcion</option>
+          <option value="">Selecciona una opción</option>
           <option value="FEMALE">Femenino</option>
           <option value="MALE">Masculino</option>
         </select>
-        {getFieldError(errors, 'biologicalSex')}
+        {getFieldError(errors, 'biologicalSex', 'profile-sex-error')}
       </div>
       <div className="form-field">
-        <label htmlFor="profile-height">Altura en centimetros</label>
+        <label htmlFor="profile-height">Altura en centímetros</label>
         <input
           id="profile-height"
           inputMode="decimal"
           min="0.01"
           type="number"
           {...register('heightCm')}
+          aria-describedby={
+            errors.heightCm ? 'profile-height-error' : undefined
+          }
           aria-invalid={errors.heightCm ? 'true' : 'false'}
         />
-        {getFieldError(errors, 'heightCm')}
+        {getFieldError(errors, 'heightCm', 'profile-height-error')}
       </div>
       <div className="form-field">
         <label htmlFor="profile-weight">Peso en kilogramos</label>
@@ -395,11 +420,14 @@ function BodyInformationStep({
           min="0.01"
           type="number"
           {...register('weightKg')}
+          aria-describedby={
+            errors.weightKg ? 'profile-weight-error' : undefined
+          }
           aria-invalid={errors.weightKg ? 'true' : 'false'}
         />
-        {getFieldError(errors, 'weightKg')}
+        {getFieldError(errors, 'weightKg', 'profile-weight-error')}
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -411,38 +439,45 @@ function ActivityGoalStep({
   register: UseFormRegister<AdultProfileFormValues>;
 }) {
   return (
-    <div className="profile-step-fields">
+    <fieldset className="profile-step-fields">
+      <legend className="visually-hidden">Actividad y objetivo</legend>
       <div className="form-field">
         <label htmlFor="profile-activity">Nivel de actividad</label>
         <select
           id="profile-activity"
           {...register('activityLevel')}
+          aria-describedby={
+            errors.activityLevel ? 'profile-activity-error' : undefined
+          }
           aria-invalid={errors.activityLevel ? 'true' : 'false'}
         >
-          <option value="">Selecciona una opcion</option>
+          <option value="">Selecciona una opción</option>
           <option value="SEDENTARY">Sedentario</option>
           <option value="LIGHT">Ligero</option>
           <option value="MODERATE">Moderado</option>
           <option value="HIGH">Alto</option>
           <option value="VERY_HIGH">Muy alto</option>
         </select>
-        {getFieldError(errors, 'activityLevel')}
+        {getFieldError(errors, 'activityLevel', 'profile-activity-error')}
       </div>
       <div className="form-field">
         <label htmlFor="profile-goal">Objetivo principal</label>
         <select
           id="profile-goal"
           {...register('primaryGoal')}
+          aria-describedby={
+            errors.primaryGoal ? 'profile-goal-error' : undefined
+          }
           aria-invalid={errors.primaryGoal ? 'true' : 'false'}
         >
-          <option value="">Selecciona una opcion</option>
+          <option value="">Selecciona una opción</option>
           <option value="FAT_LOSS">Perder grasa</option>
           <option value="MAINTENANCE">Mantenerme</option>
           <option value="MUSCLE_GAIN">Ganar masa muscular</option>
         </select>
-        {getFieldError(errors, 'primaryGoal')}
+        {getFieldError(errors, 'primaryGoal', 'profile-goal-error')}
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -466,27 +501,43 @@ function RestrictionsStep({
   const restrictionErrors = getNestedErrors(errors, 'dietaryRestrictions');
 
   return (
-    <div className="profile-step-fields">
+    <fieldset className="profile-step-fields">
+      <legend className="visually-hidden">Restricciones alimentarias</legend>
       <p className="supporting-text">
         Agrega alergias, intolerancias o preferencias que debamos considerar.
       </p>
       {fields.length === 0 ? (
-        <p className="empty-copy">Todavia no has agregado restricciones.</p>
+        <p className="empty-copy">Todavía no has agregado restricciones.</p>
       ) : null}
       {fields.map((field, index) => (
         <fieldset className="restriction-form" key={field.formId}>
-          <legend>Restriccion {index + 1}</legend>
+          <legend>Restricción {index + 1}</legend>
           <div className="form-field">
             <label htmlFor={`restriction-type-${index}`}>Tipo</label>
             <select
               id={`restriction-type-${index}`}
               {...register(`dietaryRestrictions.${index}.type`)}
+              aria-describedby={
+                hasNestedFieldError(restrictionErrors, index, 'type')
+                  ? `restriction-type-${index}-error`
+                  : undefined
+              }
+              aria-invalid={
+                hasNestedFieldError(restrictionErrors, index, 'type')
+                  ? 'true'
+                  : 'false'
+              }
             >
               <option value="ALLERGY">Alergia</option>
               <option value="INTOLERANCE">Intolerancia</option>
               <option value="PREFERENCE">Preferencia</option>
             </select>
-            {getNestedFieldError(restrictionErrors, index, 'type')}
+            {getNestedFieldError(
+              restrictionErrors,
+              index,
+              'type',
+              `restriction-type-${index}-error`,
+            )}
           </div>
           <div className="form-field">
             <label htmlFor={`restriction-name-${index}`}>Nombre</label>
@@ -494,8 +545,23 @@ function RestrictionsStep({
               id={`restriction-name-${index}`}
               type="text"
               {...register(`dietaryRestrictions.${index}.name`)}
+              aria-describedby={
+                hasNestedFieldError(restrictionErrors, index, 'name')
+                  ? `restriction-name-${index}-error`
+                  : undefined
+              }
+              aria-invalid={
+                hasNestedFieldError(restrictionErrors, index, 'name')
+                  ? 'true'
+                  : 'false'
+              }
             />
-            {getNestedFieldError(restrictionErrors, index, 'name')}
+            {getNestedFieldError(
+              restrictionErrors,
+              index,
+              'name',
+              `restriction-name-${index}-error`,
+            )}
           </div>
           <div className="form-field">
             <label htmlFor={`restriction-severity-${index}`}>
@@ -505,8 +571,23 @@ function RestrictionsStep({
               id={`restriction-severity-${index}`}
               type="text"
               {...register(`dietaryRestrictions.${index}.severity`)}
+              aria-describedby={
+                hasNestedFieldError(restrictionErrors, index, 'severity')
+                  ? `restriction-severity-${index}-error`
+                  : undefined
+              }
+              aria-invalid={
+                hasNestedFieldError(restrictionErrors, index, 'severity')
+                  ? 'true'
+                  : 'false'
+              }
             />
-            {getNestedFieldError(restrictionErrors, index, 'severity')}
+            {getNestedFieldError(
+              restrictionErrors,
+              index,
+              'severity',
+              `restriction-severity-${index}-error`,
+            )}
           </div>
           <div className="form-field">
             <label htmlFor={`restriction-notes-${index}`}>
@@ -515,15 +596,30 @@ function RestrictionsStep({
             <textarea
               id={`restriction-notes-${index}`}
               {...register(`dietaryRestrictions.${index}.notes`)}
+              aria-describedby={
+                hasNestedFieldError(restrictionErrors, index, 'notes')
+                  ? `restriction-notes-${index}-error`
+                  : undefined
+              }
+              aria-invalid={
+                hasNestedFieldError(restrictionErrors, index, 'notes')
+                  ? 'true'
+                  : 'false'
+              }
             />
-            {getNestedFieldError(restrictionErrors, index, 'notes')}
+            {getNestedFieldError(
+              restrictionErrors,
+              index,
+              'notes',
+              `restriction-notes-${index}-error`,
+            )}
           </div>
           <button
             className="button button--secondary"
             onClick={() => remove(index)}
             type="button"
           >
-            Quitar restriccion
+            Quitar restricción
           </button>
         </fieldset>
       ))}
@@ -534,9 +630,9 @@ function RestrictionsStep({
         }
         type="button"
       >
-        Agregar restriccion
+        Agregar restricción
       </button>
-    </div>
+    </fieldset>
   );
 }
 
@@ -548,7 +644,8 @@ function ScaleStep({
   register: UseFormRegister<AdultProfileFormValues>;
 }) {
   return (
-    <div className="profile-step-fields">
+    <fieldset className="profile-step-fields">
+      <legend className="visually-hidden">Balanza de cocina</legend>
       <p className="lead profile-step-copy">
         Saber si tienes una balanza nos ayuda a adaptar las recomendaciones.
       </p>
@@ -557,7 +654,7 @@ function ScaleStep({
         <span>Tengo una balanza de cocina</span>
       </label>
       {getFieldError(errors, 'hasKitchenScale')}
-    </div>
+    </fieldset>
   );
 }
 
@@ -566,7 +663,13 @@ function ProfileStepIndicator({ currentStep }: { currentStep: number }) {
     <ol className="profile-steps" aria-label="Progreso del perfil">
       {PROFILE_STEPS.map((step, index) => (
         <li
-          className={index + 1 === currentStep ? 'is-current' : undefined}
+          className={
+            index + 1 === currentStep
+              ? 'is-current'
+              : index + 1 < currentStep
+                ? 'is-complete'
+                : undefined
+          }
           key={step}
           aria-current={index + 1 === currentStep ? 'step' : undefined}
         >
@@ -665,6 +768,7 @@ function getFirstErrorStep(
 function getFieldError(
   errors: FieldErrors<AdultProfileFormValues>,
   field: string,
+  id?: string,
 ) {
   const error = (errors as Record<string, unknown>)[field];
 
@@ -672,7 +776,11 @@ function getFieldError(
     return null;
   }
 
-  return <p className="form-field__error">{String(error.message)}</p>;
+  return (
+    <p className="form-field__error" id={id}>
+      {String(error.message)}
+    </p>
+  );
 }
 
 function getNestedErrors(
@@ -683,7 +791,12 @@ function getNestedErrors(
   return Array.isArray(nested) ? nested : [];
 }
 
-function getNestedFieldError(errors: unknown[], index: number, field: string) {
+function getNestedFieldError(
+  errors: unknown[],
+  index: number,
+  field: string,
+  id?: string,
+) {
   const error = errors[index];
 
   if (typeof error !== 'object' || error === null) {
@@ -699,7 +812,24 @@ function getNestedFieldError(errors: unknown[], index: number, field: string) {
     return null;
   }
 
-  return <p className="form-field__error">{String(fieldError.message)}</p>;
+  return (
+    <p className="form-field__error" id={id}>
+      {String(fieldError.message)}
+    </p>
+  );
+}
+
+function hasNestedFieldError(
+  errors: unknown[],
+  index: number,
+  field: string,
+): boolean {
+  const error = errors[index];
+  return Boolean(
+    typeof error === 'object' &&
+      error !== null &&
+      (error as Record<string, unknown>)[field],
+  );
 }
 
 function ProfileStatus({
@@ -710,12 +840,12 @@ function ProfileStatus({
   message: string;
 }) {
   return (
-    <section className="page-section" aria-labelledby="profile-status-title">
-      <p className="eyebrow">Perfil adulto</p>
-      <h1 id="profile-status-title">Perfil adulto</h1>
-      <p className="lead" role={isError ? 'alert' : 'status'}>
-        {message}
-      </p>
+    <section className="page-section">
+      {isError ? (
+        <ErrorState message={message} />
+      ) : (
+        <LoadingState message={message} />
+      )}
     </section>
   );
 }

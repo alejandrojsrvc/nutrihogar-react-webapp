@@ -42,6 +42,7 @@ export function RecipePicker({
       <div className="meal-planning__recipe-results">
         {recipes.data?.items.map((recipe) => (
           <button
+            aria-pressed={recipe.id === value}
             className={recipe.id === value ? 'is-selected' : ''}
             key={recipe.id}
             onClick={() => {

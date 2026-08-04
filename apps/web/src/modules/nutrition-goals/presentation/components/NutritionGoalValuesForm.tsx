@@ -2,6 +2,7 @@ import { useForm, type UseFormRegister } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router';
+import { Save } from 'lucide-react';
 
 import {
   nutritionGoalValuesSchema,
@@ -37,6 +38,7 @@ export function NutritionGoalValuesForm({
   return (
     <form
       className="nutrition-goal-form"
+      noValidate
       onSubmit={form.handleSubmit((nextValues) => {
         if (!suggestion || !profileId) return;
         confirm.mutate(
@@ -46,72 +48,88 @@ export function NutritionGoalValuesForm({
       })}
     >
       {suggestion ? (
-        <dl className="nutrition-calculation">
-          <div>
-            <dt>Metabolismo basal</dt>
-            <dd>{suggestion.calculation.bmr} kcal</dd>
-          </div>
-          <div>
-            <dt>Gasto estimado</dt>
-            <dd>{suggestion.calculation.tdee} kcal</dd>
-          </div>
-          {suggestion.calculation.deficit != null ? (
+        <section
+          className="nutrition-calculation-section"
+          aria-labelledby="nutrition-calculation-title"
+        >
+          <h2 id="nutrition-calculation-title">Cómo se estimó</h2>
+          <dl className="nutrition-calculation">
             <div>
-              <dt>Déficit propuesto</dt>
-              <dd>{suggestion.calculation.deficit} kcal</dd>
+              <dt>Metabolismo basal</dt>
+              <dd>{formatValue(suggestion.calculation.bmr)} kcal</dd>
             </div>
-          ) : null}
-        </dl>
+            <div>
+              <dt>Gasto estimado</dt>
+              <dd>{formatValue(suggestion.calculation.tdee)} kcal</dd>
+            </div>
+            {suggestion.calculation.deficit != null ? (
+              <div>
+                <dt>Ajuste propuesto</dt>
+                <dd>{formatValue(suggestion.calculation.deficit)} kcal</dd>
+              </div>
+            ) : null}
+          </dl>
+        </section>
       ) : null}
-      <p className="supporting-text">
-        Los valores son una estimación y no sustituyen la orientación de un
-        profesional.
-      </p>
-      <NutritionValueInput
-        name="dailyCalories"
-        label="Calorías diarias"
-        unit="kcal"
-        register={form.register}
-        error={form.formState.errors.dailyCalories?.message}
-      />
-      <NutritionValueInput
-        name="proteinGrams"
-        label="Proteína"
-        unit="g"
-        register={form.register}
-        error={form.formState.errors.proteinGrams?.message}
-      />
-      <NutritionValueInput
-        name="carbohydrateGrams"
-        label="Carbohidratos"
-        unit="g"
-        register={form.register}
-        error={form.formState.errors.carbohydrateGrams?.message}
-      />
-      <NutritionValueInput
-        name="fatGrams"
-        label="Grasas"
-        unit="g"
-        register={form.register}
-        error={form.formState.errors.fatGrams?.message}
-      />
-      <NutritionValueInput
-        name="fiberGrams"
-        label="Fibra"
-        unit="g"
-        register={form.register}
-        error={form.formState.errors.fiberGrams?.message}
-      />
-      <button
-        className="button button--primary"
-        disabled={confirm.isPending}
-        type="submit"
-      >
-        {confirm.isPending ? 'Guardando...' : 'Confirmar meta'}
-      </button>
+      <fieldset className="nutrition-goal-fields">
+        <legend>Referencia diaria</legend>
+        <p className="supporting-text">
+          Ajusta los valores si lo necesitas. La propuesta solo se guarda al
+          confirmar.
+        </p>
+        <div className="nutrition-goal-field-grid">
+          <NutritionValueInput
+            name="dailyCalories"
+            label="Calorías diarias"
+            unit="kcal"
+            register={form.register}
+            error={form.formState.errors.dailyCalories?.message}
+          />
+          <NutritionValueInput
+            name="proteinGrams"
+            label="Proteína"
+            unit="g"
+            register={form.register}
+            error={form.formState.errors.proteinGrams?.message}
+          />
+          <NutritionValueInput
+            name="carbohydrateGrams"
+            label="Carbohidratos"
+            unit="g"
+            register={form.register}
+            error={form.formState.errors.carbohydrateGrams?.message}
+          />
+          <NutritionValueInput
+            name="fatGrams"
+            label="Grasas"
+            unit="g"
+            register={form.register}
+            error={form.formState.errors.fatGrams?.message}
+          />
+          <NutritionValueInput
+            name="fiberGrams"
+            label="Fibra"
+            unit="g"
+            register={form.register}
+            error={form.formState.errors.fiberGrams?.message}
+          />
+        </div>
+      </fieldset>
       {confirm.isError ? (
-        <p role="alert">No se pudo confirmar la meta.</p>
+        <p className="nutrition-goal-error" role="alert">
+          No se pudo confirmar la meta. Tus ajustes siguen en el formulario.
+        </p>
       ) : null}
+      <div className="nutrition-goal-actions">
+        <button
+          className="button button--primary"
+          disabled={confirm.isPending}
+          type="submit"
+        >
+          {!confirm.isPending ? <Save aria-hidden="true" size={18} /> : null}
+          {confirm.isPending ? 'Guardando...' : 'Confirmar meta'}
+        </button>
+      </div>
     </form>
   );
 }
@@ -135,42 +153,53 @@ function NutritionValueInput({
         {label} ({unit})
       </label>
       <input
+        aria-describedby={error ? `goal-${name}-error` : undefined}
+        aria-invalid={error ? 'true' : 'false'}
         id={`goal-${name}`}
         inputMode="decimal"
         min="0.1"
         step="0.1"
         type="number"
         {...register(name)}
-        aria-invalid={error ? 'true' : 'false'}
       />
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {error ? (
+        <p className="form-field__error" id={`goal-${name}-error`}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
 
 function NutritionValuesList({ values }: { values: NutritionGoalValues }) {
   return (
-    <dl className="nutrition-value-list">
+    <dl className="nutrition-value-list nutrition-goal-values">
       <div>
         <dt>Calorías</dt>
-        <dd>{values.dailyCalories} kcal</dd>
+        <dd>{formatValue(values.dailyCalories)} kcal</dd>
       </div>
       <div>
         <dt>Proteína</dt>
-        <dd>{values.proteinGrams} g</dd>
+        <dd>{formatValue(values.proteinGrams)} g</dd>
       </div>
       <div>
         <dt>Carbohidratos</dt>
-        <dd>{values.carbohydrateGrams} g</dd>
+        <dd>{formatValue(values.carbohydrateGrams)} g</dd>
       </div>
       <div>
         <dt>Grasas</dt>
-        <dd>{values.fatGrams} g</dd>
+        <dd>{formatValue(values.fatGrams)} g</dd>
       </div>
       <div>
         <dt>Fibra</dt>
-        <dd>{values.fiberGrams} g</dd>
+        <dd>{formatValue(values.fiberGrams)} g</dd>
       </div>
     </dl>
+  );
+}
+
+function formatValue(value: number) {
+  return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 1 }).format(
+    value,
   );
 }

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { PackagePlus } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
@@ -8,7 +9,11 @@ import { FoodSelector } from '../../../food-catalog/presentation/components/Food
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
 import { BackButton } from '../../../../shared/presentation/components/BackButton';
-import { useCreateInventoryItem } from '../hooks/useInventory';
+import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
+import {
+  useCreateInventoryItem,
+  useInventorySyncStatus,
+} from '../hooks/useInventory';
 import {
   createInventorySchema,
   type CreateInventoryValues,
@@ -19,6 +24,7 @@ export function InventoryCreatePage() {
   const navigate = useNavigate();
   const households = useHouseholds();
   const create = useCreateInventoryItem();
+  const syncStatus = useInventorySyncStatus(households.activeHousehold?.id);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<FoodSelection['food']>();
   const {
@@ -47,9 +53,12 @@ export function InventoryCreatePage() {
     );
   if (households.isError || !households.activeHousehold)
     return (
-      <p className="page-section" role="alert">
-        No se pudo cargar el hogar activo.
-      </p>
+      <section className="page-section" role="alert">
+        <p>No se pudo cargar el hogar activo.</p>
+        <button className="button button--secondary" onClick={() => void households.refetch()} type="button">
+          Reintentar
+        </button>
+      </section>
     );
   const householdId = households.activeHousehold.id;
 
@@ -95,19 +104,25 @@ export function InventoryCreatePage() {
       aria-labelledby="inventory-create-title"
     >
       <BackButton fallback="/app/inventario" />
-      <p className="eyebrow">Inventario del hogar</p>
-      <h1 id="inventory-create-title">Agregar existencia</h1>
-      <p className="lead">
-        Registra lo que tienes disponible para mantener una referencia clara en
-        casa.
-      </p>
+      <PageHeader
+        description="Registra lo que tienes disponible para mantener una referencia clara en casa."
+        eyebrow="Inventario del hogar"
+        icon={<PackagePlus size={22} />}
+        title="Agregar existencia"
+        titleId="inventory-create-title"
+      />
+      {syncStatus.data?.isOnline === false ? (
+        <p className="inventory-offline-note" role="status">
+          Sin conexión. Crear una existencia requiere conexión y no se pondrá en cola; tus valores permanecerán en el formulario.
+        </p>
+      ) : null}
       <form
         className="inventory-form"
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset>
-          <legend>Alimento</legend>
+          <legend><span>1</span> Alimento</legend>
           <input type="hidden" {...register('foodId')} />
           <div className="form-field">
             <span className="form-field__label">Alimento *</span>
@@ -116,6 +131,7 @@ export function InventoryCreatePage() {
                 <strong>{selectedFood.name}</strong>
                 <button
                   className="button button--text"
+                  disabled={syncStatus.data?.isOnline === false}
                   onClick={() => setSelectorOpen(true)}
                   type="button"
                 >
@@ -125,6 +141,7 @@ export function InventoryCreatePage() {
             ) : (
               <button
                 className="button button--secondary"
+                disabled={syncStatus.data?.isOnline === false}
                 onClick={() => setSelectorOpen(true)}
                 type="button"
               >
@@ -139,7 +156,7 @@ export function InventoryCreatePage() {
           </div>
         </fieldset>
         <fieldset>
-          <legend>Cantidad y ubicación</legend>
+          <legend><span>2</span> Cantidad y ubicación</legend>
           <div className="inventory-form-grid">
             <Field
               error={errors.quantity?.message}
@@ -205,24 +222,27 @@ export function InventoryCreatePage() {
             </Field>
           </div>
         </fieldset>
-        <Field
-          error={errors.reason?.message}
-          id="inventory-create-reason"
-          label="Razón"
-        >
-          <textarea
+        <fieldset>
+          <legend><span>3</span> Nota opcional</legend>
+          <Field
+            error={errors.reason?.message}
             id="inventory-create-reason"
-            placeholder="Ej. Compra semanal"
-            {...register('reason')}
-          />
-        </Field>
+            label="Razón"
+          >
+            <textarea
+              id="inventory-create-reason"
+              placeholder="Ej. Compra semanal"
+              {...register('reason')}
+            />
+          </Field>
+        </fieldset>
         <div className="inventory-form-actions">
           <Link className="button button--secondary" to="/app/inventario">
             Cancelar
           </Link>
           <button
             className="button button--primary"
-            disabled={create.isPending}
+            disabled={create.isPending || syncStatus.data?.isOnline === false}
             type="submit"
           >
             {create.isPending ? 'Guardando...' : 'Agregar existencia'}
@@ -261,7 +281,7 @@ function Field({
     <div className="form-field">
       <label htmlFor={id}>{label}</label>
       {children}
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {error ? <p className="form-field__error" role="alert">{error}</p> : null}
     </div>
   );
 }
