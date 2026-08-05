@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { Badge } from '../../../../shared/presentation/components/Badge';
 import { Dialog } from '../../../../shared/presentation/components/Overlay';
 import { useFoodDetail } from '../../../food-catalog/presentation/hooks/useFoodCatalog';
@@ -60,7 +59,6 @@ export function RecipeDetailPage() {
       className="page-section recipe-detail-page"
       aria-labelledby="recipe-detail-title"
     >
-      <BackButton fallback="/app/recetas" />
       <div className="recipe-status-line">
         <Badge tone={statusTone(value.status)}>
           {humanizeEnum(value.status)}

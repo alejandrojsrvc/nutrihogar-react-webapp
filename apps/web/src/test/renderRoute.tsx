@@ -40,8 +40,14 @@ export function renderRoute(
   path: string,
   authGateway: AuthSessionGateway = createTestAuthGateway(),
   syncCurrentUser: SyncCurrentUserUseCase = createTestSyncCurrentUserUseCase(),
+  locationState?: Record<string, unknown>,
 ) {
-  const router = createMemoryRouter(appRoutes, { initialEntries: [path] });
+  const initialEntry = locationState
+    ? { pathname: path, state: locationState }
+    : path;
+  const router = createMemoryRouter(appRoutes, {
+    initialEntries: [initialEntry],
+  });
 
   return render(
     <AppProviders authGateway={authGateway} syncCurrentUser={syncCurrentUser}>

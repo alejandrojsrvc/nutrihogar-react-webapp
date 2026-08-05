@@ -5,14 +5,12 @@ export function PageHeader({
   title,
   titleId,
   description,
-  action,
   icon,
 }: {
   eyebrow?: string;
   title: string;
   titleId?: string;
   description?: string;
-  action?: ReactNode;
   icon?: ReactNode;
 }) {
   return (
@@ -29,7 +27,6 @@ export function PageHeader({
           {description ? <p className="lead">{description}</p> : null}
         </div>
       </div>
-      {action ? <div className="page-header__action">{action}</div> : null}
     </div>
   );
 }

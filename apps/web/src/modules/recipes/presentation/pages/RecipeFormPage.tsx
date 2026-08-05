@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from 'react-router';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import {
   useCreateRecipe,
@@ -51,9 +50,6 @@ export function RecipeFormPage() {
       className="page-section recipe-form-page"
       aria-labelledby="recipe-form-title"
     >
-      <BackButton
-        fallback={isEditing ? `/app/recetas/${recipeId}` : '/app/recetas'}
-      />
       <RecipeForm
         initialValues={initialValues}
         isSubmitting={create.isPending || update.isPending}

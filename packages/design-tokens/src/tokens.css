@@ -42,10 +42,10 @@
   --color-primary-soft: var(--color-brand-soft);
 
   /* Surfaces */
-  --color-background: #faf9f5;
+  --color-background: #ffffff;
   --color-canvas: var(--color-background);
   --color-surface: #ffffff;
-  --color-surface-secondary: #f7f7f3;
+  --color-surface-secondary: #ffffff;
   --color-surface-muted: var(--color-surface-secondary);
   --color-surface-subtle: var(--color-surface-secondary);
   --color-surface-highlight: #f3f8e9;

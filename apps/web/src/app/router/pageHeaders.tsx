@@ -13,19 +13,12 @@ import {
   Scale,
   Utensils,
 } from 'lucide-react';
-import { Link } from 'react-router';
-
 import { PageHeader } from '../../shared/presentation/components/PageHeader';
 import { useRouteParams } from '../../shared/presentation/hooks/useRouteParams';
 
 export function RecipeListHeader() {
   return (
     <PageHeader
-      action={
-        <Link className="button button--primary" to="/app/recetas/nueva">
-          Crear receta
-        </Link>
-      }
       description="Encuentra preparaciones que tu familia repite con frecuencia."
       eyebrow="Recetas familiares"
       icon={<BookOpen size={22} />}
@@ -81,11 +74,6 @@ export function PreparedBatchInventoryHeader() {
 export function InventoryListHeader() {
   return (
     <PageHeader
-      action={
-        <Link className="button button--primary" to="/app/inventario/nuevo">
-          <Plus size={19} aria-hidden="true" /> Agregar producto
-        </Link>
-      }
       description="Despensa y preparados del hogar"
       icon={<House size={25} />}
       title="Inventario"
@@ -123,12 +111,6 @@ export function PurchaseFormHeader() {
 export function FoodCatalogHeader() {
   return (
     <PageHeader
-      action={
-        <Link className="button button--primary" to="/app/alimentos/nuevo">
-          <Plus aria-hidden="true" size={19} />
-          Crear alimento
-        </Link>
-      }
       description="Busca ingredientes y consulta sus valores nutricionales."
       icon={<Apple size={25} />}
       title="Alimentos"

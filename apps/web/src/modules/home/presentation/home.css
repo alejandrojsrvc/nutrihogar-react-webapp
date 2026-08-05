@@ -53,28 +53,16 @@
 }
 .home-page__layout {
   display: grid;
-  grid-template-areas:
-    'nutrition next'
-    'meals inventory';
   grid-template-columns: minmax(0, 2fr) minmax(14rem, 1fr);
   gap: var(--space-4);
   align-items: start;
 }
 .home-page__main-column,
 .home-page__side-column {
-  display: contents;
-}
-.home-page__nutrition {
-  grid-area: nutrition;
-}
-.home-page__meals {
-  grid-area: meals;
-}
-.home-next-meal {
-  grid-area: next;
-}
-.home-page__inventory-pulse {
-  grid-area: inventory;
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: var(--space-4);
 }
 .home-page__nutrition,
 .home-page__meals,
@@ -84,7 +72,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
+  /*  /* box-shadow: var(--shadow-sm); */
 }
 .home-nutrition__overview {
   display: grid;
@@ -183,7 +171,7 @@
 }
 .home-macro__content {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
   gap: var(--space-2);
   align-items: center;
 }
@@ -224,8 +212,11 @@
   background: var(--color-warning-soft);
 }
 .home-macro small {
+  align-self: start;
   color: var(--color-text-secondary);
   font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-sm);
+  text-align: right;
 }
 .home-macro__track {
   height: 0.35rem;
@@ -250,9 +241,6 @@
 }
 .home-macro small {
   display: block;
-  margin-top: var(--space-1);
-  font-size: var(--font-size-xs);
-  text-align: right;
 }
 .home-card__heading {
   display: flex;
@@ -322,7 +310,7 @@
   gap: var(--space-3);
   padding: 0 var(--space-2) var(--space-2);
   color: var(--color-text-secondary);
-  font-size: 0.6875rem;
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -339,10 +327,10 @@
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr) auto auto 1rem;
   gap: var(--space-3);
-  min-height: 3.125rem;
+  min-height: 4rem;
   align-items: center;
   border-top: 1px solid var(--color-border);
-  padding: 5px 10px;
+  padding: var(--space-2) var(--space-3);
 }
 
 .home-meal-timeline li:first-child {
@@ -383,28 +371,33 @@
   white-space: nowrap;
 }
 .home-meal-timeline__status {
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  color: var(--color-primary-800);
-  background: var(--color-primary-soft);
-  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-secondary);
+  font-size: var(--font-size-sm);
   white-space: nowrap;
 }
 .home-meal-timeline__status.is-complete {
   color: var(--color-success);
   background: var(--color-success-soft);
+  border-color: transparent;
 }
 .home-meal-timeline__status.is-cancelled {
   color: var(--color-danger);
   background: var(--color-danger-soft);
+  border-color: transparent;
 }
 .home-meal-timeline > li > svg {
   color: var(--color-text-secondary);
 }
 .home-page__primary-action {
   display: flex;
-  width: min(14rem, 100%);
+  width: min(20rem, 100%);
   margin-inline: auto;
+  border-radius: var(--radius-pill)!important;
+  margin: auto;
 }
 .home-pulse-list {
   display: grid;
@@ -481,6 +474,22 @@
       'inventory';
     grid-template-columns: minmax(0, 1fr);
   }
+  .home-page__main-column,
+  .home-page__side-column {
+    display: contents;
+  }
+  .home-page__nutrition {
+    grid-area: nutrition;
+  }
+  .home-page__meals {
+    grid-area: meals;
+  }
+  .home-next-meal {
+    grid-area: next;
+  }
+  .home-page__inventory-pulse {
+    grid-area: inventory;
+  }
   .home-page__nutrition,
   .home-page__meals,
   .home-next-meal,
@@ -509,16 +518,23 @@
     display: none;
   }
   .home-meal-timeline li {
-    grid-template-columns: 2rem minmax(0, 1fr) auto auto 1rem;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
     gap: var(--space-2);
   }
   .home-meal-timeline > li > svg {
     display: none;
   }
+  .home-meal-timeline__calories {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+  }
   .home-meal-timeline__status {
-    padding-inline: var(--space-2);
+    grid-column: 3;
+    grid-row: 1 / span 2;
   }
   .home-page__primary-action {
-    width: 100%;
+    width: min(20rem, 100%);
   }
 }

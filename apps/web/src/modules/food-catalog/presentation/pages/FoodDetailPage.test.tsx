@@ -106,6 +106,49 @@ describe('FoodDetailPage', () => {
       await screen.findByRole('heading', { name: 'No encontramos alimentos' }),
     ).toBeInTheDocument();
   });
+
+  it('shows inventory feedback when the food was created from a nutrition label', async () => {
+    vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+
+      if (request.url.endsWith('/api/households')) {
+        return jsonResponse([
+          {
+            currency: 'ARS',
+            id: 'household-1',
+            name: 'Hogar Sojo',
+            timezone: 'America/Argentina/Buenos_Aires',
+          },
+        ]);
+      }
+
+      if (request.url.endsWith('/api/foods/food-custom-1')) {
+        return jsonResponse(customFood);
+      }
+
+      if (request.url.endsWith('/api/food-categories')) {
+        return jsonResponse([category]);
+      }
+
+      return jsonResponse({
+        items: [],
+        pagination: { limit: 12, page: 1, total: 0 },
+      });
+    });
+
+    renderRoute(
+      '/app/alimentos/food-custom-1',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+      undefined,
+      { foodSaved: true, inventoryAdded: true },
+    );
+
+    expect(
+      await screen.findByText(
+        'El alimento se guardó y se agregó a tu inventario.',
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 function jsonResponse(body: unknown, status = 200) {

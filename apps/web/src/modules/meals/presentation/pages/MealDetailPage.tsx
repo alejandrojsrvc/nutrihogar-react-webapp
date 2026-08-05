@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { formatCalories, formatGrams } from '@nutrihogar/domain';
-import { Repeat2 } from 'lucide-react';
+import { Pencil, Repeat2 } from 'lucide-react';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useCancelMeal, useMealDetails } from '../hooks/useMeals';
 import { isPreparedMealSource } from '../../domain/MealOrigin';
@@ -205,6 +205,25 @@ export function MealDetailPage() {
         </Link>
       ) : null}
       <div className="meal-detail-actions">
+        {editDisabledReason ? (
+          <button
+            aria-describedby="meal-edit-disabled-reason"
+            className="button button--primary"
+            disabled
+            type="button"
+          >
+            <Pencil aria-hidden="true" size={18} />
+            Editar comida
+          </button>
+        ) : (
+          <Link
+            className="button button--primary"
+            to={`/app/comidas/${meal.id}/editar`}
+          >
+            <Pencil aria-hidden="true" size={18} />
+            Editar comida
+          </Link>
+        )}
         <Link
           className="button button--secondary"
           to={`/app/comidas/${meal.id}/repetir`}

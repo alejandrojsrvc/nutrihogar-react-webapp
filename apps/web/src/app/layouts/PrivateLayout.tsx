@@ -14,6 +14,7 @@ import {
   primaryNavigation,
   secondaryNavigationForPath,
 } from '../../shared/presentation/navigation/mainNavigation';
+import { routeDepth } from '../../shared/presentation/navigation/routeHandle';
 
 export function PrivateLayout() {
   const navigate = useNavigate();
@@ -24,7 +25,11 @@ export function PrivateLayout() {
   const [connectionMessage, setConnectionMessage] = useState<string | null>(
     null,
   );
-  const secondaryItems = secondaryNavigationForPath(location.pathname);
+  const secondaryItems = ['root', 'secondary'].includes(
+    routeDepth(location.pathname),
+  )
+    ? secondaryNavigationForPath(location.pathname)
+    : null;
 
   useEffect(() => {
     let timeout: number | undefined;
@@ -55,9 +60,7 @@ export function PrivateLayout() {
   }
 
   return (
-    <ActiveProfileProvider
-      profiles={profiles.profiles}
-    >
+    <ActiveProfileProvider profiles={profiles.profiles}>
       <div className="private-layout">
         <div className="app-shell">
           <Sidebar secondaryItems={secondaryItems} />

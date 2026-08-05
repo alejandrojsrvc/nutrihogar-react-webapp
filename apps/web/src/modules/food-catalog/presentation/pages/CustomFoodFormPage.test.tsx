@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -139,6 +139,218 @@ describe('CustomFoodFormPage', () => {
     expect(screen.getByPlaceholderText('Ej. 1 rebanada')).toBeInTheDocument();
   });
 
+  it('reads a nutrition label, keeps it pending review and confirms it manually', async () => {
+    const user = userEvent.setup();
+    const requests: Request[] = [];
+    mockFormRequests(async (request) => {
+      requests.push(request);
+      if (
+        request.url.endsWith(
+          '/api/households/household-1/foods/nutrition-label-drafts',
+        )
+      ) {
+        return jsonResponse(nutritionLabelDraft, 201);
+      }
+      if (request.url.includes('/nutrition-label-drafts/draft-1/confirm')) {
+        return jsonResponse({
+          food: { ...foodDetail, id: 'food-from-label' },
+          inventory: {
+            currentQuantity: '650',
+            expiresAt: null,
+            id: 'inventory-1',
+            location: null,
+            minimumQuantity: null,
+            status: 'ACTIVE',
+            unit: 'GRAM',
+          },
+        });
+      }
+      return jsonResponse({});
+    });
+
+    renderForm();
+    await user.click(
+      await screen.findByRole('button', { name: 'Elegir foto o PDF' }),
+    );
+    await user.upload(
+      screen.getByLabelText('Archivo de etiqueta nutricional'),
+      new File(['label'], 'label.jpg', { type: 'image/jpeg' }),
+    );
+
+    expect(await screen.findByText('Revisión pendiente')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Pan Multisemilla')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cantidad del envase')).toHaveValue(650);
+    expect(screen.queryByLabelText('Descripción')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Ubicación')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Vencimiento')).not.toBeInTheDocument();
+    expect(
+      requests.filter((request) =>
+        request.url.includes('/nutrition-label-drafts/draft-1'),
+      ),
+    ).toHaveLength(0);
+
+    await user.selectOptions(
+      screen.getByLabelText('Categoría'),
+      'category-meat',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Guardar alimento' }),
+    );
+
+    await waitFor(() => {
+      expect(
+        requests.some((request) =>
+          request.url.endsWith('/nutrition-label-drafts/draft-1/confirm'),
+        ),
+      ).toBe(true);
+    });
+    expect(
+      await requests
+        .find((request) =>
+          request.url.endsWith('/nutrition-label-drafts/draft-1/confirm'),
+        )
+        ?.clone()
+        .json(),
+    ).toMatchObject({
+      basisQuantity: '55',
+      nutrients: expect.arrayContaining([
+        { amount: '4.8', code: 'PROTEIN' },
+      ]),
+      packageQuantity: '650',
+    });
+  });
+
+  it('rejects a file that is not an image or PDF', async () => {
+    const user = userEvent.setup();
+    const drafts: Request[] = [];
+    mockFormRequests((request) => {
+      if (request.url.endsWith('/nutrition-label-drafts')) {
+        drafts.push(request);
+        return jsonResponse(nutritionLabelDraft, 201);
+      }
+      return jsonResponse({});
+    });
+
+    renderForm();
+    await user.upload(
+      screen.getByLabelText('Archivo de etiqueta nutricional'),
+      new File(['text'], 'etiqueta.txt', { type: 'text/plain' }),
+    );
+
+    expect(
+      await screen.findByText('Elegí una foto o un PDF de la etiqueta del envase.'),
+    ).toBeInTheDocument();
+    expect(drafts).toHaveLength(0);
+  });
+
+  it('accepts a label dropped on the reader', async () => {
+    const drafts: Request[] = [];
+    mockFormRequests((request) => {
+      if (request.url.endsWith('/nutrition-label-drafts')) {
+        drafts.push(request);
+        return jsonResponse(nutritionLabelDraft, 201);
+      }
+      return jsonResponse({});
+    });
+
+    renderForm();
+    const reader = screen
+      .getByLabelText('Archivo de etiqueta nutricional')
+      .closest('.nutrition-label-reader') as HTMLElement;
+    fireEvent.drop(reader, {
+      dataTransfer: { files: [new File(['label'], 'label.pdf', { type: 'application/pdf' })] },
+    });
+
+    await waitFor(() => expect(drafts).toHaveLength(1));
+    expect(await screen.findByText('Revisión pendiente')).toBeInTheDocument();
+  });
+
+  it('shows the required nutrient badge and disables saving when the label is missing one', async () => {
+    const user = userEvent.setup();
+    mockFormRequests((request) => {
+      if (request.url.endsWith('/nutrition-label-drafts')) {
+        return jsonResponse(
+          {
+            ...nutritionLabelDraft,
+            extractedData: {
+              ...nutritionLabelDraft.extractedData,
+              nutrition_declarations: [
+                {
+                  basis: { type: 'PER_SERVING', unit: 'g', value: 55 },
+                  nutrients: {
+                    carbohydrates_g: 23,
+                    energy_kcal: 140,
+                    total_fat_g: 3.2,
+                  },
+                },
+              ],
+            },
+          },
+          201,
+        );
+      }
+      return jsonResponse({});
+    });
+
+    renderForm();
+    await user.upload(
+      screen.getByLabelText('Archivo de etiqueta nutricional'),
+      new File(['label'], 'label.jpg', { type: 'image/jpeg' }),
+    );
+
+    await screen.findByText('Revisión pendiente');
+    expect(screen.getByText('Obligatorio')).toBeInTheDocument();
+    expect(
+      screen.getByText('Completá los nutrientes obligatorios antes de confirmar.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Guardar alimento' }),
+    ).toBeDisabled();
+  });
+
+  it('sends the edited food as targetFoodId when reading a label during edit', async () => {
+    const user = userEvent.setup();
+    let confirmedRequest: Request | undefined;
+    mockFormRequests(async (request) => {
+      if (request.url.endsWith('/api/foods/food-custom-1')) {
+        return jsonResponse(foodDetail);
+      }
+      if (request.url.endsWith('/nutrition-label-drafts')) {
+        return jsonResponse(nutritionLabelDraft, 201);
+      }
+      if (request.url.endsWith('/nutrition-label-drafts/draft-1/confirm')) {
+        confirmedRequest = request;
+        return jsonResponse({ food: foodDetail, inventory: {} });
+      }
+      return jsonResponse({});
+    });
+
+    renderRoute(
+      '/app/alimentos/food-custom-1/editar',
+      createTestAuthGateway({ accessToken: 'test-token', userId: 'user-1' }),
+    );
+    await user.click(
+      await screen.findByRole('button', { name: 'Elegir foto o PDF' }),
+    );
+    await user.upload(
+      screen.getByLabelText('Archivo de etiqueta nutricional'),
+      new File(['label'], 'label.jpg', { type: 'image/jpeg' }),
+    );
+    await screen.findByText('Revisión pendiente');
+    await user.selectOptions(
+      screen.getByLabelText('Categoría'),
+      'category-meat',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Actualizar alimento' }),
+    );
+
+    await waitFor(() => expect(confirmedRequest).toBeDefined());
+    expect(await confirmedRequest?.clone().json()).toMatchObject({
+      targetFoodId: 'food-custom-1',
+    });
+  });
+
   it('loads a custom food for editing and sends a patch', async () => {
     const user = userEvent.setup();
     let updatedRequest: Request | undefined;
@@ -246,6 +458,49 @@ const foodDetail = {
   servings: [],
   source: 'USER',
   sourceReference: null,
+};
+
+const nutritionLabelDraft = {
+  brand: 'Pan del hogar',
+  confidence: 0.9,
+  createdAt: '2026-08-05T16:30:00.903Z',
+  createdById: 'user-1',
+  documentHash: 'hash',
+  extractedData: {
+    allergens: { contains: ['TRIGO'], may_contain: [] },
+    brand: null,
+    confidence: 0.9,
+    ingredients: ['Harina de trigo'],
+    net_content: { unit: 'g', value: 650 },
+    nutrition_declarations: [
+      {
+        basis: { type: 'PER_SERVING', unit: 'g', value: 55 },
+        nutrients: {
+          carbohydrates_g: 23,
+          energy_kcal: 140,
+          protein_g: 4.8,
+          total_fat_g: 3.2,
+        },
+      },
+    ],
+    product_name: 'Pan Multisemilla',
+    requires_review: true,
+    schema_version: 'nutrition-label.v1',
+    serving_size: { description: '2 rebanadas', unit: 'g', value: 55 },
+    servings_per_container: null,
+    warnings: ['Revisa los alérgenos.'],
+  },
+  expiresAt: null,
+  id: 'draft-1',
+  missingFields: [],
+  name: 'Pan Multisemilla',
+  packageQuantity: '650',
+  packageUnit: 'GRAM',
+  rawText: null,
+  status: 'PENDING_REVIEW',
+  updatedAt: '2026-08-05T16:30:00.903Z',
+  warnings: ['Revisa los alérgenos.'],
+  householdId: 'household-1',
 };
 
 function jsonResponse(body: unknown, status = 200) {
