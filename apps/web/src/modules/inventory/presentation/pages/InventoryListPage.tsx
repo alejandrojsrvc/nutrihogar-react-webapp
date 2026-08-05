@@ -10,6 +10,7 @@ import {
   Snowflake,
 } from 'lucide-react';
 
+import { LoadingState } from '../../../../shared/presentation/components/AsyncState';
 import { Badge } from '../../../../shared/presentation/components/Badge';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
