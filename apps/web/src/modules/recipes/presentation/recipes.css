@@ -4,7 +4,7 @@
   gap: var(--space-5);
 }
 .recipe-form-page {
-  max-width: 72rem;
+  max-width: 42rem;
 }
 .recipe-form__workspace {
   display: grid;
@@ -12,17 +12,11 @@
   align-items: start;
 }
 .recipe-form__main {
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
+  overflow: visible;
 }
 .recipe-form__section {
-  padding: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
-}
-.recipe-form__section:last-child {
-  border-bottom: 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--color-border);
 }
 .recipe-form__section > h2 {
   display: flex;
@@ -107,10 +101,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 .recipe-ingredient-row {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
 }
-.recipe-ingredient-row__main,
+.recipe-ingredient-row__main {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+}
 .recipe-row-actions,
 .recipe-form__actions,
 .recipe-detail-actions {
@@ -141,7 +138,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   background: var(--color-surface);
-  box-shadow: var(--shadow-md);
+  /* box-shadow: var(--shadow-md); */
 }
 .recipe-form__aside {
   display: grid;
@@ -272,6 +269,9 @@
   min-height: 2.75rem;
   border-radius: var(--radius-pill);
   background: var(--color-surface);
+}
+.recipe-filters__action {
+  width: 100%;
 }
 .recipe-list {
   margin: 0;
@@ -532,7 +532,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     background: var(--color-surface);
-    box-shadow: var(--shadow-md);
+    /* box-shadow: var(--shadow-md); */
   }
   .recipe-page-actions .button--primary {
     flex: 1 1 100%;
@@ -542,8 +542,11 @@
 
 @media (min-width: 48rem) {
   .recipe-filters {
-    grid-template-columns: minmax(18rem, 1fr) auto;
+    grid-template-columns: minmax(18rem, 1fr) minmax(10rem, 0.6fr) auto;
     align-items: end;
+  }
+  .recipe-filters__action {
+    width: auto;
   }
   .recipe-detail-meta,
   .recipe-list-row dl {
@@ -571,7 +574,7 @@
 
 @media (min-width: 64rem) {
   .recipe-form__workspace {
-    grid-template-columns: minmax(0, 1fr) 18rem;
+    grid-template-columns: minmax(0, 1fr);
   }
   .recipe-form__aside {
     position: sticky;

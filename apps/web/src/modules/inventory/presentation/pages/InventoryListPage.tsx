@@ -10,6 +10,7 @@ import {
   Snowflake,
 } from 'lucide-react';
 
+import { LoadingState } from '../../../../shared/presentation/components/AsyncState';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
@@ -241,11 +242,15 @@ export function InventoryListPage() {
             Compras pendientes
           </button>
         </div>
+        <Link
+          className="button button--primary inventory-toolbar__action"
+          to="/app/inventario/nuevo"
+        >
+          <PackageOpen aria-hidden="true" size={18} /> Agregar producto
+        </Link>
       </div>
       {inventory.isPending ? (
-        <p className="summary-status" role="status">
-          Cargando inventario...
-        </p>
+        <LoadingState message="Cargando inventario..." />
       ) : null}
       {inventory.isError ? (
         <div role="alert">

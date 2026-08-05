@@ -1,8 +1,10 @@
 import { useCallback, useState, type ReactElement } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
+import { LoadingState } from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { ShoppingListEditDialog } from '../components/ShoppingListEditDialog';
 import { ShoppingListItem } from '../components/ShoppingListItem';
 import {
@@ -241,6 +243,9 @@ export function ShoppingListPage() {
       aria-labelledby="shopping-list-title"
     >
       <div className="shopping-list-actions">
+        <Link className="button button--secondary" to="/app/compras">
+          Ver compras
+        </Link>
         <button
           className={`button ${selected.length ? 'button--secondary' : 'button--primary'}`}
           disabled={!isOnline}
@@ -336,7 +341,7 @@ export function ShoppingListPage() {
           </form>
         </BottomSheet>
       ) : null}
-      {list.isPending ? <p role="status">Cargando lista...</p> : null}
+      {list.isPending ? <LoadingState message="Cargando lista..." /> : null}
       {list.isError ? (
         <div role="alert">
           <p>
@@ -354,10 +359,10 @@ export function ShoppingListPage() {
         </div>
       ) : null}
       {!list.isPending && !list.isError && items.length === 0 ? (
-        <section className="empty-state-card">
-          <h2>Tu lista está vacía</h2>
-          <p>Agrega un producto o genera faltantes desde el inventario.</p>
-        </section>
+        <EmptyState
+          description="Agrega un producto o genera faltantes desde el inventario."
+          title="Tu lista está vacía"
+        />
       ) : null}
       {items.length ? (
         <ul className="shopping-list-items">

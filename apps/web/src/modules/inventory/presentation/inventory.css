@@ -12,6 +12,9 @@
   gap: var(--space-4);
   margin-block: var(--space-5);
 }
+.inventory-toolbar__action {
+  justify-self: start;
+}
 .inventory-search {
   position: relative;
   max-width: 30rem;
@@ -671,6 +674,18 @@
 }
 
 @media (min-width: 48rem) {
+  .inventory-toolbar {
+    grid-template-columns: minmax(18rem, 1fr) auto;
+    align-items: center;
+  }
+  .inventory-filter-chips {
+    grid-column: 1 / -1;
+  }
+  .inventory-toolbar__action {
+    justify-self: end;
+    grid-column: 2;
+    grid-row: 1;
+  }
   .inventory-detail-meta,
   .inventory-current-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -679,6 +694,11 @@
 
   .inventory-form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 47.999rem) {
+  .inventory-toolbar__action {
+    width: 100%;
   }
 }
 

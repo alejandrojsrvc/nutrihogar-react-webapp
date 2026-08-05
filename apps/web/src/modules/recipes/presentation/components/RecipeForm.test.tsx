@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { emptyRecipeFormValues, RecipeForm } from './RecipeForm';
 
 describe('RecipeForm', () => {
-  it('shows unavailable previews without simulating server data', () => {
+  it('explains when definitive nutrition will be available without simulating data', () => {
     render(
       <MemoryRouter>
         <RecipeForm
@@ -18,11 +18,10 @@ describe('RecipeForm', () => {
     );
 
     expect(
-      screen.getByRole('button', { name: /Foto de la receta/ }),
-    ).toBeDisabled();
-    expect(screen.getByText('Se calculará al guardar')).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: /Resumen nutricional por porción/ }),
+      screen.getByText(
+        'El resumen nutricional definitivo se calculará después de guardar la receta.',
+      ),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/kcal/i)).not.toBeInTheDocument();
   });
 });

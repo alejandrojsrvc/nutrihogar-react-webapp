@@ -1,16 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Children,
-  cloneElement,
-  isValidElement,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type ReactElement,
 } from 'react';
 import { useFieldArray, useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Plus, Save } from 'lucide-react';
 
 import type {
@@ -18,14 +14,18 @@ import type {
   NutrientDefinition,
 } from '../../application/ports/FoodCatalogGateway';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import {
+  useCreateNutritionLabelDraft,
   useCreateCustomFood,
   useFoodCategories,
   useFoodDetail,
   useFoodNutrients,
+  useNutritionLabelDraft,
   useUpdateCustomFood,
 } from '../hooks/useFoodCatalog';
+import { NutritionLabelDraftReview } from '../components/NutritionLabelDraftReview';
+import { NutritionLabelReader } from '../components/NutritionLabelReader';
+import type { NutritionLabelDraft } from '../../application/ports/NutritionLabelDraftGateway';
 import '../food-catalog.css';
 import {
   customFoodFormSchema,
@@ -33,6 +33,8 @@ import {
   type CustomFoodFormValues,
 } from '../schemas/customFoodSchemas';
 import { preparationStateLabels } from '../utils/foodLabels';
+import { FormField } from '../../../../shared/presentation/components/FormField';
+import { ActionBar } from '../../../../shared/presentation/components/ActionBar';
 
 const confidenceOptions = [
   ['USER_PROVIDED', 'Proporcionada por mí'],
@@ -58,6 +60,11 @@ export function CustomFoodFormPage() {
   const foodDetail = useFoodDetail(foodId);
   const createFood = useCreateCustomFood();
   const updateFood = useUpdateCustomFood();
+  const createNutritionLabelDraft = useCreateNutritionLabelDraft();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const nutritionDraftId = searchParams.get('nutritionDraftId');
+  const [uploadedNutritionDraft, setUploadedNutritionDraft] =
+    useState<NutritionLabelDraft | null>(null);
   const [nutrientToAdd, setNutrientToAdd] = useState('');
   const hasInitializedForm = useRef(false);
   const {
@@ -67,6 +74,7 @@ export function CustomFoodFormPage() {
     register,
     reset,
     setError,
+    getValues,
   } = useForm<CustomFoodFormValues>({
     defaultValues: getDefaultCustomFoodFormValues(),
     resolver: zodResolver(customFoodFormSchema),
@@ -83,6 +91,15 @@ export function CustomFoodFormPage() {
   });
   const currentFood = foodDetail.data;
   const activeHousehold = households.activeHousehold;
+  const nutritionDraftQuery = useNutritionLabelDraft(
+    activeHousehold?.id,
+    nutritionDraftId,
+    uploadedNutritionDraft?.id !== nutritionDraftId,
+  );
+  const nutritionDraft =
+    uploadedNutritionDraft?.id === nutritionDraftId
+      ? uploadedNutritionDraft
+      : nutritionDraftQuery.data;
   const isSaving = createFood.isPending || updateFood.isPending;
   const mutationError = createFood.error ?? updateFood.error;
   const isEditable = Boolean(
@@ -171,6 +188,93 @@ export function CustomFoodFormPage() {
     );
   }
 
+  if (nutritionDraftId && nutritionDraftQuery.isPending && !nutritionDraft) {
+    return <CustomFoodStatus message="Cargando borrador de etiqueta..." />;
+  }
+
+  if (nutritionDraftId && nutritionDraftQuery.isError && !nutritionDraft) {
+    return (
+      <CustomFoodStatus
+        isError
+        message={getErrorMessage(
+          nutritionDraftQuery.error,
+          'No se pudo cargar el borrador de etiqueta.',
+        )}
+        action={
+          <button
+            className="button button--secondary"
+            onClick={() => {
+              setUploadedNutritionDraft(null);
+              setSearchParams({}, { replace: true });
+            }}
+            type="button"
+          >
+            Volver al formulario manual
+          </button>
+        }
+      />
+    );
+  }
+
+  if (nutritionDraft && nutritionDraft.status !== 'PENDING_REVIEW') {
+    return (
+      <CustomFoodStatus
+        isError
+        message="Este borrador ya no está pendiente de revisión."
+        action={
+          <button
+            className="button button--secondary"
+            onClick={() => {
+              setUploadedNutritionDraft(null);
+              setSearchParams({}, { replace: true });
+            }}
+            type="button"
+          >
+            Volver al formulario manual
+          </button>
+        }
+      />
+    );
+  }
+
+  if (nutritionDraft) {
+    return (
+      <NutritionLabelDraftReview
+        categories={categories.data ?? []}
+        draft={nutritionDraft}
+        foodId={isEditing ? foodId : undefined}
+        nutrients={nutrients.data ?? []}
+        onCancel={() => {
+          setUploadedNutritionDraft(null);
+          setSearchParams({}, { replace: true });
+        }}
+        onConfirmed={(confirmedFoodId) =>
+          navigate(`/app/alimentos/${confirmedFoodId}`, {
+            replace: true,
+            state: { foodSaved: true, inventoryAdded: true },
+          })
+        }
+      />
+    );
+  }
+
+  const handleNutritionLabelFile = async (file: File) => {
+    if (!file || !activeHousehold) return;
+
+    try {
+      const draft = await createNutritionLabelDraft.mutateAsync({
+        brand: getValues('brand').trim() || undefined,
+        file,
+        householdId: activeHousehold.id,
+        name: getValues('name').trim() || undefined,
+      });
+      setUploadedNutritionDraft(draft);
+      setSearchParams({ nutritionDraftId: draft.id }, { replace: true });
+    } catch {
+      // El error de lectura se muestra junto a la accion.
+    }
+  };
+
   const handleAddNutrient = () => {
     if (!nutrientToAdd || activeNutrientIds.has(nutrientToAdd)) {
       return;
@@ -223,7 +327,18 @@ export function CustomFoodFormPage() {
       className="page-section food-form-page"
       aria-labelledby="custom-food-title"
     >
-      <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
+      <NutritionLabelReader
+        error={
+          createNutritionLabelDraft.error
+            ? getErrorMessage(
+                createNutritionLabelDraft.error,
+                'No se pudo leer la etiqueta.',
+              )
+            : null
+        }
+        isPending={createNutritionLabelDraft.isPending}
+        onFile={handleNutritionLabelFile}
+      />
       <form
         className="custom-food-form"
         onSubmit={handleSubmit(onSubmit)}
@@ -307,31 +422,40 @@ export function CustomFoodFormPage() {
                 ))}
               </select>
             </FormField>
-            <FormField error={errors.source?.message} label="Fuente">
-              <input
-                id="custom-food-source"
-                {...register('source')}
-                placeholder="Ej. etiqueta del envase"
-                type="text"
-              />
-            </FormField>
-            <FormField
-              error={errors.confidenceLevel?.message}
-              label="Nivel de confianza"
-              required
-            >
-              <select
-                id="custom-food-confidence"
-                {...register('confidenceLevel')}
-              >
-                {confidenceOptions.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </FormField>
           </div>
+          <details className="food-form-optional">
+            <summary>Detalles opcionales de la información</summary>
+            <div className="food-form-grid">
+              <FormField
+                error={errors.source?.message}
+                help="Por ejemplo, la etiqueta del envase o una ficha del fabricante."
+                label="Fuente"
+              >
+                <input
+                  id="custom-food-source"
+                  {...register('source')}
+                  placeholder="Ej. etiqueta del envase"
+                  type="text"
+                />
+              </FormField>
+              <FormField
+                error={errors.confidenceLevel?.message}
+                label="Confianza de los datos"
+                required
+              >
+                <select
+                  id="custom-food-confidence"
+                  {...register('confidenceLevel')}
+                >
+                  {confidenceOptions.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+            </div>
+          </details>
         </fieldset>
 
         <fieldset className="food-form-section">
@@ -544,67 +668,31 @@ export function CustomFoodFormPage() {
             No se pudo guardar el alimento. Inténtalo nuevamente.
           </p>
         ) : null}
-        <div className="food-form-actions">
-          <Link className="button button--text" to="/app/alimentos">
-            Cancelar
-          </Link>
-          <button
-            className="button button--primary"
-            disabled={isSaving}
-            type="submit"
-          >
-            {!isSaving ? <Save aria-hidden="true" size={18} /> : null}
-            {isSaving
-              ? isEditing
-                ? 'Guardando cambios...'
-                : 'Creando alimento...'
-              : isEditing
-                ? 'Guardar cambios'
-                : 'Crear alimento'}
-          </button>
-        </div>
+        <ActionBar
+          primary={
+            <button
+              className="button button--primary"
+              disabled={isSaving}
+              type="submit"
+            >
+              {!isSaving ? <Save aria-hidden="true" size={18} /> : null}
+              {isSaving
+                ? isEditing
+                  ? 'Guardando cambios...'
+                  : 'Creando alimento...'
+                : isEditing
+                  ? 'Guardar cambios'
+                  : 'Crear alimento'}
+            </button>
+          }
+          secondary={
+            <Link className="button button--secondary" to="/app/alimentos">
+              Cancelar
+            </Link>
+          }
+        />
       </form>
     </section>
-  );
-}
-
-function FormField({
-  children,
-  error,
-  label,
-  required = false,
-}: {
-  children: ReactElement<{
-    'aria-describedby'?: string;
-    'aria-invalid'?: boolean | 'false' | 'true';
-    'aria-required'?: boolean;
-    id?: string;
-  }>;
-  error?: string;
-  label: string;
-  required?: boolean;
-}) {
-  const child = Children.only(children);
-  const inputId = isValidElement(child) ? child.props.id : undefined;
-  const errorId = inputId && error ? `${inputId}-error` : undefined;
-
-  return (
-    <div className="form-field">
-      <label htmlFor={inputId}>
-        {label}
-        {required ? ' *' : ''}
-      </label>
-      {cloneElement(child, {
-        'aria-describedby': errorId,
-        'aria-invalid': error ? 'true' : undefined,
-        'aria-required': required || undefined,
-      })}
-      {error ? (
-        <p className="form-field__error" id={errorId}>
-          {error}
-        </p>
-      ) : null}
-    </div>
   );
 }
 
@@ -709,4 +797,8 @@ function CustomFoodStatus({
       {action}
     </section>
   );
+}
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
 }

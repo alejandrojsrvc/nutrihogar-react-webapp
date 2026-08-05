@@ -10,14 +10,12 @@ import { recipeFormSchema, type RecipeFormValues } from '@nutrihogar/schemas';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
 import type { FoodSelection } from '../../../food-catalog/application/ports/FoodCatalogGateway';
 import type { CreateRecipeInput } from '../../application/ports/RecipeGateway';
+import { ActionBar } from '../../../../shared/presentation/components/ActionBar';
 import {
   ChevronDown,
   ChevronUp,
-  ImageUp,
   Plus,
   RefreshCw,
-  ShieldCheck,
-  Timer,
   Trash2,
   Utensils,
   Users,
@@ -156,15 +154,6 @@ export function RecipeForm({
                   />
                 </label>
               </fieldset>
-              <button
-                className="recipe-photo-placeholder"
-                disabled
-                type="button"
-              >
-                <ImageUp size={25} aria-hidden="true" />
-                <strong>Foto de la receta</strong>
-                <span>Disponible próximamente</span>
-              </button>
             </section>
             <section className="recipe-form__section">
               <div className="section-heading">
@@ -210,6 +199,15 @@ export function RecipeForm({
                               valueAsNumber: true,
                             })}
                           />
+                          {form.formState.errors.ingredients?.[index]?.quantity
+                            ?.message ? (
+                            <p className="form-field__error">
+                              {
+                                form.formState.errors.ingredients[index]
+                                  ?.quantity?.message
+                              }
+                            </p>
+                          ) : null}
                         </div>
                         <div className="form-field">
                           <label htmlFor={`ingredient-${index}-unit`}>
@@ -224,6 +222,15 @@ export function RecipeForm({
                             <option value="UNIT">Unidad</option>
                             <option value="SERVING">Porción</option>
                           </select>
+                          {form.formState.errors.ingredients?.[index]?.unit
+                            ?.message ? (
+                            <p className="form-field__error">
+                              {
+                                form.formState.errors.ingredients[index]?.unit
+                                  ?.message
+                              }
+                            </p>
+                          ) : null}
                         </div>
                       </div>
                       <div className="form-field">
@@ -286,7 +293,7 @@ export function RecipeForm({
             </section>
             <section className="recipe-form__section recipe-portions">
               <h2>
-                <Users size={19} aria-hidden="true" /> Porciones y nutrición
+                <Users size={19} aria-hidden="true" /> Porciones y tiempo
               </h2>
               <div className="recipe-form__grid">
                 <div className="form-field">
@@ -300,6 +307,11 @@ export function RecipeForm({
                       valueAsNumber: true,
                     })}
                   />
+                  {form.formState.errors.defaultServings?.message ? (
+                    <p className="form-field__error">
+                      {form.formState.errors.defaultServings.message}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="form-field">
                   <label htmlFor="recipe-time">Tiempo total (minutos)</label>
@@ -312,8 +324,21 @@ export function RecipeForm({
                       valueAsNumber: true,
                     })}
                   />
+                  {form.formState.errors.estimatedPreparationMinutes
+                    ?.message ? (
+                    <p className="form-field__error">
+                      {
+                        form.formState.errors.estimatedPreparationMinutes
+                          .message
+                      }
+                    </p>
+                  ) : null}
                 </div>
               </div>
+              <p className="supporting-text">
+                El resumen nutricional definitivo se calculará después de
+                guardar la receta.
+              </p>
             </section>
             <section className="recipe-form__section">
               <div className="section-heading">
@@ -345,6 +370,15 @@ export function RecipeForm({
                         id={`instruction-${index}`}
                         {...form.register(`instructions.${index}.description`)}
                       />
+                      {form.formState.errors.instructions?.[index]?.description
+                        ?.message ? (
+                        <p className="form-field__error">
+                          {
+                            form.formState.errors.instructions[index]
+                              ?.description?.message
+                          }
+                        </p>
+                      ) : null}
                     </div>
                     <button
                       className="button button--tertiary"
@@ -372,58 +406,24 @@ export function RecipeForm({
               )}
             </section>
           </div>
-          <aside
-            className="recipe-form__aside"
-            aria-label="Resumen de la receta"
-          >
-            <section>
-              <h2>
-                <ShieldCheck size={19} aria-hidden="true" /> Resumen nutricional
-                por porción
-              </h2>
-              <div
-                className="recipe-nutrition-placeholder"
-                aria-disabled="true"
-              >
-                <span>--</span>
-                <p>
-                  <strong>Se calculará al guardar</strong>
-                  <br />
-                  Los valores definitivos vienen del servidor.
-                </p>
-              </div>
-            </section>
-            <section>
-              <h2>
-                <ImageUp size={19} aria-hidden="true" /> Vista previa
-              </h2>
-              <div className="recipe-preview-placeholder">
-                <ImageUp size={28} aria-hidden="true" />
-                <span>Agrega una foto cuando la función esté disponible.</span>
-              </div>
-              <strong>{form.watch('name') || 'Nombre de la receta'}</strong>
-              <p>
-                <Users size={15} aria-hidden="true" />{' '}
-                {Number(form.watch('defaultServings')) || 1} porciones{' '}
-                <Timer size={15} aria-hidden="true" />{' '}
-                {Number(form.watch('estimatedPreparationMinutes')) || '—'} min
-              </p>
-            </section>
-          </aside>
         </div>
         {errorMessage ? <p role="alert">{errorMessage}</p> : null}
-        <div className="recipe-form__actions">
-          <Link className="button button--secondary" to={cancelTo}>
-            Cancelar
-          </Link>
-          <button
-            className="button button--primary"
-            disabled={isSubmitting}
-            type="submit"
-          >
-            {isSubmitting ? 'Guardando...' : submitLabel}
-          </button>
-        </div>
+        <ActionBar
+          primary={
+            <button
+              className="button button--primary"
+              disabled={isSubmitting}
+              type="submit"
+            >
+              {isSubmitting ? 'Guardando...' : submitLabel}
+            </button>
+          }
+          secondary={
+            <Link className="button button--secondary" to={cancelTo}>
+              Cancelar
+            </Link>
+          }
+        />
       </form>
       {selectorOpen ? (
         <FoodSelector

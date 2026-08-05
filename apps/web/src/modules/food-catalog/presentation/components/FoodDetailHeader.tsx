@@ -1,15 +1,12 @@
-import { Apple, Pencil } from 'lucide-react';
-import { Link } from 'react-router';
+import { Apple } from 'lucide-react';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
-import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import { useFoodDetail } from '../hooks/useFoodCatalog';
 import { formatReference } from '../utils/foodLabels';
 
 export function FoodDetailHeader() {
   const { foodId } = useRouteParams();
-  const households = useHouseholds();
   const foodDetail = useFoodDetail(foodId);
 
   if (
@@ -28,25 +25,9 @@ export function FoodDetailHeader() {
   }
 
   const food = foodDetail.data;
-  const canManage =
-    food.foodType === 'CUSTOM' &&
-    !food.isGlobal &&
-    food.householdId === households.activeHousehold?.id;
 
   return (
     <PageHeader
-      action={
-        canManage ? (
-          <Link
-            aria-label="Editar alimento"
-            className="button button--secondary"
-            to={`/app/alimentos/${food.id}/editar`}
-          >
-            <Pencil aria-hidden="true" size={18} />
-            Editar
-          </Link>
-        ) : undefined
-      }
       description={food.brand ?? `Valores por ${formatReference(food)}`}
       icon={<Apple size={22} />}
       title={food.name}

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 
+import { LoadingState } from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import type { PurchaseStatus } from '../../domain/Purchase';
 import { usePurchaseConnectivity, usePurchases } from '../hooks/usePurchases';
@@ -80,14 +82,12 @@ export function PurchaseListPage() {
             <option value="CANCELLED">Canceladas</option>
           </select>
         </div>
+        <Link className="button button--primary" to="/app/compras/nueva">
+          Registrar compra
+        </Link>
       </div>
       {purchases.isPending ? (
-        <div className="purchase-loading" role="status">
-          <span />
-          <span />
-          <span />
-          Cargando compras...
-        </div>
+        <LoadingState message="Cargando compras..." />
       ) : null}
       {purchases.isError ? (
         <div role="alert">
@@ -106,26 +106,33 @@ export function PurchaseListPage() {
         </div>
       ) : null}
       {!purchases.isPending && !purchases.isError && items.length === 0 ? (
-        <section className="empty-state-card">
-          <h2>
-            {status || storeName
-              ? 'No hay coincidencias'
-              : 'No hay compras todavía'}
-          </h2>
-          <p>
-            {status || storeName
+        <EmptyState
+          description={
+            status || storeName
               ? 'Prueba con otro comercio o estado.'
-              : 'Registra tu primera compra para relacionarla con el inventario.'}
-          </p>
+              : 'Registra tu primera compra para relacionarla con el inventario.'
+          }
+          title={
+            status || storeName
+              ? 'No hay coincidencias'
+              : 'No hay compras todavía'
+          }
+        >
           {!status && !storeName ? (
             <Link className="button button--secondary" to="/app/compras/nueva">
               Registrar compra
             </Link>
           ) : null}
-        </section>
+        </EmptyState>
       ) : null}
       {items.length ? (
-        <div className="purchase-list">
+        <div aria-label="Compras registradas" className="purchase-list">
+          <div aria-hidden="true" className="purchase-list__head">
+            <span>Comercio</span>
+            <span>Detalle</span>
+            <span>Estado</span>
+            <span>Total</span>
+          </div>
           {items.map((purchase) => (
             <Link
               className="purchase-row"
@@ -134,6 +141,8 @@ export function PurchaseListPage() {
             >
               <div className="purchase-row__identity">
                 <h2>{purchase.storeName}</h2>
+              </div>
+              <div className="purchase-row__details">
                 <p>
                   {formatDate(purchase.purchaseDate)} · {purchase.items.length}{' '}
                   producto{purchase.items.length === 1 ? '' : 's'}

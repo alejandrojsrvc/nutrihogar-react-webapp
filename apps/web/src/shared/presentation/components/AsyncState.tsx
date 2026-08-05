@@ -7,6 +7,11 @@ export function LoadingState({
 }) {
   return (
     <div className="loading-state" role="status" aria-live="polite">
+      <div aria-hidden="true" className="loading-state__skeleton">
+        <span />
+        <span />
+        <span />
+      </div>
       <p>{message}</p>
     </div>
   );

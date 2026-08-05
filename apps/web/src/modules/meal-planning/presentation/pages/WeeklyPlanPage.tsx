@@ -145,6 +145,14 @@ export function WeeklyPlanPage() {
           {formatDate(weekStart, timezone, { month: 'long' })} -{' '}
           {formatDate(dates[6], timezone)}
         </strong>
+        {value ? (
+          <Link
+            className="button button--primary"
+            to={`/app/plan-semanal/${value.id}/comidas/nueva?fecha=${weekStart}&tipo=BREAKFAST`}
+          >
+            Agregar comida
+          </Link>
+        ) : null}
         <button
           aria-label="Semana siguiente"
           className="icon-button"

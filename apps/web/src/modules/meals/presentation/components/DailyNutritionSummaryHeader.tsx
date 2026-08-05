@@ -1,17 +1,14 @@
-import { ChartNoAxesCombined, Plus } from 'lucide-react';
-import { Link } from 'react-router';
+import { ChartNoAxesCombined } from 'lucide-react';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
-import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 
 export function DailyNutritionSummaryHeader() {
-  const { date = '' } = useRouteParams();
   const households = useHouseholds();
   const profilesQuery = useAdultProfiles(households.activeHousehold?.id);
-  const { activeProfile, activeProfileId, profiles } = useActiveProfile();
+  const { activeProfile, profiles } = useActiveProfile();
 
   if (
     households.isPending ||
@@ -53,15 +50,6 @@ export function DailyNutritionSummaryHeader() {
 
   return (
     <PageHeader
-      action={
-        <Link
-          className="button button--primary"
-          to={`/app/comidas/nueva?profileId=${activeProfileId}&date=${date}`}
-        >
-          <Plus aria-hidden="true" size={19} />
-          Registrar comida
-        </Link>
-      }
       icon={<ChartNoAxesCombined size={22} />}
       title="Resumen del día"
       titleId="daily-summary-title"

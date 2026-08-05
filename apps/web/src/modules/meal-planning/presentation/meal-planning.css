@@ -20,8 +20,12 @@
 }
 
 .meal-planning__navigation strong {
+  flex: 1;
   text-align: center;
   text-transform: capitalize;
+}
+.meal-planning__navigation .button {
+  flex: 0 0 auto;
 }
 
 .meal-planning__announcement {

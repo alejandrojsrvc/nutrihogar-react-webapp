@@ -11,6 +11,11 @@ import { CreateCustomFoodUseCase } from '../../modules/food-catalog/application/
 import { DeleteCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/DeleteCustomFoodUseCase';
 import { UpdateCustomFoodUseCase } from '../../modules/food-catalog/application/use-cases/UpdateCustomFoodUseCase';
 import {
+  ConfirmNutritionLabelDraftUseCase,
+  CreateNutritionLabelDraftUseCase,
+  GetNutritionLabelDraftUseCase,
+} from '../../modules/food-catalog/application/use-cases/NutritionLabelDraftUseCases';
+import {
   ConfirmNutritionGoalSuggestionUseCase,
   GenerateNutritionGoalSuggestionUseCase,
   GetCurrentNutritionGoalUseCase,
@@ -41,6 +46,7 @@ import { HttpCurrentUserGateway } from '../../shared/infrastructure/http/HttpCur
 import { HttpAdultProfileGateway } from '../../shared/infrastructure/http/HttpAdultProfileGateway';
 import { HttpHealthGateway } from '../../shared/infrastructure/http/HttpHealthGateway';
 import { HttpFoodCatalogGateway } from '../../shared/infrastructure/http/HttpFoodCatalogGateway';
+import { HttpNutritionLabelDraftGateway } from '../../modules/food-catalog/infrastructure/http/HttpNutritionLabelDraftGateway';
 import { HttpHouseholdGateway } from '../../shared/infrastructure/http/HttpHouseholdGateway';
 import { HttpHouseholdInvitationGateway } from '../../shared/infrastructure/http/HttpHouseholdInvitationGateway';
 import { LocalStorageActiveHouseholdGateway } from '../../shared/infrastructure/storage/LocalStorageActiveHouseholdGateway';
@@ -164,6 +170,10 @@ export const apiClient: ApiClient = createApiClient({
 
 const healthGateway = new HttpHealthGateway(apiClient);
 const foodCatalogGateway = new HttpFoodCatalogGateway(apiClient);
+const nutritionLabelDraftGateway = new HttpNutritionLabelDraftGateway(
+  apiBaseUrl,
+  (input, init) => authSessionGateway.fetchAuthenticated(input, init),
+);
 const nutritionGoalGateway = new HttpNutritionGoalGateway(apiClient);
 const mealGateway = new HttpMealGateway(apiClient);
 const dailyNutritionSummaryGateway = new HttpDailyNutritionSummaryGateway(
@@ -227,6 +237,13 @@ export const updateCustomFoodUseCase = new UpdateCustomFoodUseCase(
 export const deleteCustomFoodUseCase = new DeleteCustomFoodUseCase(
   foodCatalogGateway,
 );
+export const createNutritionLabelDraftUseCase =
+  new CreateNutritionLabelDraftUseCase(nutritionLabelDraftGateway);
+export const getNutritionLabelDraftUseCase = new GetNutritionLabelDraftUseCase(
+  nutritionLabelDraftGateway,
+);
+export const confirmNutritionLabelDraftUseCase =
+  new ConfirmNutritionLabelDraftUseCase(nutritionLabelDraftGateway);
 export const generateNutritionGoalSuggestionUseCase =
   new GenerateNutritionGoalSuggestionUseCase(nutritionGoalGateway);
 export const confirmNutritionGoalSuggestionUseCase =

@@ -24,6 +24,7 @@ import {
 } from '../schemas/householdInvitationSchemas';
 import {
   closeInvitationForm,
+  openInvitationForm,
   useInvitationFormOpen,
 } from '../stores/invitationUiStores';
 
@@ -141,6 +142,15 @@ export function HouseholdInvitationsPage() {
       aria-labelledby="invitations-title"
     >
       <BackButton fallback="/app/familia" />
+      <div className="module-toolbar">
+        <button
+          className="button button--primary"
+          onClick={openInvitationForm}
+          type="button"
+        >
+          Invitar a alguien
+        </button>
+      </div>
 
       <BottomSheet
         onClose={closeInvitationForm}

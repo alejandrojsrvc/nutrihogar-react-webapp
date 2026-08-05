@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 interface OverlayProps {
@@ -6,6 +7,9 @@ interface OverlayProps {
   onClose: () => void;
   open: boolean;
   title: string;
+  description?: string;
+  footer?: ReactNode;
+  closeDisabled?: boolean;
 }
 
 export function Dialog({ children, onClose, open, title }: OverlayProps) {
@@ -13,6 +17,31 @@ export function Dialog({ children, onClose, open, title }: OverlayProps) {
     <OverlayFrame
       className="overlay overlay--dialog"
       labelledByPrefix="dialog"
+      onClose={onClose}
+      open={open}
+      title={title}
+    >
+      {children}
+    </OverlayFrame>
+  );
+}
+
+export function FullscreenDialog({
+  children,
+  closeDisabled = false,
+  description,
+  footer,
+  onClose,
+  open,
+  title,
+}: OverlayProps) {
+  return (
+    <OverlayFrame
+      className="overlay overlay--fullscreen"
+      closeDisabled={closeDisabled}
+      description={description}
+      footer={footer}
+      labelledByPrefix="fullscreen-dialog"
       onClose={onClose}
       open={open}
       title={title}
@@ -57,13 +86,19 @@ function OverlayFrame({
   onClose,
   open,
   title,
+  description,
+  footer,
+  closeDisabled,
 }: OverlayProps & { className: string; labelledByPrefix: string }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
     if (!open) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     restoreFocusRef.current = document.activeElement as HTMLElement | null;
     const panel = panelRef.current;
     const focusable = getFocusableElements(panel);
@@ -72,7 +107,7 @@ function OverlayFrame({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        if (!closeDisabled) onClose();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -91,22 +126,26 @@ function OverlayFrame({
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
       restoreFocusRef.current?.focus();
     };
-  }, [onClose, open]);
+  }, [closeDisabled, onClose, open]);
 
   if (!open) return null;
 
-  return (
+  const content = (
     <div
       className={className}
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget && !closeDisabled) onClose();
       }}
       role="presentation"
     >
       <div
         aria-labelledby={`${labelledByPrefix}-${titleId}`}
+        aria-describedby={
+          description ? `${labelledByPrefix}-${descriptionId}` : undefined
+        }
         aria-modal="true"
         className="overlay__panel"
         ref={panelRef}
@@ -119,15 +158,26 @@ function OverlayFrame({
             aria-label={`Cerrar ${title.toLowerCase()}`}
             className="icon-button"
             onClick={onClose}
+            disabled={closeDisabled}
             type="button"
           >
             <X size={20} aria-hidden="true" />
           </button>
         </div>
+        {description ? (
+          <p
+            className="overlay__description"
+            id={`${labelledByPrefix}-${descriptionId}`}
+          >
+            {description}
+          </p>
+        ) : null}
         <div className="overlay__content">{children}</div>
+        {footer ? <div className="overlay__footer">{footer}</div> : null}
       </div>
     </div>
   );
+  return createPortal(content, document.body);
 }
 
 function getFocusableElements(container: HTMLElement | null) {
