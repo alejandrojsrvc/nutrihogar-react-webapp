@@ -128,18 +128,6 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
-.home-page__calorie-track {
-  height: 0.4rem;
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-muted);
-}
-.home-page__calorie-track span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--color-primary);
-}
 .home-nutrition__encouragement {
   display: flex;
   gap: var(--space-3);
@@ -218,26 +206,8 @@
   font-size: var(--font-size-sm);
   text-align: right;
 }
-.home-macro__track {
-  height: 0.35rem;
+.home-macro .progress-bar__track {
   margin-top: var(--space-2);
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-muted);
-}
-.home-macro__track span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-}
-.home-macro--protein .home-macro__track span {
-  background: var(--color-protein);
-}
-.home-macro--carbohydrates .home-macro__track span {
-  background: var(--color-carbohydrates);
-}
-.home-macro--fat .home-macro__track span {
-  background: var(--color-fat);
 }
 .home-macro small {
   display: block;

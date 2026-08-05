@@ -3,11 +3,39 @@ import { Link, type LinkProps } from 'react-router';
 
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'danger' | 'text';
 
+function ButtonContent({
+  children,
+  icon,
+  iconEnd,
+  loading,
+  loadingLabel,
+}: {
+  children: ReactNode;
+  icon?: ReactNode;
+  iconEnd?: ReactNode;
+  loading: boolean;
+  loadingLabel?: string;
+}) {
+  return (
+    <>
+      {loading ? (
+        <span className="button__spinner" aria-hidden="true" />
+      ) : (
+        icon
+      )}
+      <span>{loading ? (loadingLabel ?? children) : children}</span>
+      {loading || !iconEnd ? null : iconEnd}
+    </>
+  );
+}
+
 export function Button({
   children,
   className = '',
+  icon,
+  iconEnd,
   loading = false,
-  loadingLabel = 'Guardando...',
+  loadingLabel,
   variant = 'primary',
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -15,15 +43,24 @@ export function Button({
   variant?: ButtonVariant;
   loading?: boolean;
   loadingLabel?: string;
+  icon?: ReactNode;
+  iconEnd?: ReactNode;
 }) {
+  const isBusy = Boolean(loading);
   return (
     <button
-      className={`button button--${variant} ${className}`.trim()}
       {...props}
-      aria-busy={loading || undefined}
-      disabled={loading || props.disabled}
+      aria-busy={isBusy || undefined}
+      className={`button button--${variant} ${className}`.trim()}
+      disabled={isBusy || props.disabled}
     >
-      {loading ? loadingLabel : children}
+      <ButtonContent
+        children={children}
+        icon={icon}
+        iconEnd={iconEnd}
+        loading={isBusy}
+        loadingLabel={loadingLabel}
+      />
     </button>
   );
 }
@@ -31,11 +68,15 @@ export function Button({
 export function ButtonLink({
   children,
   className = '',
+  icon,
+  iconEnd,
   variant = 'primary',
   ...props
 }: LinkProps & {
   children: ReactNode;
   variant?: ButtonVariant;
+  icon?: ReactNode;
+  iconEnd?: ReactNode;
   className?: string;
 }) {
   return (
@@ -43,7 +84,9 @@ export function ButtonLink({
       className={`button button--${variant} ${className}`.trim()}
       {...props}
     >
-      {children}
+      {icon}
+      <span>{children}</span>
+      {iconEnd}
     </Link>
   );
 }

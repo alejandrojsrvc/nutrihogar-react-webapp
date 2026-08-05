@@ -10,7 +10,7 @@ export function OnboardingHeader() {
     return (
       <PageHeader
         eyebrow="Primeros pasos"
-        icon={<HousePlus size={24} />}
+        icon={<HousePlus size={22} />}
         title="Primeros pasos"
       />
     );
@@ -20,7 +20,7 @@ export function OnboardingHeader() {
     return (
       <PageHeader
         eyebrow="Primeros pasos"
-        icon={<HousePlus size={24} />}
+        icon={<HousePlus size={22} />}
         title="No pudimos preparar tu hogar"
         titleId="onboarding-error-title"
       />
@@ -32,7 +32,7 @@ export function OnboardingHeader() {
       <PageHeader
         description="Selecciona el espacio familiar donde quieres configurar tu perfil."
         eyebrow="Primeros pasos"
-        icon={<HousePlus size={24} />}
+        icon={<HousePlus size={22} />}
         title="Elige un hogar para continuar"
         titleId="household-select-title"
       />
@@ -43,7 +43,7 @@ export function OnboardingHeader() {
     return (
       <PageHeader
         eyebrow="Primeros pasos"
-        icon={<HousePlus size={24} />}
+        icon={<HousePlus size={22} />}
         title="Primeros pasos"
       />
     );
@@ -53,7 +53,7 @@ export function OnboardingHeader() {
     <PageHeader
       description="Empieza con un espacio compartido para organizar la alimentación y el bienestar de tu familia."
       eyebrow="Primeros pasos"
-      icon={<HousePlus size={24} />}
+      icon={<HousePlus size={22} />}
       title="Crea tu hogar"
       titleId="onboarding-title"
     />
