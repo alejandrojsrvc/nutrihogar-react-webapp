@@ -1,11 +1,11 @@
-import { Leaf } from 'lucide-react';
 import { Link } from 'react-router';
+import { BrandMark } from './BrandMark';
 
 export function BrandLockup({ link = true }: { link?: boolean }) {
   const content = (
     <>
       <span>NutriHogar</span>
-      <Leaf size={17} aria-hidden="true" />
+      <BrandMark />
     </>
   );
 

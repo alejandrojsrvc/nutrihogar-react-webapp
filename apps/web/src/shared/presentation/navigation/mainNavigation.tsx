@@ -6,6 +6,7 @@ import {
   ChartNoAxesCombined,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { NAV_ICON_SIZE } from '../icons';
 
 export interface NavigationItem {
   label: string;
@@ -27,12 +28,12 @@ export type AppSection =
 export const primaryNavigation: NavigationItem[] = [
   {
     end: true,
-    icon: <House size={19} aria-hidden="true" />,
+    icon: <House size={NAV_ICON_SIZE} aria-hidden="true" />,
     label: 'Hoy',
     to: '/app',
   },
   {
-    icon: <CalendarDays size={19} aria-hidden="true" />,
+    icon: <CalendarDays size={NAV_ICON_SIZE} aria-hidden="true" />,
     label: 'Plan',
     to: '/app/plan-semanal',
   },
@@ -43,12 +44,12 @@ export const primaryNavigation: NavigationItem[] = [
     to: '/app/comidas/nueva',
   },
   {
-    icon: <ChartNoAxesCombined size={19} aria-hidden="true" />,
+    icon: <ChartNoAxesCombined size={NAV_ICON_SIZE} aria-hidden="true" />,
     label: 'Progreso',
     to: '/app/resumen',
   },
   {
-    icon: <Package size={19} aria-hidden="true" />,
+    icon: <Package size={NAV_ICON_SIZE} aria-hidden="true" />,
     label: 'Hogar',
     to: '/app/inventario',
   },

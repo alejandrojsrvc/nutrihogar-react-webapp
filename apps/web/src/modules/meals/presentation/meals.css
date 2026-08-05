@@ -181,35 +181,10 @@
 .nutrition-metric__heading {
   font-size: var(--font-size-sm);
 }
-.nutrition-metric__track {
-  height: 0.625rem;
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-muted);
-}
-.nutrition-metric__track span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--color-primary);
-  transition: width var(--duration-normal);
-}
 .nutrition-metric__remaining {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
-}
-.nutrition-metric--protein .nutrition-metric__track span {
-  background: var(--color-protein);
-}
-.nutrition-metric--carbohydrates .nutrition-metric__track span {
-  background: var(--color-carbohydrates);
-}
-.nutrition-metric--fat .nutrition-metric__track span {
-  background: var(--color-fat);
-}
-.nutrition-metric--fiber .nutrition-metric__track span {
-  background: var(--color-fiber);
 }
 .daily-meal-list {
   border-top: 1px solid var(--color-border);

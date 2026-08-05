@@ -10,6 +10,7 @@ import {
   Snowflake,
 } from 'lucide-react';
 
+import { Badge } from '../../../../shared/presentation/components/Badge';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
 import '../inventory.css';
@@ -472,20 +473,34 @@ function SyncStatus({
   isSyncing: boolean;
   onSynchronize: () => void;
 }) {
+  const state = isSyncing
+    ? { label: 'Sincronizando', tone: 'info' as const }
+    : !isOnline
+      ? { label: 'Sin conexión', tone: 'danger' as const }
+      : conflictsCount > 0
+        ? { label: 'Conflictos por revisar', tone: 'danger' as const }
+        : pendingCount > 0
+          ? {
+              label: 'Pendiente de sincronización',
+              tone: 'warning' as const,
+            }
+          : { label: 'Al día', tone: 'positive' as const };
+  const details = [
+    pendingCount > 0
+      ? `${pendingCount} operación${pendingCount === 1 ? '' : 'es'} pendiente${pendingCount === 1 ? '' : 's'}`
+      : null,
+    conflictsCount > 0
+      ? `${conflictsCount} conflicto${conflictsCount === 1 ? '' : 's'}`
+      : null,
+    lastSyncAt ? `Última sincronización: ${formatDateTime(lastSyncAt)}` : null,
+  ].filter((part): part is string => Boolean(part));
+
   return (
     <div className="inventory-sync" role="status">
-      <span>
-        {isOnline ? 'Conectado' : 'Sin conexión'}
-        {pendingCount > 0
-          ? ` · ${pendingCount} operación${pendingCount === 1 ? '' : 'es'} pendiente${pendingCount === 1 ? '' : 's'}`
-          : ''}
-        {conflictsCount > 0
-          ? ` · ${conflictsCount} conflicto${conflictsCount === 1 ? '' : 's'}`
-          : ''}
-        {lastSyncAt
-          ? ` · Última sincronización: ${formatDateTime(lastSyncAt)}`
-          : ''}
-      </span>
+      <Badge dot tone={state.tone}>
+        {state.label}
+      </Badge>
+      {details.length ? <span>{details.join(' · ')}</span> : null}
       {pendingCount > 0 && isOnline ? (
         <button
           className="button button--tertiary"

@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router';
-import { Carrot } from 'lucide-react';
 import { BrandLockup } from './BrandLockup';
+import { BrandMark } from './BrandMark';
 
 import {
   isPrimaryNavigationActive,
@@ -46,7 +46,7 @@ export function Sidebar({
         </nav>
       ) : null}
       <div className="sidebar__footer">
-        <Carrot size={42} strokeWidth={1.5} aria-hidden="true" />
+        <BrandMark size={42} strokeWidth={1.5} />
         <p>
           Pequeñas decisiones,
           <br />

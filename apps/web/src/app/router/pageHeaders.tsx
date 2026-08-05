@@ -17,6 +17,7 @@ import { Link } from 'react-router';
 
 import { PageHeader } from '../../shared/presentation/components/PageHeader';
 import { useRouteParams } from '../../shared/presentation/hooks/useRouteParams';
+import { HEADER_ICON_SIZE } from '../../shared/presentation/icons';
 
 export function RecipeListHeader() {
   return (
@@ -28,7 +29,7 @@ export function RecipeListHeader() {
       }
       description="Encuentra preparaciones que tu familia repite con frecuencia."
       eyebrow="Recetas familiares"
-      icon={<BookOpen size={22} />}
+      icon={<BookOpen size={HEADER_ICON_SIZE} />}
       title="Recetas del hogar"
       titleId="recipe-list-title"
     />
@@ -39,7 +40,7 @@ function RecipeFormHeaderContent({ isEditing }: { isEditing: boolean }) {
   return (
     <PageHeader
       description="Comparte tus recetas caseras y nutre a tu familia."
-      icon={<ChefHat size={25} />}
+      icon={<ChefHat size={HEADER_ICON_SIZE} />}
       title={isEditing ? 'Editar receta' : 'Crear receta'}
       titleId="recipe-form-title"
     />
@@ -59,7 +60,7 @@ export function PreparedFoodLeftoverDetailHeader() {
     <PageHeader
       description="El nombre de la receta no está disponible en el detalle del sobrante."
       eyebrow="Sobrante de preparación"
-      icon={<PackageCheck size={22} />}
+      icon={<PackageCheck size={HEADER_ICON_SIZE} />}
       title="Sobrante guardado"
       titleId="leftover-detail-title"
     />
@@ -71,7 +72,7 @@ export function PreparedBatchInventoryHeader() {
     <PageHeader
       description="Confirma qué existencias se descontarán. La preparación no se bloquea si ignoras un ingrediente."
       eyebrow="Confirmación de inventario"
-      icon={<ClipboardCheck size={22} />}
+      icon={<ClipboardCheck size={HEADER_ICON_SIZE} />}
       title="Ingredientes utilizados"
       titleId="prepared-batch-inventory-title"
     />
@@ -87,7 +88,7 @@ export function InventoryListHeader() {
         </Link>
       }
       description="Despensa y preparados del hogar"
-      icon={<House size={25} />}
+      icon={<House size={HEADER_ICON_SIZE} />}
       title="Inventario"
       titleId="inventory-title"
     />
@@ -99,7 +100,7 @@ export function InventoryCreateHeader() {
     <PageHeader
       description="Registra lo que tienes disponible para mantener una referencia clara en casa."
       eyebrow="Inventario del hogar"
-      icon={<PackagePlus size={22} />}
+      icon={<PackagePlus size={HEADER_ICON_SIZE} />}
       title="Agregar existencia"
       titleId="inventory-create-title"
     />
@@ -113,7 +114,7 @@ export function PurchaseFormHeader() {
     <PageHeader
       description="Guarda un borrador para revisar cantidades y confirma después, cuando quieras actualizar el inventario."
       eyebrow="Compras del hogar"
-      icon={<ReceiptText size={22} />}
+      icon={<ReceiptText size={HEADER_ICON_SIZE} />}
       title={isEditing ? 'Editar compra' : 'Registrar compra'}
       titleId="purchase-form-title"
     />
@@ -130,7 +131,7 @@ export function FoodCatalogHeader() {
         </Link>
       }
       description="Busca ingredientes y consulta sus valores nutricionales."
-      icon={<Apple size={25} />}
+      icon={<Apple size={HEADER_ICON_SIZE} />}
       title="Alimentos"
       titleId="food-catalog-title"
     />
@@ -143,7 +144,7 @@ export function CustomFoodFormHeader() {
   return (
     <PageHeader
       description="Copia los valores de la etiqueta tal como aparecen. Podrás usar este alimento en tus comidas."
-      icon={<Apple size={25} />}
+      icon={<Apple size={HEADER_ICON_SIZE} />}
       title={isEditing ? 'Editar alimento' : 'Crear alimento'}
       titleId="custom-food-title"
     />
@@ -154,7 +155,7 @@ export function RegisterMealHeader() {
   return (
     <PageHeader
       description="Rápido, flexible y pensado para la vida real."
-      icon={<Plus size={27} />}
+      icon={<Plus size={HEADER_ICON_SIZE} />}
       title="Registrar comida"
       titleId="register-meal-title"
     />
@@ -167,7 +168,7 @@ export function PlannedMealFormHeader() {
   return (
     <PageHeader
       eyebrow="Plan semanal"
-      icon={<Utensils size={22} />}
+      icon={<Utensils size={HEADER_ICON_SIZE} />}
       title={
         editing ? 'Editar comida planificada' : 'Agregar comida planificada'
       }
@@ -181,7 +182,7 @@ export function PlannedMealQuantitiesHeader() {
     <PageHeader
       description="Las sugerencias orientan la decisión; la cantidad confirmada es la que queda guardada."
       eyebrow="Comida planificada"
-      icon={<Scale size={22} />}
+      icon={<Scale size={HEADER_ICON_SIZE} />}
       title="Cantidades por adulto"
       titleId="quantities-title"
     />
@@ -193,7 +194,7 @@ export function WeeklyRequirementsHeader() {
     <PageHeader
       description="El agregado semanal agrupado por unidad de medida."
       eyebrow="Plan semanal"
-      icon={<ClipboardList size={22} />}
+      icon={<ClipboardList size={HEADER_ICON_SIZE} />}
       title="Ingredientes requeridos"
       titleId="requirements-title"
     />
@@ -205,7 +206,7 @@ export function InventoryComparisonHeader() {
     <PageHeader
       description="Selecciona los faltantes que quieres enviar a la lista de compras."
       eyebrow="Plan semanal"
-      icon={<PackageCheck size={22} />}
+      icon={<PackageCheck size={HEADER_ICON_SIZE} />}
       title="Disponibilidad del inventario"
       titleId="comparison-title"
     />
@@ -217,7 +218,7 @@ export function WeeklyAdherenceHeader() {
     <PageHeader
       description="Valores calculados por el backend a partir del plan y los consumos vinculados."
       eyebrow="Plan semanal"
-      icon={<ChartNoAxesColumnIncreasing size={22} />}
+      icon={<ChartNoAxesColumnIncreasing size={HEADER_ICON_SIZE} />}
       title="Adherencia del plan"
       titleId="adherence-title"
     />

@@ -23,7 +23,7 @@ export function AdultProfileHeader() {
   ) {
     return (
       <PageHeader
-        icon={<UserRoundPen size={24} />}
+        icon={<UserRoundPen size={22} />}
         title="Configura tu perfil"
         titleId="profile-title"
         description="Completa estos pasos para adaptar la experiencia a tus necesidades."
@@ -36,7 +36,7 @@ export function AdultProfileHeader() {
       <PageHeader
         description="Primero elige el hogar donde quieres configurar tu perfil."
         eyebrow="Perfil adulto"
-        icon={<UserRoundPen size={24} />}
+        icon={<UserRoundPen size={22} />}
         title="Selecciona un hogar"
         titleId="profile-select-title"
       />
@@ -47,7 +47,7 @@ export function AdultProfileHeader() {
     <PageHeader
       description="Completa estos pasos para adaptar la experiencia a tus necesidades."
       eyebrow={householdName}
-      icon={<UserRoundPen size={24} />}
+      icon={<UserRoundPen size={22} />}
       title={currentProfile ? 'Edita tu perfil' : 'Configura tu perfil'}
       titleId="profile-title"
     />

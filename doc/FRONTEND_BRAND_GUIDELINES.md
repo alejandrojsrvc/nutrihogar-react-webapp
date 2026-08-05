@@ -182,12 +182,13 @@ Usar `Inter` con fallback del sistema. No agregar otra familia sin una necesidad
 ## 8. Acciones y botones
 
 - Altura visual mínima: 48 px para botones principales; área táctil mínima: 44 × 44 px.
-- Primario: fondo primary, texto inverso, peso 600.
-- Secundario: fondo transparente o surface, borde visible, texto primario.
-- Terciario: texto o icono con área táctil completa; no debe competir con el primario.
+- Primario: fondo primary, texto inverso, peso 600. Acción principal del contexto.
+- Secundario: fondo surface, borde visible (`--color-border-strong`), texto primario. Para la acción complementaria que necesita un contorno claro: Cancelar, Guardar borrador, Reintentar. Nunca junto a más de un botón con el mismo peso.
+- Terciario: texto o icono con área táctil completa; no debe competir con el primario. Para acciones poco prominentes dentro de listas o superficies (Sincronizar, limpiar filtros).
 - Destructivo: danger; reservado para acciones irreversibles o de descarte real.
 - Incluir `hover`, `focus-visible`, `active`, `disabled` y `loading`.
-- El estado loading conserva ancho y comunica progreso accesiblemente.
+- El estado loading conserva ancho: mantiene el label, agrega un spinner inline y comunica progreso accesiblemente (`aria-busy`). Solo se reemplaza el texto cuando el contexto lo exige.
+- Los botones pueden incluir un icono inicial o final (lucide), siempre como apoyo al texto y nunca como única señal.
 - Evitar filas de botones con el mismo peso. Si hay más de dos acciones, priorizar y mover las menos frecuentes a un menú accesible.
 - Los botones de icono siempre tienen nombre accesible y tooltip en dispositivos con hover.
 
@@ -232,6 +233,8 @@ Las tablas se reservan para escritorio y comparaciones de columnas. En teléfono
 
 Los mensajes no deben ser “Algo salió mal” si se conoce una causa más útil.
 
+Los estados de lectura corta (sincronización, conexión, prioridad, conteo) usan el componente `Badge` con un tono y un texto. El color nunca es la única señal: acompañar con el estado textual y, cuando corresponda, un punto de estado para lectura rápida.
+
 ## 12. Gráficos nutricionales y de salud
 
 - Priorizar valor actual, referencia, diferencia y tendencia.
@@ -250,7 +253,9 @@ Los mensajes no deben ser “Algo salió mal” si se conoce una causa más úti
 - No mezclar estilos filled y outline arbitrariamente.
 - No usar emojis como iconografía principal.
 - Una ilustración solo aporta orientación o calidez; no sustituye información ni ocupa el primer viewport sin motivo.
-- La navegación utiliza únicamente `lucide-react`, con iconos lineales de aproximadamente 20 px y nombres centralizados junto con la configuración de destinos.
+- La navegación utiliza únicamente `lucide-react`, con iconos lineales y nombres centralizados junto con la configuración de destinos.
+- Los tamaños habituales están centralizados en `shared/presentation/icons.ts`: 20 px en navegación, 22 px en cabeceras de página y de perfiles. Un componente que los usa no repite el tamaño.
+- La marca se representa con un único símbolo lineal (hoja) en `BrandMark`, reutilizado por `BrandLockup` y la navegación; no usar símbolos alternativos.
 
 ## 14. Tono de contenido
 

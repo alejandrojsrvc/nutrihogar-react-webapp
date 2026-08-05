@@ -32,6 +32,8 @@ import {
   todayInTimezone,
 } from '../../../meal-planning/domain/week';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
+import { Badge } from '../../../../shared/presentation/components/Badge';
+import { ProgressBar } from '../../../../shared/presentation/components/ProgressBar';
 import '../home.css';
 
 const mealTypes = [
@@ -210,9 +212,14 @@ function HomeNutritionSummary({
           <p className="home-nutrition__goal">
             Objetivo diario: {formatCalories(calorieGoal)}
           </p>
-          <div className="home-page__calorie-track" aria-hidden="true">
-            <span style={{ width: `${calorieProgress}%` }} />
-          </div>
+          <ProgressBar
+            ariaHidden
+            goal={calorieGoal}
+            label="Calorías"
+            size="sm"
+            tone="primary"
+            value={consumedCalories}
+          />
         </div>
         <div className="home-nutrition__encouragement">
           {hasGoal ? <CircleCheck size={31} aria-hidden="true" /> : null}
@@ -283,9 +290,14 @@ function NutritionMetric({
           </span>
         </div>
       </div>
-      <div className="home-macro__track" aria-hidden="true">
-        <span style={{ width: `${percentage}%` }} />
-      </div>
+      <ProgressBar
+        ariaHidden
+        goal={goal ?? 0}
+        label={label}
+        size="sm"
+        tone={tone}
+        value={value}
+      />
       <small>{goal == null ? 'Sin objetivo' : `${percentage}%`}</small>
     </div>
   );
@@ -510,15 +522,29 @@ function HomeInventoryPulse({
         <p>El inventario no tiene alertas prioritarias.</p>
       )}
       <p className="supporting-text">
-        {sync?.isOnline === false
-          ? 'Sin conexión: se muestran los datos guardados en este dispositivo.'
-          : sync?.pendingCount
-            ? `${sync.pendingCount} operación${sync.pendingCount === 1 ? '' : 'es'} pendiente${sync.pendingCount === 1 ? '' : 's'} de sincronizar.`
-            : sync?.conflictsCount
-              ? `${sync.conflictsCount} conflicto${sync.conflictsCount === 1 ? '' : 's'} requiere${sync.conflictsCount === 1 ? '' : 'n'} revisión.`
-              : sync?.lastSyncAt
-                ? `Última sincronización: ${formatTime(sync.lastSyncAt)}`
-                : 'Inventario y compras al día.'}
+        <Badge
+          dot
+          tone={
+            sync?.isOnline === false
+              ? 'danger'
+              : sync?.pendingCount
+                ? 'warning'
+                : sync?.conflictsCount
+                  ? 'danger'
+                  : 'positive'
+          }
+        >
+          {sync?.isOnline === false
+            ? 'Sin conexión'
+            : sync?.pendingCount
+              ? 'Pendiente de sincronización'
+              : sync?.conflictsCount
+                ? 'Conflictos por revisar'
+                : 'Inventario y compras al día'}
+        </Badge>
+        {sync?.lastSyncAt ? (
+          <span> · {formatTime(sync.lastSyncAt)}</span>
+        ) : null}
       </p>
     </section>
   );

@@ -6,6 +6,10 @@ import {
   type NutritionSummary,
 } from '@nutrihogar/domain';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
+import {
+  ProgressBar,
+  type ProgressTone,
+} from '../../../../shared/presentation/components/ProgressBar';
 import { useActiveProfile } from '../../../../shared/presentation/providers/ActiveProfileContext';
 import { useAdultProfiles } from '../../../households/presentation/hooks/useAdultProfiles';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -24,12 +28,12 @@ const mealTypeLabels: Record<string, string> = {
 const nutrients: Array<{
   key: keyof NutritionSummary;
   label: string;
-  color: string;
+  tone: ProgressTone;
 }> = [
-  { color: 'protein', key: 'proteinGrams', label: 'Proteína' },
-  { color: 'carbohydrates', key: 'carbohydrateGrams', label: 'Carbohidratos' },
-  { color: 'fat', key: 'fatGrams', label: 'Grasas' },
-  { color: 'fiber', key: 'fiberGrams', label: 'Fibra' },
+  { key: 'proteinGrams', label: 'Proteína', tone: 'protein' },
+  { key: 'carbohydrateGrams', label: 'Carbohidratos', tone: 'carbohydrates' },
+  { key: 'fatGrams', label: 'Grasas', tone: 'fat' },
+  { key: 'fiberGrams', label: 'Fibra', tone: 'fiber' },
 ];
 
 export function DailyNutritionSummaryPage() {
@@ -197,7 +201,7 @@ function SummaryContent({
         </div>
         <NutritionMetric
           label="Calorías"
-          color="calories"
+          tone="primary"
           consumed={summary.consumed.calories}
           goal={summary.goal?.calories}
           remaining={summary.remaining?.calories}
@@ -207,7 +211,7 @@ function SummaryContent({
           <NutritionMetric
             key={nutrient.key}
             label={nutrient.label}
-            color={nutrient.color}
+            tone={nutrient.tone}
             consumed={summary.consumed[nutrient.key]}
             goal={summary.goal?.[nutrient.key]}
             remaining={summary.remaining?.[nutrient.key]}
@@ -260,24 +264,22 @@ function SummaryContent({
 }
 
 function NutritionMetric({
-  color,
   consumed,
   goal,
   label,
   remaining,
+  tone,
   unit,
 }: {
-  color: string;
   consumed: number;
   goal?: number;
   label: string;
   remaining?: number;
+  tone: ProgressTone;
   unit: string;
 }) {
-  const percentage =
-    goal && goal > 0 ? Math.min((consumed / goal) * 100, 100) : 0;
   return (
-    <div className={`nutrition-metric nutrition-metric--${color}`}>
+    <div className={`nutrition-metric nutrition-metric--${tone}`}>
       <div className="nutrition-metric__heading">
         <span>{label}</span>
         <strong>
@@ -287,16 +289,14 @@ function NutritionMetric({
       </div>
       {goal != null && goal > 0 ? (
         <>
-          <div
-            className="nutrition-metric__track"
-            role="progressbar"
-            aria-label={`${label}: ${formatValue(consumed, unit)} de ${formatValue(goal, unit)}`}
-            aria-valuemax={goal}
-            aria-valuemin={0}
-            aria-valuenow={Math.min(consumed, goal)}
-          >
-            <span style={{ width: `${percentage}%` }} />
-          </div>
+          <ProgressBar
+            goal={goal}
+            goalLabel={formatValue(goal, unit)}
+            label={label}
+            tone={tone}
+            value={consumed}
+            valueLabel={formatValue(consumed, unit)}
+          />
           <p className="nutrition-metric__remaining">
             {remaining == null
               ? 'Balance no disponible'

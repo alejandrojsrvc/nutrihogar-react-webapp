@@ -16,7 +16,7 @@ export function FamilyHeader() {
       }
       description="Consulta los integrantes del hogar y abre sus datos cuando lo necesites."
       eyebrow={households.activeHousehold?.name}
-      icon={<UsersRound size={24} />}
+      icon={<UsersRound size={22} />}
       title="Familia"
       titleId="family-title"
     />

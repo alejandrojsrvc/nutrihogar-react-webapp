@@ -22,7 +22,7 @@ export function AdultProfileOverviewHeader() {
     return (
       <PageHeader
         eyebrow={householdName}
-        icon={<UserRound size={24} />}
+        icon={<UserRound size={22} />}
         title="Tu perfil"
         titleId="profile-overview-title"
         description="Consulta los datos disponibles de este integrante del hogar."
@@ -34,7 +34,7 @@ export function AdultProfileOverviewHeader() {
     return (
       <PageHeader
         description="Elige el hogar cuyos datos quieres consultar."
-        icon={<UserRound size={24} />}
+        icon={<UserRound size={22} />}
         title="Selecciona un hogar"
         titleId="profile-household-title"
       />
@@ -52,7 +52,7 @@ export function AdultProfileOverviewHeader() {
       <PageHeader
         description="Este integrante no pertenece al hogar activo o ya no está disponible."
         eyebrow={householdName}
-        icon={<UserRound size={24} />}
+        icon={<UserRound size={22} />}
         title="Perfil no disponible"
         titleId="profile-empty-title"
       />
@@ -64,7 +64,7 @@ export function AdultProfileOverviewHeader() {
       <PageHeader
         description="Configura tus datos para personalizar las metas y recomendaciones del hogar."
         eyebrow={householdName}
-        icon={<UserRound size={24} />}
+        icon={<UserRound size={22} />}
         title="Tu perfil"
         titleId="profile-empty-title"
       />
@@ -84,7 +84,7 @@ export function AdultProfileOverviewHeader() {
       }
       description="Consulta los datos disponibles de este integrante del hogar."
       eyebrow={householdName}
-      icon={<UserRound size={24} />}
+      icon={<UserRound size={22} />}
       title={isOwnProfile ? 'Tu perfil' : profile.name}
       titleId="profile-overview-title"
     />
