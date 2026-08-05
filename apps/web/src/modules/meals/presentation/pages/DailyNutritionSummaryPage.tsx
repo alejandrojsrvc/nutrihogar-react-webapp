@@ -138,6 +138,12 @@ export function DailyNutritionSummaryPage() {
             onChange={(event) => changeDate(event.target.value)}
           />
         </div>
+        <Link
+          className="button button--primary summary-filters__action"
+          to={`/app/comidas/nueva?profileId=${activeProfileId}&date=${date}`}
+        >
+          Registrar comida
+        </Link>
       </div>
 
       {summaryQuery.isPending ? (

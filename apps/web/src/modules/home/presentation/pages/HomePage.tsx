@@ -123,42 +123,46 @@ export function HomePage() {
       ) : null}
       <div className="home-page__layout">
         {summaryQuery.data ? (
-          <>
-            <div className="home-page__main-column">
-              <HomeNutritionSummary summary={summaryQuery.data} />
-              <HomeMealTimeline
-                date={date}
-                plan={todayPlan}
-                summary={summaryQuery.data}
-              />
-            </div>
-            <aside
-              className="home-page__side-column"
-              aria-label="Resumen del hogar"
-            >
-              <HomeNextMeal
-                date={date}
-                plan={todayPlan}
-                summary={summaryQuery.data}
-              />
-            </aside>
-          </>
+          <div className="home-page__main-column">
+            <HomeNutritionSummary summary={summaryQuery.data} />
+            <HomeMealTimeline
+              date={date}
+              plan={todayPlan}
+              summary={summaryQuery.data}
+            />
+          </div>
         ) : (
-          <section className="home-page__nutrition" aria-live="polite">
-            <h2>{profileId ? 'Resumen nutricional' : 'Configura tu perfil'}</h2>
-            <p role={summaryQuery.isError ? 'alert' : 'status'}>
-              {!profileId
-                ? 'Completa un perfil activo para consultar el resumen del día.'
-                : summaryQuery.isError
-                  ? 'No se pudo cargar el resumen de hoy.'
-                  : 'Cargando tu resumen...'}
-            </p>
-          </section>
+          <div className="home-page__main-column">
+            <section className="home-page__nutrition" aria-live="polite">
+              <h2>
+                {profileId ? 'Resumen nutricional' : 'Configura tu perfil'}
+              </h2>
+              <p role={summaryQuery.isError ? 'alert' : 'status'}>
+                {!profileId
+                  ? 'Completa un perfil activo para consultar el resumen del día.'
+                  : summaryQuery.isError
+                    ? 'No se pudo cargar el resumen de hoy.'
+                    : 'Cargando tu resumen...'}
+              </p>
+            </section>
+          </div>
         )}
-        <HomeInventoryPulse
-          dashboard={inventoryDashboard}
-          sync={inventorySyncQuery.data}
-        />
+        <aside
+          className="home-page__side-column"
+          aria-label="Resumen del hogar"
+        >
+          {summaryQuery.data ? (
+            <HomeNextMeal
+              date={date}
+              plan={todayPlan}
+              summary={summaryQuery.data}
+            />
+          ) : null}
+          <HomeInventoryPulse
+            dashboard={inventoryDashboard}
+            sync={inventorySyncQuery.data}
+          />
+        </aside>
       </div>
     </section>
   );
@@ -289,6 +293,7 @@ function NutritionMetric({
             {Math.round(value)} / {goal == null ? '—' : `${Math.round(goal)} g`}
           </span>
         </div>
+        <small>{goal == null ? 'Sin objetivo' : `${percentage}%`}</small>
       </div>
       <ProgressBar
         ariaHidden
@@ -376,10 +381,9 @@ function HomeMealTimeline({
   );
   return (
     <section className="home-page__meals" aria-labelledby="home-meals-title">
-      <div className="home-card__heading">
-        <Utensils size={19} aria-hidden="true" />
-        <h2 id="home-meals-title">Comidas de hoy</h2>
-      </div>
+      <h2 className="visually-hidden" id="home-meals-title">
+        Comidas de hoy
+      </h2>
       {plan.isError ? (
         <p role="alert">No se pudieron cargar las comidas planificadas.</p>
       ) : null}

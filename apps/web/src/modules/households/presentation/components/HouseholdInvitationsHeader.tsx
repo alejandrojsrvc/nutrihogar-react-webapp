@@ -4,7 +4,6 @@ import { PageHeader } from '../../../../shared/presentation/components/PageHeade
 import { useHouseholdInvitations } from '../hooks/useHouseholdInvitations';
 import { useHouseholds } from '../hooks/useHouseholds';
 import { getErrorStatus } from '../invitationErrorHelpers';
-import { openInvitationForm } from '../stores/invitationUiStores';
 
 export function HouseholdInvitationsHeader() {
   const households = useHouseholds();
@@ -67,17 +66,6 @@ export function HouseholdInvitationsHeader() {
 
   return (
     <PageHeader
-      action={
-        invitations.isPending ? undefined : (
-          <button
-            className="button button--primary"
-            onClick={openInvitationForm}
-            type="button"
-          >
-            Invitar a alguien
-          </button>
-        )
-      }
       description="Invita a otro adulto para organizar juntos la alimentación del hogar."
       eyebrow={households.activeHousehold.name}
       icon={<MailPlus size={22} />}

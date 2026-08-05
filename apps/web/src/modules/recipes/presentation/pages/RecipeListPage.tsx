@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router';
+import { LoadingState } from '../../../../shared/presentation/components/AsyncState';
 import { Badge } from '../../../../shared/presentation/components/Badge';
 import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
@@ -81,8 +82,16 @@ export function RecipeListPage() {
             <option value="DINNER">Cena</option>
           </select>
         </div>
+        <Link
+          className="button button--primary recipe-filters__action"
+          to="/app/recetas/nueva"
+        >
+          Crear receta
+        </Link>
       </div>
-      {recipes.isPending ? <p role="status">Cargando recetas...</p> : null}
+      {recipes.isPending ? (
+        <LoadingState message="Cargando recetas..." />
+      ) : null}
       {recipes.isError ? (
         <div role="alert">
           <p>No se pudieron cargar las recetas.</p>

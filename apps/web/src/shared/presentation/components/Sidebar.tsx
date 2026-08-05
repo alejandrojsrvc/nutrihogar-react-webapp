@@ -21,30 +21,39 @@ export function Sidebar({
         <BrandLockup />
       </div>
       <nav aria-label="Destinos principales" className="sidebar__destinations">
-        {primaryNavigation.map((item) => (
-          <NavLink
-            aria-current={
-              isPrimaryNavigationActive(item.to, pathname) ? 'page' : undefined
-            }
-            className={`sidebar__link${item.action ? ' sidebar__link--action' : ''}`}
-            end={item.end}
-            key={item.to}
-            to={item.to}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
+        {primaryNavigation.map((item) => {
+          const active = isPrimaryNavigationActive(item.to, pathname);
+          return (
+            <div className="sidebar__group" key={item.to}>
+              <NavLink
+                aria-current={active ? 'page' : undefined}
+                className={`sidebar__link${item.action ? ' sidebar__link--action' : ''}`}
+                end={item.end}
+                to={item.to}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </NavLink>
+              {active && secondaryItems ? (
+                <nav
+                  aria-label={`Opciones de ${item.label}`}
+                  className="sidebar__secondary"
+                >
+                  {secondaryItems.map((secondaryItem) => (
+                    <NavLink
+                      end={secondaryItem.end}
+                      key={secondaryItem.to}
+                      to={secondaryItem.to}
+                    >
+                      {secondaryItem.label}
+                    </NavLink>
+                  ))}
+                </nav>
+              ) : null}
+            </div>
+          );
+        })}
       </nav>
-      {secondaryItems ? (
-        <nav className="sidebar__secondary" aria-label="Secciones relacionadas">
-          {secondaryItems.map((item) => (
-            <NavLink end={item.end} key={item.to} to={item.to}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      ) : null}
       <div className="sidebar__footer">
         <BrandMark size={42} strokeWidth={1.5} />
         <p>

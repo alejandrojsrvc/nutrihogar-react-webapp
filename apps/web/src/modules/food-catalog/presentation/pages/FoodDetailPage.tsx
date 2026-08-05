@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { Trash2 } from 'lucide-react';
 
 import { useHouseholds } from '../../../households/presentation/hooks/useHouseholds';
-import { BackButton } from '../../../../shared/presentation/components/BackButton';
 import { useDeleteCustomFood, useFoodDetail } from '../hooks/useFoodCatalog';
 import '../food-catalog.css';
 import {
@@ -63,7 +62,6 @@ export function FoodDetailPage() {
       className="page-section food-detail-page"
       aria-labelledby="food-detail-title"
     >
-      <BackButton fallback="/app/alimentos" label="Volver al catálogo" />
       {savedFeedback ? (
         <p className="food-feedback" role="status">
           {savedFeedback}
@@ -74,6 +72,17 @@ export function FoodDetailPage() {
         <span>{preparationStateLabels[food.preparationState]}</span>
         <span>Valores por {formatReference(food)}</span>
       </div>
+      {canManage ? (
+        <div className="food-detail-actions">
+          <Link
+            aria-label="Editar alimento"
+            className="button button--secondary"
+            to={`/app/alimentos/${food.id}/editar`}
+          >
+            Editar alimento
+          </Link>
+        </div>
+      ) : null}
 
       <section
         className="food-detail-section food-detail-section--summary"
@@ -252,9 +261,14 @@ function getDetailFeedback(state: unknown): string | null {
     return null;
   }
 
-  return (state as { foodSaved?: boolean }).foodSaved
-    ? 'El alimento se guardó correctamente.'
-    : null;
+  const feedback = state as { foodSaved?: boolean; inventoryAdded?: boolean };
+  if (!feedback.foodSaved) {
+    return null;
+  }
+
+  return feedback.inventoryAdded
+    ? 'El alimento se guardó y se agregó a tu inventario.'
+    : 'El alimento se guardó correctamente.';
 }
 
 function FoodNutrientHighlight({

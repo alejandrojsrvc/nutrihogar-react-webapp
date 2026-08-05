@@ -130,6 +130,9 @@ describe('HomePage', () => {
     expect(consumedCalories.parentElement).toHaveTextContent(
       '1.420 kcal consumidas',
     );
+    expect(
+      screen.getByRole('progressbar', { name: 'Proteína consumida' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Hoy' })).toBeInTheDocument();
   });
 

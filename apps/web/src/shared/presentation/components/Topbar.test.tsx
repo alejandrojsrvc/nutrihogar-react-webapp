@@ -106,5 +106,6 @@ describe('Topbar', () => {
     expect(
       screen.getByRole('heading', { name: 'Recurso abc' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Atrás' })).toBeInTheDocument();
   });
 });

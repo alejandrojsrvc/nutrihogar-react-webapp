@@ -12,6 +12,7 @@ import type { NutritionSummary } from '@nutrihogar/domain';
 import { FoodSelector } from '../../../food-catalog/presentation/components/FoodSelector';
 import type { FoodSelection } from '../../../food-catalog/application/ports/FoodCatalogGateway';
 import type { MealDraftItem } from '../../application/ports/MealGateway';
+import { ActionBar } from '../../../../shared/presentation/components/ActionBar';
 import {
   Camera,
   ChefHat,
@@ -333,22 +334,26 @@ export function MealForm({
               {errorMessage}
             </p>
           ) : null}
-          <div className="meal-form__actions meal-form__actions--consumer">
-            <Link className="button button--secondary" to={cancelTo}>
-              Cancelar
-            </Link>
-            <button
-              className="button button--primary"
-              disabled={
-                Boolean(isSubmitting) ||
-                !selectedProfileId ||
-                items.length === 0
-              }
-              type="submit"
-            >
-              {isSubmitting ? 'Guardando...' : submitLabel}
-            </button>
-          </div>
+          <ActionBar
+            primary={
+              <button
+                className="button button--primary"
+                disabled={
+                  Boolean(isSubmitting) ||
+                  !selectedProfileId ||
+                  items.length === 0
+                }
+                type="submit"
+              >
+                {isSubmitting ? 'Guardando...' : submitLabel}
+              </button>
+            }
+            secondary={
+              <Link className="button button--secondary" to={cancelTo}>
+                Cancelar
+              </Link>
+            }
+          />
         </form>
         {showSelector ? (
           <FoodSelector

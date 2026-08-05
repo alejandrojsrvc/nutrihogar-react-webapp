@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router';
 import { Apple, ChevronRight, Search } from 'lucide-react';
 
+import { LoadingState } from '../../../../shared/presentation/components/AsyncState';
+import { EmptyState } from '../../../../shared/presentation/components/EmptyState';
 import type {
   FoodSearchCriteria,
   SearchPreparationState,
@@ -136,6 +138,12 @@ export function FoodCatalogPage() {
         >
           Buscar
         </button>
+        <Link
+          className="button button--primary food-search-create"
+          to="/app/alimentos/nuevo"
+        >
+          Crear alimento
+        </Link>
       </form>
 
       {categories.isError ? (
@@ -145,7 +153,9 @@ export function FoodCatalogPage() {
       ) : null}
 
       <div aria-live="polite" className="food-search-status">
-        {foods.isPending ? <p role="status">Cargando alimentos...</p> : null}
+        {foods.isPending ? (
+          <LoadingState message="Cargando alimentos..." />
+        ) : null}
         {!foods.isPending && foods.isFetching ? (
           <p role="status">Actualizando resultados...</p>
         ) : null}
@@ -174,13 +184,14 @@ export function FoodCatalogPage() {
       ) : null}
 
       {!foods.isPending && !foods.isError && items.length === 0 ? (
-        <div className="food-empty-state" role="status">
-          <h2>No encontramos alimentos</h2>
-          <p>
-            {hasFilters
+        <EmptyState
+          description={
+            hasFilters
               ? 'Prueba con otro nombre o limpia los filtros.'
-              : 'Todavía no hay alimentos disponibles en este catálogo.'}
-          </p>
+              : 'Todavía no hay alimentos disponibles en este catálogo.'
+          }
+          title="No encontramos alimentos"
+        >
           {hasFilters ? (
             <button
               className="button button--secondary"
@@ -190,7 +201,7 @@ export function FoodCatalogPage() {
               Limpiar búsqueda
             </button>
           ) : null}
-        </div>
+        </EmptyState>
       ) : null}
 
       {items.length > 0 ? (

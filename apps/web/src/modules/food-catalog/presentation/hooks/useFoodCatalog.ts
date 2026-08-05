@@ -2,9 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import {
+  confirmNutritionLabelDraftUseCase,
   createCustomFoodUseCase,
+  createNutritionLabelDraftUseCase,
   deleteCustomFoodUseCase,
   getFoodDetailUseCase,
+  getNutritionLabelDraftUseCase,
   listFoodCategoriesUseCase,
   listFoodNutrientsUseCase,
   searchFoodsUseCase,
@@ -15,6 +18,10 @@ import type {
   FoodSearchCriteria,
   UpdateCustomFoodInput,
 } from '../../application/ports/FoodCatalogGateway';
+import type {
+  NutritionLabelConfirmInput,
+  NutritionLabelUploadInput,
+} from '../../application/ports/NutritionLabelDraftGateway';
 
 export const foodCatalogQueryKeys = {
   all: ['food-catalog'] as const,
@@ -24,6 +31,8 @@ export const foodCatalogQueryKeys = {
     [...foodCatalogQueryKeys.all, 'detail', foodId] as const,
   search: (criteria: FoodSearchCriteria) =>
     [...foodCatalogQueryKeys.all, 'search', criteria] as const,
+  nutritionLabelDraft: (draftId: string) =>
+    [...foodCatalogQueryKeys.all, 'nutrition-label-draft', draftId] as const,
 };
 
 export function useFoodCategories() {
@@ -120,6 +129,71 @@ export function useFoodDetail(foodId: string | undefined) {
       ? foodCatalogQueryKeys.detail(foodId)
       : foodCatalogQueryKeys.all,
     retry: false,
+  });
+}
+
+export function useCreateNutritionLabelDraft() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: NutritionLabelUploadInput) =>
+      createNutritionLabelDraftUseCase.execute(input),
+    onSuccess: (draft) => {
+      queryClient.setQueryData(
+        foodCatalogQueryKeys.nutritionLabelDraft(draft.id),
+        draft,
+      );
+    },
+  });
+}
+
+export function useNutritionLabelDraft(
+  householdId: string | undefined,
+  draftId: string | null,
+  enabled = true,
+) {
+  return useQuery({
+    enabled: Boolean(householdId && draftId && enabled),
+    queryFn: () =>
+      getNutritionLabelDraftUseCase.execute(
+        householdId as string,
+        draftId as string,
+      ),
+    queryKey: draftId
+      ? foodCatalogQueryKeys.nutritionLabelDraft(draftId)
+      : foodCatalogQueryKeys.all,
+    retry: false,
+  });
+}
+
+export function useConfirmNutritionLabelDraft() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      householdId,
+      draftId,
+      input,
+    }: {
+      householdId: string;
+      draftId: string;
+      input: NutritionLabelConfirmInput;
+    }) =>
+      confirmNutritionLabelDraftUseCase.execute(householdId, draftId, input),
+    onSuccess: (result) => {
+      queryClient.setQueryData(
+        foodCatalogQueryKeys.detail(result.food.id),
+        result.food,
+      );
+      queryClient.setQueryData(
+        ['inventory', 'detail', result.inventory.id],
+        result.inventory,
+      );
+      void queryClient.invalidateQueries({
+        queryKey: foodCatalogQueryKeys.all,
+      });
+      void queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
   });
 }
 

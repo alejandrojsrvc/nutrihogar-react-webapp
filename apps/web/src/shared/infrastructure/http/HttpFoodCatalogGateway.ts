@@ -258,10 +258,41 @@ function toFoodCategory(
   value: components['schemas']['CategoryResponseDto'],
 ): FoodCategory {
   return {
-    code: value.code,
-    displayOrder: value.displayOrder,
-    id: value.id,
-    name: value.name,
+    code: String(value?.code ?? ''),
+    displayOrder: Number(value?.displayOrder ?? 0),
+    id: String(value?.id ?? ''),
+    name: String(value?.name ?? ''),
+  };
+}
+
+export function toFoodDetail(
+  value: components['schemas']['FoodDetailResponseDto'],
+): FoodDetail {
+  return {
+    ...toFoodSummary(value),
+    aliases: Array.isArray(value.aliases) ? value.aliases : [],
+    confidenceLevel: value.confidenceLevel ?? 'USER_PROVIDED',
+    description: toNullableText(value.description),
+    isGlobal: Boolean(value.isGlobal),
+    nutrients: (Array.isArray(value.nutrients) ? value.nutrients : []).map(
+      (nutrient) => ({
+        amount: toNullableNumber(nutrient.amount) ?? 0,
+        id: String(nutrient.id ?? ''),
+        nutrientDefinition: nutrient.nutrientDefinition,
+      }),
+    ),
+    servings: (Array.isArray(value.servings) ? value.servings : []).map(
+      (serving) => ({
+        equivalentGrams: toNullableNumber(serving.equivalentGrams),
+        equivalentMilliliters: toNullableNumber(serving.equivalentMilliliters),
+        id: String(serving.id ?? ''),
+        name: String(serving.name ?? ''),
+        quantity: toNullableNumber(serving.quantity) ?? 0,
+        unit: String(serving.unit ?? ''),
+      }),
+    ),
+    source: String(value.source ?? ''),
+    sourceReference: toNullableText(value.sourceReference),
   };
 }
 
@@ -280,40 +311,17 @@ function toFoodSummary(
     name: value.name,
     preparationState: value.preparationState,
     proteinGrams: toNullableNumber(value.proteinGrams),
-    referenceQuantity: value.referenceQuantity,
+    referenceQuantity: toNullableNumber(value.referenceQuantity) ?? 0,
     referenceUnit: value.referenceUnit,
   };
 }
 
-function toFoodDetail(
-  value: components['schemas']['FoodDetailResponseDto'],
-): FoodDetail {
-  return {
-    ...toFoodSummary(value),
-    aliases: value.aliases,
-    confidenceLevel: value.confidenceLevel,
-    description: toNullableText(value.description),
-    isGlobal: value.isGlobal,
-    nutrients: value.nutrients.map((nutrient) => ({
-      amount: nutrient.amount,
-      id: nutrient.id,
-      nutrientDefinition: nutrient.nutrientDefinition,
-    })),
-    servings: value.servings.map((serving) => ({
-      equivalentGrams: toNullableNumber(serving.equivalentGrams),
-      equivalentMilliliters: toNullableNumber(serving.equivalentMilliliters),
-      id: serving.id,
-      name: serving.name,
-      quantity: serving.quantity,
-      unit: serving.unit,
-    })),
-    source: value.source,
-    sourceReference: toNullableText(value.sourceReference),
-  };
-}
-
 function toNullableNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) {
+    return Number(value);
+  }
+  return null;
 }
 
 function toNullableText(value: unknown): string | null {

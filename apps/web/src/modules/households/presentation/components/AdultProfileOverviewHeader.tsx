@@ -1,5 +1,4 @@
 import { UserRound } from 'lucide-react';
-import { Link } from 'react-router';
 
 import { PageHeader } from '../../../../shared/presentation/components/PageHeader';
 import { useRouteParams } from '../../../../shared/presentation/hooks/useRouteParams';
@@ -75,13 +74,6 @@ export function AdultProfileOverviewHeader() {
 
   return (
     <PageHeader
-      action={
-        isOwnProfile ? (
-          <Link className="button button--primary" to="/app/perfil/editar">
-            Editar perfil
-          </Link>
-        ) : null
-      }
       description="Consulta los datos disponibles de este integrante del hogar."
       eyebrow={householdName}
       icon={<UserRound size={22} />}

@@ -62,6 +62,7 @@ export const secondaryNavigation = {
   ],
   hogar: [
     { label: 'Inventario', to: '/app/inventario' },
+    { label: 'Alimentos', to: '/app/alimentos' },
     { label: 'Compras', to: '/app/compras' },
     { label: 'Lista de compras', to: '/app/lista-de-compras' },
     { label: 'Familia', to: '/app/familia' },
@@ -78,13 +79,10 @@ export function getAppSection(pathname: string): AppSection {
     pathname.startsWith('/app/sobrantes')
   )
     return 'planificar';
-  if (
-    pathname.startsWith('/app/comidas') ||
-    pathname.startsWith('/app/alimentos')
-  )
-    return 'registrar';
+  if (pathname.startsWith('/app/comidas')) return 'registrar';
   if (
     pathname.startsWith('/app/inventario') ||
+    pathname.startsWith('/app/alimentos') ||
     pathname.startsWith('/app/perfil') ||
     pathname.startsWith('/app/perfiles') ||
     pathname.startsWith('/app/familia') ||

@@ -72,6 +72,11 @@ export function FamilyPage() {
       className="page-section family-page"
       aria-labelledby="family-title"
     >
+      <div className="module-toolbar">
+        <Link className="button button--primary" to="/app/invitaciones">
+          Invitar integrante
+        </Link>
+      </div>
       {profiles.profiles.length === 0 ? (
         <EmptyState
           description="Cuando un adulto complete su perfil, aparecerá en esta lista."

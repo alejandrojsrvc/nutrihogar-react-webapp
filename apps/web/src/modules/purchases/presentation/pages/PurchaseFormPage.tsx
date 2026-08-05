@@ -275,7 +275,7 @@ export function PurchaseFormPage() {
                 <li key={`${item.foodId ?? item.nameSnapshot}-${index}`}>
                   <div>
                     <strong>{item.nameSnapshot}</strong>
-                    <div className="purchase-item-editors">
+                    <div className="purchase-item-editors form-field ">
                       <label>
                         <span>Cantidad</span>
                         <input
