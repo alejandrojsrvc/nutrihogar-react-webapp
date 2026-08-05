@@ -503,7 +503,7 @@ button.button--secondary {
 .empty-state-card {
   display: grid;
   justify-items: center;
-  max-width: 42rem;
+  
   margin: var(--space-8) auto;
   padding: var(--space-10) var(--space-6);
   border: 1px solid var(--color-border);
@@ -1221,7 +1221,7 @@ button.button--secondary {
     padding-inline: var(--space-4);
   }
   .app-topbar__page-header {
-    padding-inline: var(--space-3);
+    padding: var(--space-3);
   }
   .app-topbar__brand {
     display: none;
@@ -1336,9 +1336,7 @@ button.button--secondary {
     justify-content: flex-end;
     padding: var(--space-3) var(--space-4);
   }
-  .app-topbar__page-header {
-    padding-inline: var(--space-4);
-  }
+
   .app-topbar__brand {
     display: none;
   }

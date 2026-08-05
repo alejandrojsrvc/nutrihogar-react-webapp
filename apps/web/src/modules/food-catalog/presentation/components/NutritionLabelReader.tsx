@@ -79,7 +79,7 @@ export function NutritionLabelReader({
         accept="image/*,application/pdf"
         className="visually-hidden"
         onChange={(event) => {
-          const files = event.target.files;
+          const files = event.target.files ? [...event.target.files] : null;
           event.target.value = '';
           handleFiles(files);
         }}

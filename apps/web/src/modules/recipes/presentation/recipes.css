@@ -4,7 +4,7 @@
   gap: var(--space-5);
 }
 .recipe-form-page {
-  max-width: 42rem;
+  
 }
 .recipe-form__workspace {
   display: grid;
@@ -216,7 +216,7 @@
 .portion-form,
 .leftover-form {
   display: grid;
-  max-width: 42rem;
+  
   gap: var(--space-6);
 }
 .recipe-page-actions,

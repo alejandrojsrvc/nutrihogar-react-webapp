@@ -595,7 +595,7 @@
 
 .inventory-form {
   gap: var(--space-8);
-  max-width: 42rem;
+  
 }
 
 .inventory-form fieldset {
@@ -666,7 +666,7 @@
 }
 
 .inventory-prepared-form {
-  max-width: 42rem;
+  
 }
 
 .inventory-prepared-form .recipe-detail-section {

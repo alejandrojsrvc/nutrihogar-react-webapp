@@ -281,7 +281,7 @@
 .custom-food-form {
   display: grid;
   gap: var(--space-6);
-  max-width: 42rem;
+  
 }
 .nutrition-label-reader {
   display: flex;
@@ -475,13 +475,32 @@
   padding: var(--space-4) 0;
   border-bottom: 1px solid var(--color-border);
 }
+.custom-food-nutrient-row {
+  grid-template-columns: minmax(0, 1fr) minmax(6.5rem, auto);
+  align-items: center;
+}
 .custom-food-nutrient-row > div:first-of-type {
-  display: grid;
-  align-content: center;
-  gap: var(--space-1);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
 }
 .custom-food-nutrient-row small {
   color: var(--color-text-secondary);
+}
+.custom-food-nutrient-row .form-field > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.custom-food-nutrient-row .food-row-remove {
+  grid-column: 1 / -1;
+  justify-self: start;
 }
 .food-form-add-row {
   display: grid;
@@ -574,6 +593,10 @@
   .custom-food-nutrient-row {
     grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 1fr) auto;
     align-items: center;
+  }
+  .custom-food-nutrient-row .food-row-remove {
+    grid-column: auto;
+    justify-self: auto;
   }
   .nutrition-label-review__detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

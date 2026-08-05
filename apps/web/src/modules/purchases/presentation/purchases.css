@@ -417,7 +417,7 @@
 
 .purchase-form {
   gap: var(--space-8);
-  max-width: 42rem;
+  
 }
 
 .purchase-form fieldset {
